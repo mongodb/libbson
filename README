@@ -1,0 +1,21 @@
+libbson
+-------
+
+libbson is a library providing useful routines related to building, parsing,
+and iterating BSON documents.  It is a useful base for those wanting to write
+high-performance C extensions to higher level languages such as python, ruby,
+or perl.
+
+
+Overview
+--------
+
+TODO
+
+    bson_t
+    bson_context_t
+    bson_oid_t
+    bson_iter_t
+    bson_reader_t
+    bson_visitor_t
+
