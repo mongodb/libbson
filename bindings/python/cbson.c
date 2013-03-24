@@ -23,42 +23,248 @@
 static bson_context_t gContext;
 
 
-static PyObject *
-cbson_oid_init (PyObject *self,
-                PyObject *args)
+static void
+cbson_loads_visit_utf8 (const bson_iter_t *iter,
+                        const char        *key,
+                        size_t             v_utf8_len,
+                        const char        *v_utf8,
+                        void              *data)
 {
-   bson_oid_t oid;
+   PyObject **ret = data;
+   PyObject *value;
 
-   bson_oid_init(&oid, &gContext);
-   return PyString_FromStringAndSize((const char *)&oid, sizeof oid);
+   if (*ret) {
+      if (!(value = PyString_FromStringAndSize(v_utf8, v_utf8_len))) {
+         /* TODO: */
+      }
+      if (PyDict_SetItemString(*ret, key, value) == -1) {
+         /* TODO: */
+      }
+      Py_DECREF(value);
+   }
 }
 
 
-static PyObject *
-cbson_oid_to_string (PyObject *self,
-                     PyObject *args)
+static void
+cbson_loads_visit_int32 (const bson_iter_t *iter,
+                         const char        *key,
+                         bson_int32_t       v_int32,
+                         void              *data)
 {
-   const char *str;
-   char outstr[25];
-   int str_length;
+   PyObject **ret = data;
+   PyObject *value;
 
-   if (!PyArg_ParseTuple(args, "s#", &str, &str_length)) {
+   if (*ret) {
+      if (!(value = PyInt_FromLong(v_int32))) {
+         /* TODO: */
+      }
+      if (PyDict_SetItemString(*ret, key, value) == -1) {
+         /* TODO: */
+      }
+      Py_DECREF(value);
+   }
+}
+
+
+static void
+cbson_loads_visit_int64 (const bson_iter_t *iter,
+                         const char        *key,
+                         bson_int64_t       v_int64,
+                         void              *data)
+{
+   PyObject **ret = data;
+   PyObject *value;
+
+   if (*ret) {
+      if (!(value = PyLong_FromLongLong(v_int64))) {
+         /* TODO: */
+      }
+      if (PyDict_SetItemString(*ret, key, value) == -1) {
+         /* TODO: */
+      }
+      Py_DECREF(value);
+   }
+}
+
+
+static void
+cbson_loads_visit_bool (const bson_iter_t *iter,
+                        const char        *key,
+                        bson_bool_t        v_bool,
+                        void              *data)
+{
+   PyObject **ret = data;
+
+   if (*ret) {
+      if (PyDict_SetItemString(*ret, key, v_bool ? Py_True : Py_False) == -1) {
+         /* TODO: */
+      }
+   }
+}
+
+
+static void
+cbson_loads_visit_double (const bson_iter_t *iter,
+                          const char        *key,
+                          double             v_double,
+                          void              *data)
+{
+   PyObject **ret = data;
+   PyObject *value;
+
+   if (*ret) {
+      if (!(value = PyFloat_FromDouble(v_double))) {
+         /* TODO: */
+      }
+      if (PyDict_SetItemString(*ret, key, value) == -1) {
+         /* TODO: */
+      }
+      Py_DECREF(value);
+   }
+}
+
+
+static void
+cbson_loads_visit_oid (const bson_iter_t *iter,
+                       const char        *key,
+                       const bson_oid_t  *oid,
+                       void              *data)
+{
+   PyObject **ret = data;
+   PyObject *value;
+
+   if (*ret) {
+      /*
+       * TODO: Add ObjectId python type.
+       */
+      if (!(value = PyString_FromStringAndSize((const char *)oid, 12))) {
+         /* TODO: */
+      }
+      if (PyDict_SetItemString(*ret, key, value) == -1) {
+         /* TODO: */
+      }
+      Py_DECREF(value);
+   }
+}
+
+
+static void
+cbson_loads_visit_undefined (const bson_iter_t *iter,
+                             const char        *key,
+                             void              *data)
+{
+   PyObject **ret = data;
+
+   if (*ret) {
+      if (PyDict_SetItemString(*ret, key, Py_None) == -1) {
+         /* TODO: */
+      }
+   }
+}
+
+
+static void
+cbson_loads_visit_null (const bson_iter_t *iter,
+                        const char        *key,
+                        void              *data)
+{
+   PyObject **ret = data;
+
+   if (*ret) {
+      if (PyDict_SetItemString(*ret, key, Py_None) == -1) {
+         /* TODO: */
+      }
+   }
+}
+
+
+static void
+cbson_loads_visit_date_time (const bson_iter_t    *iter,
+                             const char           *key,
+                             const struct timeval *tv,
+                             void                 *data)
+{
+   PyObject **ret = data;
+   PyObject *value = Py_None;
+
+   if (*ret) {
+      /*
+       * TODO: Convert tv into a datetime.datetime.
+       */
+
+      if (PyDict_SetItemString(*ret, key, value) == -1) {
+         /* TODO: */
+      }
+   }
+}
+
+
+static void
+cbson_loads_visit_corrupt (const bson_iter_t *iter,
+                           void              *data)
+{
+   PyObject **ret = data;
+
+   if (*ret) {
+      Py_DECREF(*ret);
+      *ret = NULL;
+   }
+}
+
+
+static const bson_visitor_t gLoadsVisitors = {
+   .visit_corrupt = cbson_loads_visit_corrupt,
+   .visit_double = cbson_loads_visit_double,
+   .visit_utf8 = cbson_loads_visit_utf8,
+   .visit_undefined = cbson_loads_visit_undefined,
+   .visit_oid = cbson_loads_visit_oid,
+   .visit_bool = cbson_loads_visit_bool,
+   .visit_date_time = cbson_loads_visit_date_time,
+   .visit_null = cbson_loads_visit_null,
+   .visit_int32 = cbson_loads_visit_int32,
+   .visit_int64 = cbson_loads_visit_int64,
+};
+
+
+static PyObject *
+cbson_loads (PyObject *self,
+             PyObject *args)
+{
+   const bson_uint8_t *buffer;
+   bson_uint32_t buffer_length;
+   bson_reader_t reader;
+   bson_iter_t iter;
+   const bson_t *b;
+   PyObject *ret;
+
+   if (!PyArg_ParseTuple(args, "s#", &buffer, &buffer_length)) {
       return NULL;
    }
 
-   if (str_length != 12) {
-      PyErr_SetString(PyExc_ValueError, "must be 12 byte string.");
+   bson_reader_init_from_data(&reader, buffer, buffer_length);
+
+   if (!(b = bson_reader_read(&reader)) || !bson_iter_init(&iter, b)) {
+      PyErr_SetString(PyExc_ValueError, "Failed to parse buffer.");
       return NULL;
    }
 
-   bson_oid_to_string((const bson_oid_t *)str, outstr);
-   return PyString_FromStringAndSize(outstr, 24);
+   ret = PyDict_New();
+   bson_iter_visit_all(&iter, &gLoadsVisitors, &ret);
+   bson_reader_destroy(&reader);
+
+   if (!ret) {
+      PyErr_Format(PyExc_ValueError,
+                   "Failed to decode buffer at offset %u.",
+                   (unsigned)iter.err_offset);
+      return NULL;
+   }
+
+   return ret;
 }
 
 
 static PyMethodDef cbson_methods[] = {
-   { "oid_init", cbson_oid_init, METH_VARARGS, "Generate an OID." },
-   { "oid_to_string", cbson_oid_to_string, METH_VARARGS, "Convert OID bytes to a string." },
+   { "loads", cbson_loads, METH_VARARGS, "Decode a BSON document." },
    { NULL }
 };
 
@@ -75,7 +281,6 @@ initcbson (void)
    }
 
    flags = 0;
-   flags |= BSON_CONTEXT_THREAD_SAFE;
    flags |= BSON_CONTEXT_DISABLE_PID_CACHE;
 #if defined(__linux__)
    flags |= BSON_CONTEXT_USE_TASK_ID;

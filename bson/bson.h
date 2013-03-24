@@ -1111,7 +1111,7 @@ bson_iter_string_len_unsafe (const bson_iter_t *iter)
 {
    bson_uint32_t val;
    memcpy(&val, iter->data1, 4);
-   return BSON_UINT32_FROM_LE(val);
+   return BSON_UINT32_FROM_LE(val) - 1;
 }
 
 
