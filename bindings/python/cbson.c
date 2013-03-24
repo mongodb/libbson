@@ -179,10 +179,11 @@ cbson_loads_visit_null (const bson_iter_t *iter,
 
 
 static void
-cbson_loads_visit_date_time (const bson_iter_t    *iter,
-                             const char           *key,
-                             const struct timeval *tv,
-                             void                 *data)
+cbson_loads_visit_date_time (const bson_iter_t *iter,
+                             const char        *key,
+                             bson_uint64_t      seconds,
+                             bson_uint32_t      milliseconds,
+                             void              *data)
 {
    PyObject **ret = data;
    PyObject *value = Py_None;

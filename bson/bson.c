@@ -2052,11 +2052,15 @@ bson_iter_visit_all (bson_iter_t          *iter,
          break;
       case BSON_TYPE_DATE_TIME:
          {
-            struct timeval tv;
-            bson_iter_timeval(iter, &tv);
+            bson_uint64_t seconds;
+            bson_uint32_t milliseconds;
+
+            bson_iter_date_time(iter, &seconds, &milliseconds);
+
             RUN_VISITOR(date_time)(iter,
                                    bson_iter_key_unsafe(iter),
-                                   &tv,
+                                   seconds,
+                                   milliseconds,
                                    data);
          }
          break;
@@ -2495,18 +2499,17 @@ visit_bool (const bson_iter_t *iter,
 static void
 visit_date_time (const bson_iter_t    *iter,
                  const char           *key,
-                 const struct timeval *v_date_time,
+                 bson_uint64_t         seconds,
+                 bson_uint32_t         milliseconds,
                  void                 *data)
 {
    bson_json_state_t *state = data;
-   bson_uint64_t msec;
-   char str[32];
+   char secstr[32];
 
-   msec = (v_date_time->tv_sec * 1000UL) + (v_date_time->tv_usec / 1000UL);
-   snprintf(str, sizeof str, "%lu", msec);
+   snprintf(secstr, sizeof secstr, "%lu%u", seconds, milliseconds);
 
    bson_string_append(state->str, "{ \"$date\" : ");
-   bson_string_append(state->str, str);
+   bson_string_append(state->str, secstr);
    bson_string_append(state->str, " }");
 }
 
