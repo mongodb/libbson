@@ -2,6 +2,7 @@ EXTRA_DIST =
 
 include bson/Makefile.include
 include tests/Makefile.include
+include bindings/python/Makefile.include
 
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 DISTCHECK_CONFIGURE_FLAGS = --enable-silent-rules
@@ -10,7 +11,7 @@ bsondocdir = ${datadir}/doc/libbson-@VERSION@
 bsondoc_DATA =
 bsondoc_DATA += COPYING
 bsondoc_DATA += NEWS
-bsondoc_DATA += README.md
+bsondoc_DATA += README
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA =

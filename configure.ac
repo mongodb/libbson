@@ -30,7 +30,8 @@ AS_AM_REALLY_SILENT
 LT_PREREQ([2.2])
 LT_INIT
 
-AM_INIT_AUTOMAKE([1.11.1 no-dist-gzip dist-xz -Wno-portability])
+AM_INIT_AUTOMAKE([1.11.1 no-dist-gzip dist-xz])
+AM_PROG_CC_C_O
 
 
 dnl **************************************************************************
@@ -46,6 +47,12 @@ AC_SUBST(BSON_MINOR_VERSION)
 AC_SUBST(BSON_MICRO_VERSION)
 AC_SUBST(BSON_API_VERSION)
 AC_SUBST(BSON_VERSION)
+
+
+dnl **************************************************************************
+dnl Check for Required Modules
+dnl **************************************************************************
+PKG_CHECK_MODULES(PYTHON, [python2])
 
 
 dnl **************************************************************************
@@ -101,6 +108,7 @@ dnl **************************************************************************
 AC_CONFIG_FILES([
 	Makefile
 	libbson-1.0.pc
+	bson/bson-version.h
 ])
 AC_OUTPUT
 
