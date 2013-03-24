@@ -1854,6 +1854,29 @@ bson_iter_symbol (const bson_iter_t *iter,
 }
 
 
+void
+bson_iter_date_time (const bson_iter_t *iter,
+                     bson_uint64_t     *seconds,
+                     bson_uint32_t     *msec)
+{
+   bson_uint64_t val;
+
+   bson_return_if_fail(iter);
+   bson_return_if_fail(seconds);
+   bson_return_if_fail(msec);
+
+   if (*iter->type == BSON_TYPE_DATE_TIME) {
+      val = bson_iter_int64_unsafe(iter);
+      *seconds = val / 1000UL;
+      *msec = val % 1000UL;
+      return;
+   }
+
+   *seconds = 0;
+   *msec = 0;
+}
+
+
 time_t
 bson_iter_time_t (const bson_iter_t *iter)
 {

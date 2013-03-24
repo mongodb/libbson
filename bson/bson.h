@@ -1467,6 +1467,21 @@ bson_iter_string_unsafe (const bson_iter_t *iter,
 
 
 /**
+ * bson_iter_date_time:
+ * @iter: A bson_iter_t.
+ * @seconds: A location for the number of seconds.
+ * @msec: A location for the number of milliseconds.
+ *
+ * Fetches the number of seconds since the UNIX epoch in UTC. The number of
+ * milliseconds elapsed past the current second will be stored in @msec.
+ */
+void
+bson_iter_date_time (const bson_iter_t *iter,
+                     bson_uint64_t     *seconds,
+                     bson_uint32_t     *msec);
+
+
+/**
  * bson_iter_time_t:
  * @iter: A bson_iter_t.
  *

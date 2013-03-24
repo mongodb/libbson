@@ -70,6 +70,8 @@ test_bson_iter_string (void)
 static void
 test_bson_iter_mixed (void)
 {
+   bson_uint32_t u32 = 1;
+   bson_uint64_t u64 = 1;
    bson_iter_t iter;
    bson_t *b;
    bson_t *b2;
@@ -100,6 +102,9 @@ test_bson_iter_mixed (void)
    assert(bson_iter_next(&iter));
    assert(BSON_ITER_HOLDS_DATE_TIME(&iter));
    assert(bson_iter_time_t(&iter) == 123456);
+   bson_iter_date_time(&iter, &u64, &u32);
+   assert_cmpint(u64, ==, 123456);
+   assert_cmpint(u32, ==, 0);
    assert(!bson_iter_next(&iter));
    bson_destroy(b);
    bson_destroy(b2);
