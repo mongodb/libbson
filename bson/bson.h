@@ -1491,7 +1491,7 @@ bson_iter_time_t (const bson_iter_t *iter);
 static BSON_INLINE time_t
 bson_iter_time_t_unsafe (const bson_iter_t *iter)
 {
-   return (time_t)bson_iter_int64_unsafe(iter);
+   return (time_t)(bson_iter_int64_unsafe(iter) / 1000UL);
 }
 
 

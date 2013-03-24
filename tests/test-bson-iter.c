@@ -81,6 +81,7 @@ test_bson_iter_mixed (void)
    bson_append_code_with_scope(b, "1", -1, "var b = {};", b2);
    bson_append_int32(b, "2", -1, 1234);
    bson_append_int64(b, "3", -1, 4567);
+   bson_append_time_t(b, "4", -1, 123456);
    assert(bson_iter_init(&iter, b));
    assert(bson_iter_next(&iter));
    assert(BSON_ITER_HOLDS_CODE(&iter));
@@ -90,10 +91,15 @@ test_bson_iter_mixed (void)
    assert(BSON_ITER_HOLDS_INT32(&iter));
    assert(bson_iter_next(&iter));
    assert(BSON_ITER_HOLDS_INT64(&iter));
+   assert(bson_iter_next(&iter));
+   assert(BSON_ITER_HOLDS_DATE_TIME(&iter));
    assert(!bson_iter_next(&iter));
    assert(bson_iter_init_find(&iter, b, "3"));
    assert(!strcmp(bson_iter_key(&iter), "3"));
    assert(bson_iter_int64(&iter) == 4567);
+   assert(bson_iter_next(&iter));
+   assert(BSON_ITER_HOLDS_DATE_TIME(&iter));
+   assert(bson_iter_time_t(&iter) == 123456);
    assert(!bson_iter_next(&iter));
    bson_destroy(b);
    bson_destroy(b2);
