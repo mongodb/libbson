@@ -179,6 +179,26 @@ test_bson_iter_fuzz (void)
 }
 
 
+static void
+test_bson_iter_regex (void)
+{
+   bson_iter_t iter;
+   bson_t *b;
+
+   b = bson_new();
+   bson_append_regex(b, "foo", -1, "^abcd", "");
+   bson_append_regex(b, "foo", -1, "^abcd", NULL);
+   bson_append_regex(b, "foo", -1, "^abcd", "ix");
+
+   assert(bson_iter_init(&iter, b));
+   assert(bson_iter_next(&iter));
+   assert(bson_iter_next(&iter));
+   assert(bson_iter_next(&iter));
+
+   bson_destroy(b);
+}
+
+
 int
 main (int   argc,
       char *argv[])
@@ -188,6 +208,7 @@ main (int   argc,
    run_test("/bson/iter/test_overflow", test_bson_iter_overflow);
    run_test("/bson/iter/test_trailing_null", test_bson_iter_trailing_null);
    run_test("/bson/iter/test_fuzz", test_bson_iter_fuzz);
+   run_test("/bson/iter/test_regex", test_bson_iter_regex);
 
    return 0;
 }

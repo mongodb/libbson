@@ -1547,14 +1547,19 @@ fill_data_fields:
             }
          }
 
-         for (o = o + 1; o < b->len; o++) {
+         if (!eor) {
+            iter->err_offset = iter->next_offset;
+            return FALSE;
+         }
+
+         for (; o < b->len; o++) {
             if (!b->data[o]) {
                eoo = TRUE;
                break;
             }
          }
 
-         if (!eor || !eoo) {
+         if (!eoo) {
             iter->err_offset = iter->next_offset;
             return FALSE;
          }
