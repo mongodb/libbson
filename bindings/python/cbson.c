@@ -239,24 +239,57 @@ cbson_loads_visit_null (const bson_iter_t *iter,
 static void
 cbson_loads_visit_date_time (const bson_iter_t *iter,
                              const char        *key,
-                             bson_uint64_t      seconds,
-                             bson_uint32_t      milliseconds,
+                             bson_int64_t       msec_since_epoch,
                              void              *data)
 {
-   struct TM tm;
+   bson_int32_t diff;
+   bson_int32_t microseconds;
+   struct TM timeinfo;
    PyObject **ret = data;
    PyObject *dateTime;
-   Time64_T t64 = seconds;
+   Time64_T seconds;
+
+   /* To encode a datetime instance like datetime(9999, 12, 31, 23, 59, 59, 999999)
+    * we follow these steps:
+    * 1. Calculate a timestamp in seconds:       253402300799
+    * 2. Multiply that by 1000:                  253402300799000
+    * 3. Add in microseconds divided by 1000     253402300799999
+    *
+    * (Note: BSON doesn't support microsecond accuracy, hence the rounding.)
+    *
+    * To decode we could do:
+    * 1. Get seconds: timestamp / 1000:          253402300799
+    * 2. Get micros: (timestamp % 1000) * 1000:  999000
+    * Resulting in datetime(9999, 12, 31, 23, 59, 59, 999000) -- the expected result
+    *
+    * Now what if the we encode (1, 1, 1, 1, 1, 1, 111111)?
+    * 1. and 2. gives:                           -62135593139000
+    * 3. Gives us:                               -62135593138889
+    *
+    * Now decode:
+    * 1. Gives us:                               -62135593138
+    * 2. Gives us:                               -889000
+    * Resulting in datetime(1, 1, 1, 1, 1, 2, 15888216) -- an invalid result
+    *
+    * If instead to decode we do:
+    * diff = ((millis % 1000) + 1000) % 1000:    111
+    * seconds = (millis - diff) / 1000:          -62135593139
+    * micros = diff * 1000                       111000
+    * Resulting in datetime(1, 1, 1, 1, 1, 1, 111000) -- the expected result
+    */
 
    if (*ret) {
-      gmtime64_r(&t64, &tm);
-      dateTime = PyDateTime_FromDateAndTime(tm.tm_year + 1900,
-                                            tm.tm_mon + 1,
-                                            tm.tm_mday,
-                                            tm.tm_hour,
-                                            tm.tm_min,
-                                            tm.tm_sec,
-                                            milliseconds * 1000);
+      diff = ((msec_since_epoch % 1000L) + 1000) % 1000;
+      microseconds = diff * 1000;
+      seconds = (msec_since_epoch - diff) / 1000;
+      gmtime64_r(&seconds, &timeinfo);
+      dateTime = PyDateTime_FromDateAndTime(timeinfo.tm_year + 1900,
+                                            timeinfo.tm_mon + 1,
+                                            timeinfo.tm_mday,
+                                            timeinfo.tm_hour,
+                                            timeinfo.tm_min,
+                                            timeinfo.tm_sec,
+                                            microseconds);
       cbson_loads_set_item(*ret, key, dateTime);
       Py_DECREF(dateTime);
    }
