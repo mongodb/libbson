@@ -464,21 +464,32 @@ initcbson (void)
    PyObject *module;
    PyObject *version;
 
+   /*
+    * Initialize our module with class methods.
+    */
    if (!(module = Py_InitModule("cbson", cbson_methods))) {
       return;
    }
 
+   /*
+    * Initialize our context for certain library functions.
+    */
    flags = 0;
    flags |= BSON_CONTEXT_DISABLE_PID_CACHE;
 #if defined(__linux__)
    flags |= BSON_CONTEXT_USE_TASK_ID;
 #endif
-
    bson_context_init(&gContext, flags);
 
+   /*
+    * Register the library version as __version__.
+    */
    version = PyString_FromString(BSON_VERSION_S);
    PyModule_AddObject(module, "__version__", version);
 
+   /*
+    * Make sure we have access to the datetime API.
+    */
    PyDateTime_IMPORT;
    if (!PyDateTimeAPI) {
       Py_DECREF(module);
