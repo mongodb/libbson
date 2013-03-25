@@ -16,8 +16,12 @@
 
 
 #include <Python.h>
+#include <datetime.h>
+
 #include <bson/bson.h>
 #include <bson/bson-version.h>
+
+#include "time64.h"
 
 
 static bson_context_t gContext;
@@ -186,16 +190,26 @@ cbson_loads_visit_date_time (const bson_iter_t *iter,
                              void              *data)
 {
    PyObject **ret = data;
-   PyObject *value = Py_None;
 
    if (*ret) {
-      /*
-       * TODO: Convert tv into a datetime.datetime.
-       */
+      struct TM tm;
+      PyObject *dateTime;
+      Time64_T t64 = seconds;
 
-      if (PyDict_SetItemString(*ret, key, value) == -1) {
+      gmtime64_r(&t64, &tm);
+      dateTime = PyDateTime_FromDateAndTime(tm.tm_year + 1900,
+                                            tm.tm_mon + 1,
+                                            tm.tm_mday,
+                                            tm.tm_hour,
+                                            tm.tm_min,
+                                            tm.tm_sec,
+                                            milliseconds * 1000);
+
+      if (PyDict_SetItemString(*ret, key, dateTime) == -1) {
          /* TODO: */
       }
+
+      Py_DECREF(dateTime);
    }
 }
 
@@ -291,4 +305,10 @@ initcbson (void)
 
    version = PyString_FromString(BSON_VERSION_S);
    PyModule_AddObject(module, "__version__", version);
+
+   PyDateTime_IMPORT;
+   if (!PyDateTimeAPI) {
+      Py_DECREF(module);
+      return;
+   }
 }
