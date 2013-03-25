@@ -18,6 +18,40 @@
 #include "cbson-oid.h"
 
 
+static PyObject *
+cbson_oid_tp_repr (PyObject *obj)
+{
+   cbson_oid_t *oid = (cbson_oid_t *)obj;
+   char repr[37];
+   char str[25];
+
+   bson_oid_to_string(&oid->oid, str);
+   snprintf(repr, sizeof repr, "ObjectId(\"%s\")", str);
+   repr[36] = '\0';
+
+   return PyString_FromStringAndSize(repr, 36);
+}
+
+
+static PyObject *
+cbson_oid_tp_str (PyObject *obj)
+{
+   cbson_oid_t *oid = (cbson_oid_t *)obj;
+   char str[25];
+
+   bson_oid_to_string(&oid->oid, str);
+   return PyString_FromStringAndSize(str, 24);
+}
+
+
+static long
+cbson_oid_tp_hash (PyObject *obj)
+{
+   cbson_oid_t *oid = (cbson_oid_t *)obj;
+   return bson_oid_hash(&oid->oid);
+}
+
+
 static PyTypeObject cbson_oid_type = {
     PyObject_HEAD_INIT(NULL)
     0,                         /*ob_size*/
@@ -29,13 +63,13 @@ static PyTypeObject cbson_oid_type = {
     0,                         /*tp_getattr*/
     0,                         /*tp_setattr*/
     0,                         /*tp_compare*/
-    0,                         /*tp_repr*/
+    cbson_oid_tp_repr,         /*tp_repr*/
     0,                         /*tp_as_number*/
     0,                         /*tp_as_sequence*/
     0,                         /*tp_as_mapping*/
-    0,                         /*tp_hash */
+    cbson_oid_tp_hash,         /*tp_hash */
     0,                         /*tp_call*/
-    0,                         /*tp_str*/
+    cbson_oid_tp_str,          /*tp_str*/
     0,                         /*tp_getattro*/
     0,                         /*tp_setattro*/
     0,                         /*tp_as_buffer*/
