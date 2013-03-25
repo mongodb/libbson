@@ -282,6 +282,40 @@ cbson_loads_visit_regex (const bson_iter_t *iter,
 
 
 static void
+cbson_loads_visit_dbpointer (const bson_iter_t *iter,
+                             const char        *key,
+                             size_t             v_collection_len,
+                             const char        *v_collection,
+                             const bson_oid_t  *v_oid,
+                             void              *data)
+{
+   PyObject **ret = data;
+   PyObject *obj;
+   PyObject *objstr;
+
+   /*
+    * TODO: We probably want to add a DBRef type for this and instantiate that.
+    */
+
+   if (*ret) {
+      obj = PyDict_New();
+
+      objstr = PyString_FromStringAndSize((const char *)v_oid, 12);
+      PyDict_SetItemString(obj, "$id", objstr);
+      Py_DECREF(objstr);
+
+      objstr = PyUnicode_FromStringAndSize(v_collection, v_collection_len);
+      PyDict_SetItemString(obj, "$ref", objstr);
+      Py_DECREF(objstr);
+
+      cbson_loads_set_item(*ret, key, obj);
+
+      Py_DECREF(obj);
+   }
+}
+
+
+static void
 cbson_loads_visit_document (const bson_iter_t *iter,
                             const char        *key,
                             const bson_t      *v_document,
@@ -320,6 +354,7 @@ static const bson_visitor_t gLoadsVisitors = {
    .visit_date_time = cbson_loads_visit_date_time,
    .visit_null = cbson_loads_visit_null,
    .visit_regex = cbson_loads_visit_regex,
+   .visit_dbpointer = cbson_loads_visit_dbpointer,
    .visit_int32 = cbson_loads_visit_int32,
    .visit_int64 = cbson_loads_visit_int64,
 };
