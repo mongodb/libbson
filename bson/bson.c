@@ -1859,26 +1859,16 @@ bson_iter_symbol (const bson_iter_t *iter,
 }
 
 
-void
-bson_iter_date_time (const bson_iter_t *iter,
-                     bson_uint64_t     *seconds,
-                     bson_uint32_t     *msec)
+bson_int64_t
+bson_iter_date_time (const bson_iter_t *iter)
 {
-   bson_uint64_t val;
-
-   bson_return_if_fail(iter);
-   bson_return_if_fail(seconds);
-   bson_return_if_fail(msec);
+   bson_return_val_if_fail(iter, 0);
 
    if (*iter->type == BSON_TYPE_DATE_TIME) {
-      val = bson_iter_int64_unsafe(iter);
-      *seconds = val / 1000UL;
-      *msec = val % 1000UL;
-      return;
+      return bson_iter_int64_unsafe(iter);
    }
 
-   *seconds = 0;
-   *msec = 0;
+   return 0;
 }
 
 
@@ -2057,15 +2047,9 @@ bson_iter_visit_all (bson_iter_t          *iter,
          break;
       case BSON_TYPE_DATE_TIME:
          {
-            bson_uint64_t seconds;
-            bson_uint32_t milliseconds;
-
-            bson_iter_date_time(iter, &seconds, &milliseconds);
-
             RUN_VISITOR(date_time)(iter,
                                    bson_iter_key_unsafe(iter),
-                                   seconds,
-                                   milliseconds,
+                                   bson_iter_date_time(iter),
                                    data);
          }
          break;
@@ -2504,14 +2488,13 @@ visit_bool (const bson_iter_t *iter,
 static void
 visit_date_time (const bson_iter_t    *iter,
                  const char           *key,
-                 bson_uint64_t         seconds,
-                 bson_uint32_t         milliseconds,
+                 bson_int64_t          msec_since_epoch,
                  void                 *data)
 {
    bson_json_state_t *state = data;
    char secstr[32];
 
-   snprintf(secstr, sizeof secstr, "%lu%u", seconds, milliseconds);
+   snprintf(secstr, sizeof secstr, "%lu", msec_since_epoch);
 
    bson_string_append(state->str, "{ \"$date\" : ");
    bson_string_append(state->str, secstr);
