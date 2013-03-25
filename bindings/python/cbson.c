@@ -44,6 +44,68 @@ cbson_loads_set_item (PyObject   *obj,
 }
 
 
+static PyObject *
+cbson_regex_new (const char *regex,
+                 const char *options)
+{
+   bson_uint32_t flags = 0;
+   bson_uint32_t i;
+   PyObject *module;
+   PyObject *compile;
+   PyObject *strobj;
+   PyObject *value;
+
+   /*
+    * NOTE: Typically, you would want to cache the module from
+    *       PyImport_ImportModule(). However, it is really not typical to
+    *       have regexes stored so loading it each time is not a common
+    *       case.
+    */
+
+   if (!(module = PyImport_ImportModule("re"))) {
+      return NULL;
+   }
+
+   if (!(compile = PyObject_GetAttrString(module, "compile"))) {
+      Py_DECREF(module);
+      return NULL;
+   }
+
+   for (i = 0; options[i]; i++) {
+      switch (options[i]) {
+      case 'i':
+         flags |= 2;
+         break;
+      case 'l':
+         flags |= 4;
+         break;
+      case 'm':
+         flags |= 8;
+         break;
+      case 's':
+         flags |= 16;
+         break;
+      case 'u':
+         flags |= 32;
+         break;
+      case 'x':
+         flags |= 64;
+         break;
+      default:
+         break;
+      }
+   }
+
+   strobj = PyUnicode_FromString(regex);
+   value = PyObject_CallFunction(compile, (char *)"Oi", strobj, flags);
+   Py_DECREF(compile);
+   Py_DECREF(strobj);
+   Py_DECREF(module);
+
+   return value;
+}
+
+
 static void
 cbson_loads_visit_utf8 (const bson_iter_t *iter,
                         const char        *key,
@@ -202,6 +264,24 @@ cbson_loads_visit_date_time (const bson_iter_t *iter,
 
 
 static void
+cbson_loads_visit_regex (const bson_iter_t *iter,
+                         const char        *key,
+                         const char        *regex,
+                         const char        *options,
+                         void              *data)
+{
+   PyObject **ret = data;
+   PyObject *re;
+
+   if (*ret) {
+      re = cbson_regex_new(regex, options);
+      cbson_loads_set_item(*ret, key, re);
+      Py_DECREF(re);
+   }
+}
+
+
+static void
 cbson_loads_visit_document (const bson_iter_t *iter,
                             const char        *key,
                             const bson_t      *v_document,
@@ -239,6 +319,7 @@ static const bson_visitor_t gLoadsVisitors = {
    .visit_bool = cbson_loads_visit_bool,
    .visit_date_time = cbson_loads_visit_date_time,
    .visit_null = cbson_loads_visit_null,
+   .visit_regex = cbson_loads_visit_regex,
    .visit_int32 = cbson_loads_visit_int32,
    .visit_int64 = cbson_loads_visit_int64,
 };
