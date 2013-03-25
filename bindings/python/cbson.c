@@ -21,6 +21,7 @@
 #include <bson/bson.h>
 #include <bson/bson-version.h>
 
+#include "cbson-oid.h"
 #include "time64.h"
 
 
@@ -203,7 +204,7 @@ cbson_loads_visit_oid (const bson_iter_t *iter,
     */
 
    if (*ret) {
-      value = PyString_FromStringAndSize((const char *)oid, 12);
+      value = cbson_oid_new(oid);
       cbson_loads_set_item(*ret, key, value);
       Py_DECREF(value);
    }
@@ -494,6 +495,7 @@ PyMODINIT_FUNC
 initcbson (void)
 {
    bson_context_flags_t flags;
+   PyTypeObject *type_object;
    PyObject *module;
    PyObject *version;
 
@@ -528,4 +530,10 @@ initcbson (void)
       Py_DECREF(module);
       return;
    }
+
+   /*
+    * Register cbson types.
+    */
+   type_object = cbson_oid_get_type();
+   PyModule_AddObject(module, "ObjectId", (PyObject *)type_object);
 }
