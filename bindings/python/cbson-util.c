@@ -96,9 +96,15 @@ cbson_date_time_seconds (PyObject *date_time)
 {
    bson_int32_t val;
    PyObject *calendar;
+   PyObject *ret;
    PyObject *timegm;
    PyObject *timetuple;
-   PyObject *ret;
+
+   /*
+    * TODO: We can get about a 30% performance improvement for tight loops if
+    *       the calendar module is cached. However, that complicates other
+    *       issues like handling unexpected fork() by various modules.
+    */
 
    bson_return_val_if_fail(PyDateTime_Check(date_time), 0);
 
