@@ -387,6 +387,16 @@ bson_oid_init (bson_oid_t     *oid,
 
 
 void
+bson_oid_init_from_data (bson_oid_t         *oid,
+                         const bson_uint8_t *data)
+{
+   bson_return_if_fail(oid);
+   bson_return_if_fail(data);
+   memcpy(oid, data, 12);
+}
+
+
+void
 bson_oid_init_from_string (bson_oid_t *oid,
                            const char *str)
 {
@@ -466,6 +476,32 @@ bson_oid_copy (const bson_oid_t *src,
    bson_return_if_fail(src);
    bson_return_if_fail(dst);
    bson_oid_copy_unsafe(src, dst);
+}
+
+
+bson_bool_t
+bson_oid_is_valid (const char *str,
+                   size_t      length)
+{
+   size_t i;
+
+   bson_return_val_if_fail(str, FALSE);
+
+   if (length == 24) {
+      for (i = 0; i < length; i++) {
+         switch (str[i]) {
+         case '0': case '1': case '2': case '3': case '4': case '5': case '6':
+         case '7': case '8': case '9': case 'a': case 'b': case 'c': case 'd':
+         case 'e': case 'f':
+            break;
+         default:
+            return FALSE;
+         }
+      }
+      return TRUE;
+   }
+
+   return FALSE;
 }
 
 

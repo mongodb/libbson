@@ -956,6 +956,21 @@ bson_oid_equal (const bson_oid_t *oid1,
 
 
 /**
+ * bson_oid_is_valid:
+ * @str: A string to validate.
+ * @length: The length of @str.
+ *
+ * Validates that @str is a valid OID string. @length MUST be 12, but is
+ * provided as a parameter to simplify calling code.
+ *
+ * Returns: TRUE if @str can be passed to bson_oid_init_from_string().
+ */
+bson_bool_t
+bson_oid_is_valid (const char *str,
+                   size_t      length);
+
+
+/**
  * bson_oid_get_time_t:
  * @oid: A bson_oid_t.
  *
@@ -991,6 +1006,19 @@ bson_oid_hash (const bson_oid_t *oid);
 void
 bson_oid_init (bson_oid_t     *oid,
                bson_context_t *context);
+
+
+/**
+ * bson_oid_init_from_data:
+ * @oid: A bson_oid_t to initialize.
+ * @bytes: A 12-byte buffer to copy into @oid.
+ *
+ * Initializes an @oid from @data. @data MUST be a buffer of at least 12 bytes.
+ * This method is analagous to memcpy()'ing data into @oid.
+ */
+void
+bson_oid_init_from_data (bson_oid_t         *oid,
+                         const bson_uint8_t *data);
 
 
 /**

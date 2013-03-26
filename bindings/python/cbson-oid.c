@@ -127,45 +127,16 @@ cbson_oid_is_valid (PyObject *obj,
 {
    const char *str;
    PyObject *ret = Py_False;
-   bson_uint32_t i;
    int str_length;
 
    if (!PyArg_ParseTuple(args, "s#", &str, &str_length)) {
       return NULL;
    }
 
-   if (str_length == 12) {
+   if (str_length == 12 || bson_oid_is_valid(str, str_length)) {
       ret = Py_True;
    }
 
-   if (str_length == 24) {
-      for (i = 0; i < str_length; i++) {
-         switch (str[i]) {
-         case '0':
-         case '1':
-         case '2':
-         case '3':
-         case '4':
-         case '5':
-         case '6':
-         case '7':
-         case '8':
-         case '9':
-         case 'a':
-         case 'b':
-         case 'c':
-         case 'd':
-         case 'e':
-         case 'f':
-            break;
-         default:
-            goto failure;
-         }
-      }
-      ret = Py_True;
-   }
-
-failure:
    Py_INCREF(ret);
 
    return ret;
