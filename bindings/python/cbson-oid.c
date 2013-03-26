@@ -232,10 +232,54 @@ cbson_oid_tp_new (PyTypeObject *self,
                   PyObject     *args,
                   PyObject     *kwargs)
 {
+   static const char *kwlist[] = { "oid", NULL, NULL };
    cbson_oid_t *ret;
+   bson_oid_t oid;
+   PyObject *oidobj = NULL;
 
-   ret = (cbson_oid_t *)PyType_GenericNew(&cbson_oid_type, args, kwargs);
-   bson_oid_init(&ret->oid, gContext);
+   if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|O", (char **)kwlist, &oidobj)) {
+      return NULL;
+   }
+
+   if (!oidobj || (oidobj == Py_None)) {
+      bson_oid_init(&oid, gContext);
+   } else if (PyString_Check(oidobj)) {
+      switch (PyString_GET_SIZE(oidobj)) {
+      case 12:
+         bson_oid_init_from_data(
+            &oid, (const bson_uint8_t *)PyString_AS_STRING(oidobj));
+         break;
+      case 24:
+         if (!bson_oid_is_valid(PyString_AS_STRING(oidobj),
+                                PyString_GET_SIZE(oidobj))) {
+            PyErr_SetString(PyExc_ValueError,
+                            "`oid` is not a valid OID string.");
+            return NULL;
+         }
+         bson_oid_init_from_string(&oid, PyString_AS_STRING(oidobj));
+         break;
+      default:
+         PyErr_SetString(PyExc_ValueError,
+                         "`oid` must be 12 or 24 bytes long.");
+         return NULL;
+      }
+   } else if (Py_TYPE(oidobj) == &cbson_oid_type) {
+      bson_oid_copy(&((cbson_oid_t *)oidobj)->oid, &oid);
+   }
+#if PY_MAJOR_VERSION >= 3
+   else if (PyBytes_Check(oidobj)) {
+      /*
+       * TODO: Implement for bytes.
+       */
+   }
+#endif
+   else {
+      PyErr_SetString(PyExc_ValueError, "`oid` is invalid.");
+   }
+
+   ret = (cbson_oid_t *)PyType_GenericNew(&cbson_oid_type, NULL, NULL);
+   bson_oid_copy(&oid, &ret->oid);
+
    return (PyObject *)ret;
 }
 
