@@ -99,6 +99,7 @@ cbson_date_time_seconds (PyObject *date_time)
    PyObject *ret;
    PyObject *timegm;
    PyObject *timetuple;
+   PyObject *offset;
 
    /*
     * TODO: We can get about a 30% performance improvement for tight loops if
@@ -117,9 +118,23 @@ cbson_date_time_seconds (PyObject *date_time)
       return 0;
    }
 
+   if (!(offset = PyObject_CallMethod(date_time, (char *)"utcoffset", NULL))) {
+      Py_DECREF(calendar);
+      Py_DECREF(timegm);
+      return 0;
+   }
+
+   if (offset != Py_None) {
+      date_time = PyNumber_Subtract(date_time, offset);
+   } else {
+      Py_INCREF(date_time);
+   }
+
    if (!(timetuple = PyObject_CallMethod(date_time, (char *)"timetuple", NULL))) {
       Py_DECREF(timegm);
       Py_DECREF(calendar);
+      Py_DECREF(offset);
+      Py_DECREF(date_time);
       return 0;
    }
 
@@ -127,6 +142,8 @@ cbson_date_time_seconds (PyObject *date_time)
       Py_DECREF(timetuple);
       Py_DECREF(timegm);
       Py_DECREF(calendar);
+      Py_DECREF(offset);
+      Py_DECREF(date_time);
       return 0;
    }
 
@@ -136,6 +153,8 @@ cbson_date_time_seconds (PyObject *date_time)
    Py_DECREF(timetuple);
    Py_DECREF(timegm);
    Py_DECREF(calendar);
+   Py_DECREF(offset);
+   Py_DECREF(date_time);
 
    return val;
 }
