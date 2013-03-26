@@ -30,9 +30,10 @@
 BSON_BEGIN_DECLS
 
 
-PyObject    *cbson_date_time_from_msec (bson_int64_t msec_since_epoch);
-bson_bool_t  cbson_util_init           (void);
-bson_bool_t  cbson_date_time_check     (PyObject *object);
+PyObject     *cbson_date_time_from_msec (bson_int64_t msec_since_epoch);
+bson_int32_t  cbson_date_time_seconds   (PyObject *date_time);
+bson_bool_t   cbson_util_init           (void);
+bson_bool_t   cbson_date_time_check     (PyObject *object);
 
 
 BSON_END_DECLS

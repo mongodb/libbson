@@ -95,6 +95,8 @@ static PyObject *
 cbson_oid_from_datetime (PyObject *obj,
                          PyObject *args)
 {
+   cbson_oid_t *ret;
+   bson_int32_t t;
    PyObject *dt;
 
    if (!PyArg_ParseTuple(args, "O", &dt)) {
@@ -102,18 +104,16 @@ cbson_oid_from_datetime (PyObject *obj,
    }
 
    if (!cbson_date_time_check(dt)) {
-      Py_DECREF(dt);
+      PyErr_SetString(PyExc_TypeError, "argument not a datetime.datetime.");
       return NULL;
    }
 
-   /*
-    * TODO: Convert to timestamp/structtm/etc and build into first 4 bytes of
-    *       the oid buffer.
-    */
+   t = cbson_date_time_seconds(dt);
+   t = BSON_UINT32_TO_BE(t);
+   ret = (cbson_oid_t *)PyType_GenericNew(&cbson_oid_type, NULL, NULL);
+   memcpy(&ret->oid, &t, sizeof t);
 
-   Py_DECREF(dt);
-
-   return NULL;
+   return (PyObject *)ret;
 }
 
 

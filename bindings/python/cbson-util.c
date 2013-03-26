@@ -89,3 +89,47 @@ cbson_date_time_from_msec (bson_int64_t msec_since_epoch)
                                      timeinfo.tm_sec,
                                      microseconds);
 }
+
+
+bson_int32_t
+cbson_date_time_seconds (PyObject *date_time)
+{
+   bson_int32_t val;
+   PyObject *calendar;
+   PyObject *timegm;
+   PyObject *timetuple;
+   PyObject *ret;
+
+   bson_return_val_if_fail(PyDateTime_Check(date_time), 0);
+
+   if (!(calendar = PyImport_ImportModule("calendar"))) {
+      return 0;
+   }
+
+   if (!(timegm = PyObject_GetAttrString(calendar, "timegm"))) {
+      Py_DECREF(calendar);
+      return 0;
+   }
+
+   if (!(timetuple = PyObject_CallMethod(date_time, (char *)"timetuple", NULL))) {
+      Py_DECREF(timegm);
+      Py_DECREF(calendar);
+      return 0;
+   }
+
+   if (!(ret = PyObject_CallFunction(timegm, (char *)"O", timetuple))) {
+      Py_DECREF(timetuple);
+      Py_DECREF(timegm);
+      Py_DECREF(calendar);
+      return 0;
+   }
+
+   val = PyInt_AS_LONG(ret);
+
+   Py_DECREF(ret);
+   Py_DECREF(timetuple);
+   Py_DECREF(timegm);
+   Py_DECREF(calendar);
+
+   return val;
+}
