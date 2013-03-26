@@ -16,6 +16,7 @@
 
 
 #include "cbson-oid.h"
+#include "cbson-util.h"
 
 
 static bson_context_t *gContext;
@@ -24,13 +25,15 @@ static bson_context_t *gContext;
 #define cbson_oid_check(op) (Py_TYPE(op) == &cbson_oid_type)
 
 
-static PyObject *cbson_oid_tp_repr    (PyObject *obj);
-static PyObject *cbson_oid_tp_str     (PyObject *obj);
-static int       cbson_oid_tp_compare (PyObject *obj1,
-                                       PyObject *obj2);
-static long      cbson_oid_tp_hash    (PyObject *obj);
-static PyObject *cbson_oid_get_binary (PyObject *obj,
-                                       void     *data);
+static PyObject *cbson_oid_tp_repr             (PyObject *obj);
+static PyObject *cbson_oid_tp_str              (PyObject *obj);
+static int       cbson_oid_tp_compare          (PyObject *obj1,
+                                                PyObject *obj2);
+static long      cbson_oid_tp_hash             (PyObject *obj);
+static PyObject *cbson_oid_get_binary          (PyObject *obj,
+                                                void     *data);
+static PyObject *cbson_oid_get_generation_time (PyObject *obj,
+                                                void     *data);
 
 
 static PyTypeObject cbson_oid_type = {
@@ -65,6 +68,16 @@ static PyGetSetDef cbson_oid_getset[] = {
      NULL,
      (char *)"12-byte binary representation of this ObjectId.",
      NULL },
+   { (char *)"generation_time",
+     cbson_oid_get_generation_time,
+     NULL,
+     (char *)
+      "A :class:`datetime.datetime` instance representing the time of\n"
+      "generation for this :class:`ObjectId`.\n"
+      "\n"
+      "The :class:`datetime.datetime` is timezone aware, and\n"
+      "represents the generation time in UTC. It is precise to the\n"
+      "second." },
    { NULL }
 };
 
@@ -138,6 +151,18 @@ cbson_oid_get_binary (PyObject *obj,
 #else
    return PyString_FromStringAndSize((const char *)&oid->oid, sizeof oid->oid);
 #endif
+}
+
+
+static PyObject *
+cbson_oid_get_generation_time (PyObject *obj,
+                               void     *data)
+{
+   cbson_oid_t *oid = (cbson_oid_t *)obj;
+   bson_int64_t gentime;
+
+   gentime = bson_oid_get_time_t(&oid->oid);
+   return cbson_date_time_from_msec(gentime * 1000L);
 }
 
 
