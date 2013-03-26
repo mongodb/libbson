@@ -18,6 +18,45 @@
 #include "cbson-oid.h"
 
 
+static bson_context_t *gContext;
+
+
+#define cbson_oid_check(op) (Py_TYPE(op) == &cbson_oid_type)
+
+
+static PyObject *cbson_oid_tp_repr    (PyObject *obj);
+static PyObject *cbson_oid_tp_str     (PyObject *obj);
+static int       cbson_oid_tp_compare (PyObject *obj1,
+                                       PyObject *obj2);
+static long      cbson_oid_tp_hash    (PyObject *obj);
+
+
+static PyTypeObject cbson_oid_type = {
+    PyObject_HEAD_INIT(NULL)
+    0,                         /*ob_size*/
+    "cbson.ObjectId",          /*tp_name*/
+    sizeof(cbson_oid_t),       /*tp_basicsize*/
+    0,                         /*tp_itemsize*/
+    0,                         /*tp_dealloc*/
+    0,                         /*tp_print*/
+    0,                         /*tp_getattr*/
+    0,                         /*tp_setattr*/
+    cbson_oid_tp_compare,      /*tp_compare*/
+    cbson_oid_tp_repr,         /*tp_repr*/
+    0,                         /*tp_as_number*/
+    0,                         /*tp_as_sequence*/
+    0,                         /*tp_as_mapping*/
+    cbson_oid_tp_hash,         /*tp_hash */
+    0,                         /*tp_call*/
+    cbson_oid_tp_str,          /*tp_str*/
+    0,                         /*tp_getattro*/
+    0,                         /*tp_setattro*/
+    0,                         /*tp_as_buffer*/
+    Py_TPFLAGS_DEFAULT,        /*tp_flags*/
+    "A BSON ObjectId.",        /*tp_doc*/
+};
+
+
 static PyObject *
 cbson_oid_tp_repr (PyObject *obj)
 {
@@ -44,6 +83,30 @@ cbson_oid_tp_str (PyObject *obj)
 }
 
 
+static int
+cbson_oid_tp_compare (PyObject *obj1,
+                      PyObject *obj2)
+{
+   cbson_oid_t *oid1 = (cbson_oid_t *)obj1;
+   cbson_oid_t *oid2 = (cbson_oid_t *)obj2;
+   int ret;
+
+   /*
+    * Bonkers, but CPython requires that the return value from compare is -1,
+    * 0, or 1 (rather than < 0, 0, > 0) like qsort().
+    */
+
+   ret = bson_oid_compare(&oid1->oid, &oid2->oid);
+   if (ret < 0) {
+      return -1;
+   } else if (ret > 0) {
+      return 1;
+   } else {
+      return 0;
+   }
+}
+
+
 static long
 cbson_oid_tp_hash (PyObject *obj)
 {
@@ -52,38 +115,16 @@ cbson_oid_tp_hash (PyObject *obj)
 }
 
 
-static PyTypeObject cbson_oid_type = {
-    PyObject_HEAD_INIT(NULL)
-    0,                         /*ob_size*/
-    "cbson.ObjectId",          /*tp_name*/
-    sizeof(cbson_oid_t),       /*tp_basicsize*/
-    0,                         /*tp_itemsize*/
-    0,                         /*tp_dealloc*/
-    0,                         /*tp_print*/
-    0,                         /*tp_getattr*/
-    0,                         /*tp_setattr*/
-    0,                         /*tp_compare*/
-    cbson_oid_tp_repr,         /*tp_repr*/
-    0,                         /*tp_as_number*/
-    0,                         /*tp_as_sequence*/
-    0,                         /*tp_as_mapping*/
-    cbson_oid_tp_hash,         /*tp_hash */
-    0,                         /*tp_call*/
-    cbson_oid_tp_str,          /*tp_str*/
-    0,                         /*tp_getattro*/
-    0,                         /*tp_setattro*/
-    0,                         /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT,        /*tp_flags*/
-    "A BSON ObjectId.",        /*tp_doc*/
-};
-
-
 static PyObject *
 cbson_oid_tp_new (PyTypeObject *self,
                   PyObject     *args,
                   PyObject     *kwargs)
 {
-   return NULL;
+   cbson_oid_t *ret;
+
+   ret = (cbson_oid_t *)PyType_GenericNew(&cbson_oid_type, args, kwargs);
+   bson_oid_init(&ret->oid, gContext);
+   return (PyObject *)ret;
 }
 
 
@@ -101,11 +142,12 @@ cbson_oid_new (const bson_oid_t *oid)
 
 
 PyTypeObject *
-cbson_oid_get_type (void)
+cbson_oid_get_type (bson_context_t *context)
 {
    static bson_bool_t initialized;
 
    if (!initialized) {
+      gContext = context;
       cbson_oid_type.tp_new = cbson_oid_tp_new;
       if (PyType_Ready(&cbson_oid_type) < 0) {
          return NULL;

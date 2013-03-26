@@ -534,6 +534,6 @@ initcbson (void)
    /*
     * Register cbson types.
     */
-   type_object = cbson_oid_get_type();
+   type_object = cbson_oid_get_type(&gContext);
    PyModule_AddObject(module, "ObjectId", (PyObject *)type_object);
 }
