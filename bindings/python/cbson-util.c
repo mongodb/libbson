@@ -94,7 +94,7 @@ cbson_date_time_from_msec (bson_int64_t msec_since_epoch)
 bson_int32_t
 cbson_date_time_seconds (PyObject *date_time)
 {
-   bson_int32_t val;
+   bson_int32_t val = -1;
    PyObject *calendar;
    PyObject *ret;
    PyObject *timegm;
@@ -114,14 +114,11 @@ cbson_date_time_seconds (PyObject *date_time)
    }
 
    if (!(timegm = PyObject_GetAttrString(calendar, "timegm"))) {
-      Py_DECREF(calendar);
-      return 0;
+      goto dec_calendar;
    }
 
    if (!(offset = PyObject_CallMethod(date_time, (char *)"utcoffset", NULL))) {
-      Py_DECREF(calendar);
-      Py_DECREF(timegm);
-      return 0;
+      goto dec_timegm;
    }
 
    if (offset != Py_None) {
@@ -131,30 +128,26 @@ cbson_date_time_seconds (PyObject *date_time)
    }
 
    if (!(timetuple = PyObject_CallMethod(date_time, (char *)"timetuple", NULL))) {
-      Py_DECREF(timegm);
-      Py_DECREF(calendar);
-      Py_DECREF(offset);
-      Py_DECREF(date_time);
-      return 0;
+      goto dec_offset;
    }
 
    if (!(ret = PyObject_CallFunction(timegm, (char *)"O", timetuple))) {
-      Py_DECREF(timetuple);
-      Py_DECREF(timegm);
-      Py_DECREF(calendar);
-      Py_DECREF(offset);
-      Py_DECREF(date_time);
-      return 0;
+      goto dec_timetuple;
    }
 
    val = PyInt_AS_LONG(ret);
 
    Py_DECREF(ret);
+
+dec_timetuple:
    Py_DECREF(timetuple);
-   Py_DECREF(timegm);
-   Py_DECREF(calendar);
+dec_offset:
    Py_DECREF(offset);
    Py_DECREF(date_time);
+dec_timegm:
+   Py_DECREF(timegm);
+dec_calendar:
+   Py_DECREF(calendar);
 
    return val;
 }
