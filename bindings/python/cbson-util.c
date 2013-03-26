@@ -33,6 +33,13 @@ cbson_util_init (void)
 }
 
 
+bson_bool_t
+cbson_date_time_check (PyObject *object)
+{
+   return PyDateTime_Check(object);
+}
+
+
 PyObject *
 cbson_date_time_from_msec (bson_int64_t msec_since_epoch)
 {

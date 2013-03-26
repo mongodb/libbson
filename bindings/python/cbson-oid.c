@@ -34,6 +34,8 @@ static PyObject *cbson_oid_get_binary          (PyObject *obj,
                                                 void     *data);
 static PyObject *cbson_oid_get_generation_time (PyObject *obj,
                                                 void     *data);
+static PyObject *cbson_oid_from_datetime       (PyObject *obj,
+                                                PyObject *args);
 
 
 static PyTypeObject cbson_oid_type = {
@@ -80,6 +82,39 @@ static PyGetSetDef cbson_oid_getset[] = {
       "second." },
    { NULL }
 };
+
+
+static PyMethodDef cbson_oid_methods[] = {
+   { "from_datetime", cbson_oid_from_datetime, METH_CLASS | METH_VARARGS,
+     "Create a dummy ObjectId instance with a specific generation time." },
+   { NULL }
+};
+
+
+static PyObject *
+cbson_oid_from_datetime (PyObject *obj,
+                         PyObject *args)
+{
+   PyObject *dt;
+
+   if (!PyArg_ParseTuple(args, "O", &dt)) {
+      return NULL;
+   }
+
+   if (!cbson_date_time_check(dt)) {
+      Py_DECREF(dt);
+      return NULL;
+   }
+
+   /*
+    * TODO: Convert to timestamp/structtm/etc and build into first 4 bytes of
+    *       the oid buffer.
+    */
+
+   Py_DECREF(dt);
+
+   return NULL;
+}
 
 
 static PyObject *
@@ -201,6 +236,7 @@ cbson_oid_get_type (bson_context_t *context)
       gContext = context;
       cbson_oid_type.tp_new = cbson_oid_tp_new;
       cbson_oid_type.tp_getset = cbson_oid_getset;
+      cbson_oid_type.tp_methods = cbson_oid_methods;
       if (PyType_Ready(&cbson_oid_type) < 0) {
          return NULL;
       }
