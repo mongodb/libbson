@@ -29,6 +29,8 @@ static PyObject *cbson_oid_tp_str     (PyObject *obj);
 static int       cbson_oid_tp_compare (PyObject *obj1,
                                        PyObject *obj2);
 static long      cbson_oid_tp_hash    (PyObject *obj);
+static PyObject *cbson_oid_get_binary (PyObject *obj,
+                                       void     *data);
 
 
 static PyTypeObject cbson_oid_type = {
@@ -54,6 +56,16 @@ static PyTypeObject cbson_oid_type = {
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT,        /*tp_flags*/
     "A BSON ObjectId.",        /*tp_doc*/
+};
+
+
+static PyGetSetDef cbson_oid_getset[] = {
+   { (char *)"binary",
+     cbson_oid_get_binary,
+     NULL,
+     (char *)"12-byte binary representation of this ObjectId.",
+     NULL },
+   { NULL }
 };
 
 
@@ -116,6 +128,15 @@ cbson_oid_tp_hash (PyObject *obj)
 
 
 static PyObject *
+cbson_oid_get_binary (PyObject *obj,
+                      void     *data)
+{
+   cbson_oid_t *oid = (cbson_oid_t *)obj;
+   return PyString_FromStringAndSize((const char *)&oid->oid, sizeof oid->oid);
+}
+
+
+static PyObject *
 cbson_oid_tp_new (PyTypeObject *self,
                   PyObject     *args,
                   PyObject     *kwargs)
@@ -149,6 +170,7 @@ cbson_oid_get_type (bson_context_t *context)
    if (!initialized) {
       gContext = context;
       cbson_oid_type.tp_new = cbson_oid_tp_new;
+      cbson_oid_type.tp_getset = cbson_oid_getset;
       if (PyType_Ready(&cbson_oid_type) < 0) {
          return NULL;
       }
