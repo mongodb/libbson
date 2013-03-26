@@ -36,6 +36,8 @@ static PyObject *cbson_oid_get_generation_time (PyObject *obj,
                                                 void     *data);
 static PyObject *cbson_oid_from_datetime       (PyObject *obj,
                                                 PyObject *args);
+static PyObject *cbson_oid_is_valid            (PyObject *obj,
+                                                PyObject *args);
 
 
 static PyTypeObject cbson_oid_type = {
@@ -87,6 +89,8 @@ static PyGetSetDef cbson_oid_getset[] = {
 static PyMethodDef cbson_oid_methods[] = {
    { "from_datetime", cbson_oid_from_datetime, METH_CLASS | METH_VARARGS,
      "Create a dummy ObjectId instance with a specific generation time." },
+   { "is_valid", cbson_oid_is_valid, METH_CLASS | METH_VARARGS,
+     "Check if a `oid` string is valid or not." },
    { NULL }
 };
 
@@ -114,6 +118,57 @@ cbson_oid_from_datetime (PyObject *obj,
    memcpy(&ret->oid, &t, sizeof t);
 
    return (PyObject *)ret;
+}
+
+
+static PyObject *
+cbson_oid_is_valid (PyObject *obj,
+                    PyObject *args)
+{
+   const char *str;
+   PyObject *ret = Py_False;
+   bson_uint32_t i;
+   int str_length;
+
+   if (!PyArg_ParseTuple(args, "s#", &str, &str_length)) {
+      return NULL;
+   }
+
+   if (str_length == 12) {
+      ret = Py_True;
+   }
+
+   if (str_length == 24) {
+      for (i = 0; i < str_length; i++) {
+         switch (str[i]) {
+         case '0':
+         case '1':
+         case '2':
+         case '3':
+         case '4':
+         case '5':
+         case '6':
+         case '7':
+         case '8':
+         case '9':
+         case 'a':
+         case 'b':
+         case 'c':
+         case 'd':
+         case 'e':
+         case 'f':
+            break;
+         default:
+            goto failure;
+         }
+      }
+      ret = Py_True;
+   }
+
+failure:
+   Py_INCREF(ret);
+
+   return ret;
 }
 
 
