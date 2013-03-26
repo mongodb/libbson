@@ -132,7 +132,12 @@ cbson_oid_get_binary (PyObject *obj,
                       void     *data)
 {
    cbson_oid_t *oid = (cbson_oid_t *)obj;
+
+#if PY_MAJOR_VERSION >= 3
+   return PyBytes_FromStringAndSize((const char *)&oid->oid, sizeof oid->oid);
+#else
    return PyString_FromStringAndSize((const char *)&oid->oid, sizeof oid->oid);
+#endif
 }
 
 
