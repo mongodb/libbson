@@ -37,8 +37,9 @@ typedef struct
 } cbson_oid_t;
 
 
-PyTypeObject *cbson_oid_get_type (bson_context_t   *context);
-PyObject     *cbson_oid_new      (const bson_oid_t *oid);
+PyTypeObject *cbson_oid_get_type        (bson_context_t   *context);
+PyObject     *cbson_oid_new             (const bson_oid_t *oid);
+PyObject     *cbson_invalid_id_get_type (void);
 
 
 BSON_END_DECLS

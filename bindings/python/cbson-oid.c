@@ -245,29 +245,22 @@ cbson_oid_tp_new (PyTypeObject *self,
       case 24:
          if (!bson_oid_is_valid(PyString_AS_STRING(oidobj),
                                 PyString_GET_SIZE(oidobj))) {
-            PyErr_SetString(PyExc_ValueError,
+            PyErr_SetString(cbson_invalid_id_get_type(),
                             "`oid` is not a valid OID string.");
             return NULL;
          }
          bson_oid_init_from_string(&oid, PyString_AS_STRING(oidobj));
          break;
       default:
-         PyErr_SetString(PyExc_ValueError,
+         PyErr_SetString(cbson_invalid_id_get_type(),
                          "`oid` must be 12 or 24 bytes long.");
          return NULL;
       }
    } else if (cbson_oid_check(oidobj)) {
       bson_oid_copy(&((cbson_oid_t *)oidobj)->oid, &oid);
-   }
-#if PY_MAJOR_VERSION >= 3
-   else if (PyBytes_Check(oidobj)) {
-      /*
-       * TODO: Implement for bytes.
-       */
-   }
-#endif
-   else {
-      PyErr_SetString(PyExc_ValueError, "`oid` is invalid.");
+   } else {
+      PyErr_SetString(PyExc_TypeError, "`oid` is invalid.");
+      return NULL;
    }
 
    ret = (cbson_oid_t *)PyType_GenericNew(&cbson_oid_type, NULL, NULL);
@@ -307,4 +300,17 @@ cbson_oid_get_type (bson_context_t *context)
    }
 
    return &cbson_oid_type;
+}
+
+
+PyObject *
+cbson_invalid_id_get_type (void)
+{
+   static PyObject *invalid_id;
+
+   if (!invalid_id) {
+      invalid_id = PyErr_NewException((char *)"cbson.InvalidId", NULL, NULL);
+   }
+
+   return invalid_id;
 }

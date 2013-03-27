@@ -452,7 +452,6 @@ PyMODINIT_FUNC
 initcbson (void)
 {
    bson_context_flags_t flags;
-   PyTypeObject *type_object;
    PyObject *module;
    PyObject *version;
 
@@ -490,8 +489,7 @@ initcbson (void)
    /*
     * Register cbson types.
     */
-   type_object = cbson_oid_get_type(&gContext);
-   PyModule_AddObject(module, "ObjectId", (PyObject *)type_object);
-   type_object = cbson_dbref_get_type();
-   PyModule_AddObject(module, "DBRef", (PyObject *)type_object);
+   PyModule_AddObject(module, "ObjectId", (PyObject *)cbson_oid_get_type(&gContext));
+   PyModule_AddObject(module, "InvalidId", cbson_invalid_id_get_type());
+   PyModule_AddObject(module, "DBRef", (PyObject *)cbson_dbref_get_type());
 }
