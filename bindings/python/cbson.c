@@ -20,6 +20,7 @@
 #include <bson/bson.h>
 #include <bson/bson-version.h>
 
+#include "cbson-dbref.h"
 #include "cbson-oid.h"
 #include "cbson-util.h"
 
@@ -491,4 +492,6 @@ initcbson (void)
     */
    type_object = cbson_oid_get_type(&gContext);
    PyModule_AddObject(module, "ObjectId", (PyObject *)type_object);
+   type_object = cbson_dbref_get_type();
+   PyModule_AddObject(module, "DBRef", (PyObject *)type_object);
 }
