@@ -67,14 +67,9 @@ static PyTypeObject cbson_oid_type = {
 
 
 static PyGetSetDef cbson_oid_getset[] = {
-   { (char *)"binary",
-     cbson_oid_get_binary,
-     NULL,
-     (char *)"12-byte binary representation of this ObjectId.",
-     NULL },
-   { (char *)"generation_time",
-     cbson_oid_get_generation_time,
-     NULL,
+   { (char *)"binary", cbson_oid_get_binary, NULL,
+     (char *)"12-byte binary representation of this ObjectId." },
+   { (char *)"generation_time", cbson_oid_get_generation_time, NULL,
      (char *)
       "A :class:`datetime.datetime` instance representing the time of\n"
       "generation for this :class:`ObjectId`.\n"
