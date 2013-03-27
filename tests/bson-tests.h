@@ -22,6 +22,7 @@
 #include <bson/bson.h>
 #include <bson/bson-memory.h>
 #include <stdio.h>
+#include <time.h>
 
 
 BSON_BEGIN_DECLS
@@ -47,13 +48,33 @@ BSON_BEGIN_DECLS
    } while (0)
 
 
-#define run_test(name, func)             \
-   do {                                  \
-      fprintf(stdout, "%-42s : ", name); \
-      fflush(stdout);                    \
-      func();                            \
-      fprintf(stdout, "PASS\n");         \
-   } while (0)
+static void
+run_test (const char *name,
+          void (*func) (void))
+{
+   struct timeval begin;
+   struct timeval end;
+   struct timeval diff;
+   bson_int64_t usec;
+   double format;
+
+   fprintf(stdout, "%-42s : ", name);
+   fflush(stdout);
+   gettimeofday(&begin, NULL);
+   func();
+   gettimeofday(&end, NULL);
+   fprintf(stdout, "PASS");
+
+   diff.tv_sec = end.tv_sec - begin.tv_sec;
+   diff.tv_usec = usec = end.tv_usec - begin.tv_usec;
+   if (usec < 0) {
+      diff.tv_sec -= 1;
+      diff.tv_usec = usec + 1000000;
+   }
+
+   format = diff.tv_sec + (diff.tv_usec / 1000000.0);
+   fprintf(stdout, " : %lf\n", format);
+}
 
 
 BSON_END_DECLS
