@@ -87,10 +87,8 @@ static PyGetSetDef cbson_oid_getset[] = {
 
 
 static PyMethodDef cbson_oid_methods[] = {
-   { "from_datetime", cbson_oid_from_datetime, METH_CLASS | METH_VARARGS,
-     "Create a dummy ObjectId instance with a specific generation time." },
-   { "is_valid", cbson_oid_is_valid, METH_CLASS | METH_VARARGS,
-     "Check if a `oid` string is valid or not." },
+   { "from_datetime", cbson_oid_from_datetime, METH_CLASS | METH_VARARGS, "Create a dummy ObjectId instance with a specific generation time." },
+   { "is_valid", cbson_oid_is_valid, METH_CLASS | METH_VARARGS, "Check if a `oid` string is valid or not." },
    { NULL }
 };
 
@@ -151,7 +149,7 @@ cbson_oid_tp_repr (PyObject *obj)
    char str[25];
 
    bson_oid_to_string(&oid->oid, str);
-   snprintf(repr, sizeof repr, "ObjectId(\"%s\")", str);
+   snprintf(repr, sizeof repr, "ObjectId('%s')", str);
    repr[36] = '\0';
 
    return PyString_FromStringAndSize(repr, 36);
@@ -263,7 +261,7 @@ cbson_oid_tp_new (PyTypeObject *self,
                          "`oid` must be 12 or 24 bytes long.");
          return NULL;
       }
-   } else if (Py_TYPE(oidobj) == &cbson_oid_type) {
+   } else if (cbson_oid_check(oidobj)) {
       bson_oid_copy(&((cbson_oid_t *)oidobj)->oid, &oid);
    }
 #if PY_MAJOR_VERSION >= 3
