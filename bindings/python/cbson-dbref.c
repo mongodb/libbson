@@ -21,10 +21,16 @@
 #define cbson_dbref_check(op) (Py_TYPE(op) == &cbson_dbref_type)
 
 
-static PyObject *cbson_dbref_tp_repr    (PyObject *obj);
-static int       cbson_dbref_tp_compare (PyObject *obj1,
-                                         PyObject *obj2);
-static long      cbson_dbref_tp_hash    (PyObject *obj);
+static PyObject *cbson_dbref_tp_repr        (PyObject *obj);
+static int       cbson_dbref_tp_compare     (PyObject *obj1,
+                                             PyObject *obj2);
+static long      cbson_dbref_tp_hash        (PyObject *obj);
+static PyObject *cbson_dbref_get_collection (PyObject *obj,
+                                             void     *data);
+static PyObject *cbson_dbref_get_database   (PyObject *obj,
+                                             void     *data);
+static PyObject *cbson_dbref_get_id         (PyObject *obj,
+                                             void     *data);
 
 
 static PyTypeObject cbson_dbref_type = {
@@ -54,6 +60,13 @@ static PyTypeObject cbson_dbref_type = {
 
 
 static PyGetSetDef cbson_dbref_getset[] = {
+   { (char *)"collection", cbson_dbref_get_collection, NULL,
+     (char *)"Get the name of this DBRef's collection as unicode." },
+   { (char *)"database", cbson_dbref_get_database, NULL,
+     (char *)"Get the name of this DBRef's database.\n\n"
+             "Returns None if this DBRef doesn't specify a database." },
+   { (char *)"id", cbson_dbref_get_id, NULL,
+     (char *)"Get this DBRef's _id." },
    { NULL }
 };
 
@@ -61,6 +74,57 @@ static PyGetSetDef cbson_dbref_getset[] = {
 static PyMethodDef cbson_dbref_methods[] = {
    { NULL }
 };
+
+
+static PyObject *
+cbson_dbref_get_collection (PyObject *object,
+                            void     *data)
+{
+   cbson_dbref_t *dbref = (cbson_dbref_t *)object;
+   PyObject *ret;
+
+   if (!(ret = dbref->collection)) {
+      ret = Py_None;
+   }
+
+   Py_INCREF(ret);
+
+   return ret;
+}
+
+
+static PyObject *
+cbson_dbref_get_database (PyObject *object,
+                          void     *data)
+{
+   cbson_dbref_t *dbref = (cbson_dbref_t *)object;
+   PyObject *ret;
+
+   if (!(ret = dbref->database)) {
+      ret = Py_None;
+   }
+
+   Py_INCREF(ret);
+
+   return ret;
+}
+
+
+static PyObject *
+cbson_dbref_get_id (PyObject *object,
+                    void     *data)
+{
+   cbson_dbref_t *dbref = (cbson_dbref_t *)object;
+   PyObject *ret;
+
+   if (!(ret = dbref->id)) {
+      ret = Py_None;
+   }
+
+   Py_INCREF(ret);
+
+   return ret;
+}
 
 
 static PyObject *
@@ -93,7 +157,7 @@ cbson_dbref_tp_new (PyTypeObject *self,
    /*
     * TODO: Handle args and kwargs.
     */
-   return PyType_GenericNew(&cbson_dbref_type, NULL, NULL);
+   return PyType_GenericNew(&cbson_dbref_type, args, kwargs);
 }
 
 

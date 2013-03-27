@@ -35,7 +35,7 @@ typedef struct
    PyObject_HEAD
    PyObject *collection;
    PyObject *database;
-   PyObject *oid;
+   PyObject *id;
    PyObject *extra;
 } cbson_dbref_t;
 
