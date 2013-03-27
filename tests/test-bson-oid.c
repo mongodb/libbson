@@ -162,6 +162,7 @@ test_bson_oid_init_sequence (void)
    bson_oid_t oid2;
    int i;
 
+   bson_context_init(&context, BSON_CONTEXT_NONE);
    bson_oid_init_sequence(&oid, &context);
    for (i = 0; i < 10000; i++) {
       bson_oid_init_sequence(&oid2, &context);
