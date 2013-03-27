@@ -38,6 +38,8 @@ static PyObject *cbson_oid_from_datetime       (PyObject *obj,
                                                 PyObject *args);
 static PyObject *cbson_oid_is_valid            (PyObject *obj,
                                                 PyObject *args);
+static PyObject *cbson_oid_reduce              (PyObject *obj,
+                                                PyObject *args);
 
 
 static PyTypeObject cbson_oid_type = {
@@ -84,8 +86,21 @@ static PyGetSetDef cbson_oid_getset[] = {
 static PyMethodDef cbson_oid_methods[] = {
    { "from_datetime", cbson_oid_from_datetime, METH_CLASS | METH_VARARGS, "Create a dummy ObjectId instance with a specific generation time." },
    { "is_valid", cbson_oid_is_valid, METH_CLASS | METH_VARARGS, "Check if a `oid` string is valid or not." },
+   { "__reduce__", cbson_oid_reduce, METH_VARARGS, "Return value of object for pickling." },
    { NULL }
 };
+
+
+static PyObject *
+cbson_oid_reduce (PyObject *obj,
+                  PyObject *args)
+{
+   cbson_oid_t *oid = (cbson_oid_t *)obj;
+   PyObject *ret;
+
+   ret = Py_BuildValue((char *)"O(s#)", &cbson_oid_type, &oid->oid.bytes, sizeof oid->oid.bytes);
+   return ret;
+}
 
 
 static PyObject *
