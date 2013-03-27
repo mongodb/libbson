@@ -174,6 +174,46 @@ test_bson_oid_init_sequence (void)
 
 
 static void
+test_bson_oid_init_sequence_thread_safe (void)
+{
+   bson_context_t context;
+   bson_oid_t oid;
+   bson_oid_t oid2;
+   int i;
+
+   bson_context_init(&context, BSON_CONTEXT_THREAD_SAFE);
+   bson_oid_init_sequence(&oid, &context);
+   for (i = 0; i < 10000; i++) {
+      bson_oid_init_sequence(&oid2, &context);
+      assert(FALSE == bson_oid_equal(&oid, &oid2));
+      assert(0 > bson_oid_compare(&oid, &oid2));
+      bson_oid_copy(&oid2, &oid);
+   }
+}
+
+
+#if defined(__linux__)
+static void
+test_bson_oid_init_sequence_with_tid (void)
+{
+   bson_context_t context;
+   bson_oid_t oid;
+   bson_oid_t oid2;
+   int i;
+
+   bson_context_init(&context, BSON_CONTEXT_USE_TASK_ID);
+   bson_oid_init_sequence(&oid, &context);
+   for (i = 0; i < 10000; i++) {
+      bson_oid_init_sequence(&oid2, &context);
+      assert(FALSE == bson_oid_equal(&oid, &oid2));
+      assert(0 > bson_oid_compare(&oid, &oid2));
+      bson_oid_copy(&oid2, &oid);
+   }
+}
+#endif
+
+
+static void
 test_bson_oid_get_time_t (void)
 {
    bson_context_t context;
@@ -242,6 +282,10 @@ main (int   argc,
    run_test("/bson/oid/init", test_bson_oid_init);
    run_test("/bson/oid/init_from_string", test_bson_oid_init_from_string);
    run_test("/bson/oid/init_sequence", test_bson_oid_init_sequence);
+   run_test("/bson/oid/init_sequence_thread_safe", test_bson_oid_init_sequence_thread_safe);
+#if defined(__linux__)
+   run_test("/bson/oid/init_sequence_with_tid", test_bson_oid_init_sequence_with_tid);
+#endif
    run_test("/bson/oid/init_with_threads", test_bson_oid_init_with_threads);
    run_test("/bson/oid/hash", test_bson_oid_hash);
    run_test("/bson/oid/compare", test_bson_oid_compare);
