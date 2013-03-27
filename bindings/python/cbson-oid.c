@@ -123,13 +123,15 @@ cbson_oid_is_valid (PyObject *obj,
    int str_length;
 
    if (!PyArg_ParseTuple(args, "s#", &str, &str_length)) {
-      return NULL;
+      PyErr_Clear();
+      goto finish;
    }
 
    if (str_length == 12 || bson_oid_is_valid(str, str_length)) {
       ret = Py_True;
    }
 
+finish:
    Py_INCREF(ret);
 
    return ret;
