@@ -20,6 +20,7 @@
 
 import bson
 import cbson
+from datetime import datetime
 import sys
 import threading
 import timeit
@@ -38,16 +39,20 @@ def compare_modules(name, bson_func, cbson_func, number=1, thread_count=None):
 
     if thread_count is not None:
         results = []
+        start = datetime.utcnow()
         threads = [threading.Thread(target=bson_wrapper, args=[results]) for i in range(thread_count)]
         [t.start() for t in threads]
         [t.join() for t in threads]
-        bson_time = sum(results)
+        end = datetime.utcnow()
+        bson_time = (end - start).total_seconds()
 
         results = []
+        start = datetime.utcnow()
         threads = [threading.Thread(target=cbson_wrapper, args=[results]) for i in range(thread_count)]
         [t.start() for t in threads]
         [t.join() for t in threads]
-        cbson_time = sum(results)
+        end = datetime.utcnow()
+        cbson_time = (end - start).total_seconds()
     else:
         results = []
         bson_wrapper(results)
@@ -68,4 +73,4 @@ def cbson_generate_object_id():
 
 if __name__ == '__main__':
     compare_modules('Generate ObjectId', bson_generate_object_id, cbson_generate_object_id, number=10000)
-    compare_modules('Generate ObjectId (threaded)', bson_generate_object_id, cbson_generate_object_id, number=10000, thread_count=4)
+    compare_modules('Generate ObjectId (threaded)', bson_generate_object_id, cbson_generate_object_id, number=10000, thread_count=12)
