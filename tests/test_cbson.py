@@ -25,6 +25,8 @@ import sys
 import threading
 import timeit
 
+EMPTY_BSON = '\x05\x00\x00\x00\x00'
+
 def compare_modules(name, bson_func, cbson_func, number=1, thread_count=None):
     """
     Runs two performance tests. One using the bson module and one
@@ -71,6 +73,14 @@ def bson_generate_object_id():
 def cbson_generate_object_id():
     cbson.ObjectId()
 
+def bson_decode_empty():
+    bson.BSON(EMPTY_BSON).decode()
+
+def cbson_decode_empty():
+    cbson.loads(EMPTY_BSON)
+
 if __name__ == '__main__':
     compare_modules('Generate ObjectId', bson_generate_object_id, cbson_generate_object_id, number=10000)
     compare_modules('Generate ObjectId (threaded)', bson_generate_object_id, cbson_generate_object_id, number=10000, thread_count=12)
+    compare_modules('Decode Empty BSON', bson_decode_empty, cbson_decode_empty, number=10000)
+    compare_modules('Decode Empty BSON (threaded)', bson_decode_empty, cbson_decode_empty, number=10000, thread_count=12)
