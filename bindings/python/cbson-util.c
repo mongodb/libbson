@@ -21,6 +21,9 @@
 #include <datetime.h>
 
 
+#define cbson_fixed_offset_check(op) (Py_TYPE(op) == &cbson_fixed_offset_type)
+
+
 typedef struct
 {
    _PyTZINFO_HEAD
@@ -98,6 +101,22 @@ cbson_fixed_offset_tp_new (PyTypeObject *self,
 }
 
 
+static int
+cbson_fixed_offset_tp_compare (PyObject *self,
+                               PyObject *other)
+{
+   cbson_fixed_offset_t *_self = (cbson_fixed_offset_t *)self;
+   cbson_fixed_offset_t *_other = (cbson_fixed_offset_t *)other;
+
+   if (!cbson_fixed_offset_check(self) || !cbson_fixed_offset_check(other)) {
+      PyErr_SetString(PyExc_NotImplementedError, "");
+      return -1;
+   }
+
+   return PyObject_Compare(_self->offset, _other->offset);
+}
+
+
 static void
 cbson_fixed_offset_tp_dealloc (PyObject *self)
 {
@@ -156,6 +175,7 @@ cbson_fixed_offset_get_type (void)
       SET(tp_base, PyDateTimeAPI->TZInfoType);
       SET(tp_dealloc, cbson_fixed_offset_tp_dealloc);
       SET(tp_methods, cbson_fixed_offset_tp_methods);
+      SET(tp_compare, cbson_fixed_offset_tp_compare);
 
       if (PyType_Ready(&cbson_fixed_offset_type) < 0) {
          assert(FALSE);
