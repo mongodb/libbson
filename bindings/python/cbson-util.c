@@ -32,6 +32,7 @@ typedef struct
 } cbson_fixed_offset_t;
 
 
+static bson_bool_t gUseFixedOffset;
 static PyTypeObject cbson_fixed_offset_type = {
    PyObject_HEAD_INIT(NULL)
    0,                         /*ob_size*/
@@ -215,8 +216,7 @@ cbson_date_time_check (PyObject *object)
 
 
 PyObject *
-cbson_date_time_from_msec (bson_int64_t  msec_since_epoch,
-                           PyObject     *tzinfo)
+cbson_date_time_from_msec (bson_int64_t msec_since_epoch)
 {
    bson_int32_t diff;
    bson_int32_t microseconds;
@@ -266,7 +266,8 @@ cbson_date_time_from_msec (bson_int64_t  msec_since_epoch,
                                     timeinfo.tm_sec,
                                     microseconds);
 
-   if (ret && tzinfo) {
+   if (ret && gUseFixedOffset) {
+      PyObject *tzinfo;
       PyObject *tmp = ret;
       PyObject *method;
       PyObject *mkwargs;
@@ -275,9 +276,11 @@ cbson_date_time_from_msec (bson_int64_t  msec_since_epoch,
       method = PyObject_GetAttrString(ret, "replace");
       mkwargs = PyDict_New();
       margs = PyTuple_New(0);
+      tzinfo = cbson_fixed_offset_utc_ref();
       PyDict_SetItemString(mkwargs, "tzinfo", tzinfo);
       ret = PyObject_Call(method, margs, mkwargs);
 
+      Py_DECREF(tzinfo);
       Py_DECREF(method);
       Py_DECREF(mkwargs);
       Py_DECREF(margs);
@@ -366,4 +369,11 @@ cbson_fixed_offset_utc_ref (void)
    Py_INCREF(utc);
 
    return utc;
+}
+
+
+void
+cbson_set_use_fixed_offset (bson_bool_t use_fixed_offset)
+{
+   gUseFixedOffset = use_fixed_offset;
 }

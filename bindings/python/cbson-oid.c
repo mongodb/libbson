@@ -235,12 +235,9 @@ cbson_oid_get_generation_time (PyObject *obj,
    cbson_oid_t *oid = (cbson_oid_t *)obj;
    bson_int64_t gentime;
    PyObject *ret;
-   PyObject *utc;
 
    gentime = bson_oid_get_time_t(&oid->oid);
-   utc = cbson_fixed_offset_utc_ref();
-   ret = cbson_date_time_from_msec(gentime * 1000L, utc);
-   Py_DECREF(utc);
+   ret = cbson_date_time_from_msec(gentime * 1000L);
 
    return ret;
 }
