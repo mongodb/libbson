@@ -33,6 +33,7 @@ for i in range(25):
     oo['o'] = {}
     oo = oo['o']
 _25X_BSON = bson.BSON.encode(o)
+DATETIME_BSON = bson.BSON.encode(dict((str(k),datetime.utcnow()) for k in [0,1,2,3,4,5,6,7,8,9]))
 
 def compare_modules(name, bson_func, cbson_func, number=1, thread_count=None):
     """
@@ -92,6 +93,12 @@ def bson_decode_25x_level():
 def cbson_decode_25x_level():
     cbson.loads(_25X_BSON)
 
+def bson_decode_datetime_bson():
+    bson.BSON(DATETIME_BSON).decode()
+
+def cbson_decode_datetime_bson():
+    cbson.loads(DATETIME_BSON)
+
 if __name__ == '__main__':
     compare_modules('Generate ObjectId', bson_generate_object_id, cbson_generate_object_id, number=10000)
     compare_modules('Generate ObjectId (threaded)', bson_generate_object_id, cbson_generate_object_id, number=10000, thread_count=N_THREADS)
@@ -99,3 +106,5 @@ if __name__ == '__main__':
     compare_modules('Decode Empty BSON (threaded)', bson_decode_empty, cbson_decode_empty, number=10000, thread_count=N_THREADS)
     compare_modules('Decode 25x level BSON', bson_decode_empty, cbson_decode_empty, number=10000)
     compare_modules('Decode 25x level BSON (threaded)', bson_decode_empty, cbson_decode_empty, number=10000, thread_count=N_THREADS)
+    compare_modules('Decode Datetime BSON', bson_decode_datetime_bson, cbson_decode_datetime_bson, number=10000)
+    compare_modules('Decode Datetime BSON (threaded)', bson_decode_datetime_bson, cbson_decode_datetime_bson, number=10000, thread_count=N_THREADS)
