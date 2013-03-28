@@ -28,7 +28,7 @@
 #include <winsock2.h>
 #endif
 
-#include "b64_ntop.c"
+#include "b64_ntop.h"
 
 #include "bson.h"
 #include "bson-md5.h"
