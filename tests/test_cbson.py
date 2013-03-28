@@ -25,7 +25,14 @@ import sys
 import threading
 import timeit
 
+N_THREADS = 12
 EMPTY_BSON = '\x05\x00\x00\x00\x00'
+o = {}
+oo = o
+for i in range(25):
+    oo['o'] = {}
+    oo = oo['o']
+_25X_BSON = bson.BSON.encode(o)
 
 def compare_modules(name, bson_func, cbson_func, number=1, thread_count=None):
     """
@@ -79,8 +86,16 @@ def bson_decode_empty():
 def cbson_decode_empty():
     cbson.loads(EMPTY_BSON)
 
+def bson_decode_25x_level():
+    bson.BSON(_25X_BSON).decode()
+
+def cbson_decode_25x_level():
+    cbson.loads(_25X_BSON)
+
 if __name__ == '__main__':
     compare_modules('Generate ObjectId', bson_generate_object_id, cbson_generate_object_id, number=10000)
-    compare_modules('Generate ObjectId (threaded)', bson_generate_object_id, cbson_generate_object_id, number=10000, thread_count=12)
+    compare_modules('Generate ObjectId (threaded)', bson_generate_object_id, cbson_generate_object_id, number=10000, thread_count=N_THREADS)
     compare_modules('Decode Empty BSON', bson_decode_empty, cbson_decode_empty, number=10000)
-    compare_modules('Decode Empty BSON (threaded)', bson_decode_empty, cbson_decode_empty, number=10000, thread_count=12)
+    compare_modules('Decode Empty BSON (threaded)', bson_decode_empty, cbson_decode_empty, number=10000, thread_count=N_THREADS)
+    compare_modules('Decode 25x level BSON', bson_decode_empty, cbson_decode_empty, number=10000)
+    compare_modules('Decode 25x level BSON (threaded)', bson_decode_empty, cbson_decode_empty, number=10000, thread_count=N_THREADS)
