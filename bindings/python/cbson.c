@@ -247,7 +247,7 @@ cbson_loads_visit_date_time (const bson_iter_t *iter,
    PyObject *date_time;
 
    if (*ret) {
-      date_time = cbson_date_time_from_msec(msec_since_epoch);
+      date_time = cbson_date_time_from_msec(msec_since_epoch, NULL);
       cbson_loads_set_item(*ret, key, date_time);
       Py_DECREF(date_time);
    }
@@ -481,7 +481,7 @@ initcbson (void)
    /*
     * Initialize utilities (datetime).
     */
-   if (!cbson_util_init()) {
+   if (!cbson_util_init(module)) {
       Py_DECREF(module);
       return;
    }

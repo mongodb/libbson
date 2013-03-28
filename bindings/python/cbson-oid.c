@@ -98,7 +98,10 @@ cbson_oid_reduce (PyObject *obj,
    cbson_oid_t *oid = (cbson_oid_t *)obj;
    PyObject *ret;
 
-   ret = Py_BuildValue((char *)"O(s#)", &cbson_oid_type, &oid->oid.bytes, sizeof oid->oid.bytes);
+   ret = Py_BuildValue((char *)"O(s#)",
+                       &cbson_oid_type,
+                       &oid->oid.bytes,
+                       sizeof oid->oid.bytes);
    return ret;
 }
 
@@ -231,9 +234,15 @@ cbson_oid_get_generation_time (PyObject *obj,
 {
    cbson_oid_t *oid = (cbson_oid_t *)obj;
    bson_int64_t gentime;
+   PyObject *ret;
+   PyObject *utc;
 
    gentime = bson_oid_get_time_t(&oid->oid);
-   return cbson_date_time_from_msec(gentime * 1000L);
+   utc = cbson_fixed_offset_utc_ref();
+   ret = cbson_date_time_from_msec(gentime * 1000L, utc);
+   Py_DECREF(utc);
+
+   return ret;
 }
 
 
