@@ -23,40 +23,21 @@
 
 #include "bson-config.h"
 #include "bson-macros.h"
+#include "bson-stdint.h"
 
 
 BSON_BEGIN_DECLS
 
 
-/*
- * Standard type definitions.
- * TODO: Determine long/long long/etc from build system.
- */
-#ifdef HAVE_STDINT
-#include <stdint.h>
-typedef int            bson_bool_t;
-typedef int8_t         bson_int8_t;
-typedef int16_t        bson_int16_t;
-typedef int32_t        bson_int32_t;
-typedef int64_t        bson_int64_t;
-typedef uint8_t        bson_uint8_t;
-typedef uint16_t       bson_uint16_t;
-typedef uint32_t       bson_uint32_t;
-typedef uint64_t       bson_uint64_t;
-#else
-/*
- * TODO: long long vs long for 64-bit
- */
-typedef int            bson_bool_t;
-typedef signed char    bson_int8_t;
-typedef signed short   bson_int16_t;
-typedef signed int     bson_int32_t;
-typedef signed long    bson_int64_t;
-typedef unsigned char  bson_uint8_t;
-typedef unsigned short bson_uint16_t;
-typedef unsigned int   bson_uint32_t;
-typedef unsigned long  bson_uint64_t;
-#endif /* HAVE_STDINT */
+typedef int      bson_bool_t;
+typedef int8_t   bson_int8_t;
+typedef int16_t  bson_int16_t;
+typedef int32_t  bson_int32_t;
+typedef int64_t  bson_int64_t;
+typedef uint8_t  bson_uint8_t;
+typedef uint16_t bson_uint16_t;
+typedef uint32_t bson_uint32_t;
+typedef uint64_t bson_uint64_t;
 
 
 /**
