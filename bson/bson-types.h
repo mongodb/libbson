@@ -59,6 +59,344 @@ typedef unsigned long  bson_uint64_t;
 #endif /* HAVE_STDINT */
 
 
+/**
+ * bson_context_flags_t:
+ *
+ * This enumeration is used to configure a bson_context_t.
+ *
+ * %BSON_CONTEXT_NONE: Use default options.
+ * %BSON_CONTEXT_THREAD_SAFE: Context will be called from multiple threads.
+ * %BSON_CONTEXT_DISABLE_PID_CACHE: Call getpid() instead of caching the
+ *   result of getpid() when initializing the context.
+ * %BSON_CONTEXT_DISABLE_HOST_CACHE: Call gethostname() instead of caching the
+ *   result of gethostname() when initializing the context.
+ */
+typedef enum
+{
+   BSON_CONTEXT_NONE               = 0,
+   BSON_CONTEXT_THREAD_SAFE        = 1 << 0,
+   BSON_CONTEXT_DISABLE_HOST_CACHE = 1 << 1,
+   BSON_CONTEXT_DISABLE_PID_CACHE  = 1 << 2,
+#if defined(__linux__)
+   BSON_CONTEXT_USE_TASK_ID        = 1 << 3,
+#endif
+} bson_context_flags_t;
+
+
+/**
+ * bson_context_t:
+ *
+ * This structure manages context for the bson library. It handles
+ * configuration for thread-safety and other performance related requirements.
+ * Consumers will create a context and may use multiple under a variety of
+ * situations.
+ *
+ * If your program calls fork(), you should initialize a new bson_context_t
+ * using bson_context_init().
+ *
+ * If you are using threading, it is suggested that you use a bson_context_t
+ * per thread for best performance. Alternatively, you can initialize the
+ * bson_context_t with BSON_CONTEXT_THREAD_SAFE, although a performance penalty
+ * will be incurred.
+ *
+ * Many functions will require that you provide a bson_context_t such as OID
+ * generation.
+ *
+ * This structure is oqaque in that you cannot see the contents of the
+ * structure. However, it is stack allocatable in that enough padding is
+ * provided in _bson_context_t to hold the structure.
+ */
+typedef struct
+{
+   void *opaque[16];
+} bson_context_t;
+
+
+/**
+ * bson_t:
+ *
+ * This structure manages a buffer whose contents are a properly formatted
+ * BSON document. You may perform various transforms on the BSON documents.
+ * Additionally, it can be iterated over using bson_iter_t.
+ *
+ * See bson_iter_init() for iterating the contents of a bson_t.
+ *
+ * When building a bson_t structure using the various append functions,
+ * memory allocations may occur. That is performed using power of two
+ * allocations and realloc().
+ *
+ * See http://bsonspec.org for the BSON document spec.
+ */
+typedef struct
+{
+   bson_int32_t   allocated;  /* Length of entire allocation. */
+   bson_uint32_t  len;        /* Length of data[]. */
+   bson_uint8_t  *data;       /* Pointer to data buffer. */
+   bson_uint8_t   inlbuf[16]; /* Inline buffer for small BSON. */
+} bson_t;
+
+
+/**
+ * bson_oid_t:
+ *
+ * This structure contains the binary form of a BSON Object Id as specified
+ * on http://bsonspec.org. If you would like the bson_oid_t in string form
+ * see bson_oid_to_string() or bson_oid_to_string_r().
+ */
+typedef struct
+{
+   bson_uint8_t bytes[12];
+} bson_oid_t;
+
+
+/**
+ * bson_validate_flags_t:
+ *
+ * This enumeration is used for validation of BSON documents. It allows
+ * selective control on what you wish to validate.
+ *
+ * %BSON_VALIDATE_NONE: No additional validation occurs.
+ * %BSON_VALIDATE_UTF8: Check that strings are valid UTF-8.
+ * %BSON_VALIDATE_DOLLAR_KEYS: Check that keys do not start with $.
+ * %BSON_VALIDATE_DOT_KEYS: Check that keys do not contain a period.
+ */
+typedef enum
+{
+   BSON_VALIDATE_NONE        = 0,
+   BSON_VALIDATE_UTF8        = 1 << 0,
+   BSON_VALIDATE_DOLLAR_KEYS = 1 << 1,
+   BSON_VALIDATE_DOT_KEYS    = 1 << 2,
+} bson_validate_flags_t;
+
+
+/**
+ * bson_type_t:
+ *
+ * This enumeration contains all of the possible types within a BSON document.
+ * Use bson_iter_type() to fetch the type of a field while iterating over it.
+ */
+typedef enum
+{
+   BSON_TYPE_EOD        = 0x00,
+   BSON_TYPE_DOUBLE     = 0x01,
+   BSON_TYPE_UTF8       = 0x02,
+   BSON_TYPE_DOCUMENT   = 0x03,
+   BSON_TYPE_ARRAY      = 0x04,
+   BSON_TYPE_BINARY     = 0x05,
+   BSON_TYPE_UNDEFINED  = 0x06,
+   BSON_TYPE_OID        = 0x07,
+   BSON_TYPE_BOOL       = 0x08,
+   BSON_TYPE_DATE_TIME  = 0x09,
+   BSON_TYPE_NULL       = 0x0A,
+   BSON_TYPE_REGEX      = 0x0B,
+   BSON_TYPE_DBPOINTER  = 0x0C,
+   BSON_TYPE_CODE       = 0x0D,
+   BSON_TYPE_SYMBOL     = 0x0E,
+   BSON_TYPE_CODEWSCOPE = 0x0F,
+   BSON_TYPE_INT32      = 0x10,
+   BSON_TYPE_TIMESTAMP  = 0x11,
+   BSON_TYPE_INT64      = 0x12,
+   BSON_TYPE_MAXKEY     = 0x7F,
+   BSON_TYPE_MINKEY     = 0xFF,
+} bson_type_t;
+
+
+/**
+ * bson_subtype_t:
+ *
+ * This enumeration contains the various subtypes that may be used in a binary
+ * field. See http://bsonspec.org for more information.
+ */
+typedef enum
+{
+   BSON_SUBTYPE_BINARY             = 0x00,
+   BSON_SUBTYPE_FUNCTION           = 0x01,
+   BSON_SUBTYPE_BINARY_DEPRECATED  = 0x02,
+   BSON_SUBTYPE_UUID_DEPRECATED    = 0x03,
+   BSON_SUBTYPE_UUID               = 0x04,
+   BSON_SUBTYPE_MD5                = 0x05,
+   BSON_SUBTYPE_USER               = 0x80,
+} bson_subtype_t;
+
+
+/**
+ * bson_iter_t:
+ *
+ * This structure manages iteration over a bson_t structure. It keeps track
+ * of the location of the current key and value within the buffer. Using the
+ * various functions to get the value of the iter will read from these
+ * locations.
+ *
+ * This structure is safe to discard on the stack. No cleanup is necessary
+ * after using it.
+ */
+typedef struct
+{
+   const bson_t       *bson;        /* The bson_t being iterated. */
+   size_t              offset;      /* The current offset in the bson_t. */
+   const bson_uint8_t *type;        /* Pointer to current type field. */
+   const bson_uint8_t *key;         /* Pointer to current key field. */
+   const bson_uint8_t *data1;       /* Pointer to first chunk of element. */
+   const bson_uint8_t *data2;       /* Pointer to second chunk of element. */
+   const bson_uint8_t *data3;       /* Pointer to third chunk of element. */
+   const bson_uint8_t *data4;       /* Pointer to fourth chunk of element. */
+   size_t              next_offset; /* Offset of next element. */
+   size_t              err_offset;  /* Location of decoding error. */
+   void               *padding[6];  /* For future use. */
+} bson_iter_t;
+
+
+/**
+ * bson_reader_t:
+ *
+ * This structure is used to iterate over a sequence of BSON documents. It
+ * allows for them to be iterated with the possibility of no additional
+ * memory allocations under certain circumstances such as reading from an
+ * incoming mongo packet.
+ */
+typedef struct
+{
+   bson_uint32_t  type;
+   void          *padding[15];
+} bson_reader_t;
+
+
+/**
+ * bson_visitor_t:
+ *
+ * This structure contains a series of pointers that can be executed for
+ * each field of a BSON document based on the field type.
+ *
+ * For example, if an int32 field is found, visit_int32 will be called.
+ *
+ * When visiting each field using bson_iter_visit_all(), you may provide a
+ * data pointer that will be provided with each callback. This might be useful
+ * if you are marshaling to another language.
+ */
+typedef struct
+{
+   void (*visit_before)     (const bson_iter_t    *iter,
+                             const char           *key,
+                             void                 *data);
+
+   void (*visit_after)      (const bson_iter_t    *iter,
+                             const char           *key,
+                             void                 *data);
+
+   void (*visit_corrupt)    (const bson_iter_t    *iter,
+                             void                 *data);
+
+   void (*visit_double)     (const bson_iter_t    *iter,
+                             const char           *key,
+                             double                v_double,
+                             void                 *data);
+
+   void (*visit_utf8)       (const bson_iter_t    *iter,
+                             const char           *key,
+                             size_t                v_utf8_len,
+                             const char           *v_utf8,
+                             void                 *data);
+
+   void (*visit_document)   (const bson_iter_t    *iter,
+                             const char           *key,
+                             const bson_t         *v_document,
+                             void                 *data);
+
+   void (*visit_array)      (const bson_iter_t    *iter,
+                             const char           *key,
+                             const bson_t         *v_array,
+                             void                 *data);
+
+   void (*visit_binary)     (const bson_iter_t    *iter,
+                             const char           *key,
+                             bson_subtype_t        v_subtype,
+                             size_t                v_binary_len,
+                             const bson_uint8_t   *v_binary,
+                             void                 *data);
+
+   void (*visit_undefined)  (const bson_iter_t    *iter,
+                             const char           *key,
+                             void                 *data);
+
+   void (*visit_oid)        (const bson_iter_t    *iter,
+                             const char           *key,
+                             const bson_oid_t     *v_oid,
+                             void                 *data);
+
+   void (*visit_bool)       (const bson_iter_t    *iter,
+                             const char           *key,
+                             bson_bool_t           v_bool,
+                             void                 *data);
+
+   void (*visit_date_time)  (const bson_iter_t    *iter,
+                             const char           *key,
+                             bson_int64_t          msec_since_epoch,
+                             void                 *data);
+
+   void (*visit_null)       (const bson_iter_t    *iter,
+                             const char           *key,
+                             void                 *data);
+
+   void (*visit_regex)      (const bson_iter_t    *iter,
+                             const char           *key,
+                             const char           *v_regex,
+                             const char           *v_options,
+                             void                 *data);
+
+   void (*visit_dbpointer)  (const bson_iter_t    *iter,
+                             const char           *key,
+                             size_t                v_collection_len,
+                             const char           *v_collection,
+                             const bson_oid_t     *v_oid,
+                             void                 *data);
+
+   void (*visit_code)       (const bson_iter_t    *iter,
+                             const char           *key,
+                             size_t                v_code_len,
+                             const char           *v_code,
+                             void                 *data);
+
+   void (*visit_symbol)     (const bson_iter_t    *iter,
+                             const char           *key,
+                             size_t                v_symbol_len,
+                             const char           *v_symbol,
+                             void                 *data);
+
+   void (*visit_codewscope) (const bson_iter_t    *iter,
+                             const char           *key,
+                             size_t                v_code_len,
+                             const char           *v_code,
+                             const bson_t         *v_scope,
+                             void                 *data);
+
+   void (*visit_int32)      (const bson_iter_t    *iter,
+                             const char           *key,
+                             bson_int32_t          v_int32,
+                             void                 *data);
+
+   void (*visit_timestamp)  (const bson_iter_t    *iter,
+                             const char           *key,
+                             bson_uint32_t         v_timestamp,
+                             bson_uint32_t         v_increment,
+                             void                 *data);
+
+   void (*visit_int64)      (const bson_iter_t    *iter,
+                             const char           *key,
+                             bson_int64_t          v_int64,
+                             void                 *data);
+
+   void (*visit_maxkey)     (const bson_iter_t    *iter,
+                             const char           *key,
+                             void                 *data);
+
+   void (*visit_minkey)     (const bson_iter_t    *iter,
+                             const char           *key,
+                             void                 *data);
+
+   void *padding[9];
+} bson_visitor_t;
+
+
 BSON_END_DECLS
 
 

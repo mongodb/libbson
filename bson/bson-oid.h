@@ -30,19 +30,6 @@ BSON_BEGIN_DECLS
 
 
 /**
- * bson_oid_t:
- *
- * This structure contains the binary form of a BSON Object Id as specified
- * on http://bsonspec.org. If you would like the bson_oid_t in string form
- * see bson_oid_to_string() or bson_oid_to_string_r().
- */
-typedef struct
-{
-   bson_uint8_t bytes[12];
-} bson_oid_t;
-
-
-/**
  * bson_oid_compare:
  * @oid1: The bson_oid_t to compare as the left.
  * @oid2: The bson_oid_t to compare as the right.

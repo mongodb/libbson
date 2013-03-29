@@ -27,59 +27,6 @@ BSON_BEGIN_DECLS
 
 
 /**
- * bson_context_flags_t:
- *
- * This enumeration is used to configure a bson_context_t.
- *
- * %BSON_CONTEXT_NONE: Use default options.
- * %BSON_CONTEXT_THREAD_SAFE: Context will be called from multiple threads.
- * %BSON_CONTEXT_DISABLE_PID_CACHE: Call getpid() instead of caching the
- *   result of getpid() when initializing the context.
- * %BSON_CONTEXT_DISABLE_HOST_CACHE: Call gethostname() instead of caching the
- *   result of gethostname() when initializing the context.
- */
-typedef enum
-{
-   BSON_CONTEXT_NONE               = 0,
-   BSON_CONTEXT_THREAD_SAFE        = 1 << 0,
-   BSON_CONTEXT_DISABLE_HOST_CACHE = 1 << 1,
-   BSON_CONTEXT_DISABLE_PID_CACHE  = 1 << 2,
-#if defined(__linux__)
-   BSON_CONTEXT_USE_TASK_ID        = 1 << 3,
-#endif
-} bson_context_flags_t;
-
-
-/**
- * bson_context_t:
- *
- * This structure manages context for the bson library. It handles
- * configuration for thread-safety and other performance related requirements.
- * Consumers will create a context and may use multiple under a variety of
- * situations.
- *
- * If your program calls fork(), you should initialize a new bson_context_t
- * using bson_context_init().
- *
- * If you are using threading, it is suggested that you use a bson_context_t
- * per thread for best performance. Alternatively, you can initialize the
- * bson_context_t with BSON_CONTEXT_THREAD_SAFE, although a performance penalty
- * will be incurred.
- *
- * Many functions will require that you provide a bson_context_t such as OID
- * generation.
- *
- * This structure is oqaque in that you cannot see the contents of the
- * structure. However, it is stack allocatable in that enough padding is
- * provided in _bson_context_t to hold the structure.
- */
-typedef struct
-{
-   void *opaque[16];
-} bson_context_t;
-
-
-/**
  * bson_context_init:
  * @context: A bson_context_t.
  * @flags: Flags for initialization.
