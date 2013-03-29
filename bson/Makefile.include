@@ -29,6 +29,7 @@ libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson.c
 libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson-md5.c
 libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson-memory.c
 libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson-oid.c
+libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson-reader.c
 libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson-string.c
 
 libbson_1_0_la_CPPFLAGS =
