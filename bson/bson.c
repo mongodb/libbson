@@ -43,14 +43,14 @@
 static const bson_uint8_t gZero;
 
 
-static bson_bool_t visit_array    (const bson_iter_t *iter,
-                                   const char        *key,
-                                   const bson_t      *v_array,
-                                   void              *data);
-static bson_bool_t visit_document (const bson_iter_t *iter,
-                                   const char        *key,
-                                   const bson_t      *v_document,
-                                   void              *data);
+static bson_bool_t bson_as_json_visit_array    (const bson_iter_t *iter,
+                                                const char        *key,
+                                                const bson_t      *v_array,
+                                                void              *data);
+static bson_bool_t bson_as_json_visit_document (const bson_iter_t *iter,
+                                                const char        *key,
+                                                const bson_t      *v_document,
+                                                void              *data);
 
 
 typedef struct
@@ -1764,11 +1764,11 @@ bson_iter_visit_all (bson_iter_t          *iter,
 
 
 static bson_bool_t
-visit_utf8 (const bson_iter_t *iter,
-            const char        *key,
-            size_t             v_utf8_len,
-            const char        *v_utf8,
-            void              *data)
+bson_as_json_visit_utf8 (const bson_iter_t *iter,
+                         const char        *key,
+                         size_t             v_utf8_len,
+                         const char        *v_utf8,
+                         void              *data)
 {
    bson_json_state_t *state = data;
 
@@ -1781,10 +1781,10 @@ visit_utf8 (const bson_iter_t *iter,
 
 
 static bson_bool_t
-visit_int32 (const bson_iter_t *iter,
-             const char        *key,
-             bson_int32_t       v_int32,
-             void              *data)
+bson_as_json_visit_int32 (const bson_iter_t *iter,
+                          const char        *key,
+                          bson_int32_t       v_int32,
+                          void              *data)
 {
    bson_json_state_t *state = data;
    char str[32];
@@ -1797,10 +1797,10 @@ visit_int32 (const bson_iter_t *iter,
 
 
 static bson_bool_t
-visit_int64 (const bson_iter_t *iter,
-             const char        *key,
-             bson_int64_t       v_int64,
-             void              *data)
+bson_as_json_visit_int64 (const bson_iter_t *iter,
+                          const char        *key,
+                          bson_int64_t       v_int64,
+                          void              *data)
 {
    bson_json_state_t *state = data;
    char str[32];
@@ -1813,10 +1813,10 @@ visit_int64 (const bson_iter_t *iter,
 
 
 static bson_bool_t
-visit_double (const bson_iter_t *iter,
-              const char        *key,
-              double             v_double,
-              void              *data)
+bson_as_json_visit_double (const bson_iter_t *iter,
+                           const char        *key,
+                           double             v_double,
+                           void              *data)
 {
    bson_json_state_t *state = data;
    char str[32];
@@ -1829,9 +1829,9 @@ visit_double (const bson_iter_t *iter,
 
 
 static bson_bool_t
-visit_undefined (const bson_iter_t *iter,
-                 const char        *key,
-                 void              *data)
+bson_as_json_visit_undefined (const bson_iter_t *iter,
+                              const char        *key,
+                              void              *data)
 {
    bson_json_state_t *state = data;
    bson_string_append(state->str, "{ \"$undefined\" : true }");
@@ -1840,9 +1840,9 @@ visit_undefined (const bson_iter_t *iter,
 
 
 static bson_bool_t
-visit_null (const bson_iter_t *iter,
-            const char        *key,
-            void              *data)
+bson_as_json_visit_null (const bson_iter_t *iter,
+                         const char        *key,
+                         void              *data)
 {
    bson_json_state_t *state = data;
    bson_string_append(state->str, "null");
@@ -1851,10 +1851,10 @@ visit_null (const bson_iter_t *iter,
 
 
 static bson_bool_t
-visit_oid (const bson_iter_t *iter,
-           const char        *key,
-           const bson_oid_t  *oid,
-           void              *data)
+bson_as_json_visit_oid (const bson_iter_t *iter,
+                        const char        *key,
+                        const bson_oid_t  *oid,
+                        void              *data)
 {
    bson_json_state_t *state = data;
    char str[25];
@@ -1869,12 +1869,12 @@ visit_oid (const bson_iter_t *iter,
 
 
 static bson_bool_t
-visit_binary (const bson_iter_t  *iter,
-              const char         *key,
-              bson_subtype_t      v_subtype,
-              size_t              v_binary_len,
-              const bson_uint8_t *v_binary,
-              void               *data)
+bson_as_json_visit_binary (const bson_iter_t  *iter,
+                           const char         *key,
+                           bson_subtype_t      v_subtype,
+                           size_t              v_binary_len,
+                           const bson_uint8_t *v_binary,
+                           void               *data)
 {
    bson_json_state_t *state = data;
    size_t b64_len;
@@ -1898,10 +1898,10 @@ visit_binary (const bson_iter_t  *iter,
 
 
 static bson_bool_t
-visit_bool (const bson_iter_t *iter,
-            const char        *key,
-            bson_bool_t        v_bool,
-            void              *data)
+bson_as_json_visit_bool (const bson_iter_t *iter,
+                         const char        *key,
+                         bson_bool_t        v_bool,
+                         void              *data)
 {
    bson_json_state_t *state = data;
    bson_string_append(state->str, v_bool ? "true" : "false");
@@ -1910,10 +1910,10 @@ visit_bool (const bson_iter_t *iter,
 
 
 static bson_bool_t
-visit_date_time (const bson_iter_t    *iter,
-                 const char           *key,
-                 bson_int64_t          msec_since_epoch,
-                 void                 *data)
+bson_as_json_visit_date_time (const bson_iter_t *iter,
+                              const char        *key,
+                              bson_int64_t       msec_since_epoch,
+                              void              *data)
 {
    bson_json_state_t *state = data;
    char secstr[32];
@@ -1929,11 +1929,11 @@ visit_date_time (const bson_iter_t    *iter,
 
 
 static bson_bool_t
-visit_regex (const bson_iter_t *iter,
-             const char        *key,
-             const char        *v_regex,
-             const char        *v_options,
-             void              *data)
+bson_as_json_visit_regex (const bson_iter_t *iter,
+                          const char        *key,
+                          const char        *v_regex,
+                          const char        *v_options,
+                          void              *data)
 {
    bson_json_state_t *state = data;
 
@@ -1948,11 +1948,11 @@ visit_regex (const bson_iter_t *iter,
 
 
 static bson_bool_t
-visit_timestamp (const bson_iter_t *iter,
-                 const char        *key,
-                 bson_uint32_t      v_timestamp,
-                 bson_uint32_t      v_increment,
-                 void              *data)
+bson_as_json_visit_timestamp (const bson_iter_t *iter,
+                              const char        *key,
+                              bson_uint32_t      v_timestamp,
+                              bson_uint32_t      v_increment,
+                              void              *data)
 {
    bson_json_state_t *state = data;
    char str[32];
@@ -1970,12 +1970,12 @@ visit_timestamp (const bson_iter_t *iter,
 
 
 static bson_bool_t
-visit_dbpointer (const bson_iter_t *iter,
-                 const char        *key,
-                 size_t             v_collection_len,
-                 const char        *v_collection,
-                 const bson_oid_t  *v_oid,
-                 void              *data)
+bson_as_json_visit_dbpointer (const bson_iter_t *iter,
+                              const char        *key,
+                              size_t             v_collection_len,
+                              const char        *v_collection,
+                              const bson_oid_t  *v_oid,
+                              void              *data)
 {
    bson_json_state_t *state = data;
    char str[25];
@@ -1992,9 +1992,9 @@ visit_dbpointer (const bson_iter_t *iter,
 
 
 static bson_bool_t
-visit_minkey (const bson_iter_t *iter,
-              const char        *key,
-              void              *data)
+bson_as_json_visit_minkey (const bson_iter_t *iter,
+                           const char        *key,
+                           void              *data)
 {
    bson_json_state_t *state = data;
    bson_string_append(state->str, "{ \"$minKey\" : 1 }");
@@ -2003,9 +2003,9 @@ visit_minkey (const bson_iter_t *iter,
 
 
 static bson_bool_t
-visit_maxkey (const bson_iter_t *iter,
-              const char        *key,
-              void              *data)
+bson_as_json_visit_maxkey (const bson_iter_t *iter,
+                           const char        *key,
+                           void              *data)
 {
    bson_json_state_t *state = data;
    bson_string_append(state->str, "{ \"$maxKey\" : 1 }");
@@ -2014,9 +2014,9 @@ visit_maxkey (const bson_iter_t *iter,
 
 
 static bson_bool_t
-visit_before (const bson_iter_t *iter,
-              const char        *key,
-              void              *data)
+bson_as_json_visit_before (const bson_iter_t *iter,
+                           const char        *key,
+                           void              *data)
 {
    bson_json_state_t *state = data;
 
@@ -2037,11 +2037,11 @@ visit_before (const bson_iter_t *iter,
 
 
 static bson_bool_t
-visit_code (const bson_iter_t *iter,
-            const char        *key,
-            size_t             v_code_len,
-            const char        *v_code,
-            void              *data)
+bson_as_json_visit_code (const bson_iter_t *iter,
+                         const char        *key,
+                         size_t             v_code_len,
+                         const char        *v_code,
+                         void              *data)
 {
    bson_json_state_t *state = data;
 
@@ -2054,11 +2054,11 @@ visit_code (const bson_iter_t *iter,
 
 
 static bson_bool_t
-visit_symbol (const bson_iter_t *iter,
-              const char        *key,
-              size_t             v_symbol_len,
-              const char        *v_symbol,
-              void              *data)
+bson_as_json_visit_symbol (const bson_iter_t *iter,
+                           const char        *key,
+                           size_t             v_symbol_len,
+                           const char        *v_symbol,
+                           void              *data)
 {
    bson_json_state_t *state = data;
 
@@ -2071,12 +2071,12 @@ visit_symbol (const bson_iter_t *iter,
 
 
 static bson_bool_t
-visit_codewscope (const bson_iter_t *iter,
-                  const char        *key,
-                  size_t             v_code_len,
-                  const char        *v_code,
-                  const bson_t      *v_scope,
-                  void              *data)
+bson_as_json_visit_codewscope (const bson_iter_t *iter,
+                               const char        *key,
+                               size_t             v_code_len,
+                               const char        *v_code,
+                               const bson_t      *v_scope,
+                               void              *data)
 {
    bson_json_state_t *state = data;
 
@@ -2088,36 +2088,36 @@ visit_codewscope (const bson_iter_t *iter,
 }
 
 
-static const bson_visitor_t bson_json_visitors = {
-   .visit_before = visit_before,
-   .visit_double = visit_double,
-   .visit_utf8 = visit_utf8,
-   .visit_document = visit_document,
-   .visit_array = visit_array,
-   .visit_binary = visit_binary,
-   .visit_undefined = visit_undefined,
-   .visit_oid = visit_oid,
-   .visit_bool = visit_bool,
-   .visit_date_time = visit_date_time,
-   .visit_null = visit_null,
-   .visit_regex = visit_regex,
-   .visit_dbpointer = visit_dbpointer,
-   .visit_code = visit_code,
-   .visit_symbol = visit_symbol,
-   .visit_codewscope = visit_codewscope,
-   .visit_int32 = visit_int32,
-   .visit_timestamp = visit_timestamp,
-   .visit_int64 = visit_int64,
-   .visit_minkey = visit_minkey,
-   .visit_maxkey = visit_maxkey,
+static const bson_visitor_t bson_as_json_visitors = {
+   .visit_before     = bson_as_json_visit_before,
+   .visit_double     = bson_as_json_visit_double,
+   .visit_utf8       = bson_as_json_visit_utf8,
+   .visit_document   = bson_as_json_visit_document,
+   .visit_array      = bson_as_json_visit_array,
+   .visit_binary     = bson_as_json_visit_binary,
+   .visit_undefined  = bson_as_json_visit_undefined,
+   .visit_oid        = bson_as_json_visit_oid,
+   .visit_bool       = bson_as_json_visit_bool,
+   .visit_date_time  = bson_as_json_visit_date_time,
+   .visit_null       = bson_as_json_visit_null,
+   .visit_regex      = bson_as_json_visit_regex,
+   .visit_dbpointer  = bson_as_json_visit_dbpointer,
+   .visit_code       = bson_as_json_visit_code,
+   .visit_symbol     = bson_as_json_visit_symbol,
+   .visit_codewscope = bson_as_json_visit_codewscope,
+   .visit_int32      = bson_as_json_visit_int32,
+   .visit_timestamp  = bson_as_json_visit_timestamp,
+   .visit_int64      = bson_as_json_visit_int64,
+   .visit_minkey     = bson_as_json_visit_minkey,
+   .visit_maxkey     = bson_as_json_visit_maxkey,
 };
 
 
 static bson_bool_t
-visit_document (const bson_iter_t *iter,
-                const char        *key,
-                const bson_t      *v_document,
-                void              *data)
+bson_as_json_visit_document (const bson_iter_t *iter,
+                             const char        *key,
+                             const bson_t      *v_document,
+                             void              *data)
 {
    bson_json_state_t *state = data;
    bson_json_state_t child_state = { 0, TRUE };
@@ -2126,7 +2126,7 @@ visit_document (const bson_iter_t *iter,
    bson_iter_init(&child, v_document);
 
    child_state.str = bson_string_new("{ ");
-   bson_iter_visit_all(&child, &bson_json_visitors, &child_state);
+   bson_iter_visit_all(&child, &bson_as_json_visitors, &child_state);
    bson_string_append(child_state.str, " }");
    bson_string_append(state->str, child_state.str->str);
    bson_string_free(child_state.str, TRUE);
@@ -2136,10 +2136,10 @@ visit_document (const bson_iter_t *iter,
 
 
 static bson_bool_t
-visit_array (const bson_iter_t *iter,
-             const char        *key,
-             const bson_t      *v_array,
-             void              *data)
+bson_as_json_visit_array (const bson_iter_t *iter,
+                          const char        *key,
+                          const bson_t      *v_array,
+                          void              *data)
 {
    bson_json_state_t *state = data;
    bson_json_state_t child_state = { 0, FALSE };
@@ -2148,7 +2148,7 @@ visit_array (const bson_iter_t *iter,
    bson_iter_init(&child, v_array);
 
    child_state.str = bson_string_new("[ ");
-   bson_iter_visit_all(&child, &bson_json_visitors, &child_state);
+   bson_iter_visit_all(&child, &bson_as_json_visitors, &child_state);
    bson_string_append(child_state.str, " ]");
    bson_string_append(state->str, child_state.str->str);
    bson_string_free(child_state.str, TRUE);
@@ -2173,7 +2173,7 @@ bson_as_json (const bson_t *bson,
    state.count = 0;
    state.keys = TRUE;
    state.str = bson_string_new("{ ");
-   bson_iter_visit_all(&iter, &bson_json_visitors, &state);
+   bson_iter_visit_all(&iter, &bson_as_json_visitors, &state);
    bson_string_append(state.str, " }");
 
    if (length) {
