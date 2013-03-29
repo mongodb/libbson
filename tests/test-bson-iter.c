@@ -164,9 +164,60 @@ test_bson_iter_fuzz (void)
       b = bson_new_from_data(data, len);
       assert(b);
 
+      /*
+       * TODO: Most of the following ignores the key. That should be fixed
+       *       but has it's own perils too.
+       */
+
       assert(bson_iter_init(&iter, b));
       while (bson_iter_next(&iter)) {
          assert(iter.next_offset < len);
+         switch (bson_iter_type(&iter)) {
+         case BSON_TYPE_ARRAY:
+         case BSON_TYPE_DOCUMENT:
+            {
+               const bson_uint8_t *child = NULL;
+               bson_uint32_t child_len = -1;
+
+               bson_iter_document(&iter, &child_len, &child);
+               assert(child);
+               assert(child_len >= 5);
+               assert((iter.offset + child_len) < b->len);
+               assert(child_len < (bson_uint32_t)-1);
+               memcpy(&child_len, child, 4);
+               child_len = BSON_UINT32_FROM_LE(child_len);
+               assert(child_len >= 5);
+            }
+            break;
+         case BSON_TYPE_DOUBLE:
+         case BSON_TYPE_UTF8:
+         case BSON_TYPE_BINARY:
+         case BSON_TYPE_UNDEFINED:
+            break;
+         case BSON_TYPE_OID:
+            assert(iter.offset + 12 < iter.bson->len);
+            break;
+         case BSON_TYPE_BOOL:
+         case BSON_TYPE_DATE_TIME:
+         case BSON_TYPE_NULL:
+         case BSON_TYPE_REGEX:
+            /* TODO: check for 2 valid cstring. */
+         case BSON_TYPE_DBPOINTER:
+         case BSON_TYPE_CODE:
+         case BSON_TYPE_SYMBOL:
+         case BSON_TYPE_CODEWSCOPE:
+         case BSON_TYPE_INT32:
+         case BSON_TYPE_TIMESTAMP:
+         case BSON_TYPE_INT64:
+         case BSON_TYPE_MAXKEY:
+         case BSON_TYPE_MINKEY:
+            break;
+         case BSON_TYPE_EOD:
+         default:
+            /* Code should not be reached. */
+            assert(FALSE);
+            break;
+         }
       }
 
       bson_destroy(b);
