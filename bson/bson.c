@@ -43,6 +43,16 @@
 static const bson_uint8_t gZero;
 
 
+static bson_bool_t visit_array    (const bson_iter_t *iter,
+                                   const char        *key,
+                                   const bson_t      *v_array,
+                                   void              *data);
+static bson_bool_t visit_document (const bson_iter_t *iter,
+                                   const char        *key,
+                                   const bson_t      *v_document,
+                                   void              *data);
+
+
 typedef struct
 {
    bson_uint32_t  count;
@@ -194,7 +204,7 @@ typedef struct
 } bson_validate_state_t;
 
 
-static void
+static bson_bool_t
 bson_iter_validate_utf8 (const bson_iter_t *iter,
                          const char        *key,
                          size_t             v_utf8_len,
@@ -206,8 +216,11 @@ bson_iter_validate_utf8 (const bson_iter_t *iter,
    if ((state->flags & BSON_VALIDATE_UTF8)) {
       if (!u8_check((const bson_uint8_t *)v_utf8, v_utf8_len)) {
          state->err_offset = iter->offset;
+         return TRUE;
       }
    }
+
+   return FALSE;
 }
 
 
@@ -220,7 +233,7 @@ bson_iter_validate_corrupt (const bson_iter_t *iter,
 }
 
 
-static void
+static bson_bool_t
 bson_iter_validate_before (const bson_iter_t *iter,
                            const char        *key,
                            void              *data)
@@ -230,18 +243,22 @@ bson_iter_validate_before (const bson_iter_t *iter,
    if ((state->flags & BSON_VALIDATE_DOLLAR_KEYS)) {
       if (key[0] == '$') {
          state->err_offset = iter->offset;
+         return TRUE;
       }
    }
 
    if ((state->flags & BSON_VALIDATE_DOT_KEYS)) {
       if (strstr(key, ".")) {
          state->err_offset = iter->offset;
+         return TRUE;
       }
    }
+
+   return FALSE;
 }
 
 
-static void
+static bson_bool_t
 bson_iter_validate_document (const bson_iter_t *iter,
                              const char        *key,
                              const bson_t      *v_document,
@@ -257,7 +274,7 @@ static const bson_visitor_t bson_validate_funcs = {
 };
 
 
-static void
+static bson_bool_t
 bson_iter_validate_document (const bson_iter_t *iter,
                              const char        *key,
                              const bson_t      *v_document,
@@ -272,10 +289,12 @@ bson_iter_validate_document (const bson_iter_t *iter,
        *       on the parent document by returning FALSE/TRUE/etc.
        */
       state->err_offset = iter->offset;
-      return;
+      return TRUE;
    }
 
    bson_iter_visit_all(&child, &bson_validate_funcs, state);
+
+   return FALSE;
 }
 
 
@@ -1540,59 +1559,61 @@ bson_iter_array (const bson_iter_t   *iter,
 }
 
 
-void
+bson_bool_t
 bson_iter_visit_all (bson_iter_t          *iter,
                      const bson_visitor_t *visitor,
                      void                 *data)
 {
-   bson_return_if_fail(iter);
-   bson_return_if_fail(visitor);
+   const char *key;
+
+   bson_return_val_if_fail(iter, FALSE);
+   bson_return_val_if_fail(visitor, FALSE);
 
 #define RUN_VISITOR(name) \
    if (visitor->visit_##name) visitor->visit_##name
 
+#define VISIT_FIELD(name) \
+   visitor->visit_##name && visitor->visit_##name
+
    while (bson_iter_next(iter)) {
-      RUN_VISITOR(before)(iter, bson_iter_key_unsafe(iter), data);
+      key = bson_iter_key_unsafe(iter);
+
+      if (VISIT_FIELD(before)(iter, key, data)) {
+         return TRUE;
+      }
 
       switch (bson_iter_type(iter)) {
       case BSON_TYPE_DOUBLE:
-         RUN_VISITOR(double)(iter,
-                             bson_iter_key_unsafe(iter),
-                             bson_iter_double(iter),
-                             data);
+         if (VISIT_FIELD(double)(iter, key, bson_iter_double(iter), data)) {
+            return TRUE;
+         }
          break;
       case BSON_TYPE_UTF8:
          {
             bson_uint32_t utf8_len;
             const char *utf8;
             utf8 = bson_iter_string(iter, &utf8_len);
-            RUN_VISITOR(utf8)(iter,
-                              bson_iter_key_unsafe(iter),
-                              utf8_len,
-                              utf8,
-                              data);
+            if (VISIT_FIELD(utf8)(iter, key, utf8_len, utf8, data)) {
+               return TRUE;
+            }
          }
          break;
       case BSON_TYPE_DOCUMENT:
          {
             bson_t b = { 0 };
-
             bson_iter_document(iter, &b.len, (const bson_uint8_t **)&b.data);
-            RUN_VISITOR(document)(iter,
-                                  bson_iter_key_unsafe(iter),
-                                  &b,
-                                  data);
+            if (VISIT_FIELD(document)(iter, key, &b, data)) {
+               return TRUE;
+            }
          }
          break;
       case BSON_TYPE_ARRAY:
          {
             bson_t b = { 0 };
-
             bson_iter_array(iter, &b.len, (const bson_uint8_t **)&b.data);
-            RUN_VISITOR(array)(iter,
-                               bson_iter_key_unsafe(iter),
-                               &b,
-                               data);
+            if (VISIT_FIELD(array)(iter, key, &b, data)) {
+               return TRUE;
+            }
          }
          break;
       case BSON_TYPE_BINARY:
@@ -1602,54 +1623,46 @@ bson_iter_visit_all (bson_iter_t          *iter,
             bson_uint32_t binary_len;
 
             bson_iter_binary(iter, &subtype, &binary_len, &binary);
-            RUN_VISITOR(binary)(iter,
-                                bson_iter_key_unsafe(iter),
-                                subtype,
-                                binary_len,
-                                binary,
-                                data);
+            if (VISIT_FIELD(binary)(iter, key, subtype,
+                                    binary_len, binary, data)) {
+               return TRUE;
+            }
          }
          break;
       case BSON_TYPE_UNDEFINED:
-         RUN_VISITOR(undefined)(iter,
-                                bson_iter_key_unsafe(iter),
-                                data);
+         if (VISIT_FIELD(undefined)(iter, key, data)) {
+            return TRUE;
+         }
          break;
       case BSON_TYPE_OID:
-         RUN_VISITOR(oid)(iter,
-                          bson_iter_key_unsafe(iter),
-                          bson_iter_oid(iter),
-                          data);
+         if (VISIT_FIELD(oid)(iter, key, bson_iter_oid(iter), data)) {
+            return TRUE;
+         }
          break;
       case BSON_TYPE_BOOL:
-         RUN_VISITOR(bool)(iter,
-                           bson_iter_key_unsafe(iter),
-                           bson_iter_bool(iter),
-                           data);
+         if (VISIT_FIELD(bool)(iter, key, bson_iter_bool(iter), data)) {
+            return TRUE;
+         }
          break;
       case BSON_TYPE_DATE_TIME:
-         {
-            RUN_VISITOR(date_time)(iter,
-                                   bson_iter_key_unsafe(iter),
-                                   bson_iter_date_time(iter),
-                                   data);
+         if (VISIT_FIELD(date_time)(iter, key,
+                                    bson_iter_date_time(iter), data)) {
+            return TRUE;
          }
          break;
       case BSON_TYPE_NULL:
-         RUN_VISITOR(null)(iter,
-                           bson_iter_key_unsafe(iter),
-                           data);
+         if (VISIT_FIELD(null)(iter, key, data)) {
+            return TRUE;
+         }
          break;
       case BSON_TYPE_REGEX:
          {
             const char *regex = NULL;
             const char *options = NULL;
             regex = bson_iter_regex(iter, &options);
-            RUN_VISITOR(regex)(iter,
-                               bson_iter_key_unsafe(iter),
-                               regex,
-                               options,
-                               data);
+            if (VISIT_FIELD(regex)(iter, key, regex, options, data)) {
+               return TRUE;
+            }
          }
          break;
       case BSON_TYPE_DBPOINTER:
@@ -1659,12 +1672,10 @@ bson_iter_visit_all (bson_iter_t          *iter,
             const bson_oid_t *oid;
 
             bson_iter_dbpointer(iter, &collection_len, &collection, &oid);
-            RUN_VISITOR(dbpointer)(iter,
-                                   bson_iter_key_unsafe(iter),
-                                   collection_len,
-                                   collection,
-                                   oid,
-                                   data);
+            if (VISIT_FIELD(dbpointer)(iter, key, collection_len,
+                                       collection, oid, data)) {
+               return TRUE;
+            }
          }
          break;
       case BSON_TYPE_CODE:
@@ -1673,11 +1684,9 @@ bson_iter_visit_all (bson_iter_t          *iter,
             const char *code;
 
             code = bson_iter_code(iter, &code_len);
-            RUN_VISITOR(code)(iter,
-                              bson_iter_key_unsafe(iter),
-                              code_len,
-                              code,
-                              data);
+            if (VISIT_FIELD(code)(iter, key, code_len, code, data)) {
+               return TRUE;
+            }
          }
          break;
       case BSON_TYPE_SYMBOL:
@@ -1686,11 +1695,9 @@ bson_iter_visit_all (bson_iter_t          *iter,
             const char *symbol;
 
             symbol = bson_iter_symbol(iter, &symbol_len);
-            RUN_VISITOR(symbol)(iter,
-                                bson_iter_key_unsafe(iter),
-                                symbol_len,
-                                symbol,
-                                data);
+            if (VISIT_FIELD(symbol)(iter, key, symbol_len, symbol, data)) {
+               return TRUE;
+            }
          }
          break;
       case BSON_TYPE_CODEWSCOPE:
@@ -1701,50 +1708,49 @@ bson_iter_visit_all (bson_iter_t          *iter,
 
             code = bson_iter_codewscope(iter, &length, &b.len,
                                         (const bson_uint8_t **)&b.data);
-            RUN_VISITOR(codewscope)(iter,
-                                    bson_iter_key_unsafe(iter),
-                                    length,
-                                    code,
-                                    &b,
-                                    data);
+            if (VISIT_FIELD(codewscope)(iter, key, length, code, &b, data)) {
+               return TRUE;
+            }
          }
          break;
       case BSON_TYPE_INT32:
-         RUN_VISITOR(int32)(iter,
-                            bson_iter_key_unsafe(iter),
-                            bson_iter_int32(iter),
-                            data);
+         if (VISIT_FIELD(int32)(iter, key, bson_iter_int32(iter), data)) {
+            return TRUE;
+         }
          break;
       case BSON_TYPE_TIMESTAMP:
          {
             bson_uint32_t timestamp;
             bson_uint32_t increment;
             bson_iter_timestamp(iter, &timestamp, &increment);
-            RUN_VISITOR(timestamp)(iter,
-                                   bson_iter_key_unsafe(iter),
-                                   timestamp,
-                                   increment,
-                                   data);
+            if (VISIT_FIELD(timestamp)(iter, key, timestamp, increment, data)) {
+               return TRUE;
+            }
          }
          break;
       case BSON_TYPE_INT64:
-         RUN_VISITOR(int64)(iter,
-                            bson_iter_key_unsafe(iter),
-                            bson_iter_int64(iter),
-                            data);
+         if (VISIT_FIELD(int64)(iter, key, bson_iter_int64(iter), data)) {
+            return TRUE;
+         }
          break;
       case BSON_TYPE_MAXKEY:
-         RUN_VISITOR(maxkey)(iter, bson_iter_key_unsafe(iter), data);
+         if (VISIT_FIELD(maxkey)(iter, bson_iter_key_unsafe(iter), data)) {
+            return TRUE;
+         }
          break;
       case BSON_TYPE_MINKEY:
-         RUN_VISITOR(minkey)(iter, bson_iter_key_unsafe(iter), data);
+         if (VISIT_FIELD(minkey)(iter, bson_iter_key_unsafe(iter), data)) {
+            return TRUE;
+         }
          break;
       case BSON_TYPE_EOD:
       default:
          break;
       }
 
-      RUN_VISITOR(after)(iter, bson_iter_key_unsafe(iter), data);
+      if (VISIT_FIELD(after)(iter, bson_iter_key_unsafe(iter), data)) {
+         return TRUE;
+      }
    }
 
    if (iter->err_offset) {
@@ -1752,10 +1758,12 @@ bson_iter_visit_all (bson_iter_t          *iter,
    }
 
 #undef RUN_VISITOR
+
+   return FALSE;
 }
 
 
-static void
+static bson_bool_t
 visit_utf8 (const bson_iter_t *iter,
             const char        *key,
             size_t             v_utf8_len,
@@ -1767,10 +1775,12 @@ visit_utf8 (const bson_iter_t *iter,
    bson_string_append(state->str, "\"");
    bson_string_append(state->str, v_utf8);
    bson_string_append(state->str, "\"");
+
+   return FALSE;
 }
 
 
-static void
+static bson_bool_t
 visit_int32 (const bson_iter_t *iter,
              const char        *key,
              bson_int32_t       v_int32,
@@ -1781,10 +1791,12 @@ visit_int32 (const bson_iter_t *iter,
 
    snprintf(str, sizeof str, "%d", v_int32);
    bson_string_append(state->str, str);
+
+   return FALSE;
 }
 
 
-static void
+static bson_bool_t
 visit_int64 (const bson_iter_t *iter,
              const char        *key,
              bson_int64_t       v_int64,
@@ -1795,10 +1807,12 @@ visit_int64 (const bson_iter_t *iter,
 
    snprintf(str, sizeof str, "%ld", v_int64);
    bson_string_append(state->str, str);
+
+   return FALSE;
 }
 
 
-static void
+static bson_bool_t
 visit_double (const bson_iter_t *iter,
               const char        *key,
               double             v_double,
@@ -1809,30 +1823,34 @@ visit_double (const bson_iter_t *iter,
 
    snprintf(str, sizeof str, "%lf", v_double);
    bson_string_append(state->str, str);
+
+   return FALSE;
 }
 
 
-static void
+static bson_bool_t
 visit_undefined (const bson_iter_t *iter,
                  const char        *key,
                  void              *data)
 {
    bson_json_state_t *state = data;
    bson_string_append(state->str, "{ \"$undefined\" : true }");
+   return FALSE;
 }
 
 
-static void
+static bson_bool_t
 visit_null (const bson_iter_t *iter,
             const char        *key,
             void              *data)
 {
    bson_json_state_t *state = data;
    bson_string_append(state->str, "null");
+   return FALSE;
 }
 
 
-static void
+static bson_bool_t
 visit_oid (const bson_iter_t *iter,
            const char        *key,
            const bson_oid_t  *oid,
@@ -1845,10 +1863,12 @@ visit_oid (const bson_iter_t *iter,
    bson_string_append(state->str, "{ \"$oid\" : \"");
    bson_string_append(state->str, str);
    bson_string_append(state->str, "\" }");
+
+   return FALSE;
 }
 
 
-static void
+static bson_bool_t
 visit_binary (const bson_iter_t  *iter,
               const char         *key,
               bson_subtype_t      v_subtype,
@@ -1872,10 +1892,12 @@ visit_binary (const bson_iter_t  *iter,
    bson_string_append(state->str, b64);
    bson_string_append(state->str, "\" }");
    bson_free(b64);
+
+   return FALSE;
 }
 
 
-static void
+static bson_bool_t
 visit_bool (const bson_iter_t *iter,
             const char        *key,
             bson_bool_t        v_bool,
@@ -1883,10 +1905,11 @@ visit_bool (const bson_iter_t *iter,
 {
    bson_json_state_t *state = data;
    bson_string_append(state->str, v_bool ? "true" : "false");
+   return FALSE;
 }
 
 
-static void
+static bson_bool_t
 visit_date_time (const bson_iter_t    *iter,
                  const char           *key,
                  bson_int64_t          msec_since_epoch,
@@ -1900,10 +1923,12 @@ visit_date_time (const bson_iter_t    *iter,
    bson_string_append(state->str, "{ \"$date\" : ");
    bson_string_append(state->str, secstr);
    bson_string_append(state->str, " }");
+
+   return FALSE;
 }
 
 
-static void
+static bson_bool_t
 visit_regex (const bson_iter_t *iter,
              const char        *key,
              const char        *v_regex,
@@ -1917,10 +1942,12 @@ visit_regex (const bson_iter_t *iter,
    bson_string_append(state->str, "\", \"$options\" : \"");
    bson_string_append(state->str, v_options);
    bson_string_append(state->str, "\" }");
+
+   return FALSE;
 }
 
 
-static void
+static bson_bool_t
 visit_timestamp (const bson_iter_t *iter,
                  const char        *key,
                  bson_uint32_t      v_timestamp,
@@ -1937,10 +1964,12 @@ visit_timestamp (const bson_iter_t *iter,
    snprintf(str, sizeof str, "%u", v_increment);
    bson_string_append(state->str, str);
    bson_string_append(state->str, " } }");
+
+   return FALSE;
 }
 
 
-static void
+static bson_bool_t
 visit_dbpointer (const bson_iter_t *iter,
                  const char        *key,
                  size_t             v_collection_len,
@@ -1957,47 +1986,57 @@ visit_dbpointer (const bson_iter_t *iter,
    bson_string_append(state->str, "\", \"$id\" : \"");
    bson_string_append(state->str, str);
    bson_string_append(state->str, "\" }");
+
+   return FALSE;
 }
 
 
-static void
+static bson_bool_t
 visit_minkey (const bson_iter_t *iter,
               const char        *key,
               void              *data)
 {
    bson_json_state_t *state = data;
    bson_string_append(state->str, "{ \"$minKey\" : 1 }");
+   return FALSE;
 }
 
 
-static void
+static bson_bool_t
 visit_maxkey (const bson_iter_t *iter,
               const char        *key,
               void              *data)
 {
    bson_json_state_t *state = data;
    bson_string_append(state->str, "{ \"$maxKey\" : 1 }");
+   return FALSE;
 }
 
 
-static void
+static bson_bool_t
 visit_before (const bson_iter_t *iter,
               const char        *key,
               void              *data)
 {
    bson_json_state_t *state = data;
 
-   if (state->count) bson_string_append(state->str, ", ");
+   if (state->count) {
+      bson_string_append(state->str, ", ");
+   }
+
    if (state->keys) {
       bson_string_append(state->str, "\"");
       bson_string_append(state->str, key);
       bson_string_append(state->str, "\" : ");
    }
+
    state->count++;
+
+   return FALSE;
 }
 
 
-static void
+static bson_bool_t
 visit_code (const bson_iter_t *iter,
             const char        *key,
             size_t             v_code_len,
@@ -2009,10 +2048,12 @@ visit_code (const bson_iter_t *iter,
    bson_string_append(state->str, "\"");
    bson_string_append(state->str, v_code);
    bson_string_append(state->str, "\"");
+
+   return FALSE;
 }
 
 
-static void
+static bson_bool_t
 visit_symbol (const bson_iter_t *iter,
               const char        *key,
               size_t             v_symbol_len,
@@ -2024,10 +2065,12 @@ visit_symbol (const bson_iter_t *iter,
    bson_string_append(state->str, "\"");
    bson_string_append(state->str, v_symbol);
    bson_string_append(state->str, "\"");
+
+   return FALSE;
 }
 
 
-static void
+static bson_bool_t
 visit_codewscope (const bson_iter_t *iter,
                   const char        *key,
                   size_t             v_code_len,
@@ -2040,21 +2083,9 @@ visit_codewscope (const bson_iter_t *iter,
    bson_string_append(state->str, "\"");
    bson_string_append(state->str, v_code);
    bson_string_append(state->str, "\"");
+
+   return FALSE;
 }
-
-
-static void
-visit_array (const bson_iter_t *iter,
-             const char        *key,
-             const bson_t      *v_array,
-             void              *data);
-
-
-static void
-visit_document (const bson_iter_t *iter,
-                const char        *key,
-                const bson_t      *v_document,
-                void              *data);
 
 
 static const bson_visitor_t bson_json_visitors = {
@@ -2082,7 +2113,7 @@ static const bson_visitor_t bson_json_visitors = {
 };
 
 
-static void
+static bson_bool_t
 visit_document (const bson_iter_t *iter,
                 const char        *key,
                 const bson_t      *v_document,
@@ -2099,10 +2130,12 @@ visit_document (const bson_iter_t *iter,
    bson_string_append(child_state.str, " }");
    bson_string_append(state->str, child_state.str->str);
    bson_string_free(child_state.str, TRUE);
+
+   return FALSE;
 }
 
 
-static void
+static bson_bool_t
 visit_array (const bson_iter_t *iter,
              const char        *key,
              const bson_t      *v_array,
@@ -2119,6 +2152,8 @@ visit_array (const bson_iter_t *iter,
    bson_string_append(child_state.str, " ]");
    bson_string_append(state->str, child_state.str->str);
    bson_string_free(child_state.str, TRUE);
+
+   return FALSE;
 }
 
 

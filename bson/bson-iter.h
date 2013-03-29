@@ -614,8 +614,10 @@ bson_iter_type_unsafe (const bson_iter_t *iter)
  *
  * @iter will no longer be valid after this function has executed and will
  * need to be reinitialized if intending to reuse.
+ *
+ * Returns: TRUE if the visitor was pre-maturely ended; otherwise FALSE.
  */
-void
+bson_bool_t
 bson_iter_visit_all (bson_iter_t          *iter,
                      const bson_visitor_t *visitor,
                      void                 *data);
