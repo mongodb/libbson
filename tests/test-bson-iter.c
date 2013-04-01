@@ -16,7 +16,7 @@
 
 
 #include <assert.h>
-#include <bson/bson-memory.h>
+#include <bson/bson.h>
 #include <fcntl.h>
 #include <time.h>
 #include <unistd.h>

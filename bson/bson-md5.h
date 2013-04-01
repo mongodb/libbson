@@ -47,6 +47,12 @@
   1999-05-03 lpd Original version.
  */
 
+
+#if !defined (BSON_INSIDE) && !defined (BSON_COMPILATION)
+#error "Only <bson/bson.h> can be included directly."
+#endif
+
+
 #ifndef BSON_MD5_H
 #define BSON_MD5_H
 

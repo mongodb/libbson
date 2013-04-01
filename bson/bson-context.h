@@ -15,6 +15,11 @@
  */
 
 
+#if !defined (BSON_INSIDE) && !defined (BSON_COMPILATION)
+#error "Only <bson/bson.h> can be included directly."
+#endif
+
+
 #ifndef BSON_CONTEXT_H
 #define BSON_CONTEXT_H
 

@@ -18,7 +18,6 @@
 #include <Python.h>
 
 #include <bson/bson.h>
-#include <bson/bson-version.h>
 
 #include "cbson-dbref.h"
 #include "cbson-oid.h"

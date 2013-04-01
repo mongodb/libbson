@@ -15,61 +15,66 @@
  */
 
 
+#if !defined (BSON_INSIDE) && !defined (BSON_COMPILATION)
+#error "Only <bson/bson.h> can be included directly."
+#endif
+
+
 #ifndef BSON_VERSION_H
 #define BSON_VERSION_H
 
-/**
- * SECTION:bson-version
- * @short_description: BSON version checking.
- *
- * BSON provides macros to check the version of the library at compile-time.
- */
 
 /**
  * BSON_MAJOR_VERSION:
  *
- * Mongo major version component (e.g. 1 if %BSON_VERSION is 1.2.3)
+ * BSON major version component (e.g. 1 if %BSON_VERSION is 1.2.3)
  */
 #define BSON_MAJOR_VERSION (@BSON_MAJOR_VERSION@)
+
 
 /**
  * BSON_MINOR_VERSION:
  *
- * Mongo minor version component (e.g. 2 if %BSON_VERSION is 1.2.3)
+ * BSON minor version component (e.g. 2 if %BSON_VERSION is 1.2.3)
  */
 #define BSON_MINOR_VERSION (@BSON_MINOR_VERSION@)
+
 
 /**
  * BSON_MICRO_VERSION:
  *
- * Mongo micro version component (e.g. 3 if %BSON_VERSION is 1.2.3)
+ * BSON micro version component (e.g. 3 if %BSON_VERSION is 1.2.3)
  */
 #define BSON_MICRO_VERSION (@BSON_MICRO_VERSION@)
+
 
 /**
  * BSON_VERSION:
  *
- * Mongo version.
+ * BSON version.
  */
 #define BSON_VERSION (@BSON_VERSION@)
+
 
 /**
  * BSON_VERSION_S:
  *
- * Mongo version, encoded as a string, useful for printing and
+ * BSON version, encoded as a string, useful for printing and
  * concatenation.
  */
 #define BSON_VERSION_S "@BSON_VERSION@"
 
+
 /**
  * BSON_VERSION_HEX:
  *
- * Mongo version, encoded as an hexadecimal number, useful for
+ * BSON version, encoded as an hexadecimal number, useful for
  * integer comparisons.
  */
 #define BSON_VERSION_HEX (BSON_MAJOR_VERSION << 24 | \
                           BSON_MINOR_VERSION << 16 | \
                           BSON_MICRO_VERSION << 8)
+
 
 /**
  * BSON_CHECK_VERSION:
@@ -78,12 +83,13 @@
  * @micro: required micro version
  *
  * Compile-time version checking. Evaluates to %TRUE if the version
- * of Mongo is greater than the required one.
+ * of BSON is greater than the required one.
  */
 #define BSON_CHECK_VERSION(major,minor,micro)   \
         (BSON_MAJOR_VERSION > (major) || \
          (BSON_MAJOR_VERSION == (major) && BSON_MINOR_VERSION > (minor)) || \
          (BSON_MAJOR_VERSION == (major) && BSON_MINOR_VERSION == (minor) && \
           BSON_MICRO_VERSION >= (micro)))
+
 
 #endif /* BSON_VERSION_H */

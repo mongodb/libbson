@@ -23,12 +23,19 @@
 #include <sys/time.h>
 #include <time.h>
 
+
+#define BSON_INSIDE
+
 #include "bson-context.h"
 #include "bson-iter.h"
 #include "bson-macros.h"
+#include "bson-memory.h"
 #include "bson-oid.h"
 #include "bson-reader.h"
 #include "bson-types.h"
+#include "bson-version.h"
+
+#undef BSON_INSIDE
 
 
 BSON_BEGIN_DECLS

@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
+
+#if !defined (BSON_INSIDE) && !defined (BSON_COMPILATION)
+#error "Only <bson/bson.h> can be included directly."
+#endif
+
+
 #ifndef BSON_ITER_H
 #define BSON_ITER_H
+
 
 #include "bson.h"
 #include "bson-endian.h"
