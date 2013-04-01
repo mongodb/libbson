@@ -62,6 +62,19 @@ PKG_CHECK_MODULES(PYTHON, [python2])
 
 
 dnl **************************************************************************
+dnl Check Host Endianness
+dnl **************************************************************************
+AC_C_BIGENDIAN
+if test "x$ac_cv_c_bigendian" = "xyes"; then
+	CPPFLAGS="$CPPFLAGS -DBSON_BYTE_ORDER=4321"
+	host_endianness="Big Endian"
+else
+	CPPFLAGS="$CPPFLAGS -DBSON_BYTE_ORDER=1234"
+	host_endianness="Little Endian"
+fi
+
+
+dnl **************************************************************************
 dnl Enable extra debugging options
 dnl **************************************************************************
 m4_define([debug_default],
@@ -123,6 +136,7 @@ echo ""
 echo "libbson-$VERSION"
 echo ""
 echo "  Prefix ....................: ${prefix}"
+echo "  Endianness ................: ${host_endianness}"
 echo "  Debug Level ...............: ${enable_debug}"
 echo "  CFLAGS ....................: ${CFLAGS}"
 echo ""
