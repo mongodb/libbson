@@ -26,7 +26,6 @@
 
 #include <stdio.h>
 
-#include "bson-config.h"
 #include "bson-endian.h"
 
 
@@ -75,6 +74,16 @@
 
 #ifndef FALSE
 #define FALSE (!TRUE)
+#endif
+
+
+#if defined(_MSC_VER) || defined(_WIN32) || defined(_WIN64)
+#define HAVE_WINDOWS
+#endif
+
+
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__APPLE__)
+#define HAVE_PTHREADS
 #endif
 
 

@@ -24,7 +24,6 @@
 #define BSON_THREAD_H
 
 
-#include "bson-config.h"
 #include "bson-macros.h"
 
 
