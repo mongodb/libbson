@@ -79,20 +79,25 @@ bson_reader_destroy (bson_reader_t *reader);
 /**
  * bson_reader_read:
  * @reader: A bson_reader_t.
+ * @reached_eof: A location for a bson_bool_t.
  *
- * Reads the next bson_t in the underlying memory or storage.
- * The resulting bson_t should not be modified or freed. You may
- * copy it and iterate over it. Functions that take a
- * const bson_t* are safe to use.
+ * Reads the next bson_t in the underlying memory or storage.  The resulting
+ * bson_t should not be modified or freed. You may copy it and iterate over it.
+ * Functions that take a const bson_t* are safe to use.
  *
  * This structure does not survive calls to bson_reader_next() or
- * bson_reader_destroy() as it uses memory allocated by the reader
- * or underlying storage/memory.
+ * bson_reader_destroy() as it uses memory allocated by the reader or
+ * underlying storage/memory.
+ *
+ * If NULL is returned then @reached_eof will be set to TRUE if the end of the
+ * file or buffer was reached. This indicates if there was an error parsing the
+ * document stream.
  *
  * Returns: A const bson_t that should not be modified or freed.
  */
 const bson_t *
-bson_reader_read (bson_reader_t *reader);
+bson_reader_read (bson_reader_t *reader,
+                  bson_bool_t   *reached_eof);
 
 
 BSON_END_DECLS

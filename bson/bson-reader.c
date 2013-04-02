@@ -35,6 +35,7 @@ typedef struct
    int                 fd;
    bson_bool_t         close_fd : 1;
    bson_bool_t         done : 1;
+   bson_bool_t         failed : 1;
    size_t              end;
    size_t              len;
    size_t              offset;
@@ -99,6 +100,7 @@ bson_reader_fd_fill_buffer (bson_reader_fd_t *reader)
               reader->len - reader->end);
    if (ret <= 0) {
       reader->done = TRUE;
+      reader->failed = (ret < 0);
    } else {
       reader->end += ret;
    }
@@ -127,7 +129,8 @@ bson_reader_init_from_fd (bson_reader_t *reader,
 
 
 static const bson_t *
-bson_reader_fd_read (bson_reader_fd_t *reader)
+bson_reader_fd_read (bson_reader_fd_t *reader,
+                     bson_bool_t      *reached_eof)
 {
    bson_uint32_t blen;
 
@@ -153,6 +156,10 @@ bson_reader_fd_read (bson_reader_fd_t *reader)
       return &reader->inline_bson;
    }
 
+   if (reached_eof) {
+      *reached_eof = reader->done && !reader->failed;
+   }
+
    return NULL;
 }
 
@@ -174,11 +181,16 @@ bson_reader_init_from_data (bson_reader_t      *reader,
 
 
 static const bson_t *
-bson_reader_data_read (bson_reader_data_t *reader)
+bson_reader_data_read (bson_reader_data_t *reader,
+                       bson_bool_t        *reached_eof)
 {
    bson_uint32_t blen;
 
    bson_return_val_if_fail(reader, NULL);
+
+   if (reached_eof) {
+      *reached_eof = FALSE;
+   }
 
    if ((reader->offset + 4) < reader->length) {
       memcpy(&blen, &reader->data[reader->offset], sizeof blen);
@@ -190,6 +202,10 @@ bson_reader_data_read (bson_reader_data_t *reader)
          reader->offset += blen;
          return &reader->inline_bson;
       }
+   }
+
+   if (reached_eof) {
+      *reached_eof = (reader->offset == reader->length);
    }
 
    return NULL;
@@ -220,15 +236,16 @@ bson_reader_destroy (bson_reader_t *reader)
 
 
 const bson_t *
-bson_reader_read (bson_reader_t *reader)
+bson_reader_read (bson_reader_t *reader,
+                  bson_bool_t   *reached_eof)
 {
    bson_return_val_if_fail(reader, NULL);
 
    switch (reader->type) {
    case BSON_READER_FD:
-      return bson_reader_fd_read((bson_reader_fd_t *)reader);
+      return bson_reader_fd_read((bson_reader_fd_t *)reader, reached_eof);
    case BSON_READER_DATA:
-      return bson_reader_data_read((bson_reader_data_t *)reader);
+      return bson_reader_data_read((bson_reader_data_t *)reader, reached_eof);
    default:
       fprintf(stderr, "No such reader type: %02x\n", reader->type);
       break;

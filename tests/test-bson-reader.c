@@ -28,6 +28,7 @@ test_reader_from_data (void)
    bson_uint8_t *buffer;
    const bson_t *b;
    bson_uint32_t i;
+   bson_bool_t eof = FALSE;
 
    buffer = bson_malloc0(4095);
    for (i = 0; i < 4095; i += 5) {
@@ -36,7 +37,7 @@ test_reader_from_data (void)
 
    bson_reader_init_from_data(&reader, buffer, 4095);
 
-   for (i = 0; (b = bson_reader_read(&reader)); i++) {
+   for (i = 0; (b = bson_reader_read(&reader, &eof)); i++) {
       /* do nothing */
       assert(b->len == 5);
       assert(b->data[0] == 5);
@@ -47,6 +48,8 @@ test_reader_from_data (void)
    }
 
    assert(i == (4095/5));
+
+   assert_cmpint(eof, ==, TRUE);
 
    bson_free(buffer);
 
@@ -61,6 +64,7 @@ test_reader_from_data_overflow (void)
    bson_uint8_t *buffer;
    const bson_t *b;
    bson_uint32_t i;
+   bson_bool_t eof = FALSE;
 
    buffer = bson_malloc0(4096);
    for (i = 0; i < 4095; i += 5) {
@@ -71,7 +75,7 @@ test_reader_from_data_overflow (void)
 
    bson_reader_init_from_data(&reader, buffer, 4096);
 
-   for (i = 0; (b = bson_reader_read(&reader)); i++) {
+   for (i = 0; (b = bson_reader_read(&reader, &eof)); i++) {
       /* do nothing */
       assert(b->len == 5);
       assert(b->data[0] == 5);
@@ -79,9 +83,12 @@ test_reader_from_data_overflow (void)
       assert(b->data[2] == 0);
       assert(b->data[3] == 0);
       assert(b->data[4] == 0);
+      eof = FALSE;
    }
 
    assert(i == (4095/5));
+
+   assert_cmpint(eof, ==, FALSE);
 
    bson_free(buffer);
 
@@ -96,6 +103,7 @@ test_reader_from_fd (void)
    const bson_t *b;
    bson_uint32_t i;
    bson_iter_t iter;
+   bson_bool_t eof;
    int fd;
 
    fd  = open("tests/binary/stream.bson", O_RDONLY);
@@ -104,14 +112,17 @@ test_reader_from_fd (void)
    bson_reader_init_from_fd(&reader, fd, TRUE);
 
    for (i = 0; i < 1000; i++) {
-      b = bson_reader_read(&reader);
+      eof = FALSE;
+      b = bson_reader_read(&reader, &eof);
       assert(b);
       assert(bson_iter_init(&iter, b));
       assert(!bson_iter_next(&iter));
    }
 
-   b = bson_reader_read(&reader);
+   assert_cmpint(eof, ==, FALSE);
+   b = bson_reader_read(&reader, &eof);
    assert(!b);
+   assert_cmpint(eof, ==, TRUE);
    bson_reader_destroy(&reader);
 }
 
@@ -123,6 +134,7 @@ test_reader_from_fd_corrupt (void)
    const bson_t *b;
    bson_uint32_t i;
    bson_iter_t iter;
+   bson_bool_t eof;
    int fd;
 
    fd  = open("tests/binary/stream_corrupt.bson", O_RDONLY);
@@ -131,13 +143,13 @@ test_reader_from_fd_corrupt (void)
    bson_reader_init_from_fd(&reader, fd, TRUE);
 
    for (i = 0; i < 1000; i++) {
-      b = bson_reader_read(&reader);
+      b = bson_reader_read(&reader, &eof);
       assert(b);
       assert(bson_iter_init(&iter, b));
       assert(!bson_iter_next(&iter));
    }
 
-   b = bson_reader_read(&reader);
+   b = bson_reader_read(&reader, &eof);
    assert(!b);
    bson_reader_destroy(&reader);
 }

@@ -391,6 +391,7 @@ cbson_loads (PyObject *self,
    bson_reader_t reader;
    bson_iter_t iter;
    const bson_t *b;
+   bson_bool_t eof;
    PyObject *ret;
 
    if (!PyArg_ParseTuple(args, "s#", &buffer, &buffer_length)) {
@@ -399,7 +400,7 @@ cbson_loads (PyObject *self,
 
    bson_reader_init_from_data(&reader, buffer, buffer_length);
 
-   if (!(b = bson_reader_read(&reader)) || !bson_iter_init(&iter, b)) {
+   if (!(b = bson_reader_read(&reader, &eof)) || !bson_iter_init(&iter, b)) {
       PyErr_SetString(PyExc_ValueError, "Failed to parse buffer.");
       return NULL;
    }
