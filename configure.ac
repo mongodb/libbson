@@ -56,9 +56,9 @@ AC_NEED_STDINT_H(bson/bson-stdint.h)
 
 
 dnl **************************************************************************
-dnl Check for Required Modules
+dnl Check for Python Support
 dnl **************************************************************************
-PKG_CHECK_MODULES(PYTHON, [python2])
+AX_PYTHON
 
 
 dnl **************************************************************************

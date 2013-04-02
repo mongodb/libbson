@@ -12,8 +12,8 @@ cbson_la_SOURCES += $(top_srcdir)/bindings/python/time64.c
 
 
 cbson_la_LIBADD =
-cbson_la_LIBADD += $(PYTHON_LIBS)
 cbson_la_LIBADD += libbson-1.0.la
+cbson_la_LIBADD += -l$(PYTHON_LIB)
 
 
 cbson_la_LDFLAGS =
@@ -21,5 +21,5 @@ cbson_la_LDFLAGS += -module
 
 
 cbson_la_CPPFLAGS =
-cbson_la_CPPFLAGS += $(PYTHON_CFLAGS)
 cbson_la_CPPFLAGS += -I$(top_srcdir)
+cbson_la_CPPFLAGS += -I$(PYTHON_INCLUDE_DIR)
