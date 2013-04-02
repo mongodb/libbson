@@ -133,7 +133,11 @@ cbson_loads_visit_int32 (const bson_iter_t *iter,
    PyObject **ret = data;
    PyObject *value;
 
+#if PY_MAJOR_VERSION >= 3
+   value = PyLong_FromLong(v_int32);
+#else
    value = PyInt_FromLong(v_int32);
+#endif
    cbson_loads_set_item(*ret, key, value);
    Py_DECREF(value);
 
@@ -270,26 +274,15 @@ cbson_loads_visit_dbpointer (const bson_iter_t *iter,
                              void              *data)
 {
    PyObject **ret = data;
-   PyObject *obj;
-   PyObject *objstr;
+   PyObject *dbref;
 
-   /*
-    * TODO: We probably want to add a DBRef type for this and instantiate that.
-    */
-
-   obj = PyDict_New();
-
-   objstr = PyString_FromStringAndSize((const char *)v_oid, 12);
-   PyDict_SetItemString(obj, "$id", objstr);
-   Py_DECREF(objstr);
-
-   objstr = PyUnicode_FromStringAndSize(v_collection, v_collection_len);
-   PyDict_SetItemString(obj, "$ref", objstr);
-   Py_DECREF(objstr);
-
-   cbson_loads_set_item(*ret, key, obj);
-
-   Py_DECREF(obj);
+   dbref = cbson_dbref_new(v_collection,
+                           v_collection_len,
+                           NULL,
+                           0,
+                           v_oid);
+   cbson_loads_set_item(*ret, key, dbref);
+   Py_DECREF(dbref);
 
    return FALSE;
 }

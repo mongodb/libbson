@@ -16,6 +16,7 @@
 
 
 #include "cbson-dbref.h"
+#include "cbson-oid.h"
 
 
 #define cbson_dbref_check(op) (Py_TYPE(op) == &cbson_dbref_type)
@@ -81,13 +82,14 @@ cbson_dbref_get_collection (PyObject *object,
                             void     *data)
 {
    cbson_dbref_t *dbref = (cbson_dbref_t *)object;
-   PyObject *ret;
+   PyObject *ret = Py_None;
 
-   if (!(ret = dbref->collection)) {
-      ret = Py_None;
+   if (dbref->collection) {
+      ret = PyUnicode_FromStringAndSize(dbref->collection,
+                                        dbref->collection_len);
+   } else {
+      Py_INCREF(ret);
    }
-
-   Py_INCREF(ret);
 
    return ret;
 }
@@ -98,13 +100,14 @@ cbson_dbref_get_database (PyObject *object,
                           void     *data)
 {
    cbson_dbref_t *dbref = (cbson_dbref_t *)object;
-   PyObject *ret;
+   PyObject *ret = Py_None;
 
-   if (!(ret = dbref->database)) {
-      ret = Py_None;
+   if (dbref->database) {
+      ret = PyUnicode_FromStringAndSize(dbref->database,
+                                        dbref->database_len);
+   } else {
+      Py_INCREF(ret);
    }
-
-   Py_INCREF(ret);
 
    return ret;
 }
@@ -115,15 +118,7 @@ cbson_dbref_get_id (PyObject *object,
                     void     *data)
 {
    cbson_dbref_t *dbref = (cbson_dbref_t *)object;
-   PyObject *ret;
-
-   if (!(ret = dbref->id)) {
-      ret = Py_None;
-   }
-
-   Py_INCREF(ret);
-
-   return ret;
+   return cbson_oid_new(&dbref->oid);
 }
 
 
@@ -158,6 +153,33 @@ cbson_dbref_tp_new (PyTypeObject *self,
     * TODO: Handle args and kwargs.
     */
    return PyType_GenericNew(&cbson_dbref_type, args, kwargs);
+}
+
+
+PyObject *
+cbson_dbref_new (const char       *collection,
+                 size_t            collection_len,
+                 const char       *database,
+                 size_t            database_len,
+                 const bson_oid_t *oid)
+{
+   cbson_dbref_t *dbref;
+   PyObject *ret;
+
+   ret = cbson_dbref_tp_new(NULL, NULL, NULL);
+   dbref = (cbson_dbref_t *)ret;
+
+   dbref->collection = collection_len ? strndup(collection, collection_len) : NULL;
+   dbref->collection_len  = collection_len;
+
+   dbref->database = database_len ? strndup(database, database_len) : NULL;
+   dbref->database_len = database_len;
+
+   if (oid) {
+      bson_oid_copy(oid, &dbref->oid);
+   }
+
+   return ret;
 }
 
 

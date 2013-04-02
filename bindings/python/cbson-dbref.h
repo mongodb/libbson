@@ -33,10 +33,17 @@ BSON_BEGIN_DECLS
 typedef struct
 {
    PyObject_HEAD
-   PyObject *collection;
-   PyObject *database;
-   PyObject *id;
+
+   char   *collection;
+   size_t  collection_len;
+
+   char   *database;
+   size_t  database_len;
+
+   bson_oid_t oid;
+
    PyObject *extra;
+
 } cbson_dbref_t;
 
 
