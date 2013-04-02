@@ -391,32 +391,48 @@ cbson_loads (PyObject *self,
    bson_reader_t reader;
    bson_iter_t iter;
    const bson_t *b;
-   bson_bool_t eof;
-   PyObject *ret;
+   bson_bool_t eof = FALSE;
+   PyObject *ret = NULL;
+   PyObject *dict;
 
    if (!PyArg_ParseTuple(args, "s#", &buffer, &buffer_length)) {
       return NULL;
    }
 
+   ret = PyList_New(0);
+
    bson_reader_init_from_data(&reader, buffer, buffer_length);
 
-   if (!(b = bson_reader_read(&reader, &eof)) || !bson_iter_init(&iter, b)) {
+   if (!(b = bson_reader_read(&reader, &eof))) {
       PyErr_SetString(PyExc_ValueError, "Failed to parse buffer.");
-      return NULL;
+      goto failure;
    }
 
-   ret = PyDict_New();
-   bson_iter_visit_all(&iter, &gLoadsVisitors, &ret);
+   do {
+      if (!bson_iter_init(&iter, b)) {
+         bson_reader_destroy(&reader);
+         goto failure;
+      }
+      dict = PyDict_New();
+      bson_iter_visit_all(&iter, &gLoadsVisitors, &dict);
+      if (dict) {
+         PyList_Append(ret, dict);
+         Py_DECREF(dict);
+      }
+   } while ((b = bson_reader_read(&reader, &eof)));
+
    bson_reader_destroy(&reader);
 
-   if (!ret) {
-      PyErr_Format(PyExc_ValueError,
-                   "Failed to decode buffer at offset %u.",
-                   (unsigned)iter.err_offset);
-      return NULL;
+   if (!eof) {
+      PyErr_SetString(PyExc_ValueError, "Buffer contained invalid BSON.");
+      goto failure;
    }
 
    return ret;
+
+failure:
+   Py_XDECREF(ret);
+   return NULL;
 }
 
 
