@@ -15,6 +15,7 @@
  */
 
 
+#include <inttypes.h>
 #include <stdarg.h>
 #include <string.h>
 #include <unistd.h>
@@ -988,7 +989,7 @@ bson_as_json_visit_int32 (const bson_iter_t *iter,
    bson_json_state_t *state = data;
    char str[32];
 
-   snprintf(str, sizeof str, "%d", v_int32);
+   snprintf(str, sizeof str, "%"PRId32, v_int32);
    bson_string_append(state->str, str);
 
    return FALSE;
@@ -1004,7 +1005,7 @@ bson_as_json_visit_int64 (const bson_iter_t *iter,
    bson_json_state_t *state = data;
    char str[32];
 
-   snprintf(str, sizeof str, "%ld", v_int64);
+   snprintf(str, sizeof str, "%"PRIi64, v_int64);
    bson_string_append(state->str, str);
 
    return FALSE;
@@ -1117,7 +1118,7 @@ bson_as_json_visit_date_time (const bson_iter_t *iter,
    bson_json_state_t *state = data;
    char secstr[32];
 
-   snprintf(secstr, sizeof secstr, "%lu", msec_since_epoch);
+   snprintf(secstr, sizeof secstr, "%"PRIi64, msec_since_epoch);
 
    bson_string_append(state->str, "{ \"$date\" : ");
    bson_string_append(state->str, secstr);

@@ -29,12 +29,6 @@
 #include "bson-endian.h"
 
 
-/*
- * TODO: Add format macros for BSON_SIZE_FORMAT, BSON_INT64_FORMAT,
- *       and other needed format strings. (%lu vs %llu).
- */
-
-
 #ifdef __cplusplus
 #define BSON_BEGIN_DECLS extern "C" {
 #define BSON_END_DECLS   }
