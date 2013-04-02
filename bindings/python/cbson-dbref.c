@@ -170,7 +170,7 @@ cbson_dbref_new (const char       *collection,
    dbref = (cbson_dbref_t *)ret;
 
    dbref->collection = collection_len ? strndup(collection, collection_len) : NULL;
-   dbref->collection_len  = collection_len;
+   dbref->collection_len = collection_len;
 
    dbref->database = database_len ? strndup(database, database_len) : NULL;
    dbref->database_len = database_len;
