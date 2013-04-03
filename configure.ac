@@ -66,12 +66,14 @@ dnl Check Host Endianness
 dnl **************************************************************************
 AC_C_BIGENDIAN
 if test "x$ac_cv_c_bigendian" = "xyes"; then
-	CPPFLAGS="$CPPFLAGS -DBSON_BYTE_ORDER=4321"
+	BSON_BYTE_ORDER=4321
 	host_endianness="Big Endian"
 else
-	CPPFLAGS="$CPPFLAGS -DBSON_BYTE_ORDER=1234"
+	BSON_BYTE_ORDER=1234
 	host_endianness="Little Endian"
 fi
+CPPFLAGS="$CPPFLAGS -DBSON_BYTE_ORDER=$BSON_BYTE_ORDER"
+AC_SUBST(BSON_BYTE_ORDER)
 
 
 dnl **************************************************************************

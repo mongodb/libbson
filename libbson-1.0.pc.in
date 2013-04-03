@@ -7,4 +7,4 @@ Name: libbson
 Description: The libbson BSON serialization library.
 Version: @VERSION@
 Libs: -L${libdir} -lbson-@BSON_API_VERSION@
-Cflags: -I${includedir}/libbson-@BSON_API_VERSION@
+Cflags: -I${includedir}/libbson-@BSON_API_VERSION@ -DBSON_BYTE_ORDER=@BSON_BYTE_ORDER@
