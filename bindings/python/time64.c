@@ -453,8 +453,8 @@ void copy_TM64_to_tm(const struct TM *src, struct tm *dest) {
 
 
 /* Simulate localtime_r() to the best of our ability */
-struct tm * fake_localtime_r(const time_t *time, struct tm *result) {
-    const struct tm *static_result = localtime(time);
+struct tm * fake_localtime_r(const time_t *time_, struct tm *result) {
+    const struct tm *static_result = localtime(time_);
 
     assert(result != NULL);
 
@@ -470,8 +470,8 @@ struct tm * fake_localtime_r(const time_t *time, struct tm *result) {
 
 
 /* Simulate gmtime_r() to the best of our ability */
-struct tm * fake_gmtime_r(const time_t *time, struct tm *result) {
-    const struct tm *static_result = gmtime(time);
+struct tm * fake_gmtime_r(const time_t *time_, struct tm *result) {
+    const struct tm *static_result = gmtime(time_);
 
     assert(result != NULL);
 
@@ -514,7 +514,7 @@ static Time64_T seconds_between_years(Year left_year, Year right_year) {
 Time64_T mktime64(const struct TM *input_date) {
     struct tm safe_date;
     struct TM date;
-    Time64_T  time;
+    Time64_T  time_;
     Year      year = input_date->tm_year + 1900;
 
     if( date_in_safe_range(input_date, &SYSTEM_MKTIME_MIN, &SYSTEM_MKTIME_MAX) )
@@ -528,11 +528,11 @@ Time64_T mktime64(const struct TM *input_date) {
     date.tm_year = safe_year(year) - 1900;
     copy_TM64_to_tm(&date, &safe_date);
 
-    time = (Time64_T)mktime(&safe_date);
+    time_ = (Time64_T)mktime(&safe_date);
 
-    time += seconds_between_years(year, (Year)(safe_date.tm_year + 1900));
+    time_ += seconds_between_years(year, (Year)(safe_date.tm_year + 1900));
 
-    return time;
+    return time_;
 }
 
 
@@ -548,7 +548,7 @@ struct TM *gmtime64_r (const Time64_T *in_time, struct TM *p)
     Time64_T v_tm_tday;
     int leap;
     Time64_T m;
-    Time64_T time = *in_time;
+    Time64_T time_ = *in_time;
     Year year = 70;
     int cycles = 0;
 
@@ -575,13 +575,13 @@ struct TM *gmtime64_r (const Time64_T *in_time, struct TM *p)
     p->tm_zone   = "UTC";
 #endif
 
-    v_tm_sec =  (int)(time % 60);
-    time /= 60;
-    v_tm_min =  (int)(time % 60);
-    time /= 60;
-    v_tm_hour = (int)(time % 24);
-    time /= 24;
-    v_tm_tday = time;
+    v_tm_sec =  (int)(time_ % 60);
+    time_ /= 60;
+    v_tm_min =  (int)(time_ % 60);
+    time_ /= 60;
+    v_tm_hour = (int)(time_ % 24);
+    time_ /= 24;
+    v_tm_tday = time_;
 
     WRAP (v_tm_sec, v_tm_min, 60);
     WRAP (v_tm_min, v_tm_hour, 60);
@@ -669,7 +669,7 @@ struct TM *gmtime64_r (const Time64_T *in_time, struct TM *p)
 }
 
 
-struct TM *localtime64_r (const Time64_T *time, struct TM *local_tm)
+struct TM *localtime64_r (const Time64_T *time_, struct TM *local_tm)
 {
     time_t safe_time;
     struct tm safe_date;
@@ -680,10 +680,10 @@ struct TM *localtime64_r (const Time64_T *time, struct TM *local_tm)
     assert(local_tm != NULL);
 
     /* Use the system localtime() if time_t is small enough */
-    if( SHOULD_USE_SYSTEM_LOCALTIME(*time) ) {
-        safe_time = (time_t)*time;
+    if( SHOULD_USE_SYSTEM_LOCALTIME(*time_) ) {
+        safe_time = (time_t)*time_;
 
-        TIME64_TRACE1("Using system localtime for %lld\n", *time);
+        TIME64_TRACE1("Using system localtime for %lld\n", *time_);
 
         LOCALTIME_R(&safe_time, &safe_date);
 
@@ -693,8 +693,8 @@ struct TM *localtime64_r (const Time64_T *time, struct TM *local_tm)
         return local_tm;
     }
 
-    if( gmtime64_r(time, &gm_tm) == NULL ) {
-        TIME64_TRACE1("gmtime64_r returned null for %lld\n", *time);
+    if( gmtime64_r(time_, &gm_tm) == NULL ) {
+        TIME64_TRACE1("gmtime64_r returned null for %lld\n", *time_);
         return NULL;
     }
 
@@ -775,15 +775,15 @@ int valid_tm_mon( const struct TM* date ) {
 
 
 /* Non-thread safe versions of the above */
-struct TM *localtime64(const Time64_T *time) {
+struct TM *localtime64(const Time64_T *time_) {
 #ifdef _MSC_VER
     _tzset();
 #else
     tzset();
 #endif
-    return localtime64_r(time, &Static_Return_Date);
+    return localtime64_r(time_, &Static_Return_Date);
 }
 
-struct TM *gmtime64(const Time64_T *time) {
-    return gmtime64_r(time, &Static_Return_Date);
+struct TM *gmtime64(const Time64_T *time_) {
+    return gmtime64_r(time_, &Static_Return_Date);
 }
