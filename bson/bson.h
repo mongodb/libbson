@@ -33,6 +33,7 @@
 #include "bson-oid.h"
 #include "bson-reader.h"
 #include "bson-types.h"
+#include "bson-utf8.h"
 #include "bson-version.h"
 
 #undef BSON_INSIDE

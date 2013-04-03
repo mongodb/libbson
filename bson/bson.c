@@ -19,7 +19,6 @@
 #include <stdarg.h>
 #include <string.h>
 #include <unistd.h>
-#include <unistr.h>
 
 #include "b64_ntop.h"
 
@@ -28,6 +27,7 @@
 #include "bson-memory.h"
 #include "bson-string.h"
 #include "bson-thread.h"
+#include "bson-utf8.h"
 
 
 /*
@@ -213,9 +213,11 @@ bson_iter_validate_utf8 (const bson_iter_t *iter,
                          void              *data)
 {
    bson_validate_state_t *state = data;
+   bson_bool_t allow_null;
 
    if ((state->flags & BSON_VALIDATE_UTF8)) {
-      if (!u8_check((const bson_uint8_t *)v_utf8, v_utf8_len)) {
+      allow_null = !!(state->flags & BSON_VALIDATE_UTF8_ALLOW_NULL);
+      if (!bson_utf8_validate(v_utf8, v_utf8_len, allow_null)) {
          state->err_offset = iter->offset;
          return TRUE;
       }

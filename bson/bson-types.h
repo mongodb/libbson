@@ -147,10 +147,11 @@ typedef struct
  */
 typedef enum
 {
-   BSON_VALIDATE_NONE        = 0,
-   BSON_VALIDATE_UTF8        = 1 << 0,
-   BSON_VALIDATE_DOLLAR_KEYS = 1 << 1,
-   BSON_VALIDATE_DOT_KEYS    = 1 << 2,
+   BSON_VALIDATE_NONE            = 0,
+   BSON_VALIDATE_UTF8            = 1 << 0,
+   BSON_VALIDATE_DOLLAR_KEYS     = 1 << 1,
+   BSON_VALIDATE_DOT_KEYS        = 1 << 2,
+   BSON_VALIDATE_UTF8_ALLOW_NULL = 1 << 3,
 } bson_validate_flags_t;
 
 
