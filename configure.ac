@@ -95,6 +95,7 @@ AS_CASE([$enable_debug],
 		CFLAGS="$CFLAGS -Wcast-align"
 		CFLAGS="$CFLAGS -Wwrite-strings"
 		CFLAGS="$CFLAGS -Winline"
+		CFLAGS="$CFLAGS -Wformat"
 		CFLAGS="$CFLAGS -Wformat-nonliteral"
 		CFLAGS="$CFLAGS -Wformat-security"
 		CFLAGS="$CFLAGS -Wswitch-enum"
