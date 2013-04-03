@@ -179,7 +179,7 @@ cbson_dbref_new (const char       *collection,
       dbref->collection[collection_len] = '\0';
       dbref->collection_len = collection_len;
    } else {
-      dbref->collection = strdup("");
+      dbref->collection = NULL;
       dbref->collection_len = 0;
    }
 
@@ -188,7 +188,7 @@ cbson_dbref_new (const char       *collection,
       memcpy(dbref->database, database, database_len);
       dbref->database[database_len] = '\0';
    } else {
-      dbref->database = strdup("");
+      dbref->database = NULL;
       dbref->database_len = 0;
    }
 
