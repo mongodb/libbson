@@ -123,14 +123,14 @@ assert_bson_equal_file (const bson_t *b,
 
 
 static void
-test_bson_append_string (void)
+test_bson_append_utf8 (void)
 {
    bson_t *b;
    bson_t *b2;
 
    b = bson_new();
    b2 = get_bson("test11.bson");
-   bson_append_string(b, "hello", -1, "world", -1);
+   bson_append_utf8(b, "hello", -1, "world", -1);
    assert_bson_equal(b, b2);
    bson_destroy(b);
    bson_destroy(b2);
@@ -240,8 +240,8 @@ test_bson_append_array (void)
 
    b = bson_new();
    b2 = bson_new();
-   bson_append_string(b2, "0", -1, "hello", -1);
-   bson_append_string(b2, "1", -1, "world", -1);
+   bson_append_utf8(b2, "0", -1, "hello", -1);
+   bson_append_utf8(b2, "1", -1, "world", -1);
    bson_append_array(b, "array", -1, b2);
    bson_destroy(b2);
    b2 = get_bson("test23.bson");
@@ -370,7 +370,7 @@ test_bson_append_code_with_scope (void)
    /* Test with non-empty scope */
    b = bson_new();
    scope = bson_new();
-   bson_append_string(scope, "foo", -1, "bar", -1);
+   bson_append_utf8(scope, "foo", -1, "bar", -1);
    bson_append_code_with_scope(b, "code", -1, "var a = {};", scope);
    b2 = get_bson("test31.bson");
    assert_bson_equal(b, b2);
@@ -499,7 +499,7 @@ test_bson_append_general (void)
    bson_destroy(bson);
 
    bson = bson_new();
-   bson_append_string(bson, "string", -1, "some string", -1);
+   bson_append_utf8(bson, "string", -1, "some string", -1);
    assert_bson_equal_file(bson, "test5.bson");
    bson_destroy(bson);
 
@@ -544,13 +544,13 @@ test_bson_append_general (void)
    bson_destroy(bson);
 
    bson = bson_new();
-   bson_append_string(bson, "hello", -1, "world", -1);
+   bson_append_utf8(bson, "hello", -1, "world", -1);
    assert_bson_equal_file(bson, "test11.bson");
    bson_destroy(bson);
 
    bson = bson_new();
    array = bson_new();
-   bson_append_string(array, "0", -1, "awesome", -1);
+   bson_append_utf8(array, "0", -1, "awesome", -1);
    bson_append_double(array, "1", -1, 5.05);
    bson_append_int32(array, "2", -1, 1986);
    bson_append_array(bson, "BSON", -1, array);
@@ -564,25 +564,25 @@ test_bson_append_general (void)
    subdoc = bson_new();
    bson_append_oid(subdoc, "_id", -1, &oid);
    array = bson_new();
-   bson_append_string(array, "0", -1, "1", -1);
-   bson_append_string(array, "1", -1, "2", -1);
-   bson_append_string(array, "2", -1, "3", -1);
-   bson_append_string(array, "3", -1, "4", -1);
+   bson_append_utf8(array, "0", -1, "1", -1);
+   bson_append_utf8(array, "1", -1, "2", -1);
+   bson_append_utf8(array, "2", -1, "3", -1);
+   bson_append_utf8(array, "3", -1, "4", -1);
    bson_append_array(subdoc, "tags", -1, array);
    bson_destroy(array);
-   bson_append_string(subdoc, "text", -1, "asdfanother", -1);
+   bson_append_utf8(subdoc, "text", -1, "asdfanother", -1);
    array = bson_new();
-   bson_append_string(array, "name", -1, "blah", -1);
+   bson_append_utf8(array, "name", -1, "blah", -1);
    bson_append_document(subdoc, "source", -1, array);
    bson_destroy(array);
    bson_append_document(bson, "document", -1, subdoc);
    bson_destroy(subdoc);
    array = bson_new();
-   bson_append_string(array, "0", -1, "source", -1);
+   bson_append_utf8(array, "0", -1, "source", -1);
    bson_append_array(bson, "type", -1, array);
    bson_destroy(array);
    array = bson_new();
-   bson_append_string(array, "0", -1, "server_created_at", -1);
+   bson_append_utf8(array, "0", -1, "server_created_at", -1);
    bson_append_array(bson, "missing", -1, array);
    bson_destroy(array);
    assert_bson_equal_file(bson, "test17.bson");
@@ -677,7 +677,7 @@ main (int   argc,
    run_test("/bson/append_null", test_bson_append_null);
    run_test("/bson/append_oid", test_bson_append_oid);
    run_test("/bson/append_regex", test_bson_append_regex);
-   run_test("/bson/append_string", test_bson_append_string);
+   run_test("/bson/append_utf8", test_bson_append_utf8);
    run_test("/bson/append_symbol", test_bson_append_symbol);
    run_test("/bson/append_time_t", test_bson_append_time_t);
    run_test("/bson/append_timestamp", test_bson_append_timestamp);

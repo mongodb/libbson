@@ -433,7 +433,7 @@ bson_append_regex (bson_t     *bson,
 
 
 /**
- * bson_append_string:
+ * bson_append_utf8:
  * @bson: A bson_t.
  * @key: The key for the field.
  * @value: A UTF-8 encoded string.
@@ -449,11 +449,11 @@ bson_append_regex (bson_t     *bson,
  *   allocation was required.
  */
 void
-bson_append_string (bson_t     *bson,
-                    const char *key,
-                    int         key_length,
-                    const char *value,
-                    int         length);
+bson_append_utf8 (bson_t     *bson,
+                  const char *key,
+                  int         key_length,
+                  const char *value,
+                  int         length);
 
 
 /**

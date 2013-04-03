@@ -18,7 +18,7 @@ test_bson_as_json (void)
    bson_oid_init_from_string(&oid, "123412341234abcdabcdabcd");
 
    b = bson_new();
-   bson_append_string(b, "utf8", -1, "bar", -1);
+   bson_append_utf8(b, "utf8", -1, "bar", -1);
    bson_append_int32(b, "int32", -1, 1234);
    bson_append_int64(b, "int64", -1, 4321);
    bson_append_double(b, "double", -1, 123.4);
@@ -64,7 +64,7 @@ test_bson_as_json_string (void)
    char *str;
 
    b = bson_new();
-   bson_append_string(b, "foo", -1, "bar", -1);
+   bson_append_utf8(b, "foo", -1, "bar", -1);
    str = bson_as_json(b, &len);
    assert(len == 17);
    assert(!strcmp("{ \"foo\" : \"bar\" }", str));

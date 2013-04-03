@@ -775,11 +775,11 @@ bson_append_regex (bson_t     *bson,
 
 
 void
-bson_append_string (bson_t     *bson,
-                    const char *key,
-                    int         key_length,
-                    const char *value,
-                    int         length)
+bson_append_utf8 (bson_t     *bson,
+                  const char *key,
+                  int         key_length,
+                  const char *value,
+                  int         length)
 {
    static const bson_uint8_t zero = 0;
    static const bson_uint8_t type = BSON_TYPE_UTF8;

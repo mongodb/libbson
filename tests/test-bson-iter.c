@@ -54,8 +54,8 @@ test_bson_iter_string (void)
    bson_t *b;
 
    b = bson_new();
-   bson_append_string(b, "foo", -1, "bar", -1);
-   bson_append_string(b, "bar", -1, "baz", -1);
+   bson_append_utf8(b, "foo", -1, "bar", -1);
+   bson_append_utf8(b, "bar", -1, "baz", -1);
    assert(bson_iter_init(&iter, b));
    assert(bson_iter_next(&iter));
    assert(BSON_ITER_HOLDS_UTF8(&iter));
@@ -79,7 +79,7 @@ test_bson_iter_mixed (void)
 
    b = bson_new();
    b2 = bson_new();
-   bson_append_string(b2, "foo", -1, "bar", -1);
+   bson_append_utf8(b2, "foo", -1, "bar", -1);
    bson_append_code(b, "0", -1, "var a = {};");
    bson_append_code_with_scope(b, "1", -1, "var b = {};", b2);
    bson_append_int32(b, "2", -1, 1234);
