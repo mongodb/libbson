@@ -10,14 +10,17 @@ INST_H_FILES += $(top_srcdir)/bson/bson-context.h
 INST_H_FILES += $(top_srcdir)/bson/bson-endian.h
 INST_H_FILES += $(top_srcdir)/bson/bson-iter.h
 INST_H_FILES += $(top_srcdir)/bson/bson-macros.h
-INST_H_FILES += $(top_srcdir)/bson/bson-md5.h
 INST_H_FILES += $(top_srcdir)/bson/bson-memory.h
 INST_H_FILES += $(top_srcdir)/bson/bson-oid.h
 INST_H_FILES += $(top_srcdir)/bson/bson-reader.h
+INST_H_FILES += $(top_srcdir)/bson/bson-stdint.h
 INST_H_FILES += $(top_srcdir)/bson/bson-types.h
+INST_H_FILES += $(top_srcdir)/bson/bson-version.h
+
 
 NOINST_H_FILES =
 NOINST_H_FILES += $(top_srcdir)/bson/b64_ntop.h
+NOINST_H_FILES += $(top_srcdir)/bson/bson-md5.h
 NOINST_H_FILES += $(top_srcdir)/bson/bson-string.h
 NOINST_H_FILES += $(top_srcdir)/bson/bson-thread.h
 
