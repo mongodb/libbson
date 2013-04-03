@@ -88,8 +88,6 @@ AC_ARG_ENABLE([debug],
 AS_CASE([$enable_debug],
 	[yes], [
 		CFLAGS="$CFLAGS -g"
-		CFLAGS="$CFLAGS -Wall"
-		CFLAGS="$CFLAGS -Werror"
 		CFLAGS="$CFLAGS -Wold-style-definition"
 		CFLAGS="$CFLAGS -Wdeclaration-after-statement"
 		CFLAGS="$CFLAGS -Wredundant-decls"
