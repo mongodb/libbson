@@ -24,10 +24,6 @@
 #define cbson_dbref_check(op) (Py_TYPE(op) == &cbson_dbref_type)
 
 
-static PyObject *cbson_dbref_tp_repr        (PyObject *obj);
-static int       cbson_dbref_tp_compare     (PyObject *obj1,
-                                             PyObject *obj2);
-static long      cbson_dbref_tp_hash        (PyObject *obj);
 static PyObject *cbson_dbref_get_collection (PyObject *obj,
                                              void     *data);
 static PyObject *cbson_dbref_get_database   (PyObject *obj,
@@ -46,12 +42,12 @@ static PyTypeObject cbson_dbref_type = {
     0,                         /*tp_print*/
     0,                         /*tp_getattr*/
     0,                         /*tp_setattr*/
-    cbson_dbref_tp_compare,    /*tp_compare*/
-    cbson_dbref_tp_repr,       /*tp_repr*/
+    0,    /*tp_compare*/
+    0,       /*tp_repr*/
     0,                         /*tp_as_number*/
     0,                         /*tp_as_sequence*/
     0,                         /*tp_as_mapping*/
-    cbson_dbref_tp_hash,       /*tp_hash */
+    0,       /*tp_hash */
     0,                         /*tp_call*/
     0,                         /*tp_str*/
     0,                         /*tp_getattro*/
@@ -84,12 +80,13 @@ cbson_dbref_get_collection (PyObject *object,
                             void     *data)
 {
    cbson_dbref_t *dbref = (cbson_dbref_t *)object;
-   PyObject *ret = Py_None;
+   PyObject *ret;
 
    if (dbref->collection) {
       ret = PyUnicode_FromStringAndSize(dbref->collection,
                                         dbref->collection_len);
    } else {
+      ret = Py_None;
       Py_INCREF(ret);
    }
 
@@ -102,12 +99,13 @@ cbson_dbref_get_database (PyObject *object,
                           void     *data)
 {
    cbson_dbref_t *dbref = (cbson_dbref_t *)object;
-   PyObject *ret = Py_None;
+   PyObject *ret;
 
    if (dbref->database) {
       ret = PyUnicode_FromStringAndSize(dbref->database,
                                         dbref->database_len);
    } else {
+      ret = Py_None;
       Py_INCREF(ret);
    }
 
@@ -125,36 +123,35 @@ cbson_dbref_get_id (PyObject *object,
 
 
 static PyObject *
-cbson_dbref_tp_repr (PyObject *obj)
-{
-   return NULL;
-}
-
-
-static int
-cbson_dbref_tp_compare (PyObject *obj1,
-                        PyObject *obj2)
-{
-   return 0;
-}
-
-
-static long
-cbson_dbref_tp_hash (PyObject *obj)
-{
-   return 0;
-}
-
-
-static PyObject *
 cbson_dbref_tp_new (PyTypeObject *self,
                     PyObject     *args,
                     PyObject     *kwargs)
 {
+   const char *col;
+   PyObject *oid;
+   PyObject *ret;
+   int col_len;
+
+   if (!PyArg_ParseTuple(args, "s#O", &col, &col_len, &oid)) {
+      return NULL;
+   }
+
+   assert(col);
+   assert(col_len >= 0);
+   assert(oid);
+
+   if (!cbson_oid_check(oid)) {
+      PyErr_SetString(PyExc_TypeError, "oid must be a cbson.ObjectId");
+      return NULL;
+   }
+
    /*
-    * TODO: Handle args and kwargs.
+    * TODO: Extra, Database, etc.
     */
-   return PyType_GenericNew(&cbson_dbref_type, args, kwargs);
+
+   ret = cbson_dbref_new(col, col_len, NULL, 0, &((cbson_oid_t *)oid)->oid);
+
+   return ret;
 }
 
 
@@ -168,13 +165,19 @@ cbson_dbref_new (const char       *collection,
    cbson_dbref_t *dbref;
    PyObject *ret;
 
-   ret = cbson_dbref_tp_new(NULL, NULL, NULL);
+   bson_return_val_if_fail(collection, NULL);
+   bson_return_val_if_fail(collection_len >= 0, NULL);
+   bson_return_val_if_fail(database || !database_len, NULL);
+   bson_return_val_if_fail(oid, NULL);
+
+   ret = PyType_GenericNew(&cbson_dbref_type, NULL, NULL);
    dbref = (cbson_dbref_t *)ret;
 
    if (collection && collection_len) {
       dbref->collection = bson_malloc0(collection_len + 1);
       memcpy(dbref->collection, collection, collection_len);
       dbref->collection[collection_len] = '\0';
+      dbref->collection_len = collection_len;
    } else {
       dbref->collection = strdup("");
       dbref->collection_len = 0;
@@ -189,9 +192,7 @@ cbson_dbref_new (const char       *collection,
       dbref->database_len = 0;
    }
 
-   if (oid) {
-      bson_oid_copy(oid, &dbref->oid);
-   }
+   bson_oid_copy(oid, &dbref->oid);
 
    return ret;
 }

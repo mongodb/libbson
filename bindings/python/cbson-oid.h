@@ -30,6 +30,9 @@
 BSON_BEGIN_DECLS
 
 
+#define cbson_oid_check(o) (Py_TYPE(o) == cbson_oid_get_type(NULL))
+
+
 typedef struct
 {
    PyObject_HEAD

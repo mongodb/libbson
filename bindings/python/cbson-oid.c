@@ -22,7 +22,7 @@
 static bson_context_t *gContext;
 
 
-#define cbson_oid_check(op) (Py_TYPE(op) == &cbson_oid_type)
+#define cbson_oid_check_fast(op) (Py_TYPE(op) == &cbson_oid_type)
 
 
 static PyObject *cbson_oid_tp_repr             (PyObject *obj);
@@ -294,7 +294,7 @@ cbson_oid_tp_new (PyTypeObject *self,
                          "`oid` must be 12 or 24 bytes long.");
          goto failure;
       }
-   } else if (cbson_oid_check(oidobj)) {
+   } else if (cbson_oid_check_fast(oidobj)) {
       bson_oid_copy(&((cbson_oid_t *)oidobj)->oid, &oid);
    } else {
       PyErr_SetString(PyExc_TypeError, "`oid` is invalid.");
