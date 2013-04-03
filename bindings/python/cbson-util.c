@@ -297,7 +297,7 @@ cbson_date_time_seconds (PyObject *date_time)
    bson_int32_t val = -1;
    PyObject *calendar;
    PyObject *ret;
-   PyObject *timegm;
+   PyObject *timegm_;
    PyObject *timetuple;
    PyObject *offset;
 
@@ -313,7 +313,7 @@ cbson_date_time_seconds (PyObject *date_time)
       return 0;
    }
 
-   if (!(timegm = PyObject_GetAttrString(calendar, "timegm"))) {
+   if (!(timegm_ = PyObject_GetAttrString(calendar, "timegm"))) {
       goto dec_calendar;
    }
 
@@ -331,7 +331,7 @@ cbson_date_time_seconds (PyObject *date_time)
       goto dec_offset;
    }
 
-   if (!(ret = PyObject_CallFunction(timegm, (char *)"O", timetuple))) {
+   if (!(ret = PyObject_CallFunction(timegm_, (char *)"O", timetuple))) {
       goto dec_timetuple;
    }
 
@@ -345,7 +345,7 @@ dec_offset:
    Py_DECREF(offset);
    Py_DECREF(date_time);
 dec_timegm:
-   Py_DECREF(timegm);
+   Py_DECREF(timegm_);
 dec_calendar:
    Py_DECREF(calendar);
 

@@ -36,7 +36,10 @@ get_bson (const char *filename)
       fprintf(stderr, "Failed to open: %s\n", filename);
       abort();
    }
-   len = read(fd, buf, sizeof buf);
+   if ((len = read(fd, buf, sizeof buf)) < 0) {
+      fprintf(stderr, "Failed to read: %s\n", filename);
+      abort();
+   }
    b = bson_new_from_data(buf, len);
    close(fd);
 

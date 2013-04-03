@@ -15,6 +15,8 @@
  */
 
 
+#include <string.h>
+
 #include "cbson-dbref.h"
 #include "cbson-oid.h"
 
@@ -169,11 +171,23 @@ cbson_dbref_new (const char       *collection,
    ret = cbson_dbref_tp_new(NULL, NULL, NULL);
    dbref = (cbson_dbref_t *)ret;
 
-   dbref->collection = collection_len ? strndup(collection, collection_len) : NULL;
-   dbref->collection_len = collection_len;
+   if (collection && collection_len) {
+      dbref->collection = bson_malloc0(collection_len + 1);
+      memcpy(dbref->collection, collection, collection_len);
+      dbref->collection[collection_len] = '\0';
+   } else {
+      dbref->collection = strdup("");
+      dbref->collection_len = 0;
+   }
 
-   dbref->database = database_len ? strndup(database, database_len) : NULL;
-   dbref->database_len = database_len;
+   if (database && database_len) {
+      dbref->database = bson_malloc0(database_len + 1);
+      memcpy(dbref->database, database, database_len);
+      dbref->database[database_len] = '\0';
+   } else {
+      dbref->database = strdup("");
+      dbref->database_len = 0;
+   }
 
    if (oid) {
       bson_oid_copy(oid, &dbref->oid);

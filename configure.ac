@@ -110,12 +110,8 @@ AS_CASE([$enable_debug],
 		CFLAGS="$CFLAGS -Wshadow"
 	],
 	[minimum], [
-		CFLAGS="$CFLAGS -DG_DISABLE_CAST_CHECKS"
 	],
 	[no], [
-		CFLAGS="$CFLAGS -DG_DISABLE_ASSERT"
-		CFLAGS="$CFLAGS -DG_DISABLE_CHECKS"
-		CFLAGS="$CFLAGS -DG_DISABLE_CAST_CHECKS"
 	],
 	[AC_MSG_ERROR([Unknown argument to --enable-debug])]
 )

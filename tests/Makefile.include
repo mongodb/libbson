@@ -50,4 +50,4 @@ test: $(TESTS)
 	@ for TEST_PROG in $(TEST_PROGS) ; do \
 		./$$TEST_PROG ; \
 	done
-	LD_LIBRARY_PATH=.libs PYTHONPATH=.libs ./tests/test_cbson.py
+	@ LD_LIBRARY_PATH=.libs DYLD_LIBRARY_PATH=.libs PYTHONPATH=.libs ./tests/test_cbson.py
