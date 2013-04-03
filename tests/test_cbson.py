@@ -35,6 +35,17 @@ for i in range(25):
 _25X_BSON = bson.BSON.encode(o)
 DATETIME_BSON = bson.BSON.encode(dict((str(k),datetime.utcnow()) for k in [0,1,2,3,4,5,6,7,8,9]))
 
+def timediff(a, b):
+    delta = b - a
+    if hasattr(delta, 'total_seconds'):
+        return delta.total_seconds()
+    ret = abs(delta.days * 86400)
+    ret += abs(delta.seconds) 
+    ret += abs(delta.microseconds / 1000000.0)
+    if b < a:
+        return -ret
+    return ret
+
 def compare_modules(name, bson_func, cbson_func, number=1, thread_count=None):
     """
     Runs two performance tests. One using the bson module and one
@@ -54,7 +65,7 @@ def compare_modules(name, bson_func, cbson_func, number=1, thread_count=None):
         [t.start() for t in threads]
         [t.join() for t in threads]
         end = datetime.utcnow()
-        bson_time = (end - start).total_seconds()
+        bson_time = timediff(start, end)
 
         results = []
         start = datetime.utcnow()
@@ -62,7 +73,7 @@ def compare_modules(name, bson_func, cbson_func, number=1, thread_count=None):
         [t.start() for t in threads]
         [t.join() for t in threads]
         end = datetime.utcnow()
-        cbson_time = (end - start).total_seconds()
+        cbson_time = timediff(start, end)
     else:
         results = []
         bson_wrapper(results)
