@@ -319,7 +319,7 @@ fill_data_fields:
    return TRUE;
 
 mark_invalid:
-   memset(iter, 0, sizeof *iter);
+   iter->bson = NULL;
    return FALSE;
 }
 
