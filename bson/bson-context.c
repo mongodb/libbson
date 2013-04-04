@@ -19,6 +19,8 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
+#include <time.h>
 #include <unistd.h>
 
 #if defined(__linux__)
@@ -151,7 +153,10 @@ bson_context_t *
 bson_context_new (bson_context_flags_t  flags)
 {
    bson_context_t *context;
+   struct timeval tv;
    bson_uint16_t pid;
+   unsigned int seed[3];
+   unsigned int real_seed;
    bson_oid_t oid;
 
    context = bson_malloc0(sizeof *context);
@@ -161,7 +166,21 @@ bson_context_new (bson_context_flags_t  flags)
    context->oid_get_pid = bson_context_get_oid_pid_cached;
    context->oid_get_seq32 = bson_context_get_oid_seq32;
    context->oid_get_seq64 = bson_context_get_oid_seq64;
-   context->seq32 = rand() % 0xFFFF;
+
+   /*
+    * Generate a seed for our the random starting position of our increment
+    * bytes. We mask off the last nibble so that the last digit of the OID will
+    * start at zero. Just to be nice.
+    *
+    * The seed itself is made up of the current time in seconds, milliseconds,
+    * and pid xored together. I welcome better solutions if at all necessary.
+    */
+   gettimeofday(&tv, NULL);
+   seed[0] = tv.tv_sec;
+   seed[1] = tv.tv_usec;
+   seed[2] = getpid();
+   real_seed = seed[0] ^ seed[1] ^ seed[2];
+   context->seq32 = rand_r(&real_seed) & 0x00FFFFF0;
 
    if ((flags & BSON_CONTEXT_DISABLE_HOST_CACHE)) {
       context->oid_get_host = bson_context_get_oid_host;
