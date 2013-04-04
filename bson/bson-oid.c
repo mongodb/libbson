@@ -21,43 +21,9 @@
 #include <string.h>
 #include <unistd.h>
 
-#if defined(__linux__)
-#include <sys/syscall.h>
-#elif defined(HAVE_WINDOWS)
-#include <winsock2.h>
-#endif
-
+#include "bson-context-private.h"
 #include "bson-md5.h"
 #include "bson-oid.h"
-
-
-#ifndef HOST_NAME_MAX
-#define HOST_NAME_MAX 256
-#endif
-
-
-typedef struct
-{
-   bson_context_flags_t   flags : 7;
-   bson_bool_t            pidbe_once : 1;
-   bson_uint8_t           pidbe[2];
-   bson_uint8_t           md5[3];
-   bson_uint32_t          seq32;
-   bson_uint64_t          seq64;
-
-   void (*oid_get_host)  (bson_oid_t     *oid,
-                          bson_context_t *context);
-   void (*oid_get_pid)   (bson_oid_t     *oid,
-                          bson_context_t *context);
-   void (*oid_get_seq32) (bson_oid_t     *oid,
-                          bson_context_t *context);
-   void (*oid_get_seq64) (bson_oid_t     *oid,
-                          bson_context_t *context);
-} bson_context_real_t;
-
-
-BSON_STATIC_ASSERT(sizeof(bson_context_real_t) <= sizeof(bson_context_t));
-BSON_STATIC_ASSERT(sizeof(bson_oid_t) == 12);
 
 
 /*
@@ -125,184 +91,14 @@ static const bson_uint16_t gHexCharPairs[] = {
 };
 
 
-static void
-bson_oid_get_host (bson_oid_t     *oid,
-                   bson_context_t *context)
-{
-   bson_uint8_t *bytes = (bson_uint8_t *)oid;
-   bson_uint8_t digest[16];
-   bson_md5_t md5;
-   char hostname[HOST_NAME_MAX];
-
-   gethostname(hostname, sizeof hostname);
-   hostname[HOST_NAME_MAX-1] = '\0';
-
-   bson_md5_init(&md5);
-   bson_md5_append(&md5, (const bson_uint8_t *)hostname, strlen(hostname));
-   bson_md5_finish(&md5, &digest[0]);
-
-   bytes[4] = digest[0];
-   bytes[5] = digest[1];
-   bytes[6] = digest[2];
-}
-
-
-static void
-bson_oid_get_host_cached (bson_oid_t     *oid,
-                          bson_context_t *context)
-{
-   bson_context_real_t *real = (bson_context_real_t *)context;
-
-   oid->bytes[4] = real->md5[0];
-   oid->bytes[5] = real->md5[1];
-   oid->bytes[6] = real->md5[2];
-}
-
-
-static void
-bson_oid_get_pid (bson_oid_t     *oid,
-                  bson_context_t *context)
-{
-   bson_uint16_t pid;
-   bson_uint8_t *bytes = (bson_uint8_t *)&pid;
-
-   pid = BSON_UINT16_TO_BE(getpid());
-   oid->bytes[7] = bytes[0];
-   oid->bytes[8] = bytes[1];
-}
-
-
-static void
-bson_oid_get_pid_cached (bson_oid_t     *oid,
-                         bson_context_t *context)
-{
-   bson_context_real_t *real = (bson_context_real_t *)context;
-   oid->bytes[7] = real->pidbe[0];
-   oid->bytes[8] = real->pidbe[1];
-}
-
-
-static void
-bson_oid_get_seq32 (bson_oid_t     *oid,
-                    bson_context_t *context)
-{
-   bson_context_real_t *real = (bson_context_real_t *)context;
-   bson_uint32_t seq;
-
-   seq = BSON_UINT32_TO_BE(real->seq32++);
-   memcpy(&oid->bytes[9], ((bson_uint8_t *)&seq) + 1, 3);
-}
-
-
-static void
-bson_oid_get_seq32_threadsafe (bson_oid_t     *oid,
-                               bson_context_t *context)
-{
-   bson_context_real_t *real = (bson_context_real_t *)context;
-   bson_uint32_t seq;
-
-   seq = BSON_UINT32_TO_BE(__sync_fetch_and_add(&real->seq32, 1));
-   memcpy(&oid->bytes[9], ((bson_uint8_t *)&seq) + 1, 3);
-}
-
-
-static void
-bson_oid_get_seq64 (bson_oid_t     *oid,
-                    bson_context_t *context)
-{
-   bson_context_real_t *real = (bson_context_real_t *)context;
-   bson_uint64_t seq;
-
-   seq = BSON_UINT64_TO_BE(real->seq64++);
-   memcpy(&oid->bytes[4], &seq, 8);
-}
-
-
-static void
-bson_oid_get_seq64_threadsafe (bson_oid_t     *oid,
-                               bson_context_t *context)
-{
-   bson_context_real_t *real = (bson_context_real_t *)context;
-   bson_uint64_t seq;
-
-   seq = BSON_UINT64_TO_BE(__sync_fetch_and_add(&real->seq64, 1));
-   memcpy(&oid->bytes[4], &seq, 8);
-}
-
-
-#if defined(__linux__)
-static bson_uint16_t
-gettid (void)
-{
-   return syscall(SYS_gettid);
-}
-#endif
-
-
-void
-bson_context_init (bson_context_t       *context,
-                   bson_context_flags_t  flags)
-{
-   bson_context_real_t *real = (bson_context_real_t *)context;
-   bson_uint16_t pid;
-   bson_oid_t oid;
-
-   memset(real, 0, sizeof *real);
-
-   real->flags = flags;
-   real->oid_get_host = bson_oid_get_host_cached;
-   real->oid_get_pid  = bson_oid_get_pid_cached;
-   real->oid_get_seq32 = bson_oid_get_seq32;
-   real->oid_get_seq64 = bson_oid_get_seq64;
-   real->seq32 = rand() % 0xFFFF;
-
-   if ((flags & BSON_CONTEXT_DISABLE_HOST_CACHE)) {
-      real->oid_get_host = bson_oid_get_host;
-   } else {
-      bson_oid_get_host(&oid, context);
-      real->md5[0] = oid.bytes[4];
-      real->md5[1] = oid.bytes[5];
-      real->md5[2] = oid.bytes[6];
-   }
-
-   if ((flags & BSON_CONTEXT_THREAD_SAFE)) {
-      real->oid_get_seq32 = bson_oid_get_seq32_threadsafe;
-      real->oid_get_seq64 = bson_oid_get_seq64_threadsafe;
-   }
-
-   if ((flags & BSON_CONTEXT_DISABLE_PID_CACHE)) {
-      real->oid_get_pid = bson_oid_get_pid;
-   } else {
-      pid = BSON_UINT16_TO_BE(getpid());
-#if defined(__linux__)
-      if ((flags & BSON_CONTEXT_USE_TASK_ID)) {
-         bson_int32_t tid;
-         if ((tid = gettid())) {
-            pid = BSON_UINT16_TO_BE(tid);
-         }
-      }
-#endif
-      memcpy(&real->pidbe[0], &pid, 2);
-   }
-}
-
-
 void
 bson_oid_init_sequence (bson_oid_t     *oid,
                         bson_context_t *context)
 {
-   bson_context_real_t *real = (bson_context_real_t *)context;
    bson_uint32_t now = BSON_UINT32_TO_BE(time(NULL));
 
    memcpy(&oid->bytes[0], &now, 4);
-   real->oid_get_seq64(oid, context);
-}
-
-
-void
-bson_context_destroy (bson_context_t *context)
-{
-   memset(context, 0, sizeof *context);
+   context->oid_get_seq64(context, oid);
 }
 
 
@@ -310,7 +106,6 @@ void
 bson_oid_init (bson_oid_t     *oid,
                bson_context_t *context)
 {
-   bson_context_real_t *real = (bson_context_real_t *)context;
    bson_uint32_t now = time(NULL);
 
    bson_return_if_fail(oid);
@@ -319,9 +114,9 @@ bson_oid_init (bson_oid_t     *oid,
    now = BSON_UINT32_TO_BE(now);
    memcpy(&oid->bytes[0], &now, 4);
 
-   real->oid_get_host(oid, context);
-   real->oid_get_pid(oid, context);
-   real->oid_get_seq32(oid, context);
+   context->oid_get_host(context, oid);
+   context->oid_get_pid(context, oid);
+   context->oid_get_seq32(context, oid);
 }
 
 

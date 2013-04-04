@@ -109,6 +109,7 @@ AS_CASE([$enable_debug],
 		CFLAGS="$CFLAGS -Wmissing-format-attribute"
 		CFLAGS="$CFLAGS -Wnested-externs"
 		CFLAGS="$CFLAGS -Wshadow"
+		CFLAGS="$CFLAGS -Wreturn-type"
 	],
 	[minimum], [
 	],

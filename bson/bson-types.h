@@ -91,10 +91,7 @@ typedef enum
  * structure. However, it is stack allocatable in that enough padding is
  * provided in _bson_context_t to hold the structure.
  */
-typedef struct
-{
-   void *opaque[16];
-} bson_context_t;
+typedef struct _bson_context_t bson_context_t;
 
 
 /**
@@ -132,6 +129,9 @@ typedef struct
 {
    bson_uint8_t bytes[12];
 } bson_oid_t;
+
+
+BSON_STATIC_ASSERT(sizeof(bson_oid_t) == 12);
 
 
 /**

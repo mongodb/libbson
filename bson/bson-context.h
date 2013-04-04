@@ -32,14 +32,15 @@ BSON_BEGIN_DECLS
 
 
 /**
- * bson_context_init:
- * @context: A bson_context_t.
+ * bson_context_new:
  * @flags: Flags for initialization.
  *
- * Initializes @context with the flags specified.
+ * Initializes a new context with the flags specified.
  *
- * In most cases, you want to call this with @flags set to BSON_CONTEXT_NONE
- * and create once instance per-thread.
+ * In most cases, you want to call this with @flags set to BSON_CONTEXT_NONE.
+ *
+ * If you are running on Linux, BSON_CONTEXT_USE_TASK_ID can result in a
+ * healthy speedup for multi-threaded scenarios.
  *
  * If you absolutely must have a single context for your application and use
  * more than one thread, then BSON_CONTEXT_THREAD_SAFE should be bitwise or'd
@@ -51,10 +52,12 @@ BSON_BEGIN_DECLS
  *
  * If you expect your pid to change without notice, such as from an unexpected
  * call to fork(), then specify BSON_CONTEXT_DISABLE_PID_CACHE.
+ *
+ * Returns: A newly allocated bson_context_t that should be freed with
+ *          bson_context_destroy().
  */
-void
-bson_context_init (bson_context_t       *context,
-                   bson_context_flags_t  flags);
+bson_context_t *
+bson_context_new (bson_context_flags_t flags);
 
 
 /**

@@ -24,7 +24,7 @@
 #include "cbson-util.h"
 
 
-static bson_context_t gContext;
+static bson_context_t *gContext;
 
 
 static BSON_INLINE void
@@ -464,7 +464,7 @@ initcbson (void)
 #if defined(__linux__)
    flags |= BSON_CONTEXT_USE_TASK_ID;
 #endif
-   bson_context_init(&gContext, flags);
+   gContext = bson_context_new(flags);
 
    /*
     * Register the library version as __version__.
@@ -483,7 +483,7 @@ initcbson (void)
    /*
     * Register cbson types.
     */
-   PyModule_AddObject(module, "ObjectId", (PyObject *)cbson_oid_get_type(&gContext));
+   PyModule_AddObject(module, "ObjectId", (PyObject *)cbson_oid_get_type(gContext));
    PyModule_AddObject(module, "InvalidId", cbson_invalid_id_get_type());
    PyModule_AddObject(module, "DBRef", (PyObject *)cbson_dbref_get_type());
 }
