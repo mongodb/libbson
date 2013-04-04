@@ -30,6 +30,7 @@ static PyObject *cbson_dbref_get_database   (PyObject *obj,
                                              void     *data);
 static PyObject *cbson_dbref_get_id         (PyObject *obj,
                                              void     *data);
+static PyObject *cbson_dbref_tp_repr        (PyObject *obj);
 
 
 static PyTypeObject cbson_dbref_type = {
@@ -43,7 +44,7 @@ static PyTypeObject cbson_dbref_type = {
     0,                         /*tp_getattr*/
     0,                         /*tp_setattr*/
     0,    /*tp_compare*/
-    0,       /*tp_repr*/
+    cbson_dbref_tp_repr,       /*tp_repr*/
     0,                         /*tp_as_number*/
     0,                         /*tp_as_sequence*/
     0,                         /*tp_as_mapping*/
@@ -119,6 +120,31 @@ cbson_dbref_get_id (PyObject *object,
 {
    cbson_dbref_t *dbref = (cbson_dbref_t *)object;
    return cbson_oid_new(&dbref->oid);
+}
+
+
+static PyObject *
+cbson_dbref_tp_repr (PyObject *obj)
+{
+   PyObject *collection;
+   PyObject *id;
+   PyObject *format;
+   PyObject *args;
+   PyObject *repr;
+
+   collection = cbson_dbref_get_collection(obj, NULL);
+   id = cbson_dbref_get_id(obj, NULL);
+   format = PyString_FromString("DBRef(%r, %r)");
+   args = PyTuple_Pack(2, collection, id);
+
+   repr = PyUnicode_Format(format, args);
+
+   Py_DECREF(collection);
+   Py_DECREF(id);
+   Py_DECREF(format);
+   Py_DECREF(args);
+
+   return repr;
 }
 
 
