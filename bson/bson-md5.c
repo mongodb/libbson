@@ -131,22 +131,14 @@
 #define T64 /* 0xeb86d391 */ (T_MASK ^ 0x14792c6e)
 
 
-typedef struct
-{
-   bson_uint32_t count[2]; /* message length in bits, lsw first */
-   bson_uint32_t abcd[4];  /* digest buffer */
-   bson_uint8_t  buf[64];  /* accumulate block */
-} bson_md5_real_t;
-
-
 static void
-bson_md5_process (bson_md5_real_t     *real,
+bson_md5_process (bson_md5_t     *md5,
                   const bson_uint8_t *data)
 {
-   bson_uint32_t a = real->abcd[0];
-   bson_uint32_t b = real->abcd[1];
-   bson_uint32_t c = real->abcd[2];
-   bson_uint32_t d = real->abcd[3];
+   bson_uint32_t a = md5->abcd[0];
+   bson_uint32_t b = md5->abcd[1];
+   bson_uint32_t c = md5->abcd[2];
+   bson_uint32_t d = md5->abcd[3];
    bson_uint32_t t;
 
 #if BYTE_ORDER > 0
@@ -318,22 +310,20 @@ bson_md5_process (bson_md5_real_t     *real,
     /* Then perform the following additions. (That is increment each
        of the four registers by the value it had before this block
        was started.) */
-    real->abcd[0] += a;
-    real->abcd[1] += b;
-    real->abcd[2] += c;
-    real->abcd[3] += d;
+    md5->abcd[0] += a;
+    md5->abcd[1] += b;
+    md5->abcd[2] += c;
+    md5->abcd[3] += d;
 }
 
 void
 bson_md5_init (bson_md5_t *pms)
 {
-    bson_md5_real_t *real = (bson_md5_real_t *)pms;
-
-    real->count[0] = real->count[1] = 0;
-    real->abcd[0] = 0x67452301;
-    real->abcd[1] = /*0xefcdab89*/ T_MASK ^ 0x10325476;
-    real->abcd[2] = /*0x98badcfe*/ T_MASK ^ 0x67452301;
-    real->abcd[3] = 0x10325476;
+    pms->count[0] = pms->count[1] = 0;
+    pms->abcd[0] = 0x67452301;
+    pms->abcd[1] = /*0xefcdab89*/ T_MASK ^ 0x10325476;
+    pms->abcd[2] = /*0x98badcfe*/ T_MASK ^ 0x67452301;
+    pms->abcd[3] = 0x10325476;
 }
 
 void
@@ -341,40 +331,39 @@ bson_md5_append (bson_md5_t         *pms,
                  const bson_uint8_t *data,
                  bson_uint32_t       nbytes)
 {
-    bson_md5_real_t *real = (bson_md5_real_t *)pms;
     const bson_uint8_t *p = data;
     int left = nbytes;
-    int offset = (real->count[0] >> 3) & 63;
+    int offset = (pms->count[0] >> 3) & 63;
     bson_uint32_t nbits = (bson_uint32_t)(nbytes << 3);
 
     if (nbytes <= 0)
         return;
 
     /* Update the message length. */
-    real->count[1] += nbytes >> 29;
-    real->count[0] += nbits;
-    if (real->count[0] < nbits)
-        real->count[1]++;
+    pms->count[1] += nbytes >> 29;
+    pms->count[0] += nbits;
+    if (pms->count[0] < nbits)
+        pms->count[1]++;
 
     /* Process an initial partial block. */
     if (offset) {
         int copy = (offset + nbytes > 64 ? 64 - offset : nbytes);
 
-        memcpy(real->buf + offset, p, copy);
+        memcpy(pms->buf + offset, p, copy);
         if (offset + copy < 64)
             return;
         p += copy;
         left -= copy;
-        bson_md5_process(real, real->buf);
+        bson_md5_process(pms, pms->buf);
     }
 
     /* Process full blocks. */
     for (; left >= 64; p += 64, left -= 64)
-        bson_md5_process(real, p);
+        bson_md5_process(pms, p);
 
     /* Process a final partial block. */
     if (left)
-        memcpy(real->buf, p, left);
+        memcpy(pms->buf, p, left);
 }
 
 void
@@ -387,17 +376,16 @@ bson_md5_finish (bson_md5_t   *pms,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     };
-    bson_md5_real_t *real = (bson_md5_real_t *)pms;
     bson_uint8_t data[8];
     int i;
 
     /* Save the length before padding. */
     for (i = 0; i < 8; ++i)
-        data[i] = (bson_uint8_t)(real->count[i >> 2] >> ((i & 3) << 3));
+        data[i] = (bson_uint8_t)(pms->count[i >> 2] >> ((i & 3) << 3));
     /* Pad to 56 bytes mod 64. */
-    bson_md5_append(pms, pad, ((55 - (real->count[0] >> 3)) & 63) + 1);
+    bson_md5_append(pms, pad, ((55 - (pms->count[0] >> 3)) & 63) + 1);
     /* Append the length. */
     bson_md5_append(pms, data, 8);
     for (i = 0; i < 16; ++i)
-        digest[i] = (bson_uint8_t)(real->abcd[i >> 2] >> ((i & 3) << 3));
+        digest[i] = (bson_uint8_t)(pms->abcd[i >> 2] >> ((i & 3) << 3));
 }

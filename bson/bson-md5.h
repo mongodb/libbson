@@ -65,19 +65,12 @@
 BSON_BEGIN_DECLS
 
 
-/**
- * bson_md5_t:
- *
- * This structure contains the state for a md5 state machine. You feed data
- * into the md5 state machine and then upon completion get a digest.
- */
-typedef struct _bson_md5_t bson_md5_t;
-
-
-struct _bson_md5_t
+typedef struct
 {
-   bson_uint8_t opaque[128];
-};
+   bson_uint32_t count[2]; /* message length in bits, lsw first */
+   bson_uint32_t abcd[4];  /* digest buffer */
+   bson_uint8_t  buf[64];  /* accumulate block */
+} bson_md5_t;
 
 
 void bson_md5_init   (bson_md5_t         *pms);
