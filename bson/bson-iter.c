@@ -300,7 +300,6 @@ fill_data_fields:
       iter->next_offset = o;
       break;
    case BSON_TYPE_EOD:
-      goto mark_invalid;
    default:
       iter->err_offset = o;
       goto mark_invalid;
