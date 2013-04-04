@@ -48,7 +48,7 @@ bson_iter_init_find (bson_iter_t  *iter,
    bson_return_val_if_fail(bson, FALSE);
    bson_return_val_if_fail(key, FALSE);
 
-   return bson_iter_init(iter, bson) && bson_iter_find(iter, key);
+   return (bson_iter_init(iter, bson) && bson_iter_find(iter, key));
 }
 
 
@@ -92,6 +92,12 @@ bson_iter_next (bson_iter_t *iter)
    bson_uint32_t o;
    const bson_t *b;
 
+   bson_return_val_if_fail(iter, FALSE);
+
+   if (!iter->bson) {
+      return FALSE;
+   }
+
    b = iter->bson;
 
    iter->offset = iter->next_offset;
@@ -109,7 +115,7 @@ bson_iter_next (bson_iter_t *iter)
       }
    }
 
-   return FALSE;
+   goto mark_invalid;
 
 fill_data_fields:
 
@@ -128,7 +134,7 @@ fill_data_fields:
 
          if ((o + 4) >= b->len) {
             iter->err_offset = o;
-            return FALSE;
+            goto mark_invalid;
          }
 
          iter->data2 = &b->data[o + 4];
@@ -141,7 +147,7 @@ fill_data_fields:
           */
          if (BSON_UNLIKELY((l < 1) || (iter->next_offset >= iter->bson->len))) {
             iter->err_offset = o;
-            return FALSE;
+            goto mark_invalid;
          }
 
          /*
@@ -149,7 +155,7 @@ fill_data_fields:
           */
          if (BSON_UNLIKELY(iter->data2[l - 1] != '\0')) {
             iter->err_offset = o + 4 + l - 1;
-            return FALSE;
+            goto mark_invalid;
          }
       }
       break;
@@ -159,7 +165,7 @@ fill_data_fields:
 
          if ((o + 4) >= b->len) {
             iter->err_offset = o;
-            return FALSE;
+            goto mark_invalid;
          }
 
          iter->data2 = &b->data[o + 4];
@@ -177,7 +183,7 @@ fill_data_fields:
 
          if ((o + 4) >= b->len) {
             iter->err_offset = o;
-            return FALSE;
+            goto mark_invalid;
          }
 
          memcpy(&l, iter->data1, 4);
@@ -206,7 +212,7 @@ fill_data_fields:
 
          if (!eor) {
             iter->err_offset = iter->next_offset;
-            return FALSE;
+            goto mark_invalid;
          }
 
          for (; o < b->len; o++) {
@@ -218,7 +224,7 @@ fill_data_fields:
 
          if (!eoo) {
             iter->err_offset = iter->next_offset;
-            return FALSE;
+            goto mark_invalid;
          }
 
          iter->next_offset = o + 1;
@@ -230,7 +236,7 @@ fill_data_fields:
 
          if ((o + 4) >= b->len) {
             iter->err_offset = o;
-            return FALSE;
+            goto mark_invalid;
          }
 
          iter->data2 = &b->data[o + 4];
@@ -248,7 +254,7 @@ fill_data_fields:
 
          if ((o + 8) >= b->len) {
             iter->err_offset = o;
-            return FALSE;
+            goto mark_invalid;
          }
 
          iter->data2 = &b->data[o + 4];
@@ -258,20 +264,20 @@ fill_data_fields:
          l = BSON_UINT32_FROM_LE(l);
          if (l < 14) {
             iter->err_offset = o;
-            return FALSE;
+            goto mark_invalid;
          }
 
          iter->next_offset = o + l;
          if (iter->next_offset >= iter->bson->len) {
             iter->err_offset = o;
-            return FALSE;
+            goto mark_invalid;
          }
 
          memcpy(&l, iter->data2, 4);
          l = BSON_UINT32_FROM_LE(l);
          if (BSON_UNLIKELY((o + 4 + 4 + l + 4) >= iter->next_offset)) {
             iter->err_offset = o + 4;
-            return FALSE;
+            goto mark_invalid;
          }
 
          iter->data4 = &b->data[o + 4 + 4 + l];
@@ -279,7 +285,7 @@ fill_data_fields:
          doclen = BSON_UINT32_FROM_LE(doclen);
          if ((o + 4 + 4 + l + doclen) != iter->next_offset) {
             iter->err_offset = o + 4 + 4 + l;
-            return FALSE;
+            goto mark_invalid;
          }
       }
       break;
@@ -294,9 +300,10 @@ fill_data_fields:
       iter->next_offset = o;
       break;
    case BSON_TYPE_EOD:
+      goto mark_invalid;
    default:
       iter->err_offset = o;
-      return FALSE;
+      goto mark_invalid;
    }
 
    /*
@@ -306,11 +313,15 @@ fill_data_fields:
     */
    if (!(iter->next_offset < b->len)) {
       iter->err_offset = o;
-      return FALSE;
+      goto mark_invalid;
    }
 
    iter->err_offset = 0;
    return TRUE;
+
+mark_invalid:
+   memset(iter, 0, sizeof *iter);
+   return FALSE;
 }
 
 

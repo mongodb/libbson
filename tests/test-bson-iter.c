@@ -249,6 +249,24 @@ test_bson_iter_regex (void)
 }
 
 
+static void
+test_bson_iter_next_after_finish (void)
+{
+   bson_iter_t iter;
+   bson_t *b;
+   int i;
+
+   b = bson_new();
+   bson_append_int32(b, "key", -1, 1234);
+   assert(bson_iter_init(&iter, b));
+   assert(bson_iter_next(&iter));
+   for (i = 0; i < 1000; i++) {
+      assert(!bson_iter_next(&iter));
+   }
+   bson_destroy(b);
+}
+
+
 int
 main (int   argc,
       char *argv[])
@@ -259,6 +277,7 @@ main (int   argc,
    run_test("/bson/iter/test_trailing_null", test_bson_iter_trailing_null);
    run_test("/bson/iter/test_fuzz", test_bson_iter_fuzz);
    run_test("/bson/iter/test_regex", test_bson_iter_regex);
+   run_test("/bson/iter/test_next_after_finish", test_bson_iter_next_after_finish);
 
    return 0;
 }
