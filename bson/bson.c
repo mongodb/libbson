@@ -36,8 +36,6 @@
  *   - Put some consideration into if we want to handle OOM. It is a really
  *     difficult thing to do correctly. Almost nobody gets it right. D-BUS
  *     on GNU/Linux might be one of the few things that does.
- *
- *   - Determine how we want to handle outrageously sized bson_t.
  */
 
 
