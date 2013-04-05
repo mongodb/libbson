@@ -124,6 +124,22 @@ test_bson_as_json_double (void)
 }
 
 
+static void
+test_bson_as_json_utf8 (void)
+{
+   size_t len;
+   bson_t *b;
+   char *str;
+
+   b = bson_new();
+   bson_append_utf8(b, "€€€€€", -1, "€€€€€", -1);
+   str = bson_as_json(b, &len);
+   assert(!strcmp(str, "{ \"€€€€€\" : \"€€€€€\" }"));
+   bson_free(str);
+   bson_destroy(b);
+}
+
+
 int
 main (int   argc,
       char *argv[])
@@ -133,6 +149,7 @@ main (int   argc,
    run_test("/bson/as_json/int32", test_bson_as_json_int32);
    run_test("/bson/as_json/int64", test_bson_as_json_int64);
    run_test("/bson/as_json/double", test_bson_as_json_double);
+   run_test("/bson/as_json/utf8", test_bson_as_json_utf8);
 
    return 0;
 }
