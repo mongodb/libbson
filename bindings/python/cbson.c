@@ -442,8 +442,41 @@ failure:
 }
 
 
+static PyObject *
+cbson_as_json (PyObject *self,
+               PyObject *args)
+{
+   const bson_uint8_t *buffer;
+   bson_uint32_t buffer_length;
+   bson_reader_t reader;
+   const bson_t *b;
+   PyObject *ret = NULL;
+   size_t len;
+   char *str;
+
+   if (!PyArg_ParseTuple(args, "s#", &buffer, &buffer_length)) {
+      return NULL;
+   }
+
+   bson_reader_init_from_data(&reader, buffer, buffer_length);
+   b = bson_reader_read(&reader, NULL);
+   bson_reader_destroy(&reader);
+
+   if (b) {
+      str = bson_as_json(b, &len);
+      ret = PyUnicode_DecodeUTF8(str, len, "strict");
+      bson_free(str);
+   } else {
+      PyErr_SetString(PyExc_ValueError, "Failed to parse BSON document.");
+   }
+
+   return ret;
+}
+
+
 static PyMethodDef cbson_methods[] = {
    { "loads", cbson_loads, METH_VARARGS, "Decode a BSON document." },
+   { "as_json", cbson_as_json, METH_VARARGS, "Encode a BSON document as MongoDB Extended JSON." },
    { NULL }
 };
 
