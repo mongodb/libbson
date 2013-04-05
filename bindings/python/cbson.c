@@ -35,7 +35,9 @@ cbson_loads_set_item (PyObject   *obj,
    PyObject *keyobj;
 
    if (PyDict_Check(obj)) {
-      keyobj = PyUnicode_FromString(key);
+      if (!(keyobj = PyUnicode_DecodeUTF8(key, strlen(key), "strict"))) {
+         keyobj = PyString_FromString(key);
+      }
       PyDict_SetItem(obj, keyobj, value);
       Py_DECREF(keyobj);
    } else {
@@ -116,10 +118,14 @@ cbson_loads_visit_utf8 (const bson_iter_t *iter,
    PyObject **ret = data;
    PyObject *value;
 
-   value = PyUnicode_FromStringAndSize(v_utf8, v_utf8_len);
+   if (!(value = PyUnicode_DecodeUTF8(v_utf8, v_utf8_len, "strict"))) {
+      Py_DECREF(*ret);
+      *ret = NULL;
+      return TRUE;
+   }
+
    cbson_loads_set_item(*ret, key, value);
    Py_DECREF(value);
-
    return FALSE;
 }
 
