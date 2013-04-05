@@ -15,6 +15,9 @@
  */
 
 
+#include <string.h>
+
+#include "bson-memory.h"
 #include "bson-utf8.h"
 
 
@@ -138,4 +141,45 @@ bson_utf8_validate (const char *utf8,
 {
    bson_return_val_if_fail(utf8, FALSE);
    return !check_string(utf8, utf8_len, TRUE, !allow_null);
+}
+
+
+char *
+bson_utf8_escape_for_json (const char *utf8,
+                           ssize_t     utf8_len)
+{
+   unsigned int i = 0;
+   unsigned int o = 0;
+   size_t seq_len;
+   char *ret;
+
+   bson_return_val_if_fail(utf8, NULL);
+
+   if (utf8_len < 0) {
+      utf8_len = strlen(utf8);
+   }
+
+   ret = bson_malloc0((utf8_len * 2) + 1);
+
+   while (i < utf8_len) {
+      seq_len = 1 + trailingBytesForUTF8[utf8[i]];
+      if ((i + seq_len) > utf8_len) {
+         bson_free(ret);
+         return NULL;
+      }
+
+      switch (utf8[i]) {
+      case '"':
+      case '\\':
+         ret[o++] = '\\';
+      default:
+         memcpy(&ret[o], &utf8[i], seq_len);
+         o += seq_len;
+         break;
+      }
+
+      i += seq_len;
+   }
+
+   return ret;
 }

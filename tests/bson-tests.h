@@ -29,7 +29,7 @@ BSON_BEGIN_DECLS
 
 #define assert_cmpstr(a, b)                                             \
    do {                                                                 \
-      if (((a) != (b)) && !!cmpstr((a), (b))) {                         \
+      if (((a) != (b)) && !!strcmp((a), (b))) {                         \
          fprintf(stderr, "FAIL\n\nAssert Failure: \"%s\" != \"%s\"\n",  \
                          a, b);                                         \
          abort();                                                       \

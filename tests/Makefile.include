@@ -5,6 +5,7 @@ noinst_PROGRAMS += test-bson-json
 noinst_PROGRAMS += test-bson-oid
 noinst_PROGRAMS += test-bson-reader
 noinst_PROGRAMS += test-bson-string
+noinst_PROGRAMS += test-bson-utf8
 
 
 TEST_PROGS =
@@ -14,6 +15,7 @@ TEST_PROGS += test-bson-json
 TEST_PROGS += test-bson-oid
 TEST_PROGS += test-bson-reader
 TEST_PROGS += test-bson-string
+TEST_PROGS += test-bson-utf8
 
 
 test_bson_SOURCES = $(top_srcdir)/tests/test-bson.c
@@ -44,6 +46,11 @@ test_bson_reader_LDADD = libbson-1.0.la
 test_bson_string_SOURCES = $(top_srcdir)/tests/test-bson-string.c
 test_bson_string_CPPFLAGS = -I$(top_srcdir) -DBSON_COMPILATION
 test_bson_string_LDADD = libbson-1.0.la
+
+
+test_bson_utf8_SOURCES = $(top_srcdir)/tests/test-bson-utf8.c
+test_bson_utf8_CPPFLAGS = -I$(top_srcdir) -DBSON_COMPILATION
+test_bson_utf8_LDADD = libbson-1.0.la
 
 
 test: $(TESTS)

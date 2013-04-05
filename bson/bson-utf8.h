@@ -51,6 +51,24 @@ bson_bool_t bson_utf8_validate (const char  *utf8,
                                 bson_bool_t  allow_null);
 
 
+/**
+ * bson_utf8_escape_for_json:
+ * @utf8: A UTF-8 encoded string.
+ * @utf8_len: The length of @utf8 in bytes or -1 if NUL terminated.
+ *
+ * Allocates a new string matching @utf8 except that special characters
+ * in JSON will be escaped. The resulting string is also UTF-8 encoded.
+ *
+ * Both " and \ characters will be escaped. Additionally, if a NUL byte
+ * is found before @utf8_len bytes, it will be converted to the two byte
+ * UTF-8 sequence.
+ *
+ * Returns: A newly allocated string that should be freed with bson_free().
+ */
+char *bson_utf8_escape_for_json (const char *utf8,
+                                 ssize_t     utf8_len);
+
+
 BSON_END_DECLS
 
 

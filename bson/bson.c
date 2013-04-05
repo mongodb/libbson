@@ -971,10 +971,13 @@ bson_as_json_visit_utf8 (const bson_iter_t *iter,
                          void              *data)
 {
    bson_json_state_t *state = data;
+   char *escaped;
 
+   escaped = bson_utf8_escape_for_json(v_utf8, v_utf8_len);
    bson_string_append(state->str, "\"");
    bson_string_append(state->str, v_utf8);
    bson_string_append(state->str, "\"");
+   bson_free(escaped);
 
    return FALSE;
 }
@@ -1213,21 +1216,26 @@ bson_as_json_visit_maxkey (const bson_iter_t *iter,
 }
 
 
+
+
 static bson_bool_t
 bson_as_json_visit_before (const bson_iter_t *iter,
                            const char        *key,
                            void              *data)
 {
    bson_json_state_t *state = data;
+   char *escaped;
 
    if (state->count) {
       bson_string_append(state->str, ", ");
    }
 
    if (state->keys) {
+      escaped = bson_utf8_escape_for_json(key, -1);
       bson_string_append(state->str, "\"");
-      bson_string_append(state->str, key);
+      bson_string_append(state->str, escaped);
       bson_string_append(state->str, "\" : ");
+      bson_free(escaped);
    }
 
    state->count++;

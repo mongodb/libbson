@@ -26,3 +26,4 @@ test-bson-json
 test-bson-oid
 test-bson-reader
 test-bson-string
+test-bson-utf8
