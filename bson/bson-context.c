@@ -180,7 +180,7 @@ bson_context_new (bson_context_flags_t  flags)
    seed[1] = tv.tv_usec;
    seed[2] = getpid();
    real_seed = seed[0] ^ seed[1] ^ seed[2];
-   context->seq32 = rand_r(&real_seed) & 0x00FFFFF0;
+   context->seq32 = rand_r(&real_seed) & 0x007FFFF0;
 
    if ((flags & BSON_CONTEXT_DISABLE_HOST_CACHE)) {
       context->oid_get_host = bson_context_get_oid_host;
