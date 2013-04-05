@@ -16,6 +16,7 @@
 
 
 #include <Python.h>
+#include <datetime.h>
 
 #include <bson/bson.h>
 
@@ -474,8 +475,87 @@ cbson_as_json (PyObject *self,
 }
 
 
+static PyObject *
+cbson_dumps (PyObject *self,
+             PyObject *args)
+{
+   const char *keystr;
+   PyObject *doc;
+   PyObject *key;
+   PyObject *ret;
+   PyObject *value;
+   Py_ssize_t pos = 0;
+   bson_t *b;
+   size_t keylen;
+
+   if (!PyArg_ParseTuple(args, "O", &doc)) {
+      return NULL;
+   }
+
+   if (!PyDict_Check(doc)) {
+      PyErr_SetString(PyExc_TypeError, "doc must be a dict.");
+      return NULL;
+   }
+
+   b = bson_new();
+
+   while (PyDict_Next(doc, &pos, &key, &value)) {
+      /*
+       * TODO: Key validation. Make sure no NULL is present. Ensure valid UTF-8.
+       */
+
+      if (PyString_Check(key)) {
+         keystr = PyString_AS_STRING(key);
+         keylen = PyString_GET_SIZE(key);
+      } else if (PyUnicode_Check(key)) {
+         /*
+          * TODO: Convert to UTF-8.
+          */
+         keystr = PyUnicode_AS_UNICODE(key);
+         keylen = PyUnicode_GET_SIZE(key);
+      } else {
+         PyErr_SetString(PyExc_TypeError, "key must be a string.");
+         bson_destroy(b);
+         return NULL;
+      }
+
+      if (value == Py_None) {
+         bson_append_null(b, keystr, keylen);
+      } else if (PyString_Check(value)) {
+         /*
+          * TODO: Validate UTF-8.
+          */
+         bson_append_utf8(b, keystr, keylen,
+                          PyString_AS_STRING(value),
+                          PyString_GET_SIZE(value));
+      } else if (PyUnicode_Check(value)) {
+         /*
+          * TODO: Convert and validate UTF-8.
+          */
+         bson_append_utf8(b, keystr, keylen,
+                          PyUnicode_AS_UNICODE(value),
+                          PyUnicode_GET_SIZE(value));
+      } else if (PyDateTime_Check(value)) {
+      } else {
+         /*
+          * TODO: message should include what the value and type was.
+          */
+         PyErr_SetString(PyExc_TypeError, "Cannot encode type.");
+         bson_destroy(b);
+         return NULL;
+      }
+   }
+
+   ret = PyString_FromStringAndSize((const char *)b->data, b->len);
+   bson_destroy(b);
+
+   return ret;
+}
+
+
 static PyMethodDef cbson_methods[] = {
-   { "loads", cbson_loads, METH_VARARGS, "Decode a BSON document." },
+   { "dumps", cbson_dumps, METH_VARARGS, "Encode a document to BSON." },
+   { "loads", cbson_loads, METH_VARARGS, "Decode a document from BSON." },
    { "as_json", cbson_as_json, METH_VARARGS, "Encode a BSON document as MongoDB Extended JSON." },
    { NULL }
 };
@@ -525,4 +605,6 @@ initcbson (void)
    PyModule_AddObject(module, "ObjectId", (PyObject *)cbson_oid_get_type(gContext));
    PyModule_AddObject(module, "InvalidId", cbson_invalid_id_get_type());
    PyModule_AddObject(module, "DBRef", (PyObject *)cbson_dbref_get_type());
+
+   PyDateTime_IMPORT;
 }
