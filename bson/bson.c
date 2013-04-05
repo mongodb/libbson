@@ -1374,6 +1374,13 @@ bson_as_json (const bson_t *bson,
 
    bson_return_val_if_fail(bson, NULL);
 
+   if (bson_empty0(bson)) {
+      if (length) {
+         *length = 2;
+      }
+      return strdup("{}");
+   }
+
    if (!bson_iter_init(&iter, bson)) {
       return NULL;
    }
