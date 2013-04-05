@@ -493,6 +493,9 @@ bson_iter_dbpointer (const bson_iter_t  *iter,
       if (collection_len) {
          memcpy(collection_len, iter->data1, 4);
          *collection_len = BSON_UINT32_FROM_LE(*collection_len);
+         if ((*collection_len) > 0) {
+            (*collection_len)--;
+         }
       }
       if (collection) {
          *collection = (const char *)iter->data2;
