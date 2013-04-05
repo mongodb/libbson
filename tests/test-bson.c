@@ -656,6 +656,27 @@ test_bson_validate (void)
 }
 
 
+static void
+test_bson_utf8_key (void)
+{
+   bson_uint32_t length;
+   bson_iter_t iter;
+   const char *str;
+   bson_t *b;
+   size_t offset;
+
+   b = get_bson("eurokey.bson");
+   assert(bson_validate(b, BSON_VALIDATE_NONE, &offset));
+   assert(bson_iter_init(&iter, b));
+   assert(bson_iter_next(&iter));
+   assert(!strcmp(bson_iter_key(&iter), "€€€€€"));
+   assert((str = bson_iter_string(&iter, &length)));
+   assert(length == 15); /* 5 3-byte sequences. */
+   assert(!strcmp(str, "€€€€€"));
+   bson_destroy(b);
+}
+
+
 int
 main (int   argc,
       char *argv[])
@@ -685,6 +706,7 @@ main (int   argc,
    run_test("/bson/append_undefined", test_bson_append_undefined);
    run_test("/bson/append_general", test_bson_append_general);
    run_test("/bson/append_deep", test_bson_append_deep);
+   run_test("/bson/utf8_key", test_bson_utf8_key);
    run_test("/bson/validate", test_bson_validate);
 
    return 0;
