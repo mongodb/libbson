@@ -162,7 +162,7 @@ bson_utf8_escape_for_json (const char *utf8,
    ret = bson_malloc0((utf8_len * 2) + 1);
 
    while (i < utf8_len) {
-      seq_len = 1 + trailingBytesForUTF8[utf8[i]];
+      seq_len = 1 + trailingBytesForUTF8[((const bson_uint8_t *)utf8)[i]];
       if ((i + seq_len) > utf8_len) {
          bson_free(ret);
          return NULL;
