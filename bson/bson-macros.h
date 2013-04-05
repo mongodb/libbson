@@ -129,7 +129,7 @@
 #define bson_return_if_fail(test) \
    do { \
       if (!(test)) { \
-         fprintf(stderr, "Incorrect API usage: %s failed.\n", #test); \
+         fprintf(stderr, "%s(): precondition failed: %s\n", __FUNCTION__, #test); \
          return; \
       } \
    } while (0)
@@ -138,7 +138,7 @@
 #define bson_return_val_if_fail(test, val) \
    do { \
       if (!(test)) { \
-         fprintf(stderr, "Incorrect API usage: %s failed.\n", #test); \
+         fprintf(stderr, "%s(): precondition failed: %s\n", __FUNCTION__, #test); \
          return (val); \
       } \
    } while (0)
