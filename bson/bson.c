@@ -432,7 +432,7 @@ bson_append_bool (bson_t      *bson,
                   bson_bool_t  value)
 {
    static const bson_uint8_t type = BSON_TYPE_BOOL;
-   bson_uint8_t byte = value;
+   bson_uint8_t byte = !!value;
 
    bson_return_if_fail(bson);
    bson_return_if_fail(key);
