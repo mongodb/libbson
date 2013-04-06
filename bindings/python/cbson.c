@@ -543,6 +543,8 @@ cbson_dumps (PyObject *self,
          bson_append_int64(b, keystr, keylen, PyLong_AsLong(value));
       } else if (PyInt_Check(value)) {
          bson_append_int32(b, keystr, keylen, PyInt_AsLong(value));
+      } else if (PyFloat_Check(value)) {
+         bson_append_double(b, keystr, keylen, PyFloat_AsDouble(value));
       } else if (cbson_oid_check(value)) {
          bson_append_oid(b, keystr, keylen, &((cbson_oid_t *)value)->oid);
       /* } else if (CHECK FOR REGEX) { */
