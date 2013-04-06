@@ -539,6 +539,8 @@ cbson_dumps (PyObject *self,
          /*
           * TODO: Convert to msec since epoch.
           */
+      } else if (PyBool_Check(value)) {
+         bson_append_bool(b, keystr, keylen, (value == Py_True));
       } else if (PyLong_Check(value)) {
          bson_append_int64(b, keystr, keylen, PyLong_AsLong(value));
       } else if (PyInt_Check(value)) {
