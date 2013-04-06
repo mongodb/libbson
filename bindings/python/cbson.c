@@ -511,7 +511,7 @@ cbson_dumps (PyObject *self,
          /*
           * TODO: Convert to UTF-8.
           */
-         keystr = PyUnicode_AS_UNICODE(key);
+         keystr = (const char *)PyUnicode_AS_UNICODE(key);
          keylen = PyUnicode_GET_SIZE(key);
       } else {
          PyErr_SetString(PyExc_TypeError, "key must be a string.");
@@ -533,9 +533,20 @@ cbson_dumps (PyObject *self,
           * TODO: Convert and validate UTF-8.
           */
          bson_append_utf8(b, keystr, keylen,
-                          PyUnicode_AS_UNICODE(value),
+                          (const char *)PyUnicode_AS_UNICODE(value),
                           PyUnicode_GET_SIZE(value));
       } else if (PyDateTime_Check(value)) {
+         /*
+          * TODO: Convert to msec since epoch.
+          */
+      } else if (PyLong_Check(value)) {
+         bson_append_int64(b, keystr, keylen, PyLong_AsLong(value));
+      } else if (PyInt_Check(value)) {
+         bson_append_int32(b, keystr, keylen, PyInt_AsLong(value));
+      } else if (cbson_oid_check(value)) {
+         bson_append_oid(b, keystr, keylen, &((cbson_oid_t *)value)->oid);
+      /* } else if (CHECK FOR REGEX) { */
+      /* } else if (CHECK FOR BINARY) { */
       } else {
          /*
           * TODO: message should include what the value and type was.
