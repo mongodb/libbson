@@ -75,6 +75,39 @@ bson_new (void);
 
 
 /**
+ * bson_init_static:
+ * @b: A pointer to a bson_t.
+ * @data: The data buffer to use.
+ * @length: The length of @data.
+ *
+ * Initializes a bson_t using @data and @length. This is ideal if you would
+ * like to use a stack allocation for your bson and do not need to grow the
+ * buffer. @data must be valid for the life of @b.
+ */
+void
+bson_init_static (bson_t             *b,
+                  const bson_uint8_t *data,
+                  bson_uint32_t       length);
+
+
+/**
+ * bson_init:
+ * @b: A pointer to a bson_t.
+ *
+ * Initializes a bson_t for use. This function is useful to those that want a
+ * stack allocated bson_t. The usefulness of a stack allocated bson_t is
+ * marginal as the target buffer for content will still require heap
+ * allocations. It can help reduce heap fragmentation on allocators that do
+ * not employ SLAB/magazine semantics.
+ *
+ * You must call bson_destroy() with @b to release resources when you are done
+ * using @b.
+ */
+void
+bson_init (bson_t *b);
+
+
+/**
  * bson_new_from_data:
  * @data: A buffer containing a serialized bson document.
  * @length: The length of the document in bytes.

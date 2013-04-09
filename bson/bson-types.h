@@ -108,13 +108,16 @@ typedef struct _bson_context_t bson_context_t;
  * allocations and realloc().
  *
  * See http://bsonspec.org for the BSON document spec.
+ *
+ * This structure is meant to fit in a 64-byte cacheline.
  */
 typedef struct
 {
+   bson_uint32_t  flags;      /* Internal flags for the bson_t. */
    bson_int32_t   allocated;  /* Length of entire allocation. */
    bson_uint32_t  len;        /* Length of data[]. */
    bson_uint8_t  *data;       /* Pointer to data buffer. */
-   bson_uint8_t   inlbuf[16]; /* Inline buffer for small BSON. */
+   bson_uint8_t   inlbuf[44]; /* Inline buffer for small BSON. */
 } bson_t;
 
 

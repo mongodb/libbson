@@ -39,6 +39,10 @@
  */
 
 
+#define BSON_FLAG_NO_FREE (1 << 0)
+#define BSON_FLAG_NO_GROW (1 << 1)
+
+
 static const bson_uint8_t gZero;
 
 
@@ -125,12 +129,40 @@ bson_grow_if_needed (bson_t *bson,
 }
 
 
+void
+bson_init (bson_t *b)
+{
+   bson_return_if_fail(b);
+
+   b->flags = BSON_FLAG_NO_FREE;
+   b->allocated = 0;
+   b->len = 5;
+   b->data = &b->inlbuf[0];
+   b->data[0] = 5;
+}
+
+
+void
+bson_init_static (bson_t             *b,
+                  const bson_uint8_t *data,
+                  bson_uint32_t       length)
+{
+   bson_return_if_fail(b);
+
+   b->flags = BSON_FLAG_NO_FREE | BSON_FLAG_NO_GROW;
+   b->allocated = 0;
+   b->len = length;
+   b->data = (bson_uint8_t *)data;
+}
+
+
 bson_t *
 bson_new (void)
 {
    bson_t *b;
 
    b = bson_malloc0(sizeof *b);
+   b->flags = 0;
    b->allocated = 0;
    b->len = 5;
    b->data = &b->inlbuf[0];
@@ -191,7 +223,9 @@ bson_destroy (bson_t *bson)
       if (bson->allocated > 0) {
          bson_free(bson->data);
       }
-      bson_free(bson);
+      if (!(bson->flags & BSON_FLAG_NO_FREE)) {
+         bson_free(bson);
+      }
    }
 }
 
@@ -334,7 +368,7 @@ bson_append_va (bson_t             *bson,
    bson_uint32_t length = first_length;
    bson_int32_t todo = n_params;
 
-   if (bson->allocated < 0) {
+   if ((bson->allocated < 0) || (bson->flags & BSON_FLAG_NO_GROW)) {
       fprintf(stderr, "Cannot append to read-only BSON.\n");
       return;
    }

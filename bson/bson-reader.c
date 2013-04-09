@@ -18,6 +18,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "bson.h"
 #include "bson-reader.h"
 #include "bson-memory.h"
 
@@ -149,9 +150,10 @@ bson_reader_fd_read (bson_reader_fd_t *reader,
          continue;
       }
 
-      reader->inline_bson.len = blen;
-      reader->inline_bson.data = &reader->data[reader->offset];
       reader->offset += blen;
+      bson_init_static(&reader->inline_bson,
+                       &reader->data[reader->offset],
+                       blen);
 
       return &reader->inline_bson;
    }
@@ -196,9 +198,9 @@ bson_reader_data_read (bson_reader_data_t *reader,
       memcpy(&blen, &reader->data[reader->offset], sizeof blen);
       blen = BSON_UINT32_FROM_LE(blen);
       if ((blen + reader->offset) <= reader->length) {
-         reader->inline_bson.len = blen;
-         reader->inline_bson.data =
-            (bson_uint8_t *)&reader->data[reader->offset];
+         bson_init_static(&reader->inline_bson,
+                          &reader->data[reader->offset],
+                          blen);
          reader->offset += blen;
          return &reader->inline_bson;
       }
