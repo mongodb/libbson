@@ -727,6 +727,32 @@ test_bson_utf8_key (void)
 }
 
 
+static void
+test_bson_new_1mm (void)
+{
+   bson_t *b;
+   int i;
+
+   for (i = 0; i < 1000000; i++) {
+      b = bson_new();
+      bson_destroy(b);
+   }
+}
+
+
+static void
+test_bson_init_1mm (void)
+{
+   bson_t b;
+   int i;
+
+   for (i = 0; i < 1000000; i++) {
+      bson_init(&b);
+      bson_destroy(&b);
+   }
+}
+
+
 int
 main (int   argc,
       char *argv[])
@@ -760,6 +786,8 @@ main (int   argc,
    run_test("/bson/append_deep", test_bson_append_deep);
    run_test("/bson/utf8_key", test_bson_utf8_key);
    run_test("/bson/validate", test_bson_validate);
+   run_test("/bson/new_1mm", test_bson_new_1mm);
+   run_test("/bson/init_1mm", test_bson_init_1mm);
 
    return 0;
 }
