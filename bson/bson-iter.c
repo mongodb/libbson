@@ -89,6 +89,7 @@ bson_iter_type (const bson_iter_t *iter)
 bson_bool_t
 bson_iter_next (bson_iter_t *iter)
 {
+   const bson_uint8_t *data;
    bson_uint32_t o;
    const bson_t *b;
 
@@ -99,18 +100,19 @@ bson_iter_next (bson_iter_t *iter)
    }
 
    b = iter->bson;
+   data = bson_get_data(b);
 
    iter->offset = iter->next_offset;
-   iter->type = &b->data[iter->offset];
-   iter->key = &b->data[iter->offset + 1];
+   iter->type = &data[iter->offset];
+   iter->key = &data[iter->offset + 1];
    iter->data1 = NULL;
    iter->data2 = NULL;
    iter->data3 = NULL;
    iter->data4 = NULL;
 
    for (o = iter->offset + 1; o < b->len; o++) {
-      if (!b->data[o]) {
-         iter->data1 = &b->data[++o];
+      if (!data[o]) {
+         iter->data1 = &data[++o];
          goto fill_data_fields;
       }
    }
@@ -137,7 +139,7 @@ fill_data_fields:
             goto mark_invalid;
          }
 
-         iter->data2 = &b->data[o + 4];
+         iter->data2 = &data[o + 4];
          memcpy(&l, iter->data1, 4);
          l = BSON_UINT32_FROM_LE(l);
          iter->next_offset = o + 4 + l;
@@ -168,8 +170,8 @@ fill_data_fields:
             goto mark_invalid;
          }
 
-         iter->data2 = &b->data[o + 4];
-         iter->data3 = &b->data[o + 5];
+         iter->data2 = &data[o + 4];
+         iter->data3 = &data[o + 5];
 
          memcpy(&l, iter->data1, 4);
          l = BSON_UINT32_FROM_LE(l);
@@ -203,8 +205,8 @@ fill_data_fields:
          bson_bool_t eoo = FALSE;
 
          for (; o < b->len; o++) {
-            if (!b->data[o]) {
-               iter->data2 = &b->data[++o];
+            if (!data[o]) {
+               iter->data2 = &data[++o];
                eor = TRUE;
                break;
             }
@@ -216,7 +218,7 @@ fill_data_fields:
          }
 
          for (; o < b->len; o++) {
-            if (!b->data[o]) {
+            if (!data[o]) {
                eoo = TRUE;
                break;
             }
@@ -239,11 +241,11 @@ fill_data_fields:
             goto mark_invalid;
          }
 
-         iter->data2 = &b->data[o + 4];
+         iter->data2 = &data[o + 4];
          memcpy(&l, iter->data1, 4);
          l = BSON_UINT32_FROM_LE(l);
 
-         iter->data3 = &b->data[o + 4 + l];
+         iter->data3 = &data[o + 4 + l];
          iter->next_offset = o + 4 + l + 12;
       }
       break;
@@ -257,8 +259,8 @@ fill_data_fields:
             goto mark_invalid;
          }
 
-         iter->data2 = &b->data[o + 4];
-         iter->data3 = &b->data[o + 8];
+         iter->data2 = &data[o + 4];
+         iter->data3 = &data[o + 8];
 
          memcpy(&l, iter->data1, 4);
          l = BSON_UINT32_FROM_LE(l);
@@ -280,7 +282,7 @@ fill_data_fields:
             goto mark_invalid;
          }
 
-         iter->data4 = &b->data[o + 4 + 4 + l];
+         iter->data4 = &data[o + 4 + 4 + l];
          memcpy(&doclen, iter->data4, 4);
          doclen = BSON_UINT32_FROM_LE(doclen);
          if ((o + 4 + 4 + l + doclen) != iter->next_offset) {
@@ -666,8 +668,12 @@ bson_iter_visit_all (bson_iter_t          *iter,
          break;
       case BSON_TYPE_DOCUMENT:
          {
-            bson_t b = { 0 };
-            bson_iter_document(iter, &b.len, (const bson_uint8_t **)&b.data);
+            const bson_uint8_t *docbuf;
+            bson_uint32_t doclen;
+            bson_t b;
+
+            bson_iter_document(iter, &doclen, &docbuf);
+            bson_init_static(&b, docbuf, doclen);
             if (VISIT_FIELD(document)(iter, key, &b, data)) {
                return TRUE;
             }
@@ -675,8 +681,12 @@ bson_iter_visit_all (bson_iter_t          *iter,
          break;
       case BSON_TYPE_ARRAY:
          {
-            bson_t b = { 0 };
-            bson_iter_array(iter, &b.len, (const bson_uint8_t **)&b.data);
+            const bson_uint8_t *docbuf;
+            bson_uint32_t doclen;
+            bson_t b;
+
+            bson_iter_array(iter, &doclen, &docbuf);
+            bson_init_static(&b, docbuf, doclen);
             if (VISIT_FIELD(array)(iter, key, &b, data)) {
                return TRUE;
             }
@@ -770,10 +780,12 @@ bson_iter_visit_all (bson_iter_t          *iter,
          {
             bson_uint32_t length = 0;
             const char *code;
-            bson_t b = { 0 };
+            const bson_uint8_t *docbuf;
+            bson_uint32_t doclen;
+            bson_t b;
 
-            code = bson_iter_codewscope(iter, &length, &b.len,
-                                        (const bson_uint8_t **)&b.data);
+            code = bson_iter_codewscope(iter, &length, &doclen, &docbuf);
+            bson_init_static(&b, docbuf, doclen);
             if (VISIT_FIELD(codewscope)(iter, key, length, code, &b, data)) {
                return TRUE;
             }

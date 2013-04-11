@@ -41,6 +41,7 @@
 
 #define BSON_FLAG_NO_FREE (1 << 0)
 #define BSON_FLAG_NO_GROW (1 << 1)
+#define BSON_FLAG_CHILD   (1 << 2)
 
 
 static const bson_uint8_t gZero;
@@ -65,6 +66,36 @@ typedef struct
 
 
 /**
+ * bson_get_data_fast:
+ * @b: A bson_t.
+ *
+ * Fetches the beginning of the buffer for the BSON document taking into
+ * account the posibility that it is a child BSON. A child BSON is a BSON
+ * document currently being built within another BSON document.
+ *
+ * If you append data to @b after calling this function, the address may
+ * have changed!
+ *
+ * Returns: A bson_uint8_t* buffer of at least b->len bytes in size.
+ */
+static BSON_INLINE bson_uint8_t *
+bson_get_data_fast (const bson_t *b)
+{
+   if (!(b->flags & BSON_FLAG_CHILD))
+      return b->top.data;
+   return (*b->child.data) + b->child.offset;
+}
+
+
+const bson_uint8_t *
+bson_get_data (const bson_t *bson)
+{
+   bson_return_val_if_fail(bson, NULL);
+   return bson_get_data_fast(bson);
+}
+
+
+/**
  * bson_encode_length:
  * @bson: A bson_t.
  *
@@ -76,8 +107,9 @@ typedef struct
 static BSON_INLINE void
 bson_encode_length (bson_t *bson)
 {
-   bson_uint32_t len = BSON_UINT32_TO_LE(bson->len);
-   memcpy(bson->data, &len, 4);
+   bson_uint32_t len_le = BSON_UINT32_TO_LE(bson->len);
+   bson_uint8_t *data = bson_get_data_fast(bson);
+   memcpy(data, &len_le, 4);
 }
 
 
@@ -102,9 +134,14 @@ bson_grow_if_needed (bson_t *bson,
    bson_return_if_fail(bson);
    bson_return_if_fail(additional_bytes < INT_MAX);
 
+   if ((bson->flags & BSON_FLAG_CHILD)) {
+      bson_grow_if_needed(bson->child.toplevel, additional_bytes);
+      return;
+   }
+
    amin = bson->len + additional_bytes;
 
-   if (amin <= sizeof bson->inlbuf) {
+   if (amin <= sizeof bson->top.inlbuf) {
       return;
    }
 
@@ -118,13 +155,13 @@ bson_grow_if_needed (bson_t *bson,
       abort();
    }
 
-   if (bson->allocated) {
-      bson->data = bson_realloc(bson->data, asize);
-      bson->allocated = asize;
+   if (bson->top.allocated) {
+      bson->top.data = bson_realloc(bson->top.data, asize);
+      bson->top.allocated = asize;
    } else {
-      bson->data = bson_malloc0(asize);
-      bson->allocated = asize;
-      memcpy(bson->data, bson->inlbuf, bson->len);
+      bson->top.data = bson_malloc0(asize);
+      bson->top.allocated = asize;
+      memcpy(bson->top.data, bson->top.inlbuf, bson->len);
    }
 }
 
@@ -135,10 +172,10 @@ bson_init (bson_t *b)
    bson_return_if_fail(b);
 
    b->flags = BSON_FLAG_NO_FREE;
-   b->allocated = 0;
+   b->top.allocated = 0;
    b->len = 5;
-   b->data = &b->inlbuf[0];
-   b->data[0] = 5;
+   b->top.data = &b->top.inlbuf[0];
+   b->top.data[0] = 5;
 }
 
 
@@ -150,9 +187,9 @@ bson_init_static (bson_t             *b,
    bson_return_if_fail(b);
 
    b->flags = BSON_FLAG_NO_FREE | BSON_FLAG_NO_GROW;
-   b->allocated = 0;
+   b->top.allocated = 0;
    b->len = length;
-   b->data = (bson_uint8_t *)data;
+   b->top.data = (bson_uint8_t *)data;
 }
 
 
@@ -163,10 +200,10 @@ bson_new (void)
 
    b = bson_malloc0(sizeof *b);
    b->flags = 0;
-   b->allocated = 0;
+   b->top.allocated = 0;
    b->len = 5;
-   b->data = &b->inlbuf[0];
-   b->data[0] = 5;
+   b->top.data = &b->top.inlbuf[0];
+   b->top.data[0] = 5;
 
    return b;
 }
@@ -194,7 +231,7 @@ bson_new_from_data (const bson_uint8_t *data,
 
    b = bson_new();
    bson_grow_if_needed(b, length - b->len);
-   memcpy(b->data, data, length);
+   memcpy(b->top.data, data, length);
    b->len = length;
 
    return b;
@@ -220,8 +257,8 @@ void
 bson_destroy (bson_t *bson)
 {
    if (bson) {
-      if (bson->allocated > 0) {
-         bson_free(bson->data);
+      if (bson->top.allocated > 0) {
+         bson_free(bson->top.data);
       }
       if (!(bson->flags & BSON_FLAG_NO_FREE)) {
          bson_free(bson);
@@ -366,25 +403,42 @@ bson_append_va (bson_t             *bson,
 {
    const bson_uint8_t *data = first_data;
    bson_uint32_t length = first_length;
+   bson_uint32_t total = 0;
    bson_int32_t todo = n_params;
+   bson_uint8_t *buf;
+   bson_t *toplevel = bson;
 
-   if ((bson->allocated < 0) || (bson->flags & BSON_FLAG_NO_GROW)) {
+   if ((bson->flags & BSON_FLAG_CHILD)) {
+      toplevel = bson->child.toplevel;
+   }
+
+   if ((toplevel->top.allocated < 0) || (toplevel->flags & BSON_FLAG_NO_GROW)) {
       fprintf(stderr, "Cannot append to read-only BSON.\n");
       return;
    }
 
    do {
-      bson_grow_if_needed(bson, length);
-      memcpy(&bson->data[bson->len-1], data, length);
+      bson_grow_if_needed(toplevel, length);
+      buf = bson_get_data_fast(bson);
+      memcpy(&buf[bson->len - 1], data, length);
       bson->len += length;
+      total += length;
       if ((--todo > 0)) {
          length = va_arg(args, bson_uint32_t);
          data = va_arg(args, bson_uint8_t*);
       }
    } while (todo > 0);
 
-   bson->data[bson->len-1] = 0;
+   buf = bson_get_data_fast(bson);
+   buf[bson->len - 1] = 0;
    bson_encode_length(bson);
+
+   if ((bson->flags & BSON_FLAG_CHILD)) {
+      do {
+         bson = bson->child.parent;
+         bson->len += total;
+      } while ((bson->flags & BSON_FLAG_CHILD));
+   }
 }
 
 
@@ -423,7 +477,7 @@ bson_append_array (bson_t       *bson,
                1, &type,
                key_length, key,
                1, &gZero,
-               array->len, array->data);
+               array->len, bson_get_data_fast(array));
 }
 
 void
@@ -552,7 +606,7 @@ bson_append_code_with_scope (bson_t       *bson,
                4, &codews_length_le,
                4, &js_length_le,
                js_length, javascript,
-               scope->len, scope->data);
+               scope->len, bson_get_data_fast(scope));
 }
 
 
@@ -609,7 +663,7 @@ bson_append_document (bson_t       *bson,
                1, &type,
                key_length, key,
                1, &gZero,
-               value->len, value->data);
+               value->len, bson_get_data_fast(value));
 }
 
 
@@ -985,7 +1039,9 @@ bson_compare (const bson_t *bson,
       return cmp;
    }
 
-   return memcmp(bson->data, other->data, bson->len);
+   return memcmp(bson_get_data_fast(bson),
+                 bson_get_data_fast(other),
+                 bson->len);
 }
 
 
@@ -994,6 +1050,66 @@ bson_equal (const bson_t *bson,
             const bson_t *other)
 {
    return !bson_compare(bson, other);
+}
+
+
+void
+bson_append_document_begin (bson_t     *bson,
+                            const char *key,
+                            int         key_length,
+                            bson_t     *child)
+{
+   static const bson_uint8_t type = BSON_TYPE_DOCUMENT;
+   bson_t *parent;
+
+   bson_return_if_fail(bson);
+   bson_return_if_fail(key);
+   bson_return_if_fail(child);
+
+   if (key_length < 0) {
+      key_length = strlen(key);
+   }
+
+   bson_append(bson, 3,
+               1, &type,
+               key_length, key,
+               1, &gZero);
+
+   child->flags = BSON_FLAG_NO_FREE | BSON_FLAG_CHILD;
+   child->len = 5;
+   child->child.parent = bson;
+
+   if ((bson->flags & BSON_FLAG_CHILD)) {
+      child->child.toplevel = parent->child.toplevel;
+      child->child.offset = parent->child.offset + parent->len - 1;
+   } else {
+      child->child.toplevel = bson;
+      child->child.offset = bson->len - 1;
+   }
+
+   child->child.data = &child->child.toplevel->top.data;
+
+   bson_grow_if_needed(bson, 5);
+
+   do {
+      child = child->child.parent;
+      child->len += 5;
+      bson_encode_length(child);
+   } while ((child->flags & BSON_FLAG_CHILD));
+}
+
+
+void
+bson_append_document_end (bson_t *bson,
+                          bson_t *child)
+{
+   bson_return_if_fail(bson);
+   bson_return_if_fail(child);
+
+   do {
+      child = child->child.parent;
+      bson_encode_length(child);
+   } while ((child->flags & BSON_FLAG_CHILD));
 }
 
 

@@ -148,6 +148,18 @@ bson_destroy (bson_t *bson);
 
 
 /**
+ * bson_get_data:
+ * @bson: A bson_t.
+ *
+ * Fetched the data buffer for @bson of @bson->len bytes in length.
+ *
+ * Returns: A buffer that should not be modified or freed.
+ */
+const bson_uint8_t *
+bson_get_data (const bson_t *bson);
+
+
+/**
  * bson_compare:
  * @bson: A bson_t.
  * @other: A bson_t.

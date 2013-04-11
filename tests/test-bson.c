@@ -71,7 +71,7 @@ test_bson_alloc (void)
 
    b = bson_new();
    assert_cmpint(b->len, ==, 5);
-   assert_cmpint(b->allocated, ==, 0);
+   assert_cmpint(b->top.allocated, ==, 0);
    bson_destroy(b);
 
    /*
@@ -79,7 +79,7 @@ test_bson_alloc (void)
     */
    b = bson_sized_new(44);
    assert_cmpint(b->len, ==, 5);
-   assert_cmpint(b->allocated, ==, 0);
+   assert_cmpint(b->top.allocated, ==, 0);
    bson_destroy(b);
 
    /*
@@ -87,7 +87,7 @@ test_bson_alloc (void)
     */
    b = bson_sized_new(63);
    assert_cmpint(b->len, ==, 5);
-   assert_cmpint(b->allocated, ==, 64);
+   assert_cmpint(b->top.allocated, ==, 64);
    bson_destroy(b);
 
    /*
@@ -95,13 +95,13 @@ test_bson_alloc (void)
     */
    b = bson_sized_new(65);
    assert_cmpint(b->len, ==, 5);
-   assert_cmpint(b->allocated, ==, 128);
+   assert_cmpint(b->top.allocated, ==, 128);
    bson_destroy(b);
 
    b = bson_new_from_data(empty_bson, sizeof empty_bson);
    assert_cmpint(b->len, ==, sizeof empty_bson);
-   assert_cmpint(b->allocated, ==, 0);
-   assert(!memcmp(b->data, empty_bson, sizeof empty_bson));
+   assert_cmpint(b->top.allocated, ==, 0);
+   assert(!memcmp(bson_get_data(b), empty_bson, sizeof empty_bson));
    bson_destroy(b);
 }
 
@@ -110,6 +110,8 @@ static void
 assert_bson_equal (const bson_t *a,
                    const bson_t *b)
 {
+   const bson_uint8_t *data1 = bson_get_data(a);
+   const bson_uint8_t *data2 = bson_get_data(b);
    bson_uint32_t i;
 
    if (!bson_equal(a, b)) {
@@ -121,9 +123,9 @@ assert_bson_equal (const bson_t *a,
             printf("b is too short len=%u\n", b->len);
             abort();
          }
-         if (a->data[i] != b->data[i]) {
+         if (data1[i] != data2[i]) {
             printf("a[%u](%02x) != b[%u](%02x)\n",
-                   i, a->data[i], i, b->data[i]);
+                   i, data1[i], i, data2[i]);
             abort();
          }
       }
@@ -687,7 +689,7 @@ test_bson_init (void)
       snprintf(key, sizeof key, "%d", i);
       bson_append_utf8(&b, key, -1, "bar", -1);
    }
-   assert(b.allocated);
+   assert(b.top.allocated);
    assert(b.flags & (1 << 0));
    bson_destroy(&b);
 }
@@ -700,7 +702,7 @@ test_bson_init_static (void)
    bson_t b;
 
    bson_init_static(&b, data, sizeof data);
-   assert(!b.allocated);
+   assert(!b.top.allocated);
    assert(b.flags & ((1 << 0) | (1 << 1)));
    bson_destroy(&b);
 }
@@ -772,10 +774,8 @@ test_bson_build_child (void)
    bson_append_document(b2, "foo", -1, child2);
    bson_destroy(child2);
 
-   printf("%u %u\n", b.len, b2->len);
-
    assert(b.len == b2->len);
-   assert(!memcmp(b.data, b2->data, b.len));
+   assert_bson_equal(&b, b2);
 
    bson_destroy(&b);
    bson_destroy(b2);
