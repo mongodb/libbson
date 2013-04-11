@@ -344,6 +344,41 @@ bson_append_document (bson_t       *bson,
 
 
 /**
+ * bson_append_document_begin:
+ * @bson: A bson_t.
+ * @key: The key for the field.
+ * @key_length: The length of @key in bytes not including NUL or -1
+ *    if @key_length is NUL terminated.
+ * @child: A location to an uninitialized bson_t.
+ *
+ * Appends a new field named @key to @bson. The field is, however,
+ * incomplete.  @child will be initialized so that you may add fields to the
+ * child document.  Child will use a memory buffer owned by @bson and
+ * therefore grow the parent buffer as additional space is used. This allows
+ * a single malloc'd buffer to be used when building documents which can help
+ * reduce memory fragmentation.
+ */
+void
+bson_append_document_begin (bson_t     *bson,
+                            const char *key,
+                            int         key_length,
+                            bson_t     *child);
+
+
+/**
+ * bson_append_document_end:
+ * @bson: A bson_t.
+ * @child: A bson_t supplied to bson_append_document_begin().
+ *
+ * Finishes the appending of a document to a @bson. @child is considered
+ * disposed after this call and should not be used any further.
+ */
+void
+bson_append_document_end (bson_t *bson,
+                          bson_t *child);
+
+
+/**
  * bson_append_int32:
  * @bson: A bson_t.
  * @key: The key for the field.
