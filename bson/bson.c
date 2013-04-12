@@ -1060,7 +1060,6 @@ bson_append_document_begin (bson_t     *bson,
                             bson_t     *child)
 {
    static const bson_uint8_t type = BSON_TYPE_DOCUMENT;
-   bson_t *parent;
 
    bson_return_if_fail(bson);
    bson_return_if_fail(key);
@@ -1080,8 +1079,8 @@ bson_append_document_begin (bson_t     *bson,
    child->child.parent = bson;
 
    if ((bson->flags & BSON_FLAG_CHILD)) {
-      child->child.toplevel = parent->child.toplevel;
-      child->child.offset = parent->child.offset + parent->len - 1;
+      child->child.toplevel = bson->child.toplevel;
+      child->child.offset = bson->child.offset + bson->len - 1;
    } else {
       child->child.toplevel = bson;
       child->child.offset = bson->len - 1;
