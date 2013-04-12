@@ -1102,12 +1102,16 @@ void
 bson_append_document_end (bson_t *bson,
                           bson_t *child)
 {
+   bson_uint8_t *data;
+
    bson_return_if_fail(bson);
    bson_return_if_fail(child);
 
    do {
       child = child->child.parent;
       bson_encode_length(child);
+      data = bson_get_data_fast(child);
+      data[child->len - 1] = 0;
    } while ((child->flags & BSON_FLAG_CHILD));
 }
 
