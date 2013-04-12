@@ -783,6 +783,33 @@ test_bson_build_child (void)
 
 
 static void
+test_bson_build_child_array (void)
+{
+   bson_t b;
+   bson_t child;
+   bson_t *b2;
+   bson_t *child2;
+
+   bson_init(&b);
+   bson_append_array_begin(&b, "foo", -1, &child);
+   bson_append_utf8(&child, "0", -1, "baz", -1);
+   bson_append_array_end(&b, &child);
+
+   b2 = bson_new();
+   child2 = bson_new();
+   bson_append_utf8(child2, "0", -1, "baz", -1);
+   bson_append_array(b2, "foo", -1, child2);
+   bson_destroy(child2);
+
+   assert(b.len == b2->len);
+   assert_bson_equal(&b, b2);
+
+   bson_destroy(&b);
+   bson_destroy(b2);
+}
+
+
+static void
 test_bson_build_child_deep_1 (bson_t *b,
                               int    *count)
 {
@@ -887,6 +914,7 @@ main (int   argc,
    run_test("/bson/build_child", test_bson_build_child);
    run_test("/bson/build_child_deep", test_bson_build_child_deep);
    run_test("/bson/build_child_deep_no_begin_end", test_bson_build_child_deep_no_begin_end);
+   run_test("/bson/build_child_array", test_bson_build_child_array);
 
    return 0;
 }

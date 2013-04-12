@@ -1053,13 +1053,14 @@ bson_equal (const bson_t *bson,
 }
 
 
-void
-bson_append_document_begin (bson_t     *bson,
-                            const char *key,
-                            int         key_length,
-                            bson_t     *child)
+static void
+bson_append_bson_begin (bson_t      *bson,
+                        const char  *key,
+                        int          key_length,
+                        bson_type_t  child_type,
+                        bson_t      *child)
 {
-   static const bson_uint8_t type = BSON_TYPE_DOCUMENT;
+   const bson_uint8_t type = child_type;
 
    bson_return_if_fail(bson);
    bson_return_if_fail(key);
@@ -1098,9 +1099,9 @@ bson_append_document_begin (bson_t     *bson,
 }
 
 
-void
-bson_append_document_end (bson_t *bson,
-                          bson_t *child)
+static void
+bson_append_bson_end (bson_t *bson,
+                      bson_t *child)
 {
    bson_uint8_t *data;
 
@@ -1113,6 +1114,42 @@ bson_append_document_end (bson_t *bson,
       data = bson_get_data_fast(child);
       data[child->len - 1] = 0;
    } while ((child->flags & BSON_FLAG_CHILD));
+}
+
+
+void
+bson_append_document_begin (bson_t     *bson,
+                            const char *key,
+                            int         key_length,
+                            bson_t     *child)
+{
+   bson_append_bson_begin(bson, key, key_length, BSON_TYPE_DOCUMENT, child);
+}
+
+
+void
+bson_append_array_begin (bson_t     *bson,
+                         const char *key,
+                         int         key_length,
+                         bson_t     *child)
+{
+   bson_append_bson_begin(bson, key, key_length, BSON_TYPE_ARRAY, child);
+}
+
+
+void
+bson_append_document_end (bson_t *bson,
+                          bson_t *child)
+{
+   bson_append_bson_end(bson, child);
+}
+
+
+void
+bson_append_array_end (bson_t *bson,
+                       bson_t *child)
+{
+   bson_append_bson_end(bson, child);
 }
 
 
