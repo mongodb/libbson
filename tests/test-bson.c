@@ -815,6 +815,40 @@ test_bson_build_child_deep (void)
 }
 
 
+static void
+test_bson_build_child_deep_no_begin_end_1 (bson_t *b,
+                                     int    *count)
+{
+   bson_t child;
+
+   (*count)++;
+
+   bson_init(&child);
+   if (*count < 100) {
+      test_bson_build_child_deep_1(&child, count);
+   } else {
+      bson_append_int32(&child, "b", -1, 1234);
+   }
+   bson_append_document(b, "b", -1, &child);
+   bson_destroy(&child);
+}
+
+
+static void
+test_bson_build_child_deep_no_begin_end (void)
+{
+   bson_t b;
+   int count = 0;
+
+   bson_init(&b);
+   test_bson_build_child_deep_no_begin_end_1(&b, &count);
+   assert(bson_validate(&b, BSON_VALIDATE_NONE, NULL));
+   assert(b.top.allocated == 1024);
+   assert_bson_equal_file(&b, "test39.bson");
+   bson_destroy(&b);
+}
+
+
 int
 main (int   argc,
       char *argv[])
@@ -852,6 +886,7 @@ main (int   argc,
    run_test("/bson/init_1mm", test_bson_init_1mm);
    run_test("/bson/build_child", test_bson_build_child);
    run_test("/bson/build_child_deep", test_bson_build_child_deep);
+   run_test("/bson/build_child_deep_no_begin_end", test_bson_build_child_deep_no_begin_end);
 
    return 0;
 }
