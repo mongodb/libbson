@@ -110,6 +110,8 @@ AS_CASE([$enable_debug],
 		CFLAGS="$CFLAGS -Wnested-externs"
 		CFLAGS="$CFLAGS -Wshadow"
 		CFLAGS="$CFLAGS -Wreturn-type"
+		CFLAGS="$CFLAGS -Wunused-but-set-parameter"
+		CFLAGS="$CFLAGS -Wuninitialized"
 	],
 	[minimum], [
 	],
