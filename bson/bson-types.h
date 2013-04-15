@@ -115,8 +115,8 @@ typedef struct _bson_t bson_t;
 
 struct _bson_t
 {
-   bson_uint32_t flags;      /* Internal flags for the bson_t. */
-   bson_uint32_t len;
+   bson_uint32_t flags; /* Internal flags for the bson_t. */
+   bson_uint32_t len;   /* Length of data buffer. */
 
    /*< private >*/
 
@@ -126,7 +126,6 @@ struct _bson_t
          bson_uint32_t  allocated;
          bson_uint8_t   inlbuf[44];
       } top;
-
       struct {
          bson_uint8_t  **data;
          bson_uint32_t   offset;
