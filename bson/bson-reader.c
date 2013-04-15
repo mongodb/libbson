@@ -68,10 +68,6 @@ bson_reader_fd_fill_buffer (bson_reader_fd_t *reader)
    bson_return_if_fail(reader->fd >= 0);
 
    /*
-    * TODO: Need to grow buffer to fit an entire BSON.
-    */
-
-   /*
     * Handle first read specially.
     */
    if ((!reader->done) && (!reader->offset) && (!reader->end)) {
@@ -129,6 +125,19 @@ bson_reader_init_from_fd (bson_reader_t *reader,
 }
 
 
+static void
+bson_reader_fd_grow_buffer (bson_reader_fd_t *reader)
+{
+   size_t size;
+
+   bson_return_if_fail(reader);
+
+   size = reader->len * 2;
+   reader->data = bson_realloc(reader->data, size);
+   reader->len = size;
+}
+
+
 static const bson_t *
 bson_reader_fd_read (bson_reader_fd_t *reader,
                      bson_bool_t      *reached_eof)
@@ -146,6 +155,9 @@ bson_reader_fd_read (bson_reader_fd_t *reader,
       memcpy(&blen, &reader->data[reader->offset], sizeof blen);
       blen = BSON_UINT32_FROM_LE(blen);
       if (blen > (reader->end - reader->offset)) {
+         if (blen > reader->len) {
+            bson_reader_fd_grow_buffer(reader);
+         }
          bson_reader_fd_fill_buffer(reader);
          continue;
       }

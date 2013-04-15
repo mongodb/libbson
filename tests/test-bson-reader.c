@@ -155,6 +155,31 @@ test_reader_from_fd_corrupt (void)
 }
 
 
+static void
+test_reader_grow_buffer (void)
+{
+   bson_reader_t reader;
+   const bson_t *b;
+   bson_bool_t eof = FALSE;
+   int fd;
+
+   fd  = open("tests/binary/readergrow.bson", O_RDONLY);
+   assert(fd >= 0);
+
+   bson_reader_init_from_fd(&reader, fd, TRUE);
+
+   b = bson_reader_read(&reader, &eof);
+   assert(b);
+   assert(!eof);
+
+   b = bson_reader_read(&reader, &eof);
+   assert(!b);
+   assert(eof);
+
+   bson_reader_destroy(&reader);
+}
+
+
 int
 main (int   argc,
       char *argv[])
@@ -165,6 +190,7 @@ main (int   argc,
    run_test("/bson/reader/init_from_fd", test_reader_from_fd);
    run_test("/bson/reader/init_from_fd_corrupt",
             test_reader_from_fd_corrupt);
+   run_test("/bson/reader/grow_buffer", test_reader_grow_buffer);
 
    return 0;
 }
