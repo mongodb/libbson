@@ -97,7 +97,7 @@ main (int   argc,
 {
    run_test("/bson/utf8/validate", test_bson_utf8_validate);
    run_test("/bson/utf8/escape_for_json", test_bson_utf8_escape_for_json);
-   run_test("/bson/utf8/get_char", test_bson_utf8_get_char);
+   run_test("/bson/utf8/get_char_next_char", test_bson_utf8_get_char);
 
    return 0;
 }
