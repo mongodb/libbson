@@ -47,14 +47,18 @@
 static const bson_uint8_t gZero;
 
 
-static bson_bool_t bson_as_json_visit_array    (const bson_iter_t *iter,
-                                                const char        *key,
-                                                const bson_t      *v_array,
-                                                void              *data);
-static bson_bool_t bson_as_json_visit_document (const bson_iter_t *iter,
-                                                const char        *key,
-                                                const bson_t      *v_document,
-                                                void              *data);
+static bson_bool_t
+bson_as_json_visit_array (const bson_iter_t *iter,
+                          const char        *key,
+                          const bson_t      *v_array,
+                          void              *data);
+
+
+static bson_bool_t
+bson_as_json_visit_document (const bson_iter_t *iter,
+                             const char        *key,
+                             const bson_t      *v_document,
+                             void              *data);
 
 
 typedef struct
