@@ -78,12 +78,49 @@ test_bson_string_append (void)
 }
 
 
+static void
+test_bson_string_append_c (void)
+{
+   bson_string_t *str;
+   char *s;
+
+   str = bson_string_new(NULL);
+   bson_string_append_c(str, 'c');
+   bson_string_append_c(str, 'h');
+   bson_string_append_c(str, 'r');
+   bson_string_append_c(str, 'i');
+   bson_string_append_c(str, 's');
+   s = bson_string_free(str, FALSE);
+   assert(s);
+   assert(!strcmp(s, "chris"));
+   bson_free(s);
+}
+
+
+static void
+test_bson_string_append_unichar (void)
+{
+   static const char test1[] = {0xe2, 0x82, 0xac, 0};
+   bson_string_t *str;
+   char *s;
+
+   str = bson_string_new(NULL);
+   bson_string_append_unichar(str, 0x20AC);
+   s = bson_string_free(str, FALSE);
+   assert(s);
+   assert(!strcmp(s, test1));
+   bson_free(s);
+}
+
+
 int
 main (int   argc,
       char *argv[])
 {
    run_test("/bson/string/new", test_bson_string_new);
    run_test("/bson/string/append", test_bson_string_append);
+   run_test("/bson/string/append_c", test_bson_string_append_c);
+   run_test("/bson/string/append_unichar", test_bson_string_append_unichar);
 
    return 0;
 }

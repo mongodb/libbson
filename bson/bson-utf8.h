@@ -94,6 +94,12 @@ const char *
 bson_utf8_next_char (const char *utf8);
 
 
+void
+bson_utf8_from_unichar (bson_unichar_t  unichar,
+                        char            utf8[static 6],
+                        bson_uint32_t  *len);
+
+
 BSON_END_DECLS
 
 

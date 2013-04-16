@@ -52,6 +52,16 @@ bson_string_append (bson_string_t *string,
                     const char    *str);
 
 
+void
+bson_string_append_c (bson_string_t *string,
+                      char           str);
+
+
+void
+bson_string_append_unichar (bson_string_t  *string,
+                            bson_unichar_t  unichar);
+
+
 BSON_END_DECLS
 
 

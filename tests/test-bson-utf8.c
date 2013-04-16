@@ -94,6 +94,76 @@ test_bson_utf8_get_char (void)
 }
 
 
+static void
+test_bson_utf8_from_unichar (void)
+{
+   static const char test1[] = {'a'};
+   static const char test2[] = {0xc3, 0xbf};
+   static const char test3[] = {0xe2, 0x82, 0xac};
+   static const char test4[] = {0xF0, 0xA4, 0xAD, 0xA2};
+   bson_uint32_t len;
+   char str[6];
+
+   /*
+    * First possible sequence of a certain length.
+    */
+   bson_utf8_from_unichar(0, str, &len);
+   assert(len == 1);
+   bson_utf8_from_unichar(0x00000080, str, &len);
+   assert(len == 2);
+   bson_utf8_from_unichar(0x00000800, str, &len);
+   assert(len == 3);
+   bson_utf8_from_unichar(0x00010000, str, &len);
+   assert(len == 4);
+   bson_utf8_from_unichar(0x00200000, str, &len);
+   assert(len == 5);
+   bson_utf8_from_unichar(0x04000000, str, &len);
+   assert(len == 6);
+
+   /*
+    * Last possible sequence of a certain length.
+    */
+   bson_utf8_from_unichar(0x0000007F, str, &len);
+   assert(len == 1);
+   bson_utf8_from_unichar(0x000007FF, str, &len);
+   assert(len == 2);
+   bson_utf8_from_unichar(0x0000FFFF, str, &len);
+   assert(len == 3);
+   bson_utf8_from_unichar(0x001FFFFF, str, &len);
+   assert(len == 4);
+   bson_utf8_from_unichar(0x03FFFFFF, str, &len);
+   assert(len == 5);
+   bson_utf8_from_unichar(0x7FFFFFFF, str, &len);
+   assert(len == 6);
+
+   /*
+    * Other interesting values.
+    */
+   bson_utf8_from_unichar(0x0000D7FF, str, &len);
+   assert(len == 3);
+   bson_utf8_from_unichar(0x0000E000, str, &len);
+   assert(len == 3);
+   bson_utf8_from_unichar(0x0000FFFD, str, &len);
+   assert(len == 3);
+   bson_utf8_from_unichar(0x0010FFFF, str, &len);
+   assert(len == 4);
+   bson_utf8_from_unichar(0x00110000, str, &len);
+   assert(len == 4);
+
+   bson_utf8_from_unichar('a', str, &len);
+   assert(len == 1);
+   assert(!memcmp(test1, str, 1));
+
+   bson_utf8_from_unichar(0xFF, str, &len);
+   assert(len == 2);
+   assert(!memcmp(test2, str, 2));
+
+   bson_utf8_from_unichar(0x20AC, str, &len);
+   assert(len == 3);
+   assert(!memcmp(test3, str, 3));
+}
+
+
 int
 main (int   argc,
       char *argv[])
@@ -101,6 +171,7 @@ main (int   argc,
    run_test("/bson/utf8/validate", test_bson_utf8_validate);
    run_test("/bson/utf8/escape_for_json", test_bson_utf8_escape_for_json);
    run_test("/bson/utf8/get_char_next_char", test_bson_utf8_get_char);
+   run_test("/bson/utf8/from_unichar", test_bson_utf8_from_unichar);
 
    return 0;
 }

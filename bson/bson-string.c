@@ -19,6 +19,7 @@
 
 #include "bson-string.h"
 #include "bson-memory.h"
+#include "bson-utf8.h"
 
 
 bson_string_t *
@@ -72,4 +73,38 @@ bson_string_append (bson_string_t *string,
    memcpy(&string->str[string->len - 1], str, len);
    string->len += len;
    string->str[string->len-1] = '\0';
+}
+
+
+void
+bson_string_append_c (bson_string_t *string,
+                      char           c)
+{
+   bson_uint32_t len;
+
+   bson_return_if_fail(string);
+
+   string->str = bson_realloc(string->str, string->len + 1);
+   string->str[string->len-1] = c;
+   string->len++;
+   string->str[string->len-1] = '\0';
+}
+
+
+void
+bson_string_append_unichar (bson_string_t  *string,
+                            bson_unichar_t  unichar)
+{
+   bson_uint32_t len;
+   char str[7];
+
+   bson_return_if_fail(string);
+   bson_return_if_fail(unichar);
+
+   bson_utf8_from_unichar(unichar, str, &len);
+
+   if (len <= 6) {
+      str[len] = '\0';
+      bson_string_append(string, str);
+   }
 }
