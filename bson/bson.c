@@ -145,7 +145,7 @@ bson_grow_if_needed (bson_t *bson,
       return;
    }
 
-   asize = 32;
+   asize = 64;
 
    while (asize < amin) {
       asize <<= 1;
