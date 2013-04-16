@@ -69,6 +69,31 @@ char *bson_utf8_escape_for_json (const char *utf8,
                                  ssize_t     utf8_len);
 
 
+/**
+ * bson_utf8_get_char:
+ * @utf8: A string containing validated UTF-8.
+ *
+ * Fetches the next UTF-8 character from the UTF-8 sequence.
+ *
+ * Returns: A 32-bit bson_unichar_t reprsenting the multi-byte sequence.
+ */
+bson_unichar_t
+bson_utf8_get_char (const char *utf8);
+
+
+/**
+ * bson_utf8_next_char:
+ * @utf8: A string containing validated UTF-8.
+ *
+ * Returns an incremented pointer to the beginning of the next multi-byte
+ * sequence in @utf8.
+ *
+ * Returns: An incremented pointer in @utf8.
+ */
+const char *
+bson_utf8_next_char (const char *utf8);
+
+
 BSON_END_DECLS
 
 

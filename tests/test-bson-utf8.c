@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2013 10gen Inc.
  *
@@ -53,12 +54,47 @@ test_bson_utf8_escape_for_json (void)
 }
 
 
+static void
+test_bson_utf8_get_char (void)
+{
+   static const char *test1 = "asdf";
+   static const char test2[] = {0xe2, 0x82, 0xac, ' ', 0xe2, 0x82, 0xac, ' ', 0xe2, 0x82, 0xac, 0};
+   const char *c;
+
+   c = test1;
+   assert(bson_utf8_get_char(c) == 'a');
+   c = bson_utf8_next_char(c);
+   assert(bson_utf8_get_char(c) == 's');
+   c = bson_utf8_next_char(c);
+   assert(bson_utf8_get_char(c) == 'd');
+   c = bson_utf8_next_char(c);
+   assert(bson_utf8_get_char(c) == 'f');
+   c = bson_utf8_next_char(c);
+   assert(!*c);
+
+   c = test2;
+   assert(bson_utf8_get_char(c) == 0x20AC);
+   c = bson_utf8_next_char(c);
+   assert(c == test2 + 3);
+   assert(bson_utf8_get_char(c) == ' ');
+   c = bson_utf8_next_char(c);
+   assert(bson_utf8_get_char(c) == 0x20AC);
+   c = bson_utf8_next_char(c);
+   assert(bson_utf8_get_char(c) == ' ');
+   c = bson_utf8_next_char(c);
+   assert(bson_utf8_get_char(c) == 0x20AC);
+   c = bson_utf8_next_char(c);
+   assert(!*c);
+}
+
+
 int
 main (int   argc,
       char *argv[])
 {
    run_test("/bson/utf8/validate", test_bson_utf8_validate);
    run_test("/bson/utf8/escape_for_json", test_bson_utf8_escape_for_json);
+   run_test("/bson/utf8/get_char", test_bson_utf8_get_char);
 
    return 0;
 }

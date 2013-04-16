@@ -42,6 +42,7 @@ typedef uint8_t  bson_uint8_t;
 typedef uint16_t bson_uint16_t;
 typedef uint32_t bson_uint32_t;
 typedef uint64_t bson_uint64_t;
+typedef uint32_t bson_unichar_t;
 
 
 /**
