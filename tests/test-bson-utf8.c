@@ -25,11 +25,15 @@ test_bson_utf8_validate (void)
 {
    static const char test1[] = {0xe2, 0x82, 0xac, ' ', 0xe2, 0x82, 0xac, ' ', 0xe2, 0x82, 0xac, 0};
 
-   assert(bson_utf8_validate("asdf", -1, FALSE));
    assert(bson_utf8_validate("asdf", 4, FALSE));
+   assert(bson_utf8_validate("asdf", 4, TRUE));
    assert(bson_utf8_validate("asdf", 5, TRUE));
    assert(!bson_utf8_validate("asdf", 5, FALSE));
-   assert(bson_utf8_validate(test1, -1, FALSE));
+
+   assert(bson_utf8_validate(test1, 11, TRUE));
+   assert(bson_utf8_validate(test1, 11, FALSE));
+   assert(bson_utf8_validate(test1, 12, TRUE));
+   assert(!bson_utf8_validate(test1, 12, FALSE));
 }
 
 

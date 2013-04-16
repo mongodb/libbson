@@ -177,7 +177,32 @@ bson_utf8_validate (const char *utf8,
                     size_t      utf8_len,
                     bson_bool_t allow_null)
 {
-   return !check_string(utf8, utf8_len, TRUE, !allow_null);
+   bson_uint8_t first_mask;
+   bson_uint8_t seq_length;
+   int i;
+   int j;
+
+   bson_return_val_if_fail(utf8, FALSE);
+
+   for (i = 0; i < utf8_len; i += seq_length) {
+      bson_utf8_get_sequence(&utf8[i], &seq_length, &first_mask);
+      if (!seq_length) {
+         return FALSE;
+      }
+      /*
+       * TODO: Might make sense to validate each of the trailing bytes
+       *       based on the sequence length.
+       */
+      if (!allow_null) {
+         for (j = 0; j < seq_length; j++) {
+            if (((i + j) > utf8_len) || !utf8[i + j]) {
+               return FALSE;
+            }
+         }
+      }
+   }
+
+   return TRUE;
 }
 
 
