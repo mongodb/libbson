@@ -32,6 +32,8 @@
 #include "bson-memory.h"
 #include "bson-oid.h"
 #include "bson-reader.h"
+#include "bson-string.h"
+#include "bson-thread.h"
 #include "bson-types.h"
 #include "bson-utf8.h"
 #include "bson-version.h"
