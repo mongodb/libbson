@@ -113,6 +113,28 @@ test_bson_string_append_unichar (void)
 }
 
 
+static void
+test_bson_strdup_printf (void)
+{
+   char *s;
+
+   s = bson_strdup_printf("%s:%u", "localhost", 27017);
+   assert(!strcmp(s, "localhost:27017"));
+   bson_free(s);
+}
+
+
+static void
+test_bson_strdup (void)
+{
+   char *s;
+
+   s = bson_strdup("localhost:27017");
+   assert(!strcmp(s, "localhost:27017"));
+   bson_free(s);
+}
+
+
 int
 main (int   argc,
       char *argv[])
@@ -121,6 +143,8 @@ main (int   argc,
    run_test("/bson/string/append", test_bson_string_append);
    run_test("/bson/string/append_c", test_bson_string_append_c);
    run_test("/bson/string/append_unichar", test_bson_string_append_unichar);
+   run_test("/bson/string/strdup", test_bson_strdup);
+   run_test("/bson/string/strdup_printf", test_bson_strdup_printf);
 
    return 0;
 }

@@ -15,6 +15,7 @@
  */
 
 
+#include <stdarg.h>
 #include <string.h>
 
 #include "bson-string.h"
@@ -106,5 +107,47 @@ bson_string_append_unichar (bson_string_t  *string,
    if (len <= 6) {
       str[len] = '\0';
       bson_string_append(string, str);
+   }
+}
+
+
+char *
+bson_strdup (const char *str)
+{
+   if (!str)
+      return NULL;
+   return strdup(str);
+}
+
+
+char *
+bson_strdup_printf (const char *format,
+                    ...)
+{
+   va_list args;
+   char *buf;
+   int len = 32;
+   int n;
+
+   bson_return_val_if_fail(format, NULL);
+
+   buf = bson_malloc0(len);
+
+   while (TRUE) {
+      va_start(args, format);
+      n = vsnprintf(buf, len, format, args);
+      va_end(args);
+
+      if (n > -1 && n < len) {
+         return buf;
+      }
+
+      if (n > -1) {
+         len = n + 1;
+      } else {
+         len *= 2;
+      }
+
+      buf = bson_realloc(buf, len);
    }
 }
