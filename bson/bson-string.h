@@ -72,6 +72,11 @@ bson_strdup_printf (const char *format,
    BSON_GNUC_PRINTF(1, 2);
 
 
+char *
+bson_strndup (const char *str,
+              size_t      n_bytes);
+
+
 BSON_END_DECLS
 
 

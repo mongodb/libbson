@@ -135,6 +135,17 @@ test_bson_strdup (void)
 }
 
 
+static void
+test_bson_strndup (void)
+{
+   char *s;
+
+   s = bson_strndup("asdf", 2);
+   assert(!strcmp(s, "as"));
+   bson_free(s);
+}
+
+
 int
 main (int   argc,
       char *argv[])
@@ -145,6 +156,7 @@ main (int   argc,
    run_test("/bson/string/append_unichar", test_bson_string_append_unichar);
    run_test("/bson/string/strdup", test_bson_strdup);
    run_test("/bson/string/strdup_printf", test_bson_strdup_printf);
+   run_test("/bson/string/strndup", test_bson_strndup);
 
    return 0;
 }

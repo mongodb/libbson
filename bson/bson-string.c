@@ -151,3 +151,17 @@ bson_strdup_printf (const char *format,
       buf = bson_realloc(buf, len);
    }
 }
+
+
+char *
+bson_strndup (const char *str,
+              size_t      n_bytes)
+{
+   char *ret;
+
+   ret = bson_malloc0(n_bytes + 1);
+   memcpy(ret, str, n_bytes);
+   ret[n_bytes] = '\0';
+
+   return ret;
+}
