@@ -629,6 +629,45 @@ bson_iter_type_unsafe (const bson_iter_t *iter)
 
 
 /**
+ * bson_iter_overwrite_int32:
+ * @iter: A bson_iter_t.
+ * @value: A 32-bit integer.
+ *
+ * Overwrites the current %BSON_TYPE_INT32 field with a new value. This is
+ * performed inline and therefore no keys are moved.
+ */
+void
+bson_iter_overwrite_int32 (bson_iter_t  *iter,
+                           bson_int32_t  value);
+
+
+/**
+ * bson_iter_overwrite_int64:
+ * @iter: A bson_iter_t.
+ * @value: A 64-bit integer.
+ *
+ * Overwrites the current %BSON_TYPE_INT64 field with a new value. This is
+ * performed inline and therefore no keys are moved.
+ */
+void
+bson_iter_overwrite_int64 (bson_iter_t  *iter,
+                           bson_int64_t  value);
+
+
+/**
+ * bson_iter_overwrite_double:
+ * @iter: A bson_iter_t.
+ * @value: A double.
+ *
+ * Overwrites the current %BSON_TYPE_DOUBLE field with a new value. This is
+ * performed inline and therefore no keys are moved.
+ */
+void
+bson_iter_overwrite_double (bson_iter_t  *iter,
+                            double        value);
+
+
+/**
  * bson_iter_visit_all:
  * @iter: A bson_iter_t.
  * @visitor: A bson_visitor_t containing the visitors.

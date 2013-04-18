@@ -283,6 +283,60 @@ test_bson_iter_find_case (void)
 }
 
 
+static void
+test_bson_iter_overwrite_int32 (void)
+{
+   bson_iter_t iter;
+   bson_t b;
+
+   bson_init(&b);
+   bson_append_int32(&b, "key", -1, 1234);
+   assert(bson_iter_init_find(&iter, &b, "key"));
+   assert(BSON_ITER_HOLDS_INT32(&iter));
+   bson_iter_overwrite_int32(&iter, 4321);
+   assert(bson_iter_init_find(&iter, &b, "key"));
+   assert(BSON_ITER_HOLDS_INT32(&iter));
+   assert_cmpint(bson_iter_int32(&iter), ==, 4321);
+   bson_destroy(&b);
+}
+
+
+static void
+test_bson_iter_overwrite_int64 (void)
+{
+   bson_iter_t iter;
+   bson_t b;
+
+   bson_init(&b);
+   bson_append_int64(&b, "key", -1, 1234);
+   assert(bson_iter_init_find(&iter, &b, "key"));
+   assert(BSON_ITER_HOLDS_INT64(&iter));
+   bson_iter_overwrite_int64(&iter, 4641);
+   assert(bson_iter_init_find(&iter, &b, "key"));
+   assert(BSON_ITER_HOLDS_INT64(&iter));
+   assert_cmpint(bson_iter_int64(&iter), ==, 4641);
+   bson_destroy(&b);
+}
+
+
+static void
+test_bson_iter_overwrite_double (void)
+{
+   bson_iter_t iter;
+   bson_t b;
+
+   bson_init(&b);
+   bson_append_double(&b, "key", -1, 1234.1234);
+   assert(bson_iter_init_find(&iter, &b, "key"));
+   assert(BSON_ITER_HOLDS_DOUBLE(&iter));
+   bson_iter_overwrite_double(&iter, 4641.1234);
+   assert(bson_iter_init_find(&iter, &b, "key"));
+   assert(BSON_ITER_HOLDS_DOUBLE(&iter));
+   assert_cmpint(bson_iter_double(&iter), ==, 4641.1234);
+   bson_destroy(&b);
+}
+
+
 int
 main (int   argc,
       char *argv[])
@@ -295,6 +349,9 @@ main (int   argc,
    run_test("/bson/iter/test_regex", test_bson_iter_regex);
    run_test("/bson/iter/test_next_after_finish", test_bson_iter_next_after_finish);
    run_test("/bson/iter/test_find_case", test_bson_iter_find_case);
+   run_test("/bson/iter/test_overwrite_int32", test_bson_iter_overwrite_int32);
+   run_test("/bson/iter/test_overwrite_int64", test_bson_iter_overwrite_int64);
+   run_test("/bson/iter/test_overwrite_double", test_bson_iter_overwrite_double);
 
    return 0;
 }

@@ -858,3 +858,45 @@ bson_iter_visit_all (bson_iter_t          *iter,
 
    return FALSE;
 }
+
+
+void
+bson_iter_overwrite_int32 (bson_iter_t  *iter,
+                           bson_int32_t  value)
+{
+   bson_return_if_fail(iter);
+
+   if (*iter->type == BSON_TYPE_INT32) {
+#if BSON_BYTE_ORDER != BSON_LITTLE_ENDIAN
+      value = BSON_UINT32_TO_LE(value);
+#endif
+      memcpy((void *)iter->data1, &value, 4);
+   }
+}
+
+
+void
+bson_iter_overwrite_int64 (bson_iter_t  *iter,
+                           bson_int64_t  value)
+{
+   bson_return_if_fail(iter);
+
+   if (*iter->type == BSON_TYPE_INT64) {
+#if BSON_BYTE_ORDER != BSON_LITTLE_ENDIAN
+      value = BSON_UINT64_TO_LE(value);
+#endif
+      memcpy((void *)iter->data1, &value, 8);
+   }
+}
+
+
+void
+bson_iter_overwrite_double (bson_iter_t *iter,
+                            double       value)
+{
+   bson_return_if_fail(iter);
+
+   if (*iter->type == BSON_TYPE_DOUBLE) {
+      memcpy((void *)iter->data1, &value, 8);
+   }
+}
