@@ -85,8 +85,10 @@ bson_new (void);
  * Initializes a bson_t using @data and @length. This is ideal if you would
  * like to use a stack allocation for your bson and do not need to grow the
  * buffer. @data must be valid for the life of @b.
+ *
+ * Returns: TRUE if initialized successfully; otherwise FALSE.
  */
-void
+bson_bool_t
 bson_init_static (bson_t             *b,
                   const bson_uint8_t *data,
                   bson_uint32_t       length);

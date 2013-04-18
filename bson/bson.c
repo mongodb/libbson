@@ -175,6 +175,7 @@ bson_init (bson_t *b)
 {
    bson_return_if_fail(b);
 
+   memset(b, 0, sizeof *b);
    b->flags = BSON_FLAG_NO_FREE;
    b->top.allocated = 0;
    b->len = 5;
@@ -183,17 +184,31 @@ bson_init (bson_t *b)
 }
 
 
-void
+bson_bool_t
 bson_init_static (bson_t             *b,
                   const bson_uint8_t *data,
                   bson_uint32_t       length)
 {
-   bson_return_if_fail(b);
+   bson_uint32_t len;
 
+   bson_return_val_if_fail(b, FALSE);
+
+   if (length < 5) {
+      return FALSE;
+   }
+
+   memset(b, 0, sizeof *b);
    b->flags = BSON_FLAG_NO_FREE | BSON_FLAG_NO_GROW;
    b->top.allocated = 0;
    b->len = length;
    b->top.data = (bson_uint8_t *)data;
+
+   memcpy(&len, data, 4);
+   if (BSON_UINT32_FROM_LE(len) != length) {
+      return FALSE;
+   }
+
+   return TRUE;
 }
 
 
