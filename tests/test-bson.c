@@ -722,7 +722,7 @@ test_bson_utf8_key (void)
    assert(bson_iter_init(&iter, b));
    assert(bson_iter_next(&iter));
    assert(!strcmp(bson_iter_key(&iter), "€€€€€"));
-   assert((str = bson_iter_string(&iter, &length)));
+   assert((str = bson_iter_utf8(&iter, &length)));
    assert(length == 15); /* 5 3-byte sequences. */
    assert(!strcmp(str, "€€€€€"));
    bson_destroy(b);

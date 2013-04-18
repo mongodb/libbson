@@ -95,7 +95,7 @@ BSON_BEGIN_DECLS
 
 
 /**
- * bson_iter_string_len_unsafe:
+ * bson_iter_utf8_len_unsafe:
  * @iter: a bson_iter_t.
  *
  * Returns the length of a string currently pointed to by @iter. This performs
@@ -103,7 +103,7 @@ BSON_BEGIN_DECLS
  * bson_validate() is one way to do this ahead of time.
  */
 static BSON_INLINE bson_uint32_t
-bson_iter_string_len_unsafe (const bson_iter_t *iter)
+bson_iter_utf8_len_unsafe (const bson_iter_t *iter)
 {
    bson_uint32_t val;
    memcpy(&val, iter->data1, 4);
@@ -182,7 +182,7 @@ static BSON_INLINE const char *
 bson_iter_code_unsafe (const bson_iter_t *iter,
                        bson_uint32_t     *length)
 {
-   *length = bson_iter_string_len_unsafe(iter);
+   *length = bson_iter_utf8_len_unsafe(iter);
    return (const char *)iter->data2;
 }
 
@@ -454,7 +454,7 @@ bson_iter_key_unsafe (const bson_iter_t *iter)
 
 
 /**
- * bson_iter_string:
+ * bson_iter_utf8:
  * @iter: A bson_iter_t.
  * @length: A location for the length of the string.
  *
@@ -464,22 +464,22 @@ bson_iter_key_unsafe (const bson_iter_t *iter)
  * Returns: A string that should not be modified or freed.
  */
 const char *
-bson_iter_string (const bson_iter_t *iter,
+bson_iter_utf8 (const bson_iter_t *iter,
                   bson_uint32_t     *length);
 
 
 /**
- * bson_iter_string_unsafe:
+ * bson_iter_utf8_unsafe:
  *
- * Similar to bson_iter_string() but performs no integrity checking.
+ * Similar to bson_iter_utf8() but performs no integrity checking.
  *
  * Returns: A string that should not be modified or freed.
  */
 static BSON_INLINE const char *
-bson_iter_string_unsafe (const bson_iter_t *iter,
+bson_iter_utf8_unsafe (const bson_iter_t *iter,
                          bson_uint32_t     *length)
 {
-   *length = bson_iter_string_len_unsafe(iter);
+   *length = bson_iter_utf8_len_unsafe(iter);
    return (const char *)iter->data2;
 }
 

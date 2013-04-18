@@ -480,14 +480,14 @@ bson_iter_regex (const bson_iter_t  *iter,
 
 
 const char *
-bson_iter_string (const bson_iter_t *iter,
+bson_iter_utf8 (const bson_iter_t *iter,
                   bson_uint32_t     *length)
 {
    bson_return_val_if_fail(iter, NULL);
 
    if (*iter->type == BSON_TYPE_UTF8) {
       if (length) {
-         *length = bson_iter_string_len_unsafe(iter);
+         *length = bson_iter_utf8_len_unsafe(iter);
       }
       return (const char *)iter->data2;
    }
@@ -504,7 +504,7 @@ bson_iter_code (const bson_iter_t *iter,
 
    if (*iter->type == BSON_TYPE_CODE) {
       if (length) {
-         *length = bson_iter_string_len_unsafe(iter);
+         *length = bson_iter_utf8_len_unsafe(iter);
       }
       return (const char *)iter->data2;
    }
@@ -575,7 +575,7 @@ bson_iter_symbol (const bson_iter_t *iter,
 
    if (*iter->type == BSON_TYPE_SYMBOL) {
       ret = (const char *)iter->data2;
-      ret_length = bson_iter_string_len_unsafe(iter);
+      ret_length = bson_iter_utf8_len_unsafe(iter);
    }
 
    if (length) {
@@ -715,7 +715,7 @@ bson_iter_visit_all (bson_iter_t          *iter,
          {
             bson_uint32_t utf8_len;
             const char *utf8;
-            utf8 = bson_iter_string(iter, &utf8_len);
+            utf8 = bson_iter_utf8(iter, &utf8_len);
             if (VISIT_FIELD(utf8)(iter, key, utf8_len, utf8, data)) {
                return TRUE;
             }

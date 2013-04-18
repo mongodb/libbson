@@ -48,7 +48,7 @@ get_bson (const char *filename)
 
 
 static void
-test_bson_iter_string (void)
+test_bson_iter_utf8 (void)
 {
    bson_iter_t iter;
    bson_t *b;
@@ -60,11 +60,11 @@ test_bson_iter_string (void)
    assert(bson_iter_next(&iter));
    assert(BSON_ITER_HOLDS_UTF8(&iter));
    assert(!strcmp(bson_iter_key(&iter), "foo"));
-   assert(!strcmp(bson_iter_string(&iter, NULL), "bar"));
+   assert(!strcmp(bson_iter_utf8(&iter, NULL), "bar"));
    assert(bson_iter_next(&iter));
    assert(BSON_ITER_HOLDS_UTF8(&iter));
    assert(!strcmp(bson_iter_key(&iter), "bar"));
-   assert(!strcmp(bson_iter_string(&iter, NULL), "baz"));
+   assert(!strcmp(bson_iter_utf8(&iter, NULL), "baz"));
    assert(!bson_iter_next(&iter));
    bson_destroy(b);
 }
@@ -367,7 +367,7 @@ int
 main (int   argc,
       char *argv[])
 {
-   run_test("/bson/iter/test_string", test_bson_iter_string);
+   run_test("/bson/iter/test_string", test_bson_iter_utf8);
    run_test("/bson/iter/test_mixed", test_bson_iter_mixed);
    run_test("/bson/iter/test_overflow", test_bson_iter_overflow);
    run_test("/bson/iter/test_trailing_null", test_bson_iter_trailing_null);
