@@ -629,6 +629,21 @@ bson_iter_type_unsafe (const bson_iter_t *iter)
 
 
 /**
+ * bson_iter_recurse:
+ * @iter: A bson_iter_t.
+ * @child: A location for the child iter.
+ *
+ * Creates a new sub-iter looking at the document or array that @iter is
+ * currently pointing at.
+ *
+ * Returns: TRUE if successful; otherwise FALSE.
+ */
+bson_bool_t
+bson_iter_recurse (const bson_iter_t *iter,
+                   bson_iter_t       *child);
+
+
+/**
  * bson_iter_overwrite_int32:
  * @iter: A bson_iter_t.
  * @value: A 32-bit integer.

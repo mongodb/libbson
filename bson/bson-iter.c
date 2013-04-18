@@ -40,6 +40,44 @@ bson_iter_init (bson_iter_t  *iter,
 
 
 bson_bool_t
+bson_iter_recurse (const bson_iter_t *iter,
+                   bson_iter_t       *child)
+{
+   const bson_uint8_t *data;
+   bson_uint32_t len;
+   bson_t b;
+
+   bson_return_val_if_fail(iter, FALSE);
+   bson_return_val_if_fail(child, FALSE);
+
+   memset(child, 0, sizeof *child);
+
+   if (*iter->type == BSON_TYPE_DOCUMENT) {
+      bson_iter_document(iter, &len, &data);
+   } else if (*iter->type == BSON_TYPE_ARRAY) {
+      bson_iter_array(iter, &len, &data);
+   } else {
+      return FALSE;
+   }
+
+   /*
+    * Load the BSON into an inline document inside the iter. Sadly, we have
+    * to do this twice for the time being. We can get rid of that by not
+    * using memset() in bson_iter_init().
+    */
+   if (!bson_init_static(&b, data, len) ||
+       !bson_iter_init(child, &b) ||
+       !bson_init_static(&child->inl_bson, data, len)) {
+      return FALSE;
+   }
+
+   child->bson = &child->inl_bson;
+
+   return TRUE;
+}
+
+
+bson_bool_t
 bson_iter_init_find (bson_iter_t  *iter,
                      const bson_t *bson,
                      const char   *key)

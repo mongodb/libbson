@@ -337,6 +337,32 @@ test_bson_iter_overwrite_double (void)
 }
 
 
+static void
+test_bson_iter_recurse (void)
+{
+   bson_iter_t iter;
+   bson_iter_t child;
+   bson_t b;
+   bson_t cb;
+
+   bson_init(&b);
+   bson_init(&cb);
+   bson_append_int32(&cb, "0", 1, 0);
+   bson_append_int32(&cb, "1", 1, 1);
+   bson_append_int32(&cb, "2", 1, 2);
+   bson_append_array(&b, "key", -1, &cb);
+   assert(bson_iter_init_find(&iter, &b, "key"));
+   assert(BSON_ITER_HOLDS_ARRAY(&iter));
+   assert(bson_iter_recurse(&iter, &child));
+   assert(bson_iter_find(&child, "0"));
+   assert(bson_iter_find(&child, "1"));
+   assert(bson_iter_find(&child, "2"));
+   assert(!bson_iter_next(&child));
+   bson_destroy(&b);
+   bson_destroy(&cb);
+}
+
+
 int
 main (int   argc,
       char *argv[])
@@ -352,6 +378,7 @@ main (int   argc,
    run_test("/bson/iter/test_overwrite_int32", test_bson_iter_overwrite_int32);
    run_test("/bson/iter/test_overwrite_int64", test_bson_iter_overwrite_int64);
    run_test("/bson/iter/test_overwrite_double", test_bson_iter_overwrite_double);
+   run_test("/bson/iter/recurse", test_bson_iter_recurse);
 
    return 0;
 }

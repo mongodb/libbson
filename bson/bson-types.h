@@ -250,6 +250,7 @@ typedef struct
    const bson_uint8_t *data4;       /* Pointer to fourth chunk of element. */
    size_t              next_offset; /* Offset of next element. */
    size_t              err_offset;  /* Location of decoding error. */
+   bson_t              inl_bson;    /* Used for recursing into children. */
    void               *padding[6];  /* For future use. */
 } bson_iter_t;
 
