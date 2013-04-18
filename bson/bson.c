@@ -398,6 +398,24 @@ failure:
 }
 
 
+bson_uint32_t
+bson_count (const bson_t *bson)
+{
+   bson_uint32_t count = 0;
+   bson_iter_t iter;
+
+   bson_return_val_if_fail(bson, 0);
+
+   if (bson_iter_init(&iter, bson)) {
+      while (bson_iter_next(&iter)) {
+         count++;
+      }
+   }
+
+   return count;
+}
+
+
 static void
 bson_append_va (bson_t             *bson,
                 bson_uint32_t       n_params,

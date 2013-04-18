@@ -162,6 +162,16 @@ bson_get_data (const bson_t *bson);
 
 
 /**
+ * bson_count:
+ * @bson: A bson_t.
+ *
+ * Counts the number of elements found in @bson.
+ */
+bson_uint32_t
+bson_count (const bson_t *bson);
+
+
+/**
  * bson_compare:
  * @bson: A bson_t.
  * @other: A bson_t.

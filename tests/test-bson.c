@@ -876,6 +876,20 @@ test_bson_build_child_deep_no_begin_end (void)
 }
 
 
+static void
+test_bson_count (void)
+{
+   bson_t b;
+
+   bson_init(&b);
+   bson_append_int32(&b, "0", -1, 0);
+   bson_append_int32(&b, "1", -1, 1);
+   bson_append_int32(&b, "2", -1, 2);
+   assert_cmpint(bson_count(&b), ==, 3);
+   bson_destroy(&b);
+}
+
+
 int
 main (int   argc,
       char *argv[])
@@ -915,6 +929,7 @@ main (int   argc,
    run_test("/bson/build_child_deep", test_bson_build_child_deep);
    run_test("/bson/build_child_deep_no_begin_end", test_bson_build_child_deep_no_begin_end);
    run_test("/bson/build_child_array", test_bson_build_child_array);
+   run_test("/bson/count", test_bson_count);
 
    return 0;
 }
