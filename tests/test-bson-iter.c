@@ -267,6 +267,22 @@ test_bson_iter_next_after_finish (void)
 }
 
 
+static void
+test_bson_iter_find_case (void)
+{
+   bson_t b;
+   bson_iter_t iter;
+
+   bson_init(&b);
+   bson_append_utf8(&b, "key", -1, "value", -1);
+   assert(bson_iter_init(&iter, &b));
+   assert(bson_iter_find_case(&iter, "KEY"));
+   assert(bson_iter_init(&iter, &b));
+   assert(!bson_iter_find(&iter, "KEY"));
+   bson_destroy(&b);
+}
+
+
 int
 main (int   argc,
       char *argv[])
@@ -278,6 +294,7 @@ main (int   argc,
    run_test("/bson/iter/test_fuzz", test_bson_iter_fuzz);
    run_test("/bson/iter/test_regex", test_bson_iter_regex);
    run_test("/bson/iter/test_next_after_finish", test_bson_iter_next_after_finish);
+   run_test("/bson/iter/test_find_case", test_bson_iter_find_case);
 
    return 0;
 }

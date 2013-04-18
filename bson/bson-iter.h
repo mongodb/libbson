@@ -360,11 +360,33 @@ bson_iter_int64_unsafe (const bson_iter_t *iter)
 
 /**
  * bson_iter_find:
+ * @iter: A bson_iter_t.
+ * @key: A key to find within @iter.
  *
+ * Searches through @iter starting from the current position for a key matching
+ * @key. This is a case-sensitive search meaning "KEY" and "key" would NOT
+ * match.
+ *
+ * Returns: TRUE if @key is found.
  */
 bson_bool_t
 bson_iter_find (bson_iter_t *iter,
                 const char  *key);
+
+
+/**
+ * bson_iter_find_case:
+ * @iter: A bson_iter_t.
+ * @key: A key to find within @iter.
+ *
+ * Searches through @iter starting from the current position for a key matching
+ * @key. This is a case-insensitive search meaning "KEY" and "key" would match.
+ *
+ * Returns: TRUE if @key is found.
+ */
+bson_bool_t
+bson_iter_find_case (bson_iter_t *iter,
+                     const char  *key);
 
 
 /**

@@ -69,6 +69,23 @@ bson_iter_find (bson_iter_t *iter,
 }
 
 
+bson_bool_t
+bson_iter_find_case (bson_iter_t *iter,
+                     const char  *key)
+{
+   bson_return_val_if_fail(iter, FALSE);
+   bson_return_val_if_fail(key, FALSE);
+
+   while (bson_iter_next(iter)) {
+      if (!strcasecmp(key, bson_iter_key(iter))) {
+         return TRUE;
+      }
+   }
+
+   return FALSE;
+}
+
+
 const char *
 bson_iter_key (const bson_iter_t *iter)
 {
