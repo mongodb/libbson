@@ -46,9 +46,10 @@ BSON_BEGIN_DECLS
  *
  * Returns: TRUE if @utf8 is valid UTF-8.
  */
-bson_bool_t bson_utf8_validate (const char  *utf8,
-                                size_t       utf8_len,
-                                bson_bool_t  allow_null);
+bson_bool_t
+bson_utf8_validate (const char  *utf8,
+                    size_t       utf8_len,
+                    bson_bool_t  allow_null);
 
 
 /**
@@ -65,8 +66,9 @@ bson_bool_t bson_utf8_validate (const char  *utf8,
  *
  * Returns: A newly allocated string that should be freed with bson_free().
  */
-char *bson_utf8_escape_for_json (const char *utf8,
-                                 ssize_t     utf8_len);
+char *
+bson_utf8_escape_for_json (const char *utf8,
+                           ssize_t     utf8_len);
 
 
 /**
@@ -94,6 +96,15 @@ const char *
 bson_utf8_next_char (const char *utf8);
 
 
+/**
+ * bson_utf8_from_unichar:
+ * @unichar: A bson_unichar_t.
+ * @utf8: A location for the multi-byte sequence.
+ * @len: A location for number of bytes stored in @utf8.
+ *
+ * Converts the unichar to a sequence of utf8 bytes and stores those
+ * in @utf8. The number of bytes in the sequence are stored in @len.
+ */
 void
 bson_utf8_from_unichar (bson_unichar_t  unichar,
                         char            utf8[static 6],

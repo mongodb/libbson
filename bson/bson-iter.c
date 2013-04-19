@@ -481,7 +481,7 @@ bson_iter_regex (const bson_iter_t  *iter,
 
 const char *
 bson_iter_utf8 (const bson_iter_t *iter,
-                  bson_uint32_t     *length)
+                bson_uint32_t     *length)
 {
    bson_return_val_if_fail(iter, NULL);
 
