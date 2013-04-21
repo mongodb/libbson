@@ -1,5 +1,6 @@
 noinst_PROGRAMS =
 noinst_PROGRAMS += test-bson
+noinst_PROGRAMS += test-bson-error
 noinst_PROGRAMS += test-bson-iter
 noinst_PROGRAMS += test-bson-json
 noinst_PROGRAMS += test-bson-oid
@@ -10,6 +11,7 @@ noinst_PROGRAMS += test-bson-utf8
 
 TEST_PROGS =
 TEST_PROGS += test-bson
+TEST_PROGS += test-bson-error
 TEST_PROGS += test-bson-iter
 TEST_PROGS += test-bson-json
 TEST_PROGS += test-bson-oid
@@ -21,6 +23,11 @@ TEST_PROGS += test-bson-utf8
 test_bson_SOURCES = $(top_srcdir)/tests/test-bson.c
 test_bson_CPPFLAGS = -I$(top_srcdir) -DBSON_COMPILATION
 test_bson_LDADD = libbson-1.0.la
+
+
+test_bson_error_SOURCES = $(top_srcdir)/tests/test-bson-error.c
+test_bson_error_CPPFLAGS = -I$(top_srcdir) -DBSON_COMPILATION
+test_bson_error_LDADD = libbson-1.0.la
 
 
 test_bson_iter_SOURCES = $(top_srcdir)/tests/test-bson-iter.c

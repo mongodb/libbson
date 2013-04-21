@@ -409,6 +409,14 @@ typedef struct
 } bson_visitor_t;
 
 
+typedef struct
+{
+   bson_uint32_t  domain;
+   bson_uint32_t  code;
+   char          *message;
+} bson_error_t;
+
+
 BSON_END_DECLS
 
 

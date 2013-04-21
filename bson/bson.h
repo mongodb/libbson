@@ -27,6 +27,7 @@
 #define BSON_INSIDE
 
 #include "bson-context.h"
+#include "bson-error.h"
 #include "bson-iter.h"
 #include "bson-macros.h"
 #include "bson-memory.h"

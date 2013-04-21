@@ -21,6 +21,7 @@ missing
 stamp-h1
 *.swp
 test-bson
+test-bson-error
 test-bson-iter
 test-bson-json
 test-bson-oid
