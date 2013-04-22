@@ -244,7 +244,7 @@ static BSON_INLINE bson_uint32_t
 bson_oid_hash_unsafe (const bson_oid_t *oid)
 {
    bson_uint32_t hash = 5381;
-   int i;
+   bson_uint32_t i;
 
    for (i = 0; i < sizeof oid->bytes; i++) {
       hash = ((hash << 5) + hash) + oid->bytes[i];
