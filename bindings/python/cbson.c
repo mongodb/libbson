@@ -561,7 +561,7 @@ cbson_dumps (PyObject *self,
       }
    }
 
-   ret = PyString_FromStringAndSize(bson_get_data(b), b->len);
+   ret = PyString_FromStringAndSize((const char *)bson_get_data(b), b->len);
    bson_destroy(b);
 
    return ret;

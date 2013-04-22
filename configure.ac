@@ -89,7 +89,10 @@ AC_ARG_ENABLE([debug],
 	      		      [enable_debug=debug_default])
 AS_CASE([$enable_debug],
 	[yes], [
-		CFLAGS="$CFLAGS -g"
+		CFLAGS="$CFLAGS -Wall"
+		CFLAGS="$CFLAGS -Werror"
+	],
+	[minimum], [
 		CFLAGS="$CFLAGS -Wold-style-definition"
 		CFLAGS="$CFLAGS -Wdeclaration-after-statement"
 		CFLAGS="$CFLAGS -Wredundant-decls"
@@ -112,8 +115,6 @@ AS_CASE([$enable_debug],
 		CFLAGS="$CFLAGS -Wreturn-type"
 		CFLAGS="$CFLAGS -Wunused-but-set-parameter"
 		CFLAGS="$CFLAGS -Wuninitialized"
-	],
-	[minimum], [
 	],
 	[no], [
 	],

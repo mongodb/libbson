@@ -183,8 +183,6 @@ bson_utf8_from_unichar (bson_unichar_t  unichar,
                         char            utf8[static 6],
                         bson_uint32_t  *len)
 {
-   int i;
-
    bson_return_if_fail(len);
 
    if (unichar <= 0x7F) {

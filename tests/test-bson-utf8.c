@@ -100,7 +100,6 @@ test_bson_utf8_from_unichar (void)
    static const char test1[] = {'a'};
    static const char test2[] = {0xc3, 0xbf};
    static const char test3[] = {0xe2, 0x82, 0xac};
-   static const char test4[] = {0xF0, 0xA4, 0xAD, 0xA2};
    bson_uint32_t len;
    char str[6];
 

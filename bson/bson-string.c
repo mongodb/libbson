@@ -81,8 +81,6 @@ void
 bson_string_append_c (bson_string_t *string,
                       char           c)
 {
-   bson_uint32_t len;
-
    bson_return_if_fail(string);
 
    string->str = bson_realloc(string->str, string->len + 1);
