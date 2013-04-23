@@ -465,7 +465,7 @@ bson_iter_key_unsafe (const bson_iter_t *iter)
  */
 const char *
 bson_iter_utf8 (const bson_iter_t *iter,
-                  bson_uint32_t     *length);
+                bson_uint32_t     *length);
 
 
 /**
@@ -477,7 +477,7 @@ bson_iter_utf8 (const bson_iter_t *iter,
  */
 static BSON_INLINE const char *
 bson_iter_utf8_unsafe (const bson_iter_t *iter,
-                         bson_uint32_t     *length)
+                       bson_uint32_t     *length)
 {
    *length = bson_iter_utf8_len_unsafe(iter);
    return (const char *)iter->data2;
