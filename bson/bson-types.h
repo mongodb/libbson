@@ -144,7 +144,7 @@ struct _bson_t
 };
 
 
-BSON_STATIC_ASSERT(sizeof(bson_t) <= 64);
+BSON_STATIC_ASSERT(sizeof(bson_t) == 64);
 
 
 /**
