@@ -110,6 +110,15 @@ def bson_decode_datetime_bson():
 def cbson_decode_datetime_bson():
     cbson.loads(DATETIME_BSON)
 
+
+DOC_WITH_ID = bson.BSON.encode({'_id': bson.ObjectId()})
+
+def bson_decode_with_id():
+    bson.BSON(DOC_WITH_ID).decode()
+
+def cbson_decode_with_id():
+    cbson.loads(DOC_WITH_ID)
+
 if __name__ == '__main__':
     compare_modules('Generate ObjectId', bson_generate_object_id, cbson_generate_object_id, number=10000)
     compare_modules('Generate ObjectId (threaded)', bson_generate_object_id, cbson_generate_object_id, number=10000, thread_count=N_THREADS)
@@ -119,3 +128,4 @@ if __name__ == '__main__':
     compare_modules('Decode 25x level BSON (threaded)', bson_decode_empty, cbson_decode_empty, number=10000, thread_count=N_THREADS)
     compare_modules('Decode Datetime BSON', bson_decode_datetime_bson, cbson_decode_datetime_bson, number=10000)
     compare_modules('Decode Datetime BSON (threaded)', bson_decode_datetime_bson, cbson_decode_datetime_bson, number=10000, thread_count=N_THREADS)
+    compare_modules('Decode BSON w/ _id', bson_decode_with_id, cbson_decode_with_id, number=10000)

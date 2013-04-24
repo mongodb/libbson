@@ -26,6 +26,7 @@
 
 
 static bson_context_t *gContext;
+static PyObject       *gStr_id;
 
 
 static BSON_INLINE void
@@ -36,7 +37,10 @@ cbson_loads_set_item (PyObject   *obj,
    PyObject *keyobj;
 
    if (PyDict_Check(obj)) {
-      if (!(keyobj = PyUnicode_DecodeUTF8(key, strlen(key), "strict"))) {
+      if (*key == '_' && !strcmp(key, "_id")) {
+         keyobj = gStr_id;
+         Py_INCREF(keyobj);
+      } else if (!(keyobj = PyUnicode_DecodeUTF8(key, strlen(key), "strict"))) {
          keyobj = PyString_FromString(key);
       }
       PyDict_SetItem(obj, keyobj, value);
@@ -613,6 +617,8 @@ initcbson (void)
       Py_DECREF(module);
       return;
    }
+
+   gStr_id = PyString_FromStringAndSize("_id", 3);
 
    /*
     * Register cbson types.
