@@ -40,11 +40,11 @@ test_reader_from_data (void)
    for (i = 0; (b = bson_reader_read(&reader, &eof)); i++) {
       /* do nothing */
       assert(b->len == 5);
-      assert(b->top.data[0] == 5);
-      assert(b->top.data[1] == 0);
-      assert(b->top.data[2] == 0);
-      assert(b->top.data[3] == 0);
-      assert(b->top.data[4] == 0);
+      assert(b->u.top.data[0] == 5);
+      assert(b->u.top.data[1] == 0);
+      assert(b->u.top.data[2] == 0);
+      assert(b->u.top.data[3] == 0);
+      assert(b->u.top.data[4] == 0);
    }
 
    assert(i == (4095/5));
@@ -78,11 +78,11 @@ test_reader_from_data_overflow (void)
    for (i = 0; (b = bson_reader_read(&reader, &eof)); i++) {
       /* do nothing */
       assert(b->len == 5);
-      assert(b->top.data[0] == 5);
-      assert(b->top.data[1] == 0);
-      assert(b->top.data[2] == 0);
-      assert(b->top.data[3] == 0);
-      assert(b->top.data[4] == 0);
+      assert(b->u.top.data[0] == 5);
+      assert(b->u.top.data[1] == 0);
+      assert(b->u.top.data[2] == 0);
+      assert(b->u.top.data[3] == 0);
+      assert(b->u.top.data[4] == 0);
       eof = FALSE;
    }
 

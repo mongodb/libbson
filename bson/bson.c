@@ -87,11 +87,11 @@ static BSON_INLINE bson_uint8_t *
 bson_get_data_fast (const bson_t *b)
 {
    if ((b->flags & BSON_FLAG_CHILD)) {
-      return (*b->child.data) + b->child.offset;
+      return (*b->u.child.data) + b->u.child.offset;
    } else if ((b->flags & BSON_FLAG_WRITER)) {
-      return (*b->writer.data) + b->writer.offset;
+      return (*b->u.writer.data) + b->u.writer.offset;
    } else {
-      return b->top.data;
+      return b->u.top.data;
    }
 }
 
@@ -149,33 +149,34 @@ bson_grow_if_needed (bson_t *bson,
     */
 
    if ((bson->flags & BSON_FLAG_CHILD)) {
-      bson_grow_if_needed(bson->child.toplevel, additional_bytes);
+      bson_grow_if_needed(bson->u.child.toplevel, additional_bytes);
       return;
    }
 
    if ((bson->flags & BSON_FLAG_WRITER)) {
-      asize = bson->writer.offset + bson->len + additional_bytes;
-      if ((*bson->writer.datalen) >= asize) {
+      asize = bson->u.writer.offset + bson->len + additional_bytes;
+      if ((*bson->u.writer.datalen) >= asize) {
          return;
       }
-      while ((*bson->writer.datalen) < asize) {
+      while ((*bson->u.writer.datalen) < asize) {
          grown = TRUE;
-         if (!*bson->writer.datalen) {
-            *bson->writer.datalen = 64;
+         if (!*bson->u.writer.datalen) {
+            *bson->u.writer.datalen = 64;
          } else {
-            (*bson->writer.datalen) *= 2;
+            (*bson->u.writer.datalen) *= 2;
          }
       }
       if (grown) {
-         *bson->writer.data = bson->writer.realloc_func(*bson->writer.data,
-                                                        *bson->writer.datalen);
+         *bson->u.writer.data =
+            bson->u.writer.realloc_func(*bson->u.writer.data,
+                                        *bson->u.writer.datalen);
       }
       return;
    }
 
    amin = bson->len + additional_bytes;
 
-   if ((amin <= sizeof bson->top.inlbuf) || (amin < bson->top.allocated)) {
+   if ((amin <= sizeof bson->u.top.inlbuf) || (amin < bson->u.top.allocated)) {
       return;
    }
 
@@ -192,13 +193,13 @@ bson_grow_if_needed (bson_t *bson,
       abort();
    }
 
-   if (bson->top.allocated) {
-      bson->top.data = bson_realloc(bson->top.data, asize);
-      bson->top.allocated = asize;
+   if (bson->u.top.allocated) {
+      bson->u.top.data = bson_realloc(bson->u.top.data, asize);
+      bson->u.top.allocated = asize;
    } else {
-      bson->top.data = bson_malloc0(asize);
-      bson->top.allocated = asize;
-      memcpy(bson->top.data, bson->top.inlbuf, bson->len);
+      bson->u.top.data = bson_malloc0(asize);
+      bson->u.top.allocated = asize;
+      memcpy(bson->u.top.data, bson->u.top.inlbuf, bson->len);
    }
 }
 
@@ -210,10 +211,10 @@ bson_init (bson_t *b)
 
    memset(b, 0, sizeof *b);
    b->flags = BSON_FLAG_NO_FREE;
-   b->top.allocated = 0;
+   b->u.top.allocated = 0;
    b->len = 5;
-   b->top.data = &b->top.inlbuf[0];
-   b->top.data[0] = 5;
+   b->u.top.data = &b->u.top.inlbuf[0];
+   b->u.top.data[0] = 5;
 }
 
 
@@ -232,9 +233,9 @@ bson_init_static (bson_t             *b,
 
    memset(b, 0, sizeof *b);
    b->flags = BSON_FLAG_NO_FREE | BSON_FLAG_NO_GROW;
-   b->top.allocated = 0;
+   b->u.top.allocated = 0;
    b->len = length;
-   b->top.data = (bson_uint8_t *)data;
+   b->u.top.data = (bson_uint8_t *)data;
 
    memcpy(&len, data, 4);
    if (BSON_UINT32_FROM_LE(len) != length) {
@@ -252,10 +253,10 @@ bson_new (void)
 
    b = bson_malloc0(sizeof *b);
    b->flags = 0;
-   b->top.allocated = 0;
+   b->u.top.allocated = 0;
    b->len = 5;
-   b->top.data = &b->top.inlbuf[0];
-   b->top.data[0] = 5;
+   b->u.top.data = &b->u.top.inlbuf[0];
+   b->u.top.data[0] = 5;
 
    return b;
 }
@@ -283,7 +284,7 @@ bson_new_from_data (const bson_uint8_t *data,
 
    b = bson_new();
    bson_grow_if_needed(b, length - b->len);
-   memcpy(b->top.data, data, length);
+   memcpy(b->u.top.data, data, length);
    b->len = length;
 
    return b;
@@ -309,8 +310,8 @@ void
 bson_destroy (bson_t *bson)
 {
    if (bson) {
-      if (bson->top.allocated > 0) {
-         bson_free(bson->top.data);
+      if (bson->u.top.allocated > 0) {
+         bson_free(bson->u.top.data);
       }
       if (!(bson->flags & BSON_FLAG_NO_FREE)) {
          bson_free(bson);
@@ -479,7 +480,7 @@ bson_append_va (bson_t             *bson,
    bson_t *toplevel = bson;
 
    if ((bson->flags & BSON_FLAG_CHILD)) {
-      toplevel = bson->child.toplevel;
+      toplevel = bson->u.child.toplevel;
    } else if ((bson->flags & BSON_FLAG_WRITER)) {
       /* Do nothing */
    } else if ((toplevel->flags & BSON_FLAG_NO_GROW)) {
@@ -505,7 +506,7 @@ bson_append_va (bson_t             *bson,
 
    if ((bson->flags & BSON_FLAG_CHILD)) {
       do {
-         bson = bson->child.parent;
+         bson = bson->u.child.parent;
          bson->len += total;
       } while ((bson->flags & BSON_FLAG_CHILD));
    }
@@ -1147,22 +1148,22 @@ bson_append_bson_begin (bson_t      *bson,
 
    child->flags = BSON_FLAG_NO_FREE | BSON_FLAG_CHILD;
    child->len = 5;
-   child->child.parent = bson;
+   child->u.child.parent = bson;
 
    if ((bson->flags & BSON_FLAG_CHILD)) {
-      child->child.toplevel = bson->child.toplevel;
-      child->child.offset = bson->child.offset + bson->len - 1;
+      child->u.child.toplevel = bson->u.child.toplevel;
+      child->u.child.offset = bson->u.child.offset + bson->len - 1;
    } else {
-      child->child.toplevel = bson;
-      child->child.offset = bson->len - 1;
+      child->u.child.toplevel = bson;
+      child->u.child.offset = bson->len - 1;
    }
 
-   child->child.data = &child->child.toplevel->top.data;
+   child->u.child.data = &child->u.child.toplevel->u.top.data;
 
    bson_grow_if_needed(bson, 5);
 
    do {
-      child = child->child.parent;
+      child = child->u.child.parent;
       child->len += 5;
       bson_encode_length(child);
    } while ((child->flags & BSON_FLAG_CHILD));
@@ -1179,7 +1180,7 @@ bson_append_bson_end (bson_t *bson,
    bson_return_if_fail(child);
 
    do {
-      child = child->child.parent;
+      child = child->u.child.parent;
       bson_encode_length(child);
       data = bson_get_data_fast(child);
       data[child->len - 1] = 0;

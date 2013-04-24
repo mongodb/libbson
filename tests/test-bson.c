@@ -71,7 +71,7 @@ test_bson_alloc (void)
 
    b = bson_new();
    assert_cmpint(b->len, ==, 5);
-   assert_cmpint(b->top.allocated, ==, 0);
+   assert_cmpint(b->u.top.allocated, ==, 0);
    bson_destroy(b);
 
    /*
@@ -79,7 +79,7 @@ test_bson_alloc (void)
     */
    b = bson_sized_new(44);
    assert_cmpint(b->len, ==, 5);
-   assert_cmpint(b->top.allocated, ==, 0);
+   assert_cmpint(b->u.top.allocated, ==, 0);
    bson_destroy(b);
 
    /*
@@ -87,7 +87,7 @@ test_bson_alloc (void)
     */
    b = bson_sized_new(63);
    assert_cmpint(b->len, ==, 5);
-   assert_cmpint(b->top.allocated, ==, 64);
+   assert_cmpint(b->u.top.allocated, ==, 64);
    bson_destroy(b);
 
    /*
@@ -95,12 +95,12 @@ test_bson_alloc (void)
     */
    b = bson_sized_new(65);
    assert_cmpint(b->len, ==, 5);
-   assert_cmpint(b->top.allocated, ==, 128);
+   assert_cmpint(b->u.top.allocated, ==, 128);
    bson_destroy(b);
 
    b = bson_new_from_data(empty_bson, sizeof empty_bson);
    assert_cmpint(b->len, ==, sizeof empty_bson);
-   assert_cmpint(b->top.allocated, ==, 0);
+   assert_cmpint(b->u.top.allocated, ==, 0);
    assert(!memcmp(bson_get_data(b), empty_bson, sizeof empty_bson));
    bson_destroy(b);
 }
@@ -689,7 +689,7 @@ test_bson_init (void)
       snprintf(key, sizeof key, "%d", i);
       bson_append_utf8(&b, key, -1, "bar", -1);
    }
-   assert(b.top.allocated);
+   assert(b.u.top.allocated);
    assert(b.flags & (1 << 0));
    bson_destroy(&b);
 }
@@ -702,7 +702,7 @@ test_bson_init_static (void)
    bson_t b;
 
    bson_init_static(&b, data, sizeof data);
-   assert(!b.top.allocated);
+   assert(!b.u.top.allocated);
    assert(b.flags & ((1 << 0) | (1 << 1)));
    bson_destroy(&b);
 }
@@ -836,7 +836,7 @@ test_bson_build_child_deep (void)
    bson_init(&b);
    test_bson_build_child_deep_1(&b, &count);
    assert(bson_validate(&b, BSON_VALIDATE_NONE, NULL));
-   assert(b.top.allocated == 1024);
+   assert(b.u.top.allocated == 1024);
    assert_bson_equal_file(&b, "test39.bson");
    bson_destroy(&b);
 }
@@ -870,7 +870,7 @@ test_bson_build_child_deep_no_begin_end (void)
    bson_init(&b);
    test_bson_build_child_deep_no_begin_end_1(&b, &count);
    assert(bson_validate(&b, BSON_VALIDATE_NONE, NULL));
-   assert(b.top.allocated == 1024);
+   assert(b.u.top.allocated == 1024);
    assert_bson_equal_file(&b, "test39.bson");
    bson_destroy(&b);
 }

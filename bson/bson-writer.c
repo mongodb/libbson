@@ -76,10 +76,10 @@ bson_writer_begin (bson_writer_t  *writer,
 
    writer->b.len = 5;
    writer->b.flags = BSON_FLAG_WRITER;
-   writer->b.writer.data = writer->buf;
-   writer->b.writer.datalen = writer->buflen;
-   writer->b.writer.offset = writer->offset;
-   writer->b.writer.realloc_func = writer->realloc_func;
+   writer->b.u.writer.data = writer->buf;
+   writer->b.u.writer.datalen = writer->buflen;
+   writer->b.u.writer.offset = writer->offset;
+   writer->b.u.writer.realloc_func = writer->realloc_func;
 
    while ((writer->offset + writer->b.len) > *writer->buflen) {
       grown = TRUE;

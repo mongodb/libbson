@@ -124,15 +124,15 @@ struct _bson_t
 
    union {
       struct {
-         bson_uint8_t  *data;
-         bson_uint32_t  allocated;
-         bson_uint8_t   inlbuf[44];
+         bson_uint8_t      *data;
+         bson_uint32_t      allocated;
+         bson_uint8_t       inlbuf[44];
       } top;
       struct {
-         bson_uint8_t  **data;
-         bson_uint32_t   offset;
-         bson_t         *parent;
-         bson_t         *toplevel;
+         bson_uint8_t      **data;
+         bson_uint32_t       offset;
+         bson_t             *parent;
+         bson_t             *toplevel;
       } child;
       struct {
          bson_uint8_t      **data;
@@ -140,7 +140,7 @@ struct _bson_t
          size_t              offset;
          bson_realloc_func   realloc_func;
       } writer;
-   };
+   } u;
 };
 
 
