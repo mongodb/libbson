@@ -31,7 +31,8 @@ test_bson_writer_shared_buffer (void)
    size_t buflen = 32;
    size_t n_bytes;
    bson_t *b;
-   char key[5];
+   const char *key;
+   char keystr[32];
    int i = 0;
    int j = 0;
    int n_docs = 10000;
@@ -42,7 +43,7 @@ test_bson_writer_shared_buffer (void)
       bson_writer_begin(writer, &b);
 
       for (j = 0; j < 1000; j++) {
-         snprintf(key, sizeof key, "%u", j);
+         bson_uint32_to_string(j, &key, keystr, sizeof keystr);
          bson_append_int64(b, key, -1, j);
       }
 
