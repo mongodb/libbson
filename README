@@ -6,6 +6,31 @@ high-performance C extensions to higher level languages such as python, ruby,
 or perl.
 
 
+# Building
+
+## From Git
+
+```sh
+$ ./autogen.sh --enable-silent-rules
+$ make
+$ sudo make install
+```
+
+You can run the unit tests with
+
+```sh
+$ make test
+```
+
+## From Tarball
+
+```sh
+$ ./configure --enable-silent-rules
+$ make
+$ sudo make install
+```
+
+
 # Overview
 
 
