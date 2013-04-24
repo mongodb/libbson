@@ -38,6 +38,7 @@
 #include "bson-types.h"
 #include "bson-utf8.h"
 #include "bson-version.h"
+#include "bson-writer.h"
 
 #undef BSON_INSIDE
 

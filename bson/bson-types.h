@@ -27,6 +27,7 @@
 #include <stdlib.h>
 
 #include "bson-macros.h"
+#include "bson-memory.h"
 #include "bson-stdint.h"
 
 
@@ -133,6 +134,12 @@ struct _bson_t
          bson_t         *parent;
          bson_t         *toplevel;
       } child;
+      struct {
+         bson_uint8_t      **data;
+         size_t             *datalen;
+         size_t              offset;
+         bson_realloc_func   realloc_func;
+      } writer;
    };
 };
 

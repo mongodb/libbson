@@ -42,6 +42,7 @@
 #define BSON_FLAG_NO_FREE (1 << 0)
 #define BSON_FLAG_NO_GROW (1 << 1)
 #define BSON_FLAG_CHILD   (1 << 2)
+#define BSON_FLAG_WRITER  (1 << 3)
 
 
 static const bson_uint8_t gZero;
@@ -85,9 +86,13 @@ typedef struct
 static BSON_INLINE bson_uint8_t *
 bson_get_data_fast (const bson_t *b)
 {
-   if (!(b->flags & BSON_FLAG_CHILD))
+   if ((b->flags & BSON_FLAG_CHILD)) {
+      return (*b->child.data) + b->child.offset;
+   } else if ((b->flags & BSON_FLAG_WRITER)) {
+      return (*b->writer.data) + b->writer.offset;
+   } else {
       return b->top.data;
-   return (*b->child.data) + b->child.offset;
+   }
 }
 
 
@@ -132,20 +137,45 @@ static void
 bson_grow_if_needed (bson_t *bson,
                      size_t  additional_bytes)
 {
+   bson_bool_t grown = FALSE;
    size_t amin;
    size_t asize;
 
    bson_return_if_fail(bson);
    bson_return_if_fail(additional_bytes < INT_MAX);
 
+   /*
+    * TODO: This function is in a hot path. It could use some optimization.
+    */
+
    if ((bson->flags & BSON_FLAG_CHILD)) {
       bson_grow_if_needed(bson->child.toplevel, additional_bytes);
       return;
    }
 
+   if ((bson->flags & BSON_FLAG_WRITER)) {
+      asize = bson->writer.offset + bson->len + additional_bytes;
+      if ((*bson->writer.datalen) >= asize) {
+         return;
+      }
+      while ((*bson->writer.datalen) < asize) {
+         grown = TRUE;
+         if (!*bson->writer.datalen) {
+            *bson->writer.datalen = 64;
+         } else {
+            (*bson->writer.datalen) *= 2;
+         }
+      }
+      if (grown) {
+         *bson->writer.data = bson->writer.realloc_func(*bson->writer.data,
+                                                        *bson->writer.datalen);
+      }
+      return;
+   }
+
    amin = bson->len + additional_bytes;
 
-   if (amin <= sizeof bson->top.inlbuf) {
+   if ((amin <= sizeof bson->top.inlbuf) || (amin < bson->top.allocated)) {
       return;
    }
 
@@ -156,6 +186,9 @@ bson_grow_if_needed (bson_t *bson,
    }
 
    if (BSON_UNLIKELY(asize >= INT_MAX)) {
+      /*
+       * TODO: I really, really don't like aborting.
+       */
       abort();
    }
 
@@ -447,9 +480,10 @@ bson_append_va (bson_t             *bson,
 
    if ((bson->flags & BSON_FLAG_CHILD)) {
       toplevel = bson->child.toplevel;
-   }
-
-   if ((toplevel->top.allocated < 0) || (toplevel->flags & BSON_FLAG_NO_GROW)) {
+   } else if ((bson->flags & BSON_FLAG_WRITER)) {
+      /* Do nothing */
+   } else if ((toplevel->top.allocated < 0) ||
+              (toplevel->flags & BSON_FLAG_NO_GROW)) {
       fprintf(stderr, "Cannot append to read-only BSON.\n");
       return;
    }

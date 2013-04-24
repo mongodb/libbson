@@ -28,3 +28,4 @@ test-bson-oid
 test-bson-reader
 test-bson-string
 test-bson-utf8
+test-bson-writer

@@ -20,6 +20,7 @@ INST_H_FILES += $(top_srcdir)/bson/bson-thread.h
 INST_H_FILES += $(top_srcdir)/bson/bson-types.h
 INST_H_FILES += $(top_srcdir)/bson/bson-utf8.h
 INST_H_FILES += $(top_srcdir)/bson/bson-version.h
+INST_H_FILES += $(top_srcdir)/bson/bson-writer.h
 
 
 NOINST_H_FILES =
@@ -40,6 +41,7 @@ libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson-oid.c
 libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson-reader.c
 libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson-string.c
 libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson-utf8.c
+libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson-writer.c
 
 libbson_1_0_la_CPPFLAGS =
 libbson_1_0_la_CPPFLAGS += -DBSON_COMPILATION
