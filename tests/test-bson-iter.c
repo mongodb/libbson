@@ -27,9 +27,9 @@
 static bson_t *
 get_bson (const char *filename)
 {
-   bson_uint32_t len;
    bson_uint8_t buf[4096];
    bson_t *b;
+   int len;
    int fd;
 
    if (-1 == (fd = open(filename, O_RDONLY))) {

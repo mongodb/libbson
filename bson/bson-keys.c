@@ -129,7 +129,7 @@ bson_uint32_to_string (bson_uint32_t   value,
                        char           *str,
                        size_t          size)
 {
-   if ((value >= 0) && (value <= 1000)) {
+   if (value <= 1000) {
       *strptr = gUint32Strs[value];
       return;
    } else {
