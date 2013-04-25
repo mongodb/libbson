@@ -62,6 +62,7 @@ test_bson_writer_shared_buffer (void)
 
    assert_cmpint(n_bytes, <, (48 * 1024 * 1024));
    assert_cmpint(rolled_back, ==, TRUE);
+   assert(rolled_back);
 
    bson_free(buf);
 }
