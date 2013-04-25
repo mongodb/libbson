@@ -219,4 +219,5 @@ void
 bson_context_destroy (bson_context_t *context)
 {
    memset(context, 0, sizeof *context);
+   bson_free(context);
 }
