@@ -481,9 +481,9 @@ bson_append_va (bson_t             *bson,
 
    if ((bson->flags & BSON_FLAG_CHILD)) {
       toplevel = bson->u.child.toplevel;
-   } else if ((bson->flags & BSON_FLAG_WRITER)) {
-      /* Do nothing */
-   } else if ((toplevel->flags & BSON_FLAG_NO_GROW)) {
+   }
+
+   if ((toplevel->flags & BSON_FLAG_NO_GROW)) {
       fprintf(stderr, "Cannot append to read-only BSON.\n");
       return;
    }
