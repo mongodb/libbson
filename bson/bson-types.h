@@ -126,7 +126,11 @@ struct _bson_t
       struct {
          bson_uint8_t      *data;
          bson_uint32_t      allocated;
+#if __WORDSIZE == 64
          bson_uint8_t       inlbuf[44];
+#else
+         bson_uint8_t       inlbuf[48];
+#endif
       } top;
       struct {
          bson_uint8_t      **data;
@@ -273,7 +277,7 @@ typedef struct
 typedef struct
 {
    bson_uint32_t  type;
-   void          *padding[15];
+   void          *padding[31];
 } bson_reader_t;
 
 
