@@ -24,6 +24,7 @@
 #define BSON_MACROS_H
 
 
+#include <assert.h>
 #include <stdio.h>
 
 #include "bson-endian.h"
@@ -83,6 +84,16 @@
 
 #define bson_str_empty(s)  (!s[0])
 #define bson_str_empty0(s) (!s || !s[0])
+
+
+/*
+ * TODO: Make this configurable.
+ */
+#if 1
+#define BSON_ASSERT(s) assert((s))
+#else
+#define BSON_ASSERT(s)
+#endif
 
 
 #define BSON_STATIC_ASSERT(s) BSON_STATIC_ASSERT_(s, __LINE__)

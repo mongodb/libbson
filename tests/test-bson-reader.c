@@ -38,13 +38,15 @@ test_reader_from_data (void)
    bson_reader_init_from_data(&reader, buffer, 4095);
 
    for (i = 0; (b = bson_reader_read(&reader, &eof)); i++) {
+      const bson_uint8_t *buf = bson_get_data(b);
+
       /* do nothing */
       assert(b->len == 5);
-      assert(b->u.top.data[0] == 5);
-      assert(b->u.top.data[1] == 0);
-      assert(b->u.top.data[2] == 0);
-      assert(b->u.top.data[3] == 0);
-      assert(b->u.top.data[4] == 0);
+      assert(buf[0] == 5);
+      assert(buf[1] == 0);
+      assert(buf[2] == 0);
+      assert(buf[3] == 0);
+      assert(buf[4] == 0);
    }
 
    assert(i == (4095/5));
@@ -76,13 +78,13 @@ test_reader_from_data_overflow (void)
    bson_reader_init_from_data(&reader, buffer, 4096);
 
    for (i = 0; (b = bson_reader_read(&reader, &eof)); i++) {
-      /* do nothing */
+      const bson_uint8_t *buf = bson_get_data(b);
       assert(b->len == 5);
-      assert(b->u.top.data[0] == 5);
-      assert(b->u.top.data[1] == 0);
-      assert(b->u.top.data[2] == 0);
-      assert(b->u.top.data[3] == 0);
-      assert(b->u.top.data[4] == 0);
+      assert(buf[0] == 5);
+      assert(buf[1] == 0);
+      assert(buf[2] == 0);
+      assert(buf[3] == 0);
+      assert(buf[4] == 0);
       eof = FALSE;
    }
 

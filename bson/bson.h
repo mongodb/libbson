@@ -141,7 +141,7 @@ bson_new_from_data (const bson_uint8_t *data,
  * Returns: A newly allocated bson_t that should be freed with bson_destroy().
  */
 bson_t *
-bson_sized_new (size_t bytes);
+bson_sized_new (size_t size);
 
 
 /**
@@ -167,13 +167,13 @@ bson_get_data (const bson_t *bson);
 
 
 /**
- * bson_count:
+ * bson_count_keys:
  * @bson: A bson_t.
  *
  * Counts the number of elements found in @bson.
  */
 bson_uint32_t
-bson_count (const bson_t *bson);
+bson_count_keys (const bson_t *bson);
 
 
 /**

@@ -113,39 +113,12 @@ typedef struct _bson_context_t bson_context_t;
  *
  * This structure is meant to fit in a 64-byte cacheline.
  */
-typedef struct _bson_t bson_t;
-
-struct _bson_t
+typedef struct
 {
-   bson_uint32_t flags; /* Internal flags for the bson_t. */
-   bson_uint32_t len;   /* Length of data buffer. */
-
-   /*< private >*/
-
-   union {
-      struct {
-         bson_uint8_t      *data;
-         bson_uint32_t      allocated;
-#if __WORDSIZE == 64
-         bson_uint8_t       inlbuf[44];
-#else
-         bson_uint8_t       inlbuf[48];
-#endif
-      } top;
-      struct {
-         bson_uint8_t      **data;
-         bson_uint32_t       offset;
-         bson_t             *parent;
-         bson_t             *toplevel;
-      } child;
-      struct {
-         bson_uint8_t      **data;
-         size_t             *datalen;
-         size_t              offset;
-         bson_realloc_func   realloc_func;
-      } writer;
-   } u;
-};
+   bson_uint32_t flags;       /* Internal flags for the bson_t. */
+   bson_uint32_t len;         /* Length of BSON data. */
+   bson_uint8_t  padding[56]; /* Padding for stack allocation. */
+} bson_t;
 
 
 BSON_STATIC_ASSERT(sizeof(bson_t) == 64);

@@ -17,35 +17,25 @@
 
 #include <inttypes.h>
 #include <stdarg.h>
-#include <string.h>
-#include <unistd.h>
 
 #include "b64_ntop.h"
-
 #include "bson.h"
-#include "bson-md5.h"
-#include "bson-memory.h"
-#include "bson-string.h"
-#include "bson-thread.h"
-#include "bson-utf8.h"
+#include "bson-private.h"
 
 
-/*
- * TODO:
- *
- *   - Put some consideration into if we want to handle OOM. It is a really
- *     difficult thing to do correctly. Almost nobody gets it right. D-BUS
- *     on GNU/Linux might be one of the few things that does.
- */
+typedef struct
+{
+   bson_validate_flags_t flags;
+   ssize_t err_offset;
+} bson_validate_state_t;
 
 
-#define BSON_FLAG_NO_FREE (1 << 0)
-#define BSON_FLAG_NO_GROW (1 << 1)
-#define BSON_FLAG_CHILD   (1 << 2)
-#define BSON_FLAG_WRITER  (1 << 3)
-
-
-static const bson_uint8_t gZero;
+typedef struct
+{
+   bson_uint32_t  count;
+   bson_bool_t    keys;
+   bson_string_t *str;
+} bson_json_state_t;
 
 
 static bson_bool_t
@@ -62,469 +52,350 @@ bson_as_json_visit_document (const bson_iter_t *iter,
                              void              *data);
 
 
-typedef struct
-{
-   bson_uint32_t  count;
-   bson_bool_t    keys;
-   bson_string_t *str;
-} bson_json_state_t;
+static const bson_uint8_t gZero;
 
 
 /**
- * bson_get_data_fast:
- * @b: A bson_t.
+ * npow2:
+ * @v: A 32-bit unsigned integer of requested bytes.
  *
- * Fetches the beginning of the buffer for the BSON document taking into
- * account the posibility that it is a child BSON. A child BSON is a BSON
- * document currently being built within another BSON document.
+ * Determines the next larger power of two for the value of @v.
  *
- * If you append data to @b after calling this function, the address may
- * have changed!
- *
- * Returns: A bson_uint8_t* buffer of at least b->len bytes in size.
+ * Returns: The next power of 2 from @v.
  */
-static BSON_INLINE bson_uint8_t *
-bson_get_data_fast (const bson_t *b)
+static BSON_INLINE bson_uint32_t
+npow2 (bson_uint32_t v)
 {
-   if ((b->flags & BSON_FLAG_CHILD)) {
-      return (*b->u.child.data) + b->u.child.offset;
-   } else if ((b->flags & BSON_FLAG_WRITER)) {
-      return (*b->u.writer.data) + b->u.writer.offset;
-   } else {
-      return b->u.top.data;
-   }
-}
+   v--;
+   v |= v >> 1;
+   v |= v >> 2;
+   v |= v >> 4;
+   v |= v >> 8;
+   v |= v >> 16;
+   v++;
 
-
-const bson_uint8_t *
-bson_get_data (const bson_t *bson)
-{
-   bson_return_val_if_fail(bson, NULL);
-   return bson_get_data_fast(bson);
-}
-
-
-/**
- * bson_encode_length:
- * @bson: A bson_t.
- *
- * Encodes the length of the bson into the first four bytes of @bson.
- * This should be called any time you add a field. This used to be done
- * in a bson_finish() style call, but instead we just do it every time we
- * add a field internally.
- */
-static BSON_INLINE void
-bson_encode_length (bson_t *bson)
-{
-   bson_uint32_t len_le = BSON_UINT32_TO_LE(bson->len);
-   bson_uint8_t *data = bson_get_data_fast(bson);
-   memcpy(data, &len_le, 4);
-}
-
-
-/**
- * bson_grow_if_needed:
- * @bson: A bson_t to grow.
- * @additional_bytes: Number of additional bytes needed.
- *
- * Will check to see if there are enough bytes allocated for @additional_bytes
- * to be used. If not, it will grow the size of the bson by a power of two of
- * the current allocation size.
- *
- * Returns: @bson or a new memory location if the buffer was grown.
- */
-static void
-bson_grow_if_needed (bson_t *bson,
-                     size_t  additional_bytes)
-{
-   bson_bool_t grown = FALSE;
-   size_t amin;
-   size_t asize;
-
-   bson_return_if_fail(bson);
-   bson_return_if_fail(additional_bytes < INT_MAX);
-
-   /*
-    * TODO: This function is in a hot path. It could use some optimization.
-    */
-
-   if ((bson->flags & BSON_FLAG_CHILD)) {
-      bson_grow_if_needed(bson->u.child.toplevel, additional_bytes);
-      return;
-   }
-
-   if ((bson->flags & BSON_FLAG_WRITER)) {
-      asize = bson->u.writer.offset + bson->len + additional_bytes;
-      if ((*bson->u.writer.datalen) >= asize) {
-         return;
-      }
-      while ((*bson->u.writer.datalen) < asize) {
-         grown = TRUE;
-         if (!*bson->u.writer.datalen) {
-            *bson->u.writer.datalen = 64;
-         } else {
-            (*bson->u.writer.datalen) *= 2;
-         }
-      }
-      if (grown) {
-         *bson->u.writer.data =
-            bson->u.writer.realloc_func(*bson->u.writer.data,
-                                        *bson->u.writer.datalen);
-      }
-      return;
-   }
-
-   amin = bson->len + additional_bytes;
-
-   if ((amin <= sizeof bson->u.top.inlbuf) || (amin < bson->u.top.allocated)) {
-      return;
-   }
-
-   asize = 64;
-
-   while (asize < amin) {
-      asize <<= 1;
-   }
-
-   if (BSON_UNLIKELY(asize >= INT_MAX)) {
-      /*
-       * TODO: I really, really don't like aborting.
-       */
-      abort();
-   }
-
-   if (bson->u.top.allocated) {
-      bson->u.top.data = bson_realloc(bson->u.top.data, asize);
-      bson->u.top.allocated = asize;
-   } else {
-      bson->u.top.data = bson_malloc0(asize);
-      bson->u.top.allocated = asize;
-      memcpy(bson->u.top.data, bson->u.top.inlbuf, bson->len);
-   }
-}
-
-
-void
-bson_init (bson_t *b)
-{
-   bson_return_if_fail(b);
-
-   memset(b, 0, sizeof *b);
-   b->flags = BSON_FLAG_NO_FREE;
-   b->u.top.allocated = 0;
-   b->len = 5;
-   b->u.top.data = &b->u.top.inlbuf[0];
-   b->u.top.data[0] = 5;
-}
-
-
-bson_bool_t
-bson_init_static (bson_t             *b,
-                  const bson_uint8_t *data,
-                  bson_uint32_t       length)
-{
-   bson_uint32_t len;
-
-   bson_return_val_if_fail(b, FALSE);
-
-   if (length < 5) {
-      return FALSE;
-   }
-
-   memset(b, 0, sizeof *b);
-   b->flags = BSON_FLAG_NO_FREE | BSON_FLAG_NO_GROW;
-   b->u.top.allocated = 0;
-   b->len = length;
-   b->u.top.data = (bson_uint8_t *)data;
-
-   memcpy(&len, data, 4);
-   if (BSON_UINT32_FROM_LE(len) != length) {
-      return FALSE;
-   }
-
-   return TRUE;
-}
-
-
-bson_t *
-bson_new (void)
-{
-   bson_t *b;
-
-   b = bson_malloc0(sizeof *b);
-   b->flags = 0;
-   b->u.top.allocated = 0;
-   b->len = 5;
-   b->u.top.data = &b->u.top.inlbuf[0];
-   b->u.top.data[0] = 5;
-
-   return b;
-}
-
-
-bson_t *
-bson_new_from_data (const bson_uint8_t *data,
-                    size_t              length)
-{
-   bson_uint32_t len_le;
-   bson_t *b;
-
-   bson_return_val_if_fail(data, NULL);
-   bson_return_val_if_fail(length >= 5, NULL);
-   bson_return_val_if_fail(length < INT_MAX, NULL);
-
-   if (length < 5) {
-      return NULL;
-   }
-
-   memcpy(&len_le, data, 4);
-   if (BSON_UINT32_FROM_LE(len_le) != length) {
-      return NULL;
-   }
-
-   b = bson_new();
-   bson_grow_if_needed(b, length - b->len);
-   memcpy(b->u.top.data, data, length);
-   b->len = length;
-
-   return b;
-}
-
-
-bson_t *
-bson_sized_new (size_t size)
-{
-   bson_t *b;
-
-   bson_return_val_if_fail(size >= 5, NULL);
-   bson_return_val_if_fail(size < INT_MAX, NULL);
-
-   b = bson_new();
-   bson_grow_if_needed(b, size - b->len);
-
-   return b;
-}
-
-
-void
-bson_destroy (bson_t *bson)
-{
-   if (bson) {
-      if (bson->u.top.allocated > 0) {
-         bson_free(bson->u.top.data);
-      }
-      if (!(bson->flags & BSON_FLAG_NO_FREE)) {
-         bson_free(bson);
-      }
-   }
-}
-
-
-typedef struct
-{
-   bson_validate_flags_t flags;
-   ssize_t err_offset;
-} bson_validate_state_t;
-
-
-static bson_bool_t
-bson_iter_validate_utf8 (const bson_iter_t *iter,
-                         const char        *key,
-                         size_t             v_utf8_len,
-                         const char        *v_utf8,
-                         void              *data)
-{
-   bson_validate_state_t *state = data;
-   bson_bool_t allow_null;
-
-   if ((state->flags & BSON_VALIDATE_UTF8)) {
-      allow_null = !!(state->flags & BSON_VALIDATE_UTF8_ALLOW_NULL);
-      if (!bson_utf8_validate(v_utf8, v_utf8_len, allow_null)) {
-         state->err_offset = iter->offset;
-         return TRUE;
-      }
-   }
-
-   return FALSE;
-}
-
-
-static void
-bson_iter_validate_corrupt (const bson_iter_t *iter,
-                            void              *data)
-{
-   bson_validate_state_t *state = data;
-   state->err_offset = iter->err_offset;
+   return v;
 }
 
 
 static bson_bool_t
-bson_iter_validate_before (const bson_iter_t *iter,
-                           const char        *key,
-                           void              *data)
+bson_impl_inline_grow (bson_impl_inline_t *impl,
+                       bson_uint32_t       size)
 {
-   bson_validate_state_t *state = data;
+   bson_impl_alloc_t *alloc = (bson_impl_alloc_t *)impl;
+   bson_uint8_t *data;
+   size_t req;
 
-   if ((state->flags & BSON_VALIDATE_DOLLAR_KEYS)) {
-      if (key[0] == '$') {
-         state->err_offset = iter->offset;
-         return TRUE;
-      }
-   }
+   BSON_ASSERT(impl);
+   BSON_ASSERT(!(impl->flags & BSON_FLAG_RDONLY));
 
-   if ((state->flags & BSON_VALIDATE_DOT_KEYS)) {
-      if (strstr(key, ".")) {
-         state->err_offset = iter->offset;
-         return TRUE;
-      }
-   }
-
-   return FALSE;
-}
-
-
-static bson_bool_t
-bson_iter_validate_document (const bson_iter_t *iter,
-                             const char        *key,
-                             const bson_t      *v_document,
-                             void              *data);
-
-
-static const bson_visitor_t bson_validate_funcs = {
-   .visit_before = bson_iter_validate_before,
-   .visit_corrupt = bson_iter_validate_corrupt,
-   .visit_utf8 = bson_iter_validate_utf8,
-   .visit_document = bson_iter_validate_document,
-   .visit_array = bson_iter_validate_document,
-};
-
-
-static bson_bool_t
-bson_iter_validate_document (const bson_iter_t *iter,
-                             const char        *key,
-                             const bson_t      *v_document,
-                             void              *data)
-{
-   bson_validate_state_t *state = data;
-   bson_iter_t child;
-
-   if (!bson_iter_init(&child, v_document)) {
-      /*
-       * TODO: We should make it so we can abort future iteration
-       *       on the parent document by returning FALSE/TRUE/etc.
-       */
-      state->err_offset = iter->offset;
+   if ((impl->len + size) <= sizeof impl->data) {
       return TRUE;
    }
 
-   bson_iter_visit_all(&child, &bson_validate_funcs, state);
+   if ((req = npow2(impl->len + size)) <= INT32_MAX) {
+      data = bson_malloc0(req);
+      memcpy(data, impl->data, impl->len);
+      alloc->flags &= ~BSON_FLAG_INLINE;
+      alloc->parent = NULL;
+      alloc->buf = &alloc->alloc;
+      alloc->buflen = &alloc->alloclen;
+      alloc->alloc = data;
+      alloc->alloclen = req;
+      alloc->offset = 0;
+      alloc->realloc = bson_realloc;
+      return TRUE;
+   }
 
    return FALSE;
 }
 
 
-bson_bool_t
-bson_validate (const bson_t          *bson,
-               bson_validate_flags_t  flags,
-               size_t                *offset)
+static bson_bool_t
+bson_impl_alloc_grow (bson_impl_alloc_t *impl,
+                      bson_uint32_t      size)
 {
-   bson_validate_state_t state = { flags, -1 };
-   bson_iter_t iter;
+   bson_impl_alloc_t *tmp = impl;
+   size_t req;
 
-   if (!bson_iter_init(&iter, bson)) {
-      state.err_offset = 0;
-      goto failure;
+   BSON_ASSERT(impl);
+
+   /*
+    * Determine how many bytes we need for this document in the buffer.
+    */
+   req = impl->offset + impl->len + size;
+
+   /*
+    * Add enough bytes for trainling byte of each parent document. This
+    * could be optimized out with a "depth" parameter in the child
+    * document.
+    */
+   while ((tmp->flags & BSON_FLAG_CHILD) &&
+          (tmp = (bson_impl_alloc_t *)tmp->parent)) {
+      req++;
    }
 
-   bson_iter_validate_document(&iter, NULL, bson, &state);
-
-failure:
-   if (offset) {
-      *offset = state.err_offset;
+   if (req <= *impl->buflen) {
+      return TRUE;
    }
 
-   return (state.err_offset < 0);
+   req = npow2(req);
+
+   if (req <= INT32_MAX) {
+      *impl->buf = impl->realloc(*impl->buf, req);
+      *impl->buflen = req;
+      return TRUE;
+   }
+
+   return FALSE;
 }
 
 
-bson_uint32_t
-bson_count (const bson_t *bson)
+static bson_bool_t
+bson_grow (bson_t        *bson,
+           bson_uint32_t  size)
 {
-   bson_uint32_t count = 0;
-   bson_iter_t iter;
+   BSON_ASSERT(bson);
+   BSON_ASSERT(!(bson->flags & BSON_FLAG_RDONLY));
 
-   bson_return_val_if_fail(bson, 0);
+   if ((bson->flags & BSON_FLAG_INLINE)) {
+      return bson_impl_inline_grow((bson_impl_inline_t *)bson, size);
+   } else {
+      return bson_impl_alloc_grow((bson_impl_alloc_t *)bson, size);
+   }
+}
 
-   if (bson_iter_init(&iter, bson)) {
-      while (bson_iter_next(&iter)) {
-         count++;
-      }
+
+static BSON_INLINE bson_uint8_t *
+bson_data (const bson_t *bson)
+{
+   BSON_ASSERT(bson);
+
+   if ((bson->flags & BSON_FLAG_INLINE)) {
+      return ((bson_impl_inline_t *)bson)->data;
+   } else {
+      bson_impl_alloc_t *impl = (bson_impl_alloc_t *)bson;
+      return (*impl->buf) + impl->offset;
+   }
+}
+
+
+static bson_uint32_t
+bson_append_count_bytes (bson_t             *bson,
+                         bson_uint32_t       n_pairs,
+                         bson_uint32_t       first_len,
+                         const bson_uint8_t *first_data,
+                         va_list             args)
+{
+   bson_uint32_t count = first_len;
+
+   BSON_ASSERT(bson);
+   BSON_ASSERT(n_pairs);
+   BSON_ASSERT(first_len);
+   BSON_ASSERT(first_data);
+
+   while (--n_pairs) {
+      count += va_arg(args, bson_uint32_t);
+      va_arg(args, const bson_uint8_t *);
    }
 
    return count;
 }
 
 
+static BSON_INLINE void
+bson_encode_length (bson_t *bson)
+{
+   bson_uint32_t length_le = BSON_UINT32_TO_LE(bson->len);
+   memcpy(bson_data(bson), &length_le, 4);
+}
+
+
 static void
 bson_append_va (bson_t             *bson,
-                bson_uint32_t       n_params,
-                bson_uint32_t       first_length,
+                bson_uint32_t       n_bytes,
+                bson_uint32_t       n_pairs,
+                bson_uint32_t       first_len,
                 const bson_uint8_t *first_data,
                 va_list             args)
 {
-   const bson_uint8_t *data = first_data;
-   bson_uint32_t length = first_length;
-   bson_uint32_t total = 0;
-   bson_int32_t todo = n_params;
-   bson_uint8_t *buf;
-   bson_t *toplevel = bson;
+   const bson_uint8_t *data;
+   bson_uint32_t data_len;
 
-   if ((bson->flags & BSON_FLAG_CHILD)) {
-      toplevel = bson->u.child.toplevel;
-   }
+   BSON_ASSERT(bson);
+   BSON_ASSERT(!(bson->flags & BSON_FLAG_IN_CHILD));
+   BSON_ASSERT(!(bson->flags & BSON_FLAG_RDONLY));
+   BSON_ASSERT(n_pairs);
+   BSON_ASSERT(first_len);
+   BSON_ASSERT(first_data);
 
-   if ((toplevel->flags & BSON_FLAG_NO_GROW)) {
-      fprintf(stderr, "Cannot append to read-only BSON.\n");
-      return;
-   }
+   bson_grow(bson, n_bytes);
+
+   data = first_data;
+   data_len = first_len;
 
    do {
-      bson_grow_if_needed(toplevel, length);
-      buf = bson_get_data_fast(bson);
-      memcpy(&buf[bson->len - 1], data, length);
-      bson->len += length;
-      total += length;
-      if ((--todo > 0)) {
-         length = va_arg(args, bson_uint32_t);
-         data = va_arg(args, bson_uint8_t*);
+      n_pairs--;
+      memcpy(bson_data(bson) + bson->len - 1, data, data_len);
+      bson->len += data_len;
+      if (n_pairs) {
+         data_len = va_arg(args, bson_uint32_t);
+         data = va_arg(args, const bson_uint8_t *);
       }
-   } while (todo > 0);
+   } while (n_pairs);
 
-   buf = bson_get_data_fast(bson);
-   buf[bson->len - 1] = 0;
    bson_encode_length(bson);
+   bson_data(bson)[bson->len - 1] = '\0';
 
-   if ((bson->flags & BSON_FLAG_CHILD)) {
-      do {
-         bson = bson->u.child.parent;
-         bson->len += total;
-      } while ((bson->flags & BSON_FLAG_CHILD));
+   while ((bson->flags & BSON_FLAG_CHILD) &&
+          (bson = ((bson_impl_alloc_t *)bson)->parent)) {
+      bson->len += n_bytes;
+      bson_data(bson)[bson->len - 1] = '\0';
+      bson_encode_length(bson);
    }
 }
 
 
 static void
 bson_append (bson_t             *bson,
-             bson_uint32_t       n_params,
-             bson_uint32_t       first_length,
+             bson_uint32_t       n_pairs,
+             bson_uint32_t       first_len,
              const bson_uint8_t *first_data,
              ...)
 {
+   bson_uint32_t count;
    va_list args;
 
+   BSON_ASSERT(bson);
+   BSON_ASSERT(n_pairs);
+   BSON_ASSERT(first_len);
+   BSON_ASSERT(first_data);
+
    va_start(args, first_data);
-   bson_append_va(bson, n_params, first_length, first_data, args);
+   count = bson_append_count_bytes(bson, n_pairs, first_len, first_data, args);
    va_end(args);
+
+   va_start(args, first_data);
+   bson_append_va(bson, count, n_pairs, first_len, first_data, args);
+   va_end(args);
+}
+
+
+static void
+bson_append_bson_begin (bson_t      *bson,
+                        const char  *key,
+                        int          key_length,
+                        bson_type_t  child_type,
+                        bson_t      *child)
+{
+   const bson_uint8_t type = child_type;
+   const bson_uint8_t empty[5] = { 5 };
+   bson_impl_alloc_t *aparent = (bson_impl_alloc_t *)bson;
+   bson_impl_alloc_t *achild = (bson_impl_alloc_t *)child;
+
+   bson_return_if_fail(bson);
+   bson_return_if_fail(!(bson->flags & BSON_FLAG_RDONLY));
+   bson_return_if_fail(!(bson->flags & BSON_FLAG_IN_CHILD));
+   bson_return_if_fail(key);
+   bson_return_if_fail(child);
+
+   if (key_length < 0) {
+      key_length = strlen(key);
+   }
+
+   /*
+    * If the parent is an inline bson_t, then we need to convert
+    * it to a heap allocated buffer. This makes extending buffers
+    * of child bson documents much simpler logic, as they can just
+    * realloc the *buf pointer.
+    */
+   if ((bson->flags & BSON_FLAG_INLINE)) {
+      BSON_ASSERT(bson->len < 64);
+      bson_grow(bson, 64 - bson->len);
+      BSON_ASSERT(!(bson->flags & BSON_FLAG_INLINE));
+   }
+
+   /*
+    * Append the type and key for the field.
+    */
+   bson_append(bson, 4,
+               1, &type,
+               key_length, key,
+               1, &gZero,
+               5, empty);
+
+   /*
+    * Mark the document as working on a child document so that no
+    * further modifications can happen until the caller has called
+    * bson_append_{document,array}_end().
+    */
+   bson->flags |= BSON_FLAG_IN_CHILD;
+
+   /*
+    * Initialize the child bson_t structure and point it at the parents
+    * buffers. This allows us to realloc directly from the child without
+    * walking up to the parent bson_t.
+    */
+   memset(child, 0, sizeof *child);
+   achild->flags = (BSON_FLAG_CHILD |
+                    BSON_FLAG_NO_FREE |
+                    BSON_FLAG_STATIC);
+   achild->parent = bson;
+   achild->buf = aparent->buf;
+   achild->buflen = aparent->buflen;
+   achild->offset = aparent->offset + aparent->len - 1 - 5;
+   achild->len = 5;
+   achild->alloc = NULL;
+   achild->alloclen = 0;
+   achild->realloc = aparent->realloc;
+}
+
+
+void
+bson_append_bson_end (bson_t *bson,
+                      bson_t *child)
+{
+   bson_return_if_fail(bson);
+   bson_return_if_fail((bson->flags & BSON_FLAG_IN_CHILD));
+   bson_return_if_fail(!(child->flags & BSON_FLAG_IN_CHILD));
+
+   bson->flags &= ~BSON_FLAG_IN_CHILD;
+}
+
+
+void
+bson_append_array_begin (bson_t     *bson,
+                         const char *key,
+                         int         key_length,
+                         bson_t     *child)
+{
+   bson_append_bson_begin(bson, key, key_length, BSON_TYPE_ARRAY, child);
+}
+
+
+void
+bson_append_array_end (bson_t *bson,
+                       bson_t *child)
+{
+   bson_append_bson_end(bson, child);
+}
+
+
+void
+bson_append_document_begin (bson_t     *bson,
+                            const char *key,
+                            int         key_length,
+                            bson_t     *child)
+{
+   bson_append_bson_begin(bson, key, key_length, BSON_TYPE_DOCUMENT, child);
+}
+
+
+void
+bson_append_document_end (bson_t *bson,
+                          bson_t *child)
+{
+   bson_append_bson_end(bson, child);
 }
 
 
@@ -548,7 +419,7 @@ bson_append_array (bson_t       *bson,
                1, &type,
                key_length, key,
                1, &gZero,
-               array->len, bson_get_data_fast(array));
+               array->len, bson_data(array));
 }
 
 void
@@ -677,7 +548,7 @@ bson_append_code_with_scope (bson_t       *bson,
                4, &codews_length_le,
                4, &js_length_le,
                js_length, javascript,
-               scope->len, bson_get_data_fast(scope));
+               scope->len, bson_data(scope));
 }
 
 
@@ -734,7 +605,7 @@ bson_append_document (bson_t       *bson,
                1, &type,
                key_length, key,
                1, &gZero,
-               value->len, bson_get_data_fast(value));
+               value->len, bson_data(value));
 }
 
 
@@ -1097,22 +968,189 @@ bson_append_undefined (bson_t     *bson,
 }
 
 
+void
+bson_init (bson_t *bson)
+{
+   bson_impl_inline_t *impl = (bson_impl_inline_t *)bson;
+
+   bson_return_if_fail(bson);
+
+   memset(bson, 0, sizeof *bson);
+
+   impl->flags = BSON_FLAG_INLINE | BSON_FLAG_STATIC;
+   impl->len = 5;
+   impl->data[0] = 5;
+}
+
+
+bson_bool_t
+bson_init_static (bson_t             *bson,
+                  const bson_uint8_t *data,
+                  bson_uint32_t       length)
+{
+   bson_impl_alloc_t *impl = (bson_impl_alloc_t *)bson;
+   bson_uint32_t len_le;
+
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(data, FALSE);
+
+   if (length < 5) {
+      return FALSE;
+   }
+
+   memcpy(&len_le, data, 4);
+   if (BSON_UINT32_FROM_LE(len_le) != length) {
+      return FALSE;
+   }
+
+   memset(bson, 0, sizeof *bson);
+   impl->flags = BSON_FLAG_STATIC | BSON_FLAG_RDONLY;
+   impl->len = length;
+   impl->buf = &impl->alloc;
+   impl->buflen = &impl->alloclen;
+   impl->alloc = (bson_uint8_t *)data;
+   impl->alloclen = length;
+
+   return TRUE;
+}
+
+
+bson_t *
+bson_new (void)
+{
+   bson_impl_inline_t *impl;
+   bson_t *bson;
+
+   bson = bson_malloc0(sizeof *bson);
+
+   impl = (bson_impl_inline_t *)bson;
+   impl->flags = BSON_FLAG_INLINE;
+   impl->len = 5;
+   impl->data[0] = 5;
+
+   return bson;
+}
+
+
+bson_t *
+bson_sized_new (size_t size)
+{
+   bson_impl_alloc_t *impl_a;
+   bson_impl_inline_t *impl_i;
+   bson_t *b;
+
+   bson_return_val_if_fail(size <= INT32_MAX, NULL);
+
+   b = bson_malloc0(sizeof *b);
+   impl_a = (bson_impl_alloc_t *)b;
+   impl_i = (bson_impl_inline_t *)b;
+
+   if (size <= sizeof impl_i->data) {
+      bson_init(b);
+      b->flags &= ~BSON_FLAG_STATIC;
+   } else {
+      impl_a->flags = 0;
+      impl_a->len = 5;
+      impl_a->buf = &impl_a->alloc;
+      impl_a->buflen = &impl_a->alloclen;
+      impl_a->alloclen = MAX(5, size);
+      impl_a->alloc = bson_malloc0(impl_a->alloclen);
+      impl_a->alloc[0] = 5;
+      impl_a->realloc = bson_realloc;
+   }
+
+   return b;
+}
+
+
+bson_t *
+bson_new_from_data (const bson_uint8_t *data,
+                    size_t              length)
+{
+   bson_uint32_t len_le;
+   bson_t *bson;
+
+   bson_return_val_if_fail(data, NULL);
+   bson_return_val_if_fail(length >= 5, NULL);
+
+   if (length < 5) {
+      return NULL;
+   }
+
+   memcpy(&len_le, data, 4);
+   if (length != BSON_UINT32_FROM_LE(len_le)) {
+      return NULL;
+   }
+
+   bson = bson_sized_new(length);
+   memcpy(bson_data(bson), data, length);
+   bson->len = length;
+
+   return bson;
+}
+
+
+void
+bson_destroy (bson_t *bson)
+{
+   const bson_uint32_t nofree = (BSON_FLAG_RDONLY |
+                                 BSON_FLAG_INLINE |
+                                 BSON_FLAG_NO_FREE);
+
+   BSON_ASSERT(bson);
+
+   if (!(bson->flags & nofree)) {
+      bson_free(*((bson_impl_alloc_t *)bson)->buf);
+   }
+   if (!(bson->flags & BSON_FLAG_STATIC)) {
+      bson_free(bson);
+   }
+}
+
+
+const bson_uint8_t *
+bson_get_data (const bson_t *bson)
+{
+   bson_return_val_if_fail(bson, NULL);
+   return bson_data(bson);
+}
+
+
+bson_uint32_t
+bson_count_keys (const bson_t *bson)
+{
+   bson_uint32_t count = 0;
+   bson_iter_t iter;
+
+   bson_return_val_if_fail(bson, 0);
+
+   if (bson_iter_init(&iter, bson)) {
+      while (bson_iter_next(&iter)) {
+         count++;
+      }
+   }
+
+   return count;
+}
+
+
 int
 bson_compare (const bson_t *bson,
               const bson_t *other)
 {
-   int cmp;
+   bson_uint32_t len;
+   int ret;
 
-   bson_return_val_if_fail(bson, 0);
-   bson_return_val_if_fail(other, 0);
-
-   if (0 != (cmp = bson->len - other->len)) {
-      return cmp;
+   if (bson->len != other->len) {
+      len = MIN(bson->len, other->len);
+      if (!(ret = memcmp(bson_data(bson), bson_data(other), len))) {
+         ret = bson->len - other->len;
+      }
+   } else {
+      ret = memcmp(bson_data(bson), bson_data(other), bson->len);
    }
 
-   return memcmp(bson_get_data_fast(bson),
-                 bson_get_data_fast(other),
-                 bson->len);
+   return ret;
 }
 
 
@@ -1121,106 +1159,6 @@ bson_equal (const bson_t *bson,
             const bson_t *other)
 {
    return !bson_compare(bson, other);
-}
-
-
-static void
-bson_append_bson_begin (bson_t      *bson,
-                        const char  *key,
-                        int          key_length,
-                        bson_type_t  child_type,
-                        bson_t      *child)
-{
-   const bson_uint8_t type = child_type;
-
-   bson_return_if_fail(bson);
-   bson_return_if_fail(key);
-   bson_return_if_fail(child);
-
-   if (key_length < 0) {
-      key_length = strlen(key);
-   }
-
-   bson_append(bson, 3,
-               1, &type,
-               key_length, key,
-               1, &gZero);
-
-   child->flags = BSON_FLAG_NO_FREE | BSON_FLAG_CHILD;
-   child->len = 5;
-   child->u.child.parent = bson;
-
-   if ((bson->flags & BSON_FLAG_CHILD)) {
-      child->u.child.toplevel = bson->u.child.toplevel;
-      child->u.child.offset = bson->u.child.offset + bson->len - 1;
-   } else {
-      child->u.child.toplevel = bson;
-      child->u.child.offset = bson->len - 1;
-   }
-
-   child->u.child.data = &child->u.child.toplevel->u.top.data;
-
-   bson_grow_if_needed(bson, 5);
-
-   do {
-      child = child->u.child.parent;
-      child->len += 5;
-      bson_encode_length(child);
-   } while ((child->flags & BSON_FLAG_CHILD));
-}
-
-
-static void
-bson_append_bson_end (bson_t *bson,
-                      bson_t *child)
-{
-   bson_uint8_t *data;
-
-   bson_return_if_fail(bson);
-   bson_return_if_fail(child);
-
-   do {
-      child = child->u.child.parent;
-      bson_encode_length(child);
-      data = bson_get_data_fast(child);
-      data[child->len - 1] = 0;
-   } while ((child->flags & BSON_FLAG_CHILD));
-}
-
-
-void
-bson_append_document_begin (bson_t     *bson,
-                            const char *key,
-                            int         key_length,
-                            bson_t     *child)
-{
-   bson_append_bson_begin(bson, key, key_length, BSON_TYPE_DOCUMENT, child);
-}
-
-
-void
-bson_append_array_begin (bson_t     *bson,
-                         const char *key,
-                         int         key_length,
-                         bson_t     *child)
-{
-   bson_append_bson_begin(bson, key, key_length, BSON_TYPE_ARRAY, child);
-}
-
-
-void
-bson_append_document_end (bson_t *bson,
-                          bson_t *child)
-{
-   bson_append_bson_end(bson, child);
-}
-
-
-void
-bson_append_array_end (bson_t *bson,
-                       bson_t *child)
-{
-   bson_append_bson_end(bson, child);
 }
 
 
@@ -1657,4 +1595,124 @@ bson_as_json (const bson_t *bson,
    }
 
    return bson_string_free(state.str, FALSE);
+}
+
+
+static bson_bool_t
+bson_iter_validate_utf8 (const bson_iter_t *iter,
+                         const char        *key,
+                         size_t             v_utf8_len,
+                         const char        *v_utf8,
+                         void              *data)
+{
+   bson_validate_state_t *state = data;
+   bson_bool_t allow_null;
+
+   if ((state->flags & BSON_VALIDATE_UTF8)) {
+      allow_null = !!(state->flags & BSON_VALIDATE_UTF8_ALLOW_NULL);
+      if (!bson_utf8_validate(v_utf8, v_utf8_len, allow_null)) {
+         state->err_offset = iter->offset;
+         return TRUE;
+      }
+   }
+
+   return FALSE;
+}
+
+
+static void
+bson_iter_validate_corrupt (const bson_iter_t *iter,
+                            void              *data)
+{
+   bson_validate_state_t *state = data;
+   state->err_offset = iter->err_offset;
+}
+
+
+static bson_bool_t
+bson_iter_validate_before (const bson_iter_t *iter,
+                           const char        *key,
+                           void              *data)
+{
+   bson_validate_state_t *state = data;
+
+   if ((state->flags & BSON_VALIDATE_DOLLAR_KEYS)) {
+      if (key[0] == '$') {
+         state->err_offset = iter->offset;
+         return TRUE;
+      }
+   }
+
+   if ((state->flags & BSON_VALIDATE_DOT_KEYS)) {
+      if (strstr(key, ".")) {
+         state->err_offset = iter->offset;
+         return TRUE;
+      }
+   }
+
+   return FALSE;
+}
+
+
+static bson_bool_t
+bson_iter_validate_document (const bson_iter_t *iter,
+                             const char        *key,
+                             const bson_t      *v_document,
+                             void              *data);
+
+
+static const bson_visitor_t bson_validate_funcs = {
+   .visit_before = bson_iter_validate_before,
+   .visit_corrupt = bson_iter_validate_corrupt,
+   .visit_utf8 = bson_iter_validate_utf8,
+   .visit_document = bson_iter_validate_document,
+   .visit_array = bson_iter_validate_document,
+};
+
+
+static bson_bool_t
+bson_iter_validate_document (const bson_iter_t *iter,
+                             const char        *key,
+                             const bson_t      *v_document,
+                             void              *data)
+{
+   bson_validate_state_t *state = data;
+   bson_iter_t child;
+
+   if (!bson_iter_init(&child, v_document)) {
+      /*
+       * TODO: We should make it so we can abort future iteration
+       *       on the parent document by returning FALSE/TRUE/etc.
+       */
+      state->err_offset = iter->offset;
+      return TRUE;
+   }
+
+   bson_iter_visit_all(&child, &bson_validate_funcs, state);
+
+   return FALSE;
+}
+
+
+bson_bool_t
+bson_validate (const bson_t          *bson,
+               bson_validate_flags_t  flags,
+               size_t                *offset)
+{
+   bson_validate_state_t state = { flags, -1 };
+   bson_iter_t iter;
+
+   if (!bson_iter_init(&iter, bson)) {
+      state.err_offset = 0;
+      goto failure;
+   }
+
+   bson_iter_validate_document(&iter, NULL, bson, &state);
+
+failure:
+   if (offset) {
+      *offset = state.err_offset;
+   }
+
+   return (state.err_offset < 0);
 }

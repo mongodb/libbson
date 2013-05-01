@@ -16,6 +16,7 @@
 
 
 #include <assert.h>
+#include <bson/bson-private.h>
 #include <fcntl.h>
 #include <time.h>
 #include <unistd.h>
@@ -71,7 +72,10 @@ test_bson_alloc (void)
 
    b = bson_new();
    assert_cmpint(b->len, ==, 5);
-   assert_cmpint(b->u.top.allocated, ==, 0);
+   assert((b->flags & BSON_FLAG_INLINE));
+   assert(!(b->flags & BSON_FLAG_CHILD));
+   assert(!(b->flags & BSON_FLAG_STATIC));
+   assert(!(b->flags & BSON_FLAG_NO_FREE));
    bson_destroy(b);
 
    /*
@@ -79,7 +83,7 @@ test_bson_alloc (void)
     */
    b = bson_sized_new(44);
    assert_cmpint(b->len, ==, 5);
-   assert_cmpint(b->u.top.allocated, ==, 0);
+   assert((b->flags & BSON_FLAG_INLINE));
    bson_destroy(b);
 
    /*
@@ -87,7 +91,7 @@ test_bson_alloc (void)
     */
    b = bson_sized_new(63);
    assert_cmpint(b->len, ==, 5);
-   assert_cmpint(b->u.top.allocated, ==, 64);
+   assert(!(b->flags & BSON_FLAG_INLINE));
    bson_destroy(b);
 
    /*
@@ -95,12 +99,12 @@ test_bson_alloc (void)
     */
    b = bson_sized_new(65);
    assert_cmpint(b->len, ==, 5);
-   assert_cmpint(b->u.top.allocated, ==, 128);
+   assert(!(b->flags & BSON_FLAG_INLINE));
    bson_destroy(b);
 
    b = bson_new_from_data(empty_bson, sizeof empty_bson);
    assert_cmpint(b->len, ==, sizeof empty_bson);
-   assert_cmpint(b->u.top.allocated, ==, 0);
+   assert((b->flags & BSON_FLAG_INLINE));
    assert(!memcmp(bson_get_data(b), empty_bson, sizeof empty_bson));
    bson_destroy(b);
 }
@@ -685,12 +689,14 @@ test_bson_init (void)
    int i;
 
    bson_init(&b);
+   assert((b.flags & BSON_FLAG_INLINE));
+   assert((b.flags & BSON_FLAG_STATIC));
+   assert(!(b.flags & BSON_FLAG_RDONLY));
    for (i = 0; i < 100; i++) {
       snprintf(key, sizeof key, "%d", i);
       bson_append_utf8(&b, key, -1, "bar", -1);
    }
-   assert(b.u.top.allocated);
-   assert(b.flags & (1 << 0));
+   assert(!(b.flags & BSON_FLAG_INLINE));
    bson_destroy(&b);
 }
 
@@ -702,8 +708,7 @@ test_bson_init_static (void)
    bson_t b;
 
    bson_init_static(&b, data, sizeof data);
-   assert(!b.u.top.allocated);
-   assert(b.flags & ((1 << 0) | (1 << 1)));
+   assert((b.flags & BSON_FLAG_RDONLY));
    bson_destroy(&b);
 }
 
@@ -818,12 +823,20 @@ test_bson_build_child_deep_1 (bson_t *b,
    (*count)++;
 
    bson_append_document_begin(b, "b", -1, &child);
+   assert(!(b->flags & BSON_FLAG_INLINE));
+   assert((b->flags & BSON_FLAG_IN_CHILD));
+   assert(!(child.flags & BSON_FLAG_INLINE));
+   assert((child.flags & BSON_FLAG_STATIC));
+   assert((child.flags & BSON_FLAG_CHILD));
+
    if (*count < 100) {
       test_bson_build_child_deep_1(&child, count);
    } else {
       bson_append_int32(&child, "b", -1, 1234);
    }
+
    bson_append_document_end(b, &child);
+   assert(!(b->flags & BSON_FLAG_IN_CHILD));
 }
 
 
@@ -834,9 +847,14 @@ test_bson_build_child_deep (void)
    int count = 0;
 
    bson_init(&b);
+   assert((b.flags & BSON_FLAG_INLINE));
    test_bson_build_child_deep_1(&b, &count);
+   assert(!(b.flags & BSON_FLAG_INLINE));
+   assert((b.flags & BSON_FLAG_STATIC));
+   assert(!(b.flags & BSON_FLAG_NO_FREE));
+   assert(!(b.flags & BSON_FLAG_RDONLY));
    assert(bson_validate(&b, BSON_VALIDATE_NONE, NULL));
-   assert(b.u.top.allocated == 1024);
+   assert(((bson_impl_alloc_t *)&b)->alloclen == 1024);
    assert_bson_equal_file(&b, "test39.bson");
    bson_destroy(&b);
 }
@@ -844,7 +862,7 @@ test_bson_build_child_deep (void)
 
 static void
 test_bson_build_child_deep_no_begin_end_1 (bson_t *b,
-                                     int    *count)
+                                           int    *count)
 {
    bson_t child;
 
@@ -870,14 +888,14 @@ test_bson_build_child_deep_no_begin_end (void)
    bson_init(&b);
    test_bson_build_child_deep_no_begin_end_1(&b, &count);
    assert(bson_validate(&b, BSON_VALIDATE_NONE, NULL));
-   assert(b.u.top.allocated == 1024);
+   assert(((bson_impl_alloc_t *)&b)->alloclen == 1024);
    assert_bson_equal_file(&b, "test39.bson");
    bson_destroy(&b);
 }
 
 
 static void
-test_bson_count (void)
+test_bson_count_keys (void)
 {
    bson_t b;
 
@@ -885,7 +903,7 @@ test_bson_count (void)
    bson_append_int32(&b, "0", -1, 0);
    bson_append_int32(&b, "1", -1, 1);
    bson_append_int32(&b, "2", -1, 2);
-   assert_cmpint(bson_count(&b), ==, 3);
+   assert_cmpint(bson_count_keys(&b), ==, 3);
    bson_destroy(&b);
 }
 
@@ -929,7 +947,7 @@ main (int   argc,
    run_test("/bson/build_child_deep", test_bson_build_child_deep);
    run_test("/bson/build_child_deep_no_begin_end", test_bson_build_child_deep_no_begin_end);
    run_test("/bson/build_child_array", test_bson_build_child_array);
-   run_test("/bson/count", test_bson_count);
+   run_test("/bson/count", test_bson_count_keys);
 
    return 0;
 }
