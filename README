@@ -102,3 +102,14 @@ sequential list of BSON documents.
 Additionally, you can parse a stream of BSON documents from a file using
 bson\_reader\_init\_from\_fd(). This is handy if you are processing backups
 from the mongodump command.
+
+
+### bson\_writer\_t
+
+It would be useful to be able to create wire-protocol packets while serializing
+directly to the same buffer. bson\_writer\_t achieves this by allowing the
+caller to provide a malloc()d buffer and a realloc() function to resize the
+buffer. Additionally, you may set an offset in the buffer to start from. This
+is useful since you can start encoding to the buffer directly after the message
+header structure. Buffers are grown in powers of two.
+
