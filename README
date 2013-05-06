@@ -113,3 +113,34 @@ buffer. Additionally, you may set an offset in the buffer to start from. This
 is useful since you can start encoding to the buffer directly after the message
 header structure. Buffers are grown in powers of two.
 
+
+## Performance Tricks
+
+
+### Serialize Documents into Output Buffer
+
+You can use bson\_writer\_t to serialize your dictionary/hash types to the
+target packet buffer.  It supports providing a realloc function to resize the
+packet buffer as you go.  This saves you many small allocations and instead has
+one large growing allocation.  This should help with memory fragmentation
+greatly.
+
+
+### Build sub-documents with bson\_append\_document\_begin()
+
+When building a sub-document, you have two options. You can build the bson\_t
+structure on its own, using its own allocations. Or, you can use
+bson\_append\_document\_begin() and bson\_append\_document\_end() to build the
+document inside of the parent document. This allows you to use one allocation
+for both rather than multiple.
+
+
+### Keep small documents on the stack
+
+bson\_t will use an inline buffer for small documents. Any document under 56
+bytes can be built inline on the stack. bson\_t will automatically switch to a
+malloc()d buffer when overflowing that internal buffer.
+
+Remember that even if you are building a bson\_t on the stack, you are required
+to call bson\_destroy().
+
