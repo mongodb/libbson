@@ -11,6 +11,7 @@ or perl.
 ## From Git
 
 ```sh
+$ sudo yum install automake autoconf libtool make gcc
 $ ./autogen.sh --enable-silent-rules
 $ make
 $ sudo make install
