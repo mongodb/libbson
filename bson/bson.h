@@ -145,6 +145,19 @@ bson_sized_new (size_t size);
 
 
 /**
+ * bson_copy:
+ * @bson: A bson_t.
+ *
+ * Copies @bson into a newly allocated bson_t. You must call bson_destroy()
+ * when you are done with the resulting value to free its resources.
+ *
+ * Returns: A newly allocated bson_t that should be free'd with bson_destroy()
+ */
+bson_t *
+bson_copy (const bson_t *bson);
+
+
+/**
  * bson_destroy:
  * @bson: A bson_t.
  *

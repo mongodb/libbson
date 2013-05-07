@@ -908,6 +908,21 @@ test_bson_count_keys (void)
 }
 
 
+static void
+test_bson_copy (void)
+{
+   bson_t b;
+   bson_t *c;
+
+   bson_init(&b);
+   bson_append_int32(&b, "foobar", -1, 1234);
+   c = bson_copy(&b);
+   assert_bson_equal(&b, c);
+   bson_destroy(c);
+   bson_destroy(&b);
+}
+
+
 int
 main (int   argc,
       char *argv[])
@@ -948,6 +963,7 @@ main (int   argc,
    run_test("/bson/build_child_deep_no_begin_end", test_bson_build_child_deep_no_begin_end);
    run_test("/bson/build_child_array", test_bson_build_child_array);
    run_test("/bson/count", test_bson_count_keys);
+   run_test("/bson/copy", test_bson_copy);
 
    return 0;
 }

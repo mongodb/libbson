@@ -1090,6 +1090,18 @@ bson_new_from_data (const bson_uint8_t *data,
 }
 
 
+bson_t *
+bson_copy (const bson_t *bson)
+{
+   const bson_uint8_t *data;
+
+   bson_return_val_if_fail(bson, NULL);
+
+   data = bson_data(bson);
+   return bson_new_from_data(data, bson->len);
+}
+
+
 void
 bson_destroy (bson_t *bson)
 {
