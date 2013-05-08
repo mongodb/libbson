@@ -363,6 +363,20 @@ test_bson_iter_recurse (void)
 }
 
 
+static void
+test_bson_iter_init_find_case (void)
+{
+   bson_t b;
+   bson_iter_t iter;
+
+   bson_init(&b);
+   bson_append_int32(&b, "FOO", -1, 1234);
+   assert(bson_iter_init_find_case(&iter, &b, "foo"));
+   assert_cmpint(bson_iter_int32(&iter), ==, 1234);
+   bson_destroy(&b);
+}
+
+
 int
 main (int   argc,
       char *argv[])
@@ -379,6 +393,7 @@ main (int   argc,
    run_test("/bson/iter/test_overwrite_int64", test_bson_iter_overwrite_int64);
    run_test("/bson/iter/test_overwrite_double", test_bson_iter_overwrite_double);
    run_test("/bson/iter/recurse", test_bson_iter_recurse);
+   run_test("/bson/iter/init_find_case", test_bson_iter_init_find_case);
 
    return 0;
 }

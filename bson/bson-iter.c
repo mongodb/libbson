@@ -91,6 +91,19 @@ bson_iter_init_find (bson_iter_t  *iter,
 
 
 bson_bool_t
+bson_iter_init_find_case (bson_iter_t  *iter,
+                          const bson_t *bson,
+                          const char   *key)
+{
+   bson_return_val_if_fail(iter, FALSE);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
+
+   return (bson_iter_init(iter, bson) && bson_iter_find_case(iter, key));
+}
+
+
+bson_bool_t
 bson_iter_find (bson_iter_t *iter,
                 const char  *key)
 {

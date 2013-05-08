@@ -292,12 +292,35 @@ bson_iter_init (bson_iter_t  *iter,
 
 /**
  * bson_iter_init_find:
+ * @iter: A bson_iter_t to initialize.
+ * @bson: A bson_t to read from.
+ * @key: The key to locate.
  *
+ * Initializes a bson_iter_t and moves the iter to the first field matching
+ * @key.
+ *
+ * Returns: TRUE if the field was found.
  */
 bson_bool_t
 bson_iter_init_find (bson_iter_t  *iter,
                      const bson_t *bson,
                      const char   *key);
+
+
+/**
+ * bson_iter_init_find_case:
+ * @iter: A bson_iter_t to initialize.
+ * @bson: A bson_t to read from.
+ * @key: The key to locate.
+ *
+ * A case-insensitive version of bson_iter_init_find().
+ *
+ * Returns: TRUE if the field was found.
+ */
+bson_bool_t
+bson_iter_init_find_case (bson_iter_t  *iter,
+                          const bson_t *bson,
+                          const char   *key);
 
 
 /**
