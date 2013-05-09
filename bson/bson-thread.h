@@ -36,6 +36,7 @@ BSON_BEGIN_DECLS
 #define bson_cond_t        pthread_cond_t
 #define bson_cond_init     pthread_cond_init
 #define bson_cond_wait     pthread_cond_wait
+#define bson_cond_signal   pthread_cond_signal
 #define bson_cond_destroy  pthread_cond_destroy
 #define bson_mutex_t       pthread_mutex_t
 #define bson_mutex_init    pthread_mutex_init
