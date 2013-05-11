@@ -153,6 +153,41 @@ bson_iter_find_case (bson_iter_t *iter,
 }
 
 
+bson_bool_t
+bson_iter_find_descendant (bson_iter_t *iter,
+                           const char  *dotkey,
+                           bson_iter_t *descendant)
+{
+   bson_iter_t tmp;
+   const char *dot;
+   size_t sublen;
+
+   bson_return_val_if_fail(iter, FALSE);
+   bson_return_val_if_fail(dotkey, FALSE);
+   bson_return_val_if_fail(descendant, FALSE);
+
+   if ((dot = strchr(dotkey, '.'))) {
+      sublen = dot - dotkey;
+   } else {
+      sublen = strlen(dotkey);
+   }
+
+   if (bson_iter_find_with_len(iter, dotkey, sublen)) {
+      if (!dot) {
+         *descendant = *iter;
+         return TRUE;
+      }
+      if (BSON_ITER_HOLDS_DOCUMENT(iter) || BSON_ITER_HOLDS_ARRAY(iter)) {
+         if (bson_iter_recurse(iter, &tmp)) {
+            return bson_iter_find_descendant(&tmp, dot + 1, descendant);
+         }
+      }
+   }
+
+   return FALSE;
+}
+
+
 const char *
 bson_iter_key (const bson_iter_t *iter)
 {

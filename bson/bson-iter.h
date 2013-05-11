@@ -413,6 +413,24 @@ bson_iter_find_case (bson_iter_t *iter,
 
 
 /**
+ * bson_iter_find_descendant:
+ * @iter: a bson_iter_t.
+ * @dotkey: a key to find the descendant.
+ * @descendant: an iter to initialize with at the descendent.
+ *
+ * Locates a descendant using the parent.child.key notation. This operates
+ * similar to bson_iter_find() except that it can recurse into children
+ * documents using the dot notation.
+ *
+ * Returns: TRUE if the descendant was found.
+ */
+bson_bool_t
+bson_iter_find_descendant (bson_iter_t *iter,
+                           const char  *dotkey,
+                           bson_iter_t *descendant);
+
+
+/**
  * bson_iter_next:
  *
  */
