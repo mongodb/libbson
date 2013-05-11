@@ -377,6 +377,22 @@ test_bson_iter_init_find_case (void)
 }
 
 
+static void
+test_bson_iter_find_descendant (void)
+{
+   bson_iter_t iter;
+   bson_iter_t desc;
+   bson_t *b;
+
+   b = get_bson("tests/binary/dotkey.bson");
+   bson_iter_init(&iter, b);
+   assert(bson_iter_find_descendant(&iter, "a.b.c.0", &desc));
+   assert(BSON_ITER_HOLDS_INT32(&desc));
+   assert(bson_iter_int32(&desc) == 1);
+   bson_destroy(b);
+}
+
+
 int
 main (int   argc,
       char *argv[])
@@ -394,6 +410,7 @@ main (int   argc,
    run_test("/bson/iter/test_overwrite_double", test_bson_iter_overwrite_double);
    run_test("/bson/iter/recurse", test_bson_iter_recurse);
    run_test("/bson/iter/init_find_case", test_bson_iter_init_find_case);
+   run_test("/bson/iter/find_descendant", test_bson_iter_find_descendant);
 
    return 0;
 }
