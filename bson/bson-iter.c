@@ -103,6 +103,28 @@ bson_iter_init_find_case (bson_iter_t  *iter,
 }
 
 
+static bson_bool_t
+bson_iter_find_with_len (bson_iter_t *iter,
+                         const char  *key,
+                         int          keylen)
+{
+   bson_return_val_if_fail(iter, FALSE);
+   bson_return_val_if_fail(key, FALSE);
+
+   if (keylen < 0) {
+      keylen = strlen(key);
+   }
+
+   while (bson_iter_next(iter)) {
+      if (!strncmp(key, bson_iter_key(iter), keylen)) {
+         return TRUE;
+      }
+   }
+
+   return FALSE;
+}
+
+
 bson_bool_t
 bson_iter_find (bson_iter_t *iter,
                 const char  *key)
@@ -110,13 +132,7 @@ bson_iter_find (bson_iter_t *iter,
    bson_return_val_if_fail(iter, FALSE);
    bson_return_val_if_fail(key, FALSE);
 
-   while (bson_iter_next(iter)) {
-      if (!strcmp(key, bson_iter_key(iter))) {
-         return TRUE;
-      }
-   }
-
-   return FALSE;
+   return bson_iter_find_with_len(iter, key, -1);
 }
 
 
