@@ -73,6 +73,11 @@ bson_strdup_printf (const char *format,
 
 
 char *
+bson_strdupv_printf (const char *format,
+                     va_list     args);
+
+
+char *
 bson_strndup (const char *str,
               size_t      n_bytes);
 

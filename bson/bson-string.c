@@ -119,10 +119,10 @@ bson_strdup (const char *str)
 
 
 char *
-bson_strdup_printf (const char *format,
-                    ...)
+bson_strdupv_printf (const char *format,
+                     va_list     args)
 {
-   va_list args;
+   va_list my_args;
    char *buf;
    int len = 32;
    int n;
@@ -132,9 +132,9 @@ bson_strdup_printf (const char *format,
    buf = bson_malloc0(len);
 
    while (TRUE) {
-      va_start(args, format);
-      n = vsnprintf(buf, len, format, args);
-      va_end(args);
+      va_copy(my_args, args);
+      n = vsnprintf(buf, len, format, my_args);
+      va_end(my_args);
 
       if (n > -1 && n < len) {
          return buf;
@@ -148,6 +148,21 @@ bson_strdup_printf (const char *format,
 
       buf = bson_realloc(buf, len);
    }
+}
+
+
+char *
+bson_strdup_printf (const char *format,
+                    ...)
+{
+   va_list args;
+   char *ret;
+
+   va_start(args, format);
+   ret = bson_strdupv_printf(format, args);
+   va_end(args);
+
+   return ret;
 }
 
 
