@@ -33,19 +33,20 @@ BSON_BEGIN_DECLS
 #if defined(HAVE_PTHREADS)
 
 #include <pthread.h>
-#define bson_cond_t        pthread_cond_t
-#define bson_cond_init     pthread_cond_init
-#define bson_cond_wait     pthread_cond_wait
-#define bson_cond_signal   pthread_cond_signal
-#define bson_cond_destroy  pthread_cond_destroy
-#define bson_mutex_t       pthread_mutex_t
-#define bson_mutex_init    pthread_mutex_init
-#define bson_mutex_lock    pthread_mutex_lock
-#define bson_mutex_unlock  pthread_mutex_unlock
-#define bson_mutex_destroy pthread_mutex_destroy
-#define bson_thread_t      pthread_t
-#define bson_thread_create pthread_create
-#define bson_thread_join   pthread_join
+#define BSON_MUTEX_INITIALIZER PTHREAD_MUTEX_INITIALIZER
+#define bson_cond_t            pthread_cond_t
+#define bson_cond_init         pthread_cond_init
+#define bson_cond_wait         pthread_cond_wait
+#define bson_cond_signal       pthread_cond_signal
+#define bson_cond_destroy      pthread_cond_destroy
+#define bson_mutex_t           pthread_mutex_t
+#define bson_mutex_init        pthread_mutex_init
+#define bson_mutex_lock        pthread_mutex_lock
+#define bson_mutex_unlock      pthread_mutex_unlock
+#define bson_mutex_destroy     pthread_mutex_destroy
+#define bson_thread_t          pthread_t
+#define bson_thread_create     pthread_create
+#define bson_thread_join       pthread_join
 
 #elif defined(HAVE_WINDOWS)
 
