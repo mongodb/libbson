@@ -59,6 +59,7 @@ dnl **************************************************************************
 dnl Check for Python Support
 dnl **************************************************************************
 AX_PYTHON
+AM_CONDITIONAL([HAVE_PYTHON], [test x$ax_python_header != xno])
 
 
 dnl **************************************************************************
@@ -163,4 +164,8 @@ echo "  Prefix ....................: ${prefix}"
 echo "  Endianness ................: ${host_endianness}"
 echo "  Debug Level ...............: ${enable_debug}"
 echo "  CFLAGS ....................: ${CFLAGS}"
+echo ""
+echo "Bindings"
+echo ""
+echo "  Python ....................: ${ax_python_header}"
 echo ""
