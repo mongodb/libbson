@@ -85,7 +85,7 @@ bson_reader_destroy (bson_reader_t *reader);
  * bson_t should not be modified or freed. You may copy it and iterate over it.
  * Functions that take a const bson_t* are safe to use.
  *
- * This structure does not survive calls to bson_reader_next() or
+ * This structure does not survive calls to bson_reader_read() or
  * bson_reader_destroy() as it uses memory allocated by the reader or
  * underlying storage/memory.
  *
