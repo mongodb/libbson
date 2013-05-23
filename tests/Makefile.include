@@ -71,4 +71,6 @@ test: $(TEST_PROGS)
 	@ for TEST_PROG in $(TEST_PROGS) ; do \
 		./$$TEST_PROG ; \
 	done
+if HAVE_PYTHON
 	@ LD_LIBRARY_PATH=.libs DYLD_LIBRARY_PATH=.libs PYTHONPATH=.libs ./tests/test_cbson.py
+endif
