@@ -67,7 +67,12 @@ test_bson_writer_CPPFLAGS = -I$(top_srcdir) -DBSON_COMPILATION
 test_bson_writer_LDADD = libbson-1.0.la
 
 
-test: $(TEST_PROGS)
+if HAVE_PYTHON
+PYTEST_DEPS := cbson.la
+endif
+
+
+test: $(TEST_PROGS) $(PYTEST_DEPS)
 	@ for TEST_PROG in $(TEST_PROGS) ; do \
 		./$$TEST_PROG ; \
 	done
