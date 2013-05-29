@@ -29,20 +29,27 @@ main (int   argc,
    bson_reader_t reader;
    const bson_t *b;
    const char *filename;
-   bson_bool_t eof;
-   size_t len;
    char *str;
    int fd;
    int i;
 
+   /*
+    * Print program usage if no arguments are provided.
+    */
    if (argc == 1) {
       fprintf(stderr, "usage: %s FILE...\n", argv[0]);
       return 1;
    }
 
+   /*
+    * Process command line arguments expecting each to be a filename.
+    */
    for (i = 1; i < argc; i++) {
       filename = argv[i];
 
+      /*
+       * Open the filename provided in command line arguments.
+       */
       errno = 0;
       fd = open(filename, O_RDONLY);
       if (fd == -1) {
@@ -50,14 +57,23 @@ main (int   argc,
          continue;
       }
 
+      /*
+       * Initialize a new reader for this file descriptor.
+       */
       bson_reader_init_from_fd(&reader, fd, TRUE);
 
-      while ((b = bson_reader_read(&reader, &eof))) {
-         str = bson_as_json(b, &len);
+      /*
+       * Convert each incoming document to JSON and print to stdout.
+       */
+      while ((b = bson_reader_read(&reader, NULL))) {
+         str = bson_as_json(b, NULL);
          fprintf(stdout, "%s\n", str);
          bson_free(str);
       }
 
+      /*
+       * Cleanup after our reader, which closes the file descriptor.
+       */
       bson_reader_destroy(&reader);
    }
 
