@@ -86,10 +86,7 @@
 #define bson_str_empty0(s) (!s || !s[0])
 
 
-/*
- * TODO: Make this configurable.
- */
-#if 1
+#ifndef BSON_DISABLE_ASSERT
 #define BSON_ASSERT(s) assert((s))
 #else
 #define BSON_ASSERT(s)
@@ -137,6 +134,7 @@
 #define BSON_INLINE inline
 
 
+#ifndef BSON_DISABLE_CHECKS
 #define bson_return_if_fail(test) \
    do { \
       if (!(test)) { \
@@ -144,8 +142,12 @@
          return; \
       } \
    } while (0)
+#else
+#define bson_return_if_fail(test)
+#endif
 
 
+#ifndef BSON_DISABLE_CHECKS
 #define bson_return_val_if_fail(test, val) \
    do { \
       if (!(test)) { \
@@ -153,6 +155,9 @@
          return (val); \
       } \
    } while (0)
+#else
+#define bson_return_val_if_fail(test, val)
+#endif
 
 
 #endif /* BSON_MACROS_H */

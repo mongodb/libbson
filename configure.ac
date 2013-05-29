@@ -118,6 +118,8 @@ AS_CASE([$enable_debug],
 		CFLAGS="$CFLAGS -Wuninitialized"
 	],
 	[no], [
+		CFLAGS="$CFLAGS -DBSON_DISABLE_ASSERT"
+		CFLAGS="$CFLAGS -DBSON_DISABLE_CHECKS"
 	],
 	[AC_MSG_ERROR([Unknown argument to --enable-debug])]
 )
