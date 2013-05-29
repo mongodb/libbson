@@ -2,6 +2,7 @@ EXTRA_DIST =
 
 include bson/Makefile.include
 include tests/Makefile.include
+include examples/Makefile.include
 
 if HAVE_PYTHON
 include bindings/python/Makefile.include

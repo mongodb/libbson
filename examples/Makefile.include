@@ -1,0 +1,4 @@
+noinst_PROGRAMS += bson-to-json
+bson_to_json_SOURCES = $(top_srcdir)/examples/bson-to-json.c
+bson_to_json_CPPFLAGS = -I$(top_srcdir)/bson
+bson_to_json_LDADD = libbson-1.0.la
