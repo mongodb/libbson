@@ -2,6 +2,7 @@
 aclocal.m4
 autom4te.cache
 bson-to-json
+bson-validate
 compile
 config.*
 configure
