@@ -15,6 +15,12 @@
  */
 
 
+/*
+ * This program will print each BSON document contained in the provided files
+ * as a JSON string to STDOUT.
+ */
+
+
 #include <bson.h>
 #include <errno.h>
 #include <fcntl.h>
