@@ -84,7 +84,7 @@ def compare_modules(name, bson_func, cbson_func, number=1, thread_count=None):
         cbson_time = sum(results)
 
     speedup = bson_time / cbson_time
-    print >> sys.stdout, 'bson %0.4lf : cbson %0.4lf : %0.3lf x faster' % (bson_time, cbson_time, speedup)
+    print >> sys.stdout, 'bson %0.4lf : cbson %0.4lf : %06.3lfx faster' % (bson_time, cbson_time, speedup)
 
 def bson_generate_object_id():
     bson.ObjectId()
