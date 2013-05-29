@@ -1692,10 +1692,6 @@ bson_iter_validate_document (const bson_iter_t *iter,
    bson_iter_t child;
 
    if (!bson_iter_init(&child, v_document)) {
-      /*
-       * TODO: We should make it so we can abort future iteration
-       *       on the parent document by returning FALSE/TRUE/etc.
-       */
       state->err_offset = iter->offset;
       return TRUE;
    }
