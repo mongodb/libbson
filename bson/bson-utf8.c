@@ -84,10 +84,11 @@ bson_utf8_validate (const char *utf8,
       if (!seq_length) {
          return FALSE;
       }
-      /*
-       * TODO: Might make sense to validate each of the trailing bytes
-       *       based on the sequence length.
-       */
+      for (j = i + 1; j < (i + seq_length); j++) {
+         if ((utf8[j] & 0xC0) != 0x80) {
+            return FALSE;
+         }
+      }
       if (!allow_null) {
          for (j = 0; j < seq_length; j++) {
             if (((i + j) > utf8_len) || !utf8[i + j]) {
