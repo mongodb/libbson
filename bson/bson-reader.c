@@ -162,10 +162,13 @@ bson_reader_fd_read (bson_reader_fd_t *reader,
          continue;
       }
 
+      if (!bson_init_static(&reader->inline_bson,
+                            &reader->data[reader->offset],
+                            blen)) {
+         return FALSE;
+      }
+
       reader->offset += blen;
-      bson_init_static(&reader->inline_bson,
-                       &reader->data[reader->offset],
-                       blen);
 
       return &reader->inline_bson;
    }
