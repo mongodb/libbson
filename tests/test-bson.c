@@ -89,7 +89,7 @@ test_bson_alloc (void)
    /*
     * Make sure we grow to next power of 2.
     */
-   b = bson_sized_new(63);
+   b = bson_sized_new(121);
    assert_cmpint(b->len, ==, 5);
    assert(!(b->flags & BSON_FLAG_INLINE));
    bson_destroy(b);
@@ -97,7 +97,7 @@ test_bson_alloc (void)
    /*
     * Make sure we grow to next power of 2.
     */
-   b = bson_sized_new(65);
+   b = bson_sized_new(129);
    assert_cmpint(b->len, ==, 5);
    assert(!(b->flags & BSON_FLAG_INLINE));
    bson_destroy(b);

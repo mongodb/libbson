@@ -115,13 +115,13 @@ typedef struct _bson_context_t bson_context_t;
  */
 typedef struct
 {
-   bson_uint32_t flags;       /* Internal flags for the bson_t. */
-   bson_uint32_t len;         /* Length of BSON data. */
-   bson_uint8_t  padding[56]; /* Padding for stack allocation. */
+   bson_uint32_t flags;        /* Internal flags for the bson_t. */
+   bson_uint32_t len;          /* Length of BSON data. */
+   bson_uint8_t  padding[120]; /* Padding for stack allocation. */
 } bson_t;
 
 
-BSON_STATIC_ASSERT(sizeof(bson_t) == 64);
+BSON_STATIC_ASSERT(sizeof(bson_t) == 128);
 
 
 /**

@@ -310,8 +310,8 @@ bson_append_bson_begin (bson_t      *bson,
     * realloc the *buf pointer.
     */
    if ((bson->flags & BSON_FLAG_INLINE)) {
-      BSON_ASSERT(bson->len < 64);
-      bson_grow(bson, 64 - bson->len);
+      BSON_ASSERT(bson->len <= 120);
+      bson_grow(bson, 128 - bson->len);
       BSON_ASSERT(!(bson->flags & BSON_FLAG_INLINE));
    }
 

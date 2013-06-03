@@ -41,11 +41,11 @@ typedef struct
 {
    bson_flags_t   flags;
    bson_uint32_t  len;
-   bson_uint8_t   data[56];
+   bson_uint8_t   data[120];
 } bson_impl_inline_t;
 
 
-BSON_STATIC_ASSERT(sizeof(bson_impl_inline_t) == 64);
+BSON_STATIC_ASSERT(sizeof(bson_impl_inline_t) == 128);
 
 
 typedef struct
@@ -62,7 +62,7 @@ typedef struct
 } bson_impl_alloc_t;
 
 
-BSON_STATIC_ASSERT(sizeof(bson_impl_alloc_t) <= 64);
+BSON_STATIC_ASSERT(sizeof(bson_impl_alloc_t) <= 128);
 
 
 BSON_END_DECLS
