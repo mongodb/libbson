@@ -121,7 +121,7 @@ test_bson_iter_overflow (void)
 
    b = get_bson("tests/binary/overflow2.bson");
    assert(b);
-   bson_iter_init(&iter, b);
+   assert(bson_iter_init(&iter, b));
    assert(!bson_iter_next(&iter));
    bson_destroy(b);
 }
@@ -135,7 +135,7 @@ test_bson_iter_trailing_null (void)
 
    b = get_bson("tests/binary/trailingnull.bson");
    assert(b);
-   bson_iter_init(&iter, b);
+   assert(bson_iter_init(&iter, b));
    assert(!bson_iter_next(&iter));
    bson_destroy(b);
 }
@@ -385,7 +385,7 @@ test_bson_iter_find_descendant (void)
    bson_t *b;
 
    b = get_bson("tests/binary/dotkey.bson");
-   bson_iter_init(&iter, b);
+   assert(bson_iter_init(&iter, b));
    assert(bson_iter_find_descendant(&iter, "a.b.c.0", &desc));
    assert(BSON_ITER_HOLDS_INT32(&desc));
    assert(bson_iter_int32(&desc) == 1);
