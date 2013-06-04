@@ -111,7 +111,7 @@ typedef struct _bson_context_t bson_context_t;
  *
  * See http://bsonspec.org for the BSON document spec.
  *
- * This structure is meant to fit in a 64-byte cacheline.
+ * This structure is meant to fit in two sequential 64-byte cachelines.
  */
 typedef struct
 {
