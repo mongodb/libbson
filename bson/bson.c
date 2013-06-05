@@ -23,6 +23,9 @@
 #include "bson-private.h"
 
 
+#define BSON_MAX_SIZE ((size_t)((1U << 31) - 1))
+
+
 typedef struct
 {
    bson_validate_flags_t flags;
@@ -305,7 +308,7 @@ bson_append (bson_t             *bson,
     * what you're thinking. BSON uses a signed 32-bit length field? Yeah. It
     * does.
     */
-   if (BSON_UNLIKELY(count > (((size_t)INT_MAX) - (size_t)bson->len))) {
+   if (BSON_UNLIKELY(count > (BSON_MAX_SIZE - bson->len))) {
       return FALSE;
    }
 
