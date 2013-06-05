@@ -923,6 +923,25 @@ test_bson_copy (void)
 }
 
 
+static void
+test_bson_append_overflow (void)
+{
+   const char *key = "a";
+   size_t len;
+   bson_t b;
+
+   len = BSON_MAX_SIZE;
+   len -= 4; /* len */
+   len -= 1; /* type */
+   len -= 1; /* value */
+   len -= 1; /* end byte */
+
+   bson_init(&b);
+   assert(!bson_append_bool(&b, key, len, TRUE));
+   bson_destroy(&b);
+}
+
+
 int
 main (int   argc,
       char *argv[])
@@ -931,6 +950,7 @@ main (int   argc,
    run_test("/bson/init", test_bson_init);
    run_test("/bson/init_static", test_bson_init_static);
    run_test("/bson/basic", test_bson_alloc);
+   run_test("/bson/append_overflow", test_bson_append_overflow);
    run_test("/bson/append_array", test_bson_append_array);
    run_test("/bson/append_binary", test_bson_append_binary);
    run_test("/bson/append_bool", test_bson_append_bool);
