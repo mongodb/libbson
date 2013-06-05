@@ -23,9 +23,6 @@
 #include "bson-private.h"
 
 
-#define BSON_MAX_SIZE ((size_t)((1U << 31) - 1))
-
-
 typedef struct
 {
    bson_validate_flags_t flags;

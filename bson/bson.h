@@ -67,6 +67,14 @@ BSON_BEGIN_DECLS
 
 
 /**
+ * BSON_MAX_SIZE:
+ *
+ * The maximum size in bytes of a BSON document.
+ */
+#define BSON_MAX_SIZE ((size_t)((1U << 31) - 1))
+
+
+/**
  * bson_new:
  *
  * Allocates a new bson_t structure. Call the various bson_append_*()
