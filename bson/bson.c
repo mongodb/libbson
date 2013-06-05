@@ -180,14 +180,14 @@ bson_data (const bson_t *bson)
 }
 
 
-static bson_uint32_t
+static size_t
 bson_append_count_bytes (bson_t             *bson,
                          bson_uint32_t       n_pairs,
                          bson_uint32_t       first_len,
                          const bson_uint8_t *first_data,
                          va_list             args)
 {
-   bson_uint32_t count = first_len;
+   size_t count = first_len;
 
    BSON_ASSERT(bson);
    BSON_ASSERT(n_pairs);
@@ -211,6 +211,18 @@ bson_encode_length (bson_t *bson)
 }
 
 
+/**
+ * bson_append_va:
+ * @bson: A bson_t
+ * @n_bytes: The number of bytes to append to the document.
+ * @n_pairs: The number of length,buffer pairs.
+ * @first_len: Length of first buffer.
+ * @first_data: First buffer.
+ * @args: va_list of additional tuples.
+ *
+ * Appends the length,buffer pairs to the bson_t. @n_bytes is an optimization
+ * to perform one array growth rather than many small growths.
+ */
 static void
 bson_append_va (bson_t             *bson,
                 bson_uint32_t       n_bytes,
@@ -256,15 +268,28 @@ bson_append_va (bson_t             *bson,
 }
 
 
-static void
+/**
+ * bson_append:
+ * @bson: A bson_t.
+ * @n_pairs: Number of length,buffer pairs.
+ * @first_len: Length of first buffer.
+ * @first_data: First buffer.
+ *
+ * Variadic function to append length,buffer pairs to a bson_t. If the
+ * append would cause the bson_t to overflow a 32-bit length, it will return
+ * FALSE and no append will have occurred.
+ *
+ * Returns: TRUE if successful; otherwise FALSE.
+ */
+static bson_bool_t
 bson_append (bson_t             *bson,
              bson_uint32_t       n_pairs,
              bson_uint32_t       first_len,
              const bson_uint8_t *first_data,
              ...)
 {
-   bson_uint32_t count;
    va_list args;
+   size_t count;
 
    BSON_ASSERT(bson);
    BSON_ASSERT(n_pairs);
@@ -275,13 +300,24 @@ bson_append (bson_t             *bson,
    count = bson_append_count_bytes(bson, n_pairs, first_len, first_data, args);
    va_end(args);
 
+   /*
+    * Check to see if this append would overflow 32-bit signed integer. I know
+    * what you're thinking. BSON uses a signed 32-bit length field? Yeah. It
+    * does.
+    */
+   if (BSON_UNLIKELY(count > (((size_t)INT_MAX) - (size_t)bson->len))) {
+      return FALSE;
+   }
+
    va_start(args, first_data);
    bson_append_va(bson, count, n_pairs, first_len, first_data, args);
    va_end(args);
+
+   return TRUE;
 }
 
 
-static void
+static bson_bool_t
 bson_append_bson_begin (bson_t      *bson,
                         const char  *key,
                         int          key_length,
@@ -293,11 +329,11 @@ bson_append_bson_begin (bson_t      *bson,
    bson_impl_alloc_t *aparent = (bson_impl_alloc_t *)bson;
    bson_impl_alloc_t *achild = (bson_impl_alloc_t *)child;
 
-   bson_return_if_fail(bson);
-   bson_return_if_fail(!(bson->flags & BSON_FLAG_RDONLY));
-   bson_return_if_fail(!(bson->flags & BSON_FLAG_IN_CHILD));
-   bson_return_if_fail(key);
-   bson_return_if_fail(child);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(!(bson->flags & BSON_FLAG_RDONLY), FALSE);
+   bson_return_val_if_fail(!(bson->flags & BSON_FLAG_IN_CHILD), FALSE);
+   bson_return_val_if_fail(key, FALSE);
+   bson_return_val_if_fail(child, FALSE);
 
    if (key_length < 0) {
       key_length = strlen(key);
@@ -318,11 +354,13 @@ bson_append_bson_begin (bson_t      *bson,
    /*
     * Append the type and key for the field.
     */
-   bson_append(bson, 4,
-               1, &type,
-               key_length, key,
-               1, &gZero,
-               5, empty);
+   if (!bson_append(bson, 4,
+                    1, &type,
+                    key_length, key,
+                    1, &gZero,
+                    5, empty)) {
+      return FALSE;
+   }
 
    /*
     * Mark the document as working on a child document so that no
@@ -348,58 +386,78 @@ bson_append_bson_begin (bson_t      *bson,
    achild->alloc = NULL;
    achild->alloclen = 0;
    achild->realloc = aparent->realloc;
+
+   return TRUE;
 }
 
 
-void
+bson_bool_t
 bson_append_bson_end (bson_t *bson,
                       bson_t *child)
 {
-   bson_return_if_fail(bson);
-   bson_return_if_fail((bson->flags & BSON_FLAG_IN_CHILD));
-   bson_return_if_fail(!(child->flags & BSON_FLAG_IN_CHILD));
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail((bson->flags & BSON_FLAG_IN_CHILD), FALSE);
+   bson_return_val_if_fail(!(child->flags & BSON_FLAG_IN_CHILD), FALSE);
 
    bson->flags &= ~BSON_FLAG_IN_CHILD;
+
+   return TRUE;
 }
 
 
-void
+bson_bool_t
 bson_append_array_begin (bson_t     *bson,
                          const char *key,
                          int         key_length,
                          bson_t     *child)
 {
-   bson_append_bson_begin(bson, key, key_length, BSON_TYPE_ARRAY, child);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
+   bson_return_val_if_fail(child, FALSE);
+
+   return bson_append_bson_begin(bson, key, key_length, BSON_TYPE_ARRAY,
+                                 child);
 }
 
 
-void
+bson_bool_t
 bson_append_array_end (bson_t *bson,
                        bson_t *child)
 {
-   bson_append_bson_end(bson, child);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(child, FALSE);
+
+   return bson_append_bson_end(bson, child);
 }
 
 
-void
+bson_bool_t
 bson_append_document_begin (bson_t     *bson,
                             const char *key,
                             int         key_length,
                             bson_t     *child)
 {
-   bson_append_bson_begin(bson, key, key_length, BSON_TYPE_DOCUMENT, child);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
+   bson_return_val_if_fail(child, FALSE);
+
+   return bson_append_bson_begin(bson, key, key_length, BSON_TYPE_DOCUMENT,
+                                 child);
 }
 
 
-void
+bson_bool_t
 bson_append_document_end (bson_t *bson,
                           bson_t *child)
 {
-   bson_append_bson_end(bson, child);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(child, FALSE);
+
+   return bson_append_bson_end(bson, child);
 }
 
 
-void
+bson_bool_t
 bson_append_array (bson_t       *bson,
                    const char   *key,
                    int           key_length,
@@ -407,22 +465,23 @@ bson_append_array (bson_t       *bson,
 {
    static const bson_uint8_t type = BSON_TYPE_ARRAY;
 
-   bson_return_if_fail(bson);
-   bson_return_if_fail(key);
-   bson_return_if_fail(array);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
+   bson_return_val_if_fail(array, FALSE);
 
    if (key_length < 0) {
       key_length = strlen(key);
    }
 
-   bson_append(bson, 4,
-               1, &type,
-               key_length, key,
-               1, &gZero,
-               array->len, bson_data(array));
+   return bson_append(bson, 4,
+                      1, &type,
+                      key_length, key,
+                      1, &gZero,
+                      array->len, bson_data(array));
 }
 
-void
+
+bson_bool_t
 bson_append_binary (bson_t             *bson,
                     const char         *key,
                     int                 key_length,
@@ -434,9 +493,9 @@ bson_append_binary (bson_t             *bson,
    bson_uint32_t length_le;
    bson_uint8_t subtype8;
 
-   bson_return_if_fail(bson);
-   bson_return_if_fail(key);
-   bson_return_if_fail(binary);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
+   bson_return_val_if_fail(binary, FALSE);
 
    if (key_length < 0) {
       key_length = strlen(key);
@@ -445,17 +504,17 @@ bson_append_binary (bson_t             *bson,
    length_le = BSON_UINT32_TO_LE(length);
    subtype8 = subtype;
 
-   bson_append(bson, 6,
-               1, &type,
-               key_length, key,
-               1, &gZero,
-               4, &length_le,
-               1, &subtype8,
-               length, binary);
+   return bson_append(bson, 6,
+                      1, &type,
+                      key_length, key,
+                      1, &gZero,
+                      4, &length_le,
+                      1, &subtype8,
+                      length, binary);
 }
 
 
-void
+bson_bool_t
 bson_append_bool (bson_t      *bson,
                   const char  *key,
                   int          key_length,
@@ -464,22 +523,22 @@ bson_append_bool (bson_t      *bson,
    static const bson_uint8_t type = BSON_TYPE_BOOL;
    bson_uint8_t byte = !!value;
 
-   bson_return_if_fail(bson);
-   bson_return_if_fail(key);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
 
    if (key_length < 0) {
       key_length = strlen(key);
    }
 
-   bson_append(bson, 4,
-               1, &type,
-               key_length, key,
-               1, &gZero,
-               1, &byte);
+   return bson_append(bson, 4,
+                      1, &type,
+                      key_length, key,
+                      1, &gZero,
+                      1, &byte);
 }
 
 
-void
+bson_bool_t
 bson_append_code (bson_t     *bson,
                   const char *key,
                   int         key_length,
@@ -489,9 +548,9 @@ bson_append_code (bson_t     *bson,
    bson_uint32_t length;
    bson_uint32_t length_le;
 
-   bson_return_if_fail(bson);
-   bson_return_if_fail(key);
-   bson_return_if_fail(javascript);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
+   bson_return_val_if_fail(javascript, FALSE);
 
    if (key_length < 0) {
       key_length = strlen(key);
@@ -500,16 +559,16 @@ bson_append_code (bson_t     *bson,
    length = strlen(javascript) + 1;
    length_le = BSON_UINT32_TO_LE(length);
 
-   bson_append(bson, 5,
-               1, &type,
-               key_length, key,
-               1, &gZero,
-               4, &length_le,
-               length, javascript);
+   return bson_append(bson, 5,
+                      1, &type,
+                      key_length, key,
+                      1, &gZero,
+                      4, &length_le,
+                      length, javascript);
 }
 
 
-void
+bson_bool_t
 bson_append_code_with_scope (bson_t       *bson,
                              const char   *key,
                              int           key_length,
@@ -522,13 +581,12 @@ bson_append_code_with_scope (bson_t       *bson,
    bson_uint32_t js_length_le;
    bson_uint32_t js_length;
 
-   bson_return_if_fail(bson);
-   bson_return_if_fail(key);
-   bson_return_if_fail(javascript);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
+   bson_return_val_if_fail(javascript, FALSE);
 
    if (bson_empty0(scope)) {
-      bson_append_code(bson, key, key_length, javascript);
-      return;
+      return bson_append_code(bson, key, key_length, javascript);
    }
 
    if (key_length < 0) {
@@ -541,18 +599,18 @@ bson_append_code_with_scope (bson_t       *bson,
    codews_length = 4 + 4 + js_length + scope->len;
    codews_length_le = BSON_UINT32_TO_LE(codews_length);
 
-   bson_append(bson, 7,
-               1, &type,
-               key_length, key,
-               1, &gZero,
-               4, &codews_length_le,
-               4, &js_length_le,
-               js_length, javascript,
-               scope->len, bson_data(scope));
+   return bson_append(bson, 7,
+                      1, &type,
+                      key_length, key,
+                      1, &gZero,
+                      4, &codews_length_le,
+                      4, &js_length_le,
+                      js_length, javascript,
+                      scope->len, bson_data(scope));
 }
 
 
-void
+bson_bool_t
 bson_append_dbpointer (bson_t           *bson,
                        const char       *key,
                        int               key_length,
@@ -563,10 +621,10 @@ bson_append_dbpointer (bson_t           *bson,
    bson_uint32_t length;
    bson_uint32_t length_le;
 
-   bson_return_if_fail(bson);
-   bson_return_if_fail(key);
-   bson_return_if_fail(collection);
-   bson_return_if_fail(oid);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
+   bson_return_val_if_fail(collection, FALSE);
+   bson_return_val_if_fail(oid, FALSE);
 
    if (key_length < 0) {
       key_length = strlen(key);
@@ -575,17 +633,17 @@ bson_append_dbpointer (bson_t           *bson,
    length = strlen(collection) + 1;
    length_le = BSON_UINT32_TO_LE(length);
 
-   bson_append(bson, 6,
-               1, &type,
-               key_length, key,
-               1, &gZero,
-               4, &length_le,
-               length, collection,
-               12, oid);
+   return bson_append(bson, 6,
+                      1, &type,
+                      key_length, key,
+                      1, &gZero,
+                      4, &length_le,
+                      length, collection,
+                      12, oid);
 }
 
 
-void
+bson_bool_t
 bson_append_document (bson_t       *bson,
                       const char   *key,
                       int           key_length,
@@ -593,23 +651,23 @@ bson_append_document (bson_t       *bson,
 {
    static const bson_uint8_t type = BSON_TYPE_DOCUMENT;
 
-   bson_return_if_fail(bson);
-   bson_return_if_fail(key);
-   bson_return_if_fail(value);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
+   bson_return_val_if_fail(value, FALSE);
 
    if (key_length < 0) {
       key_length = strlen(key);
    }
 
-   bson_append(bson, 4,
-               1, &type,
-               key_length, key,
-               1, &gZero,
-               value->len, bson_data(value));
+   return bson_append(bson, 4,
+                      1, &type,
+                      key_length, key,
+                      1, &gZero,
+                      value->len, bson_data(value));
 }
 
 
-void
+bson_bool_t
 bson_append_double (bson_t     *bson,
                     const char *key,
                     int         key_length,
@@ -617,22 +675,22 @@ bson_append_double (bson_t     *bson,
 {
    static const bson_uint8_t type = BSON_TYPE_DOUBLE;
 
-   bson_return_if_fail(bson);
-   bson_return_if_fail(key);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
 
    if (key_length < 0) {
       key_length = strlen(key);
    }
 
-   bson_append(bson, 4,
-               1, &type,
-               key_length, key,
-               1, &gZero,
-               8, &value);
+   return bson_append(bson, 4,
+                      1, &type,
+                      key_length, key,
+                      1, &gZero,
+                      8, &value);
 }
 
 
-void
+bson_bool_t
 bson_append_int32 (bson_t       *bson,
                    const char   *key,
                    int           key_length,
@@ -641,8 +699,8 @@ bson_append_int32 (bson_t       *bson,
    static const bson_uint8_t type = BSON_TYPE_INT32;
    bson_uint32_t value_le;
 
-   bson_return_if_fail(bson);
-   bson_return_if_fail(key);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
 
    if (key_length < 0) {
       key_length = strlen(key);
@@ -650,15 +708,15 @@ bson_append_int32 (bson_t       *bson,
 
    value_le = BSON_UINT32_TO_LE(value);
 
-   bson_append(bson, 4,
-               1, &type,
-               key_length, key,
-               1, &gZero,
-               4, &value_le);
+   return bson_append(bson, 4,
+                      1, &type,
+                      key_length, key,
+                      1, &gZero,
+                      4, &value_le);
 }
 
 
-void
+bson_bool_t
 bson_append_int64 (bson_t       *bson,
                    const char   *key,
                    int           key_length,
@@ -667,8 +725,8 @@ bson_append_int64 (bson_t       *bson,
    static const bson_uint8_t type = BSON_TYPE_INT64;
    bson_uint64_t value_le;
 
-   bson_return_if_fail(bson);
-   bson_return_if_fail(key);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
 
    if (key_length < 0) {
       key_length = strlen(key);
@@ -676,78 +734,78 @@ bson_append_int64 (bson_t       *bson,
 
    value_le = BSON_UINT64_TO_LE(value);
 
-   bson_append(bson, 4,
-               1, &type,
-               key_length, key,
-               1, &gZero,
-               8, &value_le);
+   return bson_append(bson, 4,
+                      1, &type,
+                      key_length, key,
+                      1, &gZero,
+                      8, &value_le);
 }
 
 
-void
+bson_bool_t
 bson_append_maxkey (bson_t     *bson,
                     const char *key,
                     int         key_length)
 {
    static const bson_uint8_t type = BSON_TYPE_MAXKEY;
 
-   bson_return_if_fail(bson);
-   bson_return_if_fail(key);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
 
    if (key_length < 0) {
       key_length = strlen(key);
    }
 
-   bson_append(bson, 3,
-               1, &type,
-               key_length, key,
-               1, &gZero);
+   return bson_append(bson, 3,
+                      1, &type,
+                      key_length, key,
+                      1, &gZero);
 }
 
 
-void
+bson_bool_t
 bson_append_minkey (bson_t     *bson,
                     const char *key,
                     int         key_length)
 {
    static const bson_uint8_t type = BSON_TYPE_MINKEY;
 
-   bson_return_if_fail(bson);
-   bson_return_if_fail(key);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
 
    if (key_length < 0) {
       key_length = strlen(key);
    }
 
-   bson_append(bson, 3,
-               1, &type,
-               key_length, key,
-               1, &gZero);
+   return bson_append(bson, 3,
+                      1, &type,
+                      key_length, key,
+                      1, &gZero);
 }
 
 
-void
+bson_bool_t
 bson_append_null (bson_t     *bson,
                   const char *key,
                   int         key_length)
 {
    static const bson_uint8_t type = BSON_TYPE_NULL;
 
-   bson_return_if_fail(bson);
-   bson_return_if_fail(key);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
 
    if (key_length < 0) {
       key_length = strlen(key);
    }
 
-   bson_append(bson, 3,
-               1, &type,
-               key_length, key,
-               1, &gZero);
+   return bson_append(bson, 3,
+                      1, &type,
+                      key_length, key,
+                      1, &gZero);
 }
 
 
-void
+bson_bool_t
 bson_append_oid (bson_t           *bson,
                  const char       *key,
                  int               key_length,
@@ -755,23 +813,23 @@ bson_append_oid (bson_t           *bson,
 {
    static const bson_uint8_t type = BSON_TYPE_OID;
 
-   bson_return_if_fail(bson);
-   bson_return_if_fail(key);
-   bson_return_if_fail(value);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
+   bson_return_val_if_fail(value, FALSE);
 
    if (key_length < 0) {
       key_length = strlen(key);
    }
 
-   bson_append(bson, 4,
-               1, &type,
-               key_length, key,
-               1, &gZero,
-               12, value);
+   return bson_append(bson, 4,
+                      1, &type,
+                      key_length, key,
+                      1, &gZero,
+                      12, value);
 }
 
 
-void
+bson_bool_t
 bson_append_regex (bson_t     *bson,
                    const char *key,
                    int         key_length,
@@ -780,8 +838,8 @@ bson_append_regex (bson_t     *bson,
 {
    static const bson_uint8_t type = BSON_TYPE_REGEX;
 
-   bson_return_if_fail(bson);
-   bson_return_if_fail(key);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
 
    if (key_length < 0) {
       key_length = strlen(key);
@@ -795,16 +853,16 @@ bson_append_regex (bson_t     *bson,
       options = "";
    }
 
-   bson_append(bson, 5,
-               1, &type,
-               key_length, key,
-               1, &gZero,
-               strlen(regex) + 1, regex,
-               strlen(options) + 1, options);
+   return bson_append(bson, 5,
+                      1, &type,
+                      key_length, key,
+                      1, &gZero,
+                      strlen(regex) + 1, regex,
+                      strlen(options) + 1, options);
 }
 
 
-void
+bson_bool_t
 bson_append_utf8 (bson_t     *bson,
                   const char *key,
                   int         key_length,
@@ -815,12 +873,11 @@ bson_append_utf8 (bson_t     *bson,
    static const bson_uint8_t type = BSON_TYPE_UTF8;
    bson_uint32_t length_le;
 
-   bson_return_if_fail(bson);
-   bson_return_if_fail(key);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
 
    if (!value) {
-      bson_append_null(bson, key, key_length);
-      return;
+      return bson_append_null(bson, key, key_length);
    }
 
    if (key_length < 0) {
@@ -832,17 +889,18 @@ bson_append_utf8 (bson_t     *bson,
    }
 
    length_le = BSON_UINT32_TO_LE(length + 1);
-   bson_append(bson, 6,
-               1, &type,
-               key_length, key,
-               1, &gZero,
-               4, &length_le,
-               length, value,
-               1, &zero);
+
+   return bson_append(bson, 6,
+                      1, &type,
+                      key_length, key,
+                      1, &gZero,
+                      4, &length_le,
+                      length, value,
+                      1, &zero);
 }
 
 
-void
+bson_bool_t
 bson_append_symbol (bson_t     *bson,
                     const char *key,
                     int         key_length,
@@ -852,12 +910,11 @@ bson_append_symbol (bson_t     *bson,
    static const bson_uint8_t type = BSON_TYPE_SYMBOL;
    bson_uint32_t length_le;
 
-   bson_return_if_fail(bson);
-   bson_return_if_fail(key);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
 
    if (!value) {
-      bson_append_null(bson, key, key_length);
-      return;
+      return bson_append_null(bson, key, key_length);
    }
 
    if (key_length < 0) {
@@ -869,30 +926,33 @@ bson_append_symbol (bson_t     *bson,
    }
 
    length_le = BSON_UINT32_TO_LE(length + 1);
-   bson_append(bson, 6,
-               1, &type,
-               key_length, key,
-               1, &gZero,
-               4, &length_le,
-               length, value,
-               1, &gZero);
+
+   return bson_append(bson, 6,
+                      1, &type,
+                      key_length, key,
+                      1, &gZero,
+                      4, &length_le,
+                      length, value,
+                      1, &gZero);
 }
 
 
-void
+bson_bool_t
 bson_append_time_t (bson_t     *bson,
                     const char *key,
                     int         key_length,
                     time_t      value)
 {
    struct timeval tv = { value, 0 };
-   bson_return_if_fail(bson);
-   bson_return_if_fail(key);
-   bson_append_timeval(bson, key, key_length, &tv);
+
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
+
+   return bson_append_timeval(bson, key, key_length, &tv);
 }
 
 
-void
+bson_bool_t
 bson_append_timestamp (bson_t        *bson,
                        const char    *key,
                        int            key_length,
@@ -902,8 +962,8 @@ bson_append_timestamp (bson_t        *bson,
    static const bson_uint8_t type = BSON_TYPE_TIMESTAMP;
    bson_uint64_t value;
 
-   bson_return_if_fail(bson);
-   bson_return_if_fail(key);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
 
    if (key_length < 0) {
       key_length = strlen(key);
@@ -912,15 +972,15 @@ bson_append_timestamp (bson_t        *bson,
    value = ((((bson_uint64_t)timestamp) << 32) | ((bson_uint64_t)increment));
    value = BSON_UINT64_TO_LE(value);
 
-   bson_append(bson, 4,
-               1, &type,
-               key_length, key,
-               1, &gZero,
-               8, &value);
+   return bson_append(bson, 4,
+                      1, &type,
+                      key_length, key,
+                      1, &gZero,
+                      8, &value);
 }
 
 
-void
+bson_bool_t
 bson_append_timeval (bson_t         *bson,
                      const char     *key,
                      int             key_length,
@@ -929,9 +989,9 @@ bson_append_timeval (bson_t         *bson,
    static const bson_uint8_t type = BSON_TYPE_DATE_TIME;
    bson_uint64_t unix_msec;
 
-   bson_return_if_fail(bson);
-   bson_return_if_fail(key);
-   bson_return_if_fail(value);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
+   bson_return_val_if_fail(value, FALSE);
 
    if (key_length < 0) {
       key_length = strlen(key);
@@ -939,32 +999,33 @@ bson_append_timeval (bson_t         *bson,
 
    unix_msec = BSON_UINT64_TO_LE((((bson_uint64_t)value->tv_sec) * 1000UL) +
                                  (value->tv_usec / 1000UL));
-   bson_append(bson, 4,
-               1, &type,
-               key_length, key,
-               1, &gZero,
-               8, &unix_msec);
+
+   return bson_append(bson, 4,
+                      1, &type,
+                      key_length, key,
+                      1, &gZero,
+                      8, &unix_msec);
 }
 
 
-void
+bson_bool_t
 bson_append_undefined (bson_t     *bson,
                        const char *key,
                        int         key_length)
 {
    static const bson_uint8_t type = BSON_TYPE_UNDEFINED;
 
-   bson_return_if_fail(bson);
-   bson_return_if_fail(key);
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
 
    if (key_length < 0) {
       key_length = strlen(key);
    }
 
-   bson_append(bson, 3,
-               1, &type,
-               key_length, key,
-               1, &gZero);
+   return bson_append(bson, 3,
+                      1, &type,
+                      key_length, key,
+                      1, &gZero);
 }
 
 

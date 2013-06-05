@@ -261,8 +261,10 @@ bson_as_json (const bson_t *bson,
  * Appends a BSON array to @bson. BSON arrays are like documents where the
  * key is the string version of the index. For example, the first item of the
  * array would have the key "0". The second item would have the index "1".
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_array (bson_t       *bson,
                    const char   *key,
                    int           key_length,
@@ -278,8 +280,10 @@ bson_append_array (bson_t       *bson,
  * @length: The length of @binary.
  *
  * Appends a binary buffer to the BSON document.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_binary (bson_t             *bson,
                     const char         *key,
                     int                 key_length,
@@ -295,8 +299,10 @@ bson_append_binary (bson_t             *bson,
  * @value: The boolean value.
  *
  * Appends a new field to @bson of type BSON_TYPE_BOOL.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_bool (bson_t      *bson,
                   const char  *key,
                   int          key_length,
@@ -311,8 +317,10 @@ bson_append_bool (bson_t      *bson,
  *
  * Appends a field of type BSON_TYPE_CODE to the BSON document. @javascript
  * should contain a script in javascript to be executed.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_code (bson_t     *bson,
                   const char *key,
                   int         key_length,
@@ -328,8 +336,10 @@ bson_append_code (bson_t     *bson,
  *
  * Appends a field of type BSON_TYPE_CODEWSCOPE to the BSON document.
  * @javascript should contain a script in javascript to be executed.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_code_with_scope (bson_t       *bson,
                              const char   *key,
                              int           key_length,
@@ -346,8 +356,10 @@ bson_append_code_with_scope (bson_t       *bson,
  *
  * Appends a new field of type BSON_TYPE_DBPOINTER. This datum type is
  * deprecated in the BSON spec and should not be used in new code.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_dbpointer (bson_t           *bson,
                        const char       *key,
                        int               key_length,
@@ -361,8 +373,10 @@ bson_append_dbpointer (bson_t           *bson,
  * @key: The key for the field.
  *
  * Appends a new field to @bson of the type BSON_TYPE_DOUBLE.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_double (bson_t     *bson,
                     const char *key,
                     int         key_length,
@@ -377,8 +391,10 @@ bson_append_double (bson_t     *bson,
  *
  * Appends a new field to @bson of the type BSON_TYPE_DOCUMENT.
  * The documents contents will be copied into @bson.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_document (bson_t       *bson,
                       const char   *key,
                       int           key_length,
@@ -399,8 +415,10 @@ bson_append_document (bson_t       *bson,
  * therefore grow the parent buffer as additional space is used. This allows
  * a single malloc'd buffer to be used when building documents which can help
  * reduce memory fragmentation.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_document_begin (bson_t     *bson,
                             const char *key,
                             int         key_length,
@@ -414,8 +432,10 @@ bson_append_document_begin (bson_t     *bson,
  *
  * Finishes the appending of a document to a @bson. @child is considered
  * disposed after this call and should not be used any further.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_document_end (bson_t *bson,
                           bson_t *child);
 
@@ -437,8 +457,10 @@ bson_append_document_end (bson_t *bson,
  *
  * The type of @child will be BSON_TYPE_ARRAY and therefore the keys inside
  * of it MUST be "0", "1", etc.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_array_begin (bson_t     *bson,
                          const char *key,
                          int         key_length,
@@ -452,8 +474,10 @@ bson_append_array_begin (bson_t     *bson,
  *
  * Finishes the appending of a array to a @bson. @child is considered
  * disposed after this call and should not be used any further.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_array_end (bson_t *bson,
                        bson_t *child);
 
@@ -465,8 +489,10 @@ bson_append_array_end (bson_t *bson,
  * @value: The bson_int32_t 32-bit integer value.
  *
  * Appends a new field of type BSON_TYPE_INT32 to @bson.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_int32 (bson_t       *bson,
                    const char   *key,
                    int           key_length,
@@ -480,8 +506,10 @@ bson_append_int32 (bson_t       *bson,
  * @value: The bson_int64_t 64-bit integer value.
  *
  * Appends a new field of type BSON_TYPE_INT64 to @bson.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_int64 (bson_t       *bson,
                    const char   *key,
                    int           key_length,
@@ -497,8 +525,10 @@ bson_append_int64 (bson_t       *bson,
  * type that compares lower than all other possible BSON element values.
  *
  * See http://bsonspec.org for more information on this type.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_minkey (bson_t     *bson,
                     const char *key,
                     int         key_length);
@@ -513,8 +543,10 @@ bson_append_minkey (bson_t     *bson,
  * type that compares higher than all other possible BSON element values.
  *
  * See http://bsonspec.org for more information on this type.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_maxkey (bson_t     *bson,
                     const char *key,
                     int         key_length);
@@ -526,8 +558,10 @@ bson_append_maxkey (bson_t     *bson,
  * @key: The key for the field.
  *
  * Appends a new field to @bson with NULL for the value.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_null (bson_t     *bson,
                   const char *key,
                   int         key_length);
@@ -539,13 +573,12 @@ bson_append_null (bson_t     *bson,
  * @key: The key for the field.
  * @oid: bson_oid_t.
  *
- * Appends a new field to the @bson of type BSON_TYPE_OID using
- * the contents of @oid.
+ * Appends a new field to the @bson of type BSON_TYPE_OID using the contents of
+ * @oid.
  *
- * Returns: @bson or a newly allcoated structure if a memory
- *   allocation was required.
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_oid (bson_t           *bson,
                  const char       *key,
                  int               key_length,
@@ -572,8 +605,10 @@ bson_append_oid (bson_t           *bson,
  *   'u' to make \w and \W match unicode.
  *
  * For more information on what comprimises a BSON regex, see bsonspec.org.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_regex (bson_t     *bson,
                    const char *key,
                    int         key_length,
@@ -594,10 +629,9 @@ bson_append_regex (bson_t     *bson,
  * It is the callers responsibility to ensure @value is valid UTF-8. You can
  * use bson_utf8_validate() to perform this check.
  *
- * Returns: @bson or a newly allcoated structure if a memory
- *   allocation was required.
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_utf8 (bson_t     *bson,
                   const char *key,
                   int         key_length,
@@ -616,8 +650,10 @@ bson_append_utf8 (bson_t     *bson,
  * deprecated and should not be used in new code.
  *
  * See http://bsonspec.org for more information on this type.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_symbol (bson_t     *bson,
                     const char *key,
                     int         key_length,
@@ -631,10 +667,12 @@ bson_append_symbol (bson_t     *bson,
  * @key: The key for the field.
  * @value: A time_t.
  *
- * Appends a BSON_TYPE_DATE_TIME field to @bson using the time_t @value for
- * the number of seconds since UNIX epoch in UTC.
+ * Appends a BSON_TYPE_DATE_TIME field to @bson using the time_t @value for the
+ * number of seconds since UNIX epoch in UTC.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_time_t (bson_t     *bson,
                     const char *key,
                     int         key_length,
@@ -648,10 +686,11 @@ bson_append_time_t (bson_t     *bson,
  * @value: A struct timeval containing the date and time.
  *
  * Appends a BSON_TYPE_DATE_TIME field to @bson using the struct timeval
- * provided. The time is persisted in milliseconds since the UNIX epoch in
- * UTC.
+ * provided. The time is persisted in milliseconds since the UNIX epoch in UTC.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_timeval (bson_t         *bson,
                      const char     *key,
                      int             key_length,
@@ -665,14 +704,16 @@ bson_append_timeval (bson_t         *bson,
  * @timestamp: 4 byte timestamp.
  * @increment: 4 byte increment for timestamp.
  *
- * Appends a field of type BSON_TYPE_TIMESTAMP to @bson. This is a special
- * type used by MongoDB replication and sharding. If you need generic time
- * and date fields use bson_append_time_t() or bson_append_timeval().
+ * Appends a field of type BSON_TYPE_TIMESTAMP to @bson. This is a special type
+ * used by MongoDB replication and sharding. If you need generic time and date
+ * fields use bson_append_time_t() or bson_append_timeval().
  *
  * Setting @increment and @timestamp to zero has special semantics. See
  * http://bsonspec.org for more information on this field type.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_timestamp (bson_t        *bson,
                        const char    *key,
                        int            key_length,
@@ -685,11 +726,13 @@ bson_append_timestamp (bson_t        *bson,
  * @bson: A bson_t.
  * @key: The key for the field.
  *
- * Appends a field of type BSON_TYPE_UNDEFINED. This type is deprecated in
- * the spec and should not be used for new code. However, it is provided for
- * those needing to interact with legacy systems.
+ * Appends a field of type BSON_TYPE_UNDEFINED. This type is deprecated in the
+ * spec and should not be used for new code. However, it is provided for those
+ * needing to interact with legacy systems.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
-void
+bson_bool_t
 bson_append_undefined (bson_t     *bson,
                        const char *key,
                        int         key_length);
