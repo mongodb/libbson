@@ -942,6 +942,18 @@ test_bson_append_overflow (void)
 }
 
 
+static void
+test_bson_initializer (void)
+{
+   bson_t b = BSON_INITIALIZER;
+
+   assert(bson_empty(&b));
+   bson_append_bool(&b, "foo", -1, TRUE);
+   assert(!bson_empty(&b));
+   bson_destroy(&b);
+}
+
+
 int
 main (int   argc,
       char *argv[])
@@ -984,6 +996,7 @@ main (int   argc,
    run_test("/bson/build_child_array", test_bson_build_child_array);
    run_test("/bson/count", test_bson_count_keys);
    run_test("/bson/copy", test_bson_copy);
+   run_test("/bson/initializer", test_bson_initializer);
 
    return 0;
 }

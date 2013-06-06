@@ -121,6 +121,9 @@ typedef struct
 } bson_t;
 
 
+#define BSON_INITIALIZER {3, 5, {5}}
+
+
 BSON_STATIC_ASSERT(sizeof(bson_t) == 128);
 
 
