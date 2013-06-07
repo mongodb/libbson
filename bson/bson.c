@@ -1132,7 +1132,6 @@ bson_new_from_data (const bson_uint8_t *data,
    bson_t *bson;
 
    bson_return_val_if_fail(data, NULL);
-   bson_return_val_if_fail(length >= 5, NULL);
 
    if (length < 5) {
       return NULL;
