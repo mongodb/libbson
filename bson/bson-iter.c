@@ -464,6 +464,18 @@ bson_iter_binary (const bson_iter_t   *iter,
          *binary = iter->data3;
       }
    }
+
+   if (binary) {
+      *binary = NULL;
+   }
+
+   if (binary_len) {
+      *binary_len = 0;
+   }
+
+   if (subtype) {
+      *subtype = 0;
+   }
 }
 
 
