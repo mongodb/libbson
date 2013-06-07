@@ -1626,13 +1626,13 @@ bson_as_json_visit_array (const bson_iter_t *iter,
    bson_json_state_t child_state = { 0, FALSE };
    bson_iter_t child;
 
-   bson_iter_init(&child, v_array);
-
-   child_state.str = bson_string_new("[ ");
-   bson_iter_visit_all(&child, &bson_as_json_visitors, &child_state);
-   bson_string_append(child_state.str, " ]");
-   bson_string_append(state->str, child_state.str->str);
-   bson_string_free(child_state.str, TRUE);
+   if (bson_iter_init(&child, v_array)) {
+      child_state.str = bson_string_new("[ ");
+      bson_iter_visit_all(&child, &bson_as_json_visitors, &child_state);
+      bson_string_append(child_state.str, " ]");
+      bson_string_append(state->str, child_state.str->str);
+      bson_string_free(child_state.str, TRUE);
+   }
 
    return FALSE;
 }
