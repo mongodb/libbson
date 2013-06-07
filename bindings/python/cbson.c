@@ -60,7 +60,7 @@ cbson_regex_new (const char *regex,
    PyObject *module;
    PyObject *compile;
    PyObject *strobj;
-   PyObject *value;
+   PyObject *value = NULL;
 
    /*
     * NOTE: Typically, you would want to cache the module from
@@ -103,10 +103,12 @@ cbson_regex_new (const char *regex,
       }
    }
 
-   strobj = PyUnicode_FromString(regex);
-   value = PyObject_CallFunction(compile, (char *)"Oi", strobj, flags);
+   if ((strobj = PyUnicode_FromString(regex))) {
+      value = PyObject_CallFunction(compile, (char *)"Oi", strobj, flags);
+      Py_DECREF(strobj);
+   }
+
    Py_DECREF(compile);
-   Py_DECREF(strobj);
    Py_DECREF(module);
 
    return value;
