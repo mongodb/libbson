@@ -44,7 +44,7 @@ test_bson_writer_shared_buffer (void)
 
       for (j = 0; j < 1000; j++) {
          bson_uint32_to_string(j, &key, keystr, sizeof keystr);
-         bson_append_int64(b, key, -1, j);
+         assert(bson_append_int64(b, key, -1, j));
       }
 
       if (bson_writer_get_length(writer) > (48 * 1024 * 1024)) {
