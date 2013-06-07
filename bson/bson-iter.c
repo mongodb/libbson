@@ -818,8 +818,8 @@ bson_iter_visit_all (bson_iter_t          *iter,
             bson_t b;
 
             bson_iter_document(iter, &doclen, &docbuf);
-            bson_init_static(&b, docbuf, doclen);
-            if (VISIT_FIELD(document)(iter, key, &b, data)) {
+            if (bson_init_static(&b, docbuf, doclen) &&
+                VISIT_FIELD(document)(iter, key, &b, data)) {
                return TRUE;
             }
          }
@@ -831,8 +831,8 @@ bson_iter_visit_all (bson_iter_t          *iter,
             bson_t b;
 
             bson_iter_array(iter, &doclen, &docbuf);
-            bson_init_static(&b, docbuf, doclen);
-            if (VISIT_FIELD(array)(iter, key, &b, data)) {
+            if (bson_init_static(&b, docbuf, doclen)
+                && VISIT_FIELD(array)(iter, key, &b, data)) {
                return TRUE;
             }
          }
