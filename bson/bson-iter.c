@@ -463,6 +463,7 @@ bson_iter_binary (const bson_iter_t   *iter,
          *binary_len = BSON_UINT32_FROM_LE(*binary_len);
          *binary = iter->data3;
       }
+      return;
    }
 
    if (binary) {
