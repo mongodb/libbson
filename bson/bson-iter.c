@@ -724,6 +724,9 @@ bson_iter_document (const bson_iter_t   *iter,
    bson_return_if_fail(document_len);
    bson_return_if_fail(document);
 
+   *document = NULL;
+   *document_len = 0;
+
    if (*iter->type == BSON_TYPE_DOCUMENT) {
       memcpy(document_len, iter->data1, 4);
       *document_len = BSON_UINT32_FROM_LE(*document_len);
@@ -740,6 +743,9 @@ bson_iter_array (const bson_iter_t   *iter,
    bson_return_if_fail(iter);
    bson_return_if_fail(array_len);
    bson_return_if_fail(array);
+
+   *array = NULL;
+   *array_len = 0;
 
    if (*iter->type == BSON_TYPE_ARRAY) {
       memcpy(array_len, iter->data1, 4);
