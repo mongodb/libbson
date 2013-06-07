@@ -1645,6 +1645,10 @@ bson_as_json (const bson_t *bson,
 
    bson_return_val_if_fail(bson, NULL);
 
+   if (length) {
+      *length = 0;
+   }
+
    if (bson_empty0(bson)) {
       if (length) {
          *length = 2;
