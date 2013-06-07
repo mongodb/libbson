@@ -54,8 +54,8 @@ test_bson_iter_utf8 (void)
    bson_t *b;
 
    b = bson_new();
-   bson_append_utf8(b, "foo", -1, "bar", -1);
-   bson_append_utf8(b, "bar", -1, "baz", -1);
+   assert(bson_append_utf8(b, "foo", -1, "bar", -1));
+   assert(bson_append_utf8(b, "bar", -1, "baz", -1));
    assert(bson_iter_init(&iter, b));
    assert(bson_iter_next(&iter));
    assert(BSON_ITER_HOLDS_UTF8(&iter));
@@ -79,12 +79,12 @@ test_bson_iter_mixed (void)
 
    b = bson_new();
    b2 = bson_new();
-   bson_append_utf8(b2, "foo", -1, "bar", -1);
-   bson_append_code(b, "0", -1, "var a = {};");
-   bson_append_code_with_scope(b, "1", -1, "var b = {};", b2);
-   bson_append_int32(b, "2", -1, 1234);
-   bson_append_int64(b, "3", -1, 4567);
-   bson_append_time_t(b, "4", -1, 123456);
+   assert(bson_append_utf8(b2, "foo", -1, "bar", -1));
+   assert(bson_append_code(b, "0", -1, "var a = {};"));
+   assert(bson_append_code_with_scope(b, "1", -1, "var b = {};", b2));
+   assert(bson_append_int32(b, "2", -1, 1234));
+   assert(bson_append_int64(b, "3", -1, 4567));
+   assert(bson_append_time_t(b, "4", -1, 123456));
    assert(bson_iter_init(&iter, b));
    assert(bson_iter_next(&iter));
    assert(BSON_ITER_HOLDS_CODE(&iter));
@@ -236,9 +236,9 @@ test_bson_iter_regex (void)
    bson_t *b;
 
    b = bson_new();
-   bson_append_regex(b, "foo", -1, "^abcd", "");
-   bson_append_regex(b, "foo", -1, "^abcd", NULL);
-   bson_append_regex(b, "foo", -1, "^abcd", "ix");
+   assert(bson_append_regex(b, "foo", -1, "^abcd", ""));
+   assert(bson_append_regex(b, "foo", -1, "^abcd", NULL));
+   assert(bson_append_regex(b, "foo", -1, "^abcd", "ix"));
 
    assert(bson_iter_init(&iter, b));
    assert(bson_iter_next(&iter));
@@ -257,7 +257,7 @@ test_bson_iter_next_after_finish (void)
    int i;
 
    b = bson_new();
-   bson_append_int32(b, "key", -1, 1234);
+   assert(bson_append_int32(b, "key", -1, 1234));
    assert(bson_iter_init(&iter, b));
    assert(bson_iter_next(&iter));
    for (i = 0; i < 1000; i++) {
@@ -274,7 +274,7 @@ test_bson_iter_find_case (void)
    bson_iter_t iter;
 
    bson_init(&b);
-   bson_append_utf8(&b, "key", -1, "value", -1);
+   assert(bson_append_utf8(&b, "key", -1, "value", -1));
    assert(bson_iter_init(&iter, &b));
    assert(bson_iter_find_case(&iter, "KEY"));
    assert(bson_iter_init(&iter, &b));
@@ -290,7 +290,7 @@ test_bson_iter_overwrite_int32 (void)
    bson_t b;
 
    bson_init(&b);
-   bson_append_int32(&b, "key", -1, 1234);
+   assert(bson_append_int32(&b, "key", -1, 1234));
    assert(bson_iter_init_find(&iter, &b, "key"));
    assert(BSON_ITER_HOLDS_INT32(&iter));
    bson_iter_overwrite_int32(&iter, 4321);
@@ -308,7 +308,7 @@ test_bson_iter_overwrite_int64 (void)
    bson_t b;
 
    bson_init(&b);
-   bson_append_int64(&b, "key", -1, 1234);
+   assert(bson_append_int64(&b, "key", -1, 1234));
    assert(bson_iter_init_find(&iter, &b, "key"));
    assert(BSON_ITER_HOLDS_INT64(&iter));
    bson_iter_overwrite_int64(&iter, 4641);
@@ -326,7 +326,7 @@ test_bson_iter_overwrite_double (void)
    bson_t b;
 
    bson_init(&b);
-   bson_append_double(&b, "key", -1, 1234.1234);
+   assert(bson_append_double(&b, "key", -1, 1234.1234));
    assert(bson_iter_init_find(&iter, &b, "key"));
    assert(BSON_ITER_HOLDS_DOUBLE(&iter));
    bson_iter_overwrite_double(&iter, 4641.1234);
@@ -347,10 +347,10 @@ test_bson_iter_recurse (void)
 
    bson_init(&b);
    bson_init(&cb);
-   bson_append_int32(&cb, "0", 1, 0);
-   bson_append_int32(&cb, "1", 1, 1);
-   bson_append_int32(&cb, "2", 1, 2);
-   bson_append_array(&b, "key", -1, &cb);
+   assert(bson_append_int32(&cb, "0", 1, 0));
+   assert(bson_append_int32(&cb, "1", 1, 1));
+   assert(bson_append_int32(&cb, "2", 1, 2));
+   assert(bson_append_array(&b, "key", -1, &cb));
    assert(bson_iter_init_find(&iter, &b, "key"));
    assert(BSON_ITER_HOLDS_ARRAY(&iter));
    assert(bson_iter_recurse(&iter, &child));
@@ -370,7 +370,7 @@ test_bson_iter_init_find_case (void)
    bson_iter_t iter;
 
    bson_init(&b);
-   bson_append_int32(&b, "FOO", -1, 1234);
+   assert(bson_append_int32(&b, "FOO", -1, 1234));
    assert(bson_iter_init_find_case(&iter, &b, "foo"));
    assert_cmpint(bson_iter_int32(&iter), ==, 1234);
    bson_destroy(&b);
