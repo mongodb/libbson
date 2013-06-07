@@ -270,9 +270,10 @@ cbson_loads_visit_regex (const bson_iter_t *iter,
    PyObject **ret = data;
    PyObject *re;
 
-   re = cbson_regex_new(regex, options);
-   cbson_loads_set_item(*ret, key, re);
-   Py_DECREF(re);
+   if ((re = cbson_regex_new(regex, options))) {
+      cbson_loads_set_item(*ret, key, re);
+      Py_DECREF(re);
+   }
 
    return FALSE;
 }
