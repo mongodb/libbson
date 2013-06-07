@@ -590,6 +590,10 @@ bson_iter_code (const bson_iter_t *iter,
       return (const char *)iter->data2;
    }
 
+   if (length) {
+      *length = 0;
+   }
+
    return NULL;
 }
 
