@@ -524,44 +524,55 @@ cbson_dumps (PyObject *self,
       }
 
       if (value == Py_None) {
-         bson_append_null(b, keystr, keylen);
+         if (!bson_append_null(b, keystr, keylen)) {
+            goto failure;
+         }
       } else if (PyString_Check(value)) {
          /*
           * TODO: Validate UTF-8.
           */
-         bson_append_utf8(b, keystr, keylen,
-                          PyString_AS_STRING(value),
-                          PyString_GET_SIZE(value));
+         if (!bson_append_utf8(b, keystr, keylen,
+                               PyString_AS_STRING(value),
+                               PyString_GET_SIZE(value))) {
+            goto failure;
+         }
       } else if (PyUnicode_Check(value)) {
          /*
           * TODO: Convert and validate UTF-8.
           */
-         bson_append_utf8(b, keystr, keylen,
-                          (const char *)PyUnicode_AS_UNICODE(value),
-                          PyUnicode_GET_SIZE(value));
+         if (!bson_append_utf8(b, keystr, keylen,
+                               (const char *)PyUnicode_AS_UNICODE(value),
+                               PyUnicode_GET_SIZE(value))) {
+            goto failure;
+         }
       } else if (PyDateTime_Check(value)) {
          /*
           * TODO: Convert to msec since epoch.
           */
       } else if (PyBool_Check(value)) {
-         bson_append_bool(b, keystr, keylen, (value == Py_True));
+         if (!bson_append_bool(b, keystr, keylen, (value == Py_True))) {
+            goto failure;
+         }
       } else if (PyLong_Check(value)) {
-         bson_append_int64(b, keystr, keylen, PyLong_AsLong(value));
+         if (!bson_append_int64(b, keystr, keylen, PyLong_AsLong(value))) {
+            goto failure;
+         }
       } else if (PyInt_Check(value)) {
-         bson_append_int32(b, keystr, keylen, PyInt_AsLong(value));
+         if (!bson_append_int32(b, keystr, keylen, PyInt_AsLong(value))) {
+            goto failure;
+         }
       } else if (PyFloat_Check(value)) {
-         bson_append_double(b, keystr, keylen, PyFloat_AsDouble(value));
+         if (!bson_append_double(b, keystr, keylen, PyFloat_AsDouble(value))) {
+            goto failure;
+         }
       } else if (cbson_oid_check(value)) {
-         bson_append_oid(b, keystr, keylen, &((cbson_oid_t *)value)->oid);
+         if (!bson_append_oid(b, keystr, keylen, &((cbson_oid_t *)value)->oid)) {
+            goto failure;
+         }
       /* } else if (CHECK FOR REGEX) { */
       /* } else if (CHECK FOR BINARY) { */
       } else {
-         /*
-          * TODO: message should include what the value and type was.
-          */
-         PyErr_SetString(PyExc_TypeError, "Cannot encode type.");
-         bson_destroy(b);
-         return NULL;
+         goto failure;
       }
    }
 
@@ -569,6 +580,11 @@ cbson_dumps (PyObject *self,
    bson_destroy(b);
 
    return ret;
+
+failure:
+   PyErr_SetString(PyExc_TypeError, "Cannot encode type.");
+   bson_destroy(b);
+   return NULL;
 }
 
 
