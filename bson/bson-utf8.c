@@ -132,6 +132,7 @@ bson_utf8_escape_for_json (const char *utf8,
       case '"':
       case '\\':
          ret[o++] = '\\';
+         /* fall through */
       default:
          memcpy(&ret[o], &utf8[i], seq_len);
          o += seq_len;
