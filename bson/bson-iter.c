@@ -622,6 +622,14 @@ bson_iter_dbpointer (const bson_iter_t  *iter,
 {
    bson_return_if_fail(iter);
 
+   if (collection) {
+      *collection = NULL;
+   }
+
+   if (oid) {
+      *oid = NULL;
+   }
+
    if (*iter->type == BSON_TYPE_DBPOINTER) {
       if (collection_len) {
          memcpy(collection_len, iter->data1, 4);
@@ -636,14 +644,6 @@ bson_iter_dbpointer (const bson_iter_t  *iter,
       if (oid) {
          *oid = (const bson_oid_t *)iter->data3;
       }
-   }
-
-   if (collection) {
-      *collection = NULL;
-   }
-
-   if (oid) {
-      *oid = NULL;
    }
 }
 
