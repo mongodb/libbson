@@ -1333,6 +1333,8 @@ bson_as_json_visit_oid (const bson_iter_t *iter,
    bson_json_state_t *state = data;
    char str[25];
 
+   bson_return_val_if_fail(oid, FALSE);
+
    bson_oid_to_string(oid, str);
    bson_string_append(state->str, "{ \"$oid\" : \"");
    bson_string_append(state->str, str);
