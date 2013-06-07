@@ -625,6 +625,14 @@ bson_iter_dbpointer (const bson_iter_t  *iter,
          *oid = (const bson_oid_t *)iter->data3;
       }
    }
+
+   if (collection) {
+      *collection = NULL;
+   }
+
+   if (oid) {
+      *oid = NULL;
+   }
 }
 
 
