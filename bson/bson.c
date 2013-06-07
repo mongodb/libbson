@@ -1456,6 +1456,8 @@ bson_as_json_visit_dbpointer (const bson_iter_t *iter,
    bson_json_state_t *state = data;
    char str[25];
 
+   bson_return_val_if_fail(v_oid, FALSE);
+
    bson_oid_to_string(v_oid, str);
    bson_string_append(state->str, "{ \"$ref\" : \"");
    bson_string_append(state->str, v_collection);
