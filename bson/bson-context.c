@@ -122,7 +122,7 @@ bson_context_get_oid_seq32_threadsafe (bson_context_t *context,
 {
    bson_uint32_t seq;
 
-   seq = BSON_UINT32_TO_BE(__sync_fetch_and_add(&context->seq32, 1));
+   seq = BSON_UINT32_TO_BE(__sync_fetch_and_add_4(&context->seq32, 1));
    memcpy(&oid->bytes[9], ((bson_uint8_t *)&seq) + 1, 3);
 }
 
@@ -144,7 +144,7 @@ bson_context_get_oid_seq64_threadsafe (bson_context_t *context,
 {
    bson_uint64_t seq;
 
-   seq = BSON_UINT64_TO_BE(__sync_fetch_and_add(&context->seq64, 1));
+   seq = BSON_UINT64_TO_BE(__sync_fetch_and_add_8(&context->seq64, 1));
    memcpy(&oid->bytes[4], &seq, 8);
 }
 
