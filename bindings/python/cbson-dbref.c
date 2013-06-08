@@ -191,12 +191,14 @@ cbson_dbref_new (const char       *collection,
    cbson_dbref_t *dbref;
    PyObject *ret;
 
-   bson_return_val_if_fail(collection, NULL);
-   bson_return_val_if_fail(collection_len >= 0, NULL);
+   bson_return_val_if_fail(collection || !collection_len, NULL);
    bson_return_val_if_fail(database || !database_len, NULL);
    bson_return_val_if_fail(oid, NULL);
 
-   ret = PyType_GenericNew(&cbson_dbref_type, NULL, NULL);
+   if (!(ret = PyType_GenericNew(&cbson_dbref_type, NULL, NULL))) {
+      return NULL;
+   }
+
    dbref = (cbson_dbref_t *)ret;
 
    if (collection && collection_len) {
