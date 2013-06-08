@@ -167,9 +167,10 @@ cbson_loads_visit_int64 (const bson_iter_t *iter,
    PyObject **ret = data;
    PyObject *value;
 
-   value = PyLong_FromLongLong(v_int64);
-   cbson_loads_set_item(*ret, key, value);
-   Py_DECREF(value);
+   if ((value = PyLong_FromLongLong(v_int64))) {
+      cbson_loads_set_item(*ret, key, value);
+      Py_DECREF(value);
+   }
 
    return FALSE;
 }
@@ -196,9 +197,10 @@ cbson_loads_visit_double (const bson_iter_t *iter,
    PyObject **ret = data;
    PyObject *value;
 
-   value = PyFloat_FromDouble(v_double);
-   cbson_loads_set_item(*ret, key, value);
-   Py_DECREF(value);
+   if ((value = PyFloat_FromDouble(v_double))) {
+      cbson_loads_set_item(*ret, key, value);
+      Py_DECREF(value);
+   }
 
    return FALSE;
 }
@@ -213,9 +215,10 @@ cbson_loads_visit_oid (const bson_iter_t *iter,
    PyObject **ret = data;
    PyObject *value;
 
-   value = cbson_oid_new(oid);
-   cbson_loads_set_item(*ret, key, value);
-   Py_DECREF(value);
+   if ((value = cbson_oid_new(oid))) {
+      cbson_loads_set_item(*ret, key, value);
+      Py_DECREF(value);
+   }
 
    return FALSE;
 }
@@ -252,9 +255,10 @@ cbson_loads_visit_date_time (const bson_iter_t *iter,
    PyObject **ret = data;
    PyObject *date_time;
 
-   date_time = cbson_date_time_from_msec(msec_since_epoch);
-   cbson_loads_set_item(*ret, key, date_time);
-   Py_DECREF(date_time);
+   if ((date_time = cbson_date_time_from_msec(msec_since_epoch))) {
+      cbson_loads_set_item(*ret, key, date_time);
+      Py_DECREF(date_time);
+   }
 
    return FALSE;
 }
@@ -290,13 +294,14 @@ cbson_loads_visit_dbpointer (const bson_iter_t *iter,
    PyObject **ret = data;
    PyObject *dbref;
 
-   dbref = cbson_dbref_new(v_collection,
-                           v_collection_len,
-                           NULL,
-                           0,
-                           v_oid);
-   cbson_loads_set_item(*ret, key, dbref);
-   Py_DECREF(dbref);
+   if ((dbref = cbson_dbref_new(v_collection,
+                                v_collection_len,
+                                NULL,
+                                0,
+                                v_oid))) {
+      cbson_loads_set_item(*ret, key, dbref);
+      Py_DECREF(dbref);
+   }
 
    return FALSE;
 }
