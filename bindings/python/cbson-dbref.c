@@ -126,23 +126,23 @@ cbson_dbref_get_id (PyObject *object,
 static PyObject *
 cbson_dbref_tp_repr (PyObject *obj)
 {
-   PyObject *collection;
-   PyObject *id;
-   PyObject *format;
-   PyObject *args;
-   PyObject *repr;
+   PyObject *collection = NULL;
+   PyObject *id = NULL;
+   PyObject *format = NULL;
+   PyObject *args = NULL;
+   PyObject *repr = NULL;
 
-   collection = cbson_dbref_get_collection(obj, NULL);
-   id = cbson_dbref_get_id(obj, NULL);
-   format = PyString_FromString("DBRef(%r, %r)");
-   args = PyTuple_Pack(2, collection, id);
+   if ((collection = cbson_dbref_get_collection(obj, NULL)) &&
+       (id = cbson_dbref_get_id(obj, NULL)) &&
+       (format = PyString_FromString("DBRef(%r, %r)")) &&
+       (args = PyTuple_Pack(2, collection, id))) {
+      repr = PyUnicode_Format(format, args);
+   }
 
-   repr = PyUnicode_Format(format, args);
-
-   Py_DECREF(collection);
-   Py_DECREF(id);
-   Py_DECREF(format);
-   Py_DECREF(args);
+   Py_XDECREF(collection);
+   Py_XDECREF(id);
+   Py_XDECREF(format);
+   Py_XDECREF(args);
 
    return repr;
 }

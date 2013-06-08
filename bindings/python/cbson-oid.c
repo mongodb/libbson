@@ -125,8 +125,9 @@ cbson_oid_from_datetime (PyObject *obj,
 
    t = cbson_date_time_seconds(dt);
    t = BSON_UINT32_TO_BE(t);
-   ret = (cbson_oid_t *)PyType_GenericNew(&cbson_oid_type, NULL, NULL);
-   memcpy(&ret->oid, &t, sizeof t);
+   if ((ret = (cbson_oid_t *)PyType_GenericNew(&cbson_oid_type, NULL, NULL))) {
+      memcpy(&ret->oid, &t, sizeof t);
+   }
 
    return (PyObject *)ret;
 }

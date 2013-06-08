@@ -43,8 +43,10 @@ cbson_loads_set_item (PyObject   *obj,
       } else if (!(keyobj = PyUnicode_DecodeUTF8(key, strlen(key), "strict"))) {
          keyobj = PyString_FromString(key);
       }
-      PyDict_SetItem(obj, keyobj, value);
-      Py_DECREF(keyobj);
+      if (keyobj) {
+         PyDict_SetItem(obj, keyobj, value);
+         Py_DECREF(keyobj);
+      }
    } else {
       PyList_Append(obj, value);
    }

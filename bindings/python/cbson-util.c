@@ -64,7 +64,7 @@ cbson_fixed_offset_tp_new (PyTypeObject *self,
                            PyObject     *args,
                            PyObject     *kwargs)
 {
-   PyObject *offset;
+   PyObject *offset = NULL;
    PyObject *name;
    PyObject *ret;
 
@@ -77,10 +77,13 @@ cbson_fixed_offset_tp_new (PyTypeObject *self,
    } else if (PyInt_Check(offset)) {
       PyObject *dkwargs;
 
-      dkwargs = PyDict_New();
-      PyDict_SetItemString(dkwargs, "minutes", offset);
-      offset = PyType_GenericNew(PyDateTimeAPI->DeltaType, NULL, dkwargs);
-      Py_DECREF(dkwargs);
+      if ((dkwargs = PyDict_New())) {
+         PyDict_SetItemString(dkwargs, "minutes", offset);
+         offset = PyType_GenericNew(PyDateTimeAPI->DeltaType, NULL, dkwargs);
+         Py_DECREF(dkwargs);
+      }
+
+      return NULL;
    } else {
       PyErr_SetString(PyExc_TypeError, "`offset` must be timedelta or int.");
       return NULL;
@@ -90,7 +93,7 @@ cbson_fixed_offset_tp_new (PyTypeObject *self,
       Py_INCREF(name);
    } else {
       PyErr_SetString(PyExc_TypeError, "`name` must be a str or unicode.");
-      Py_DECREF(offset);
+      Py_XDECREF(offset);
       return NULL;
    }
 
@@ -280,11 +283,11 @@ cbson_date_time_from_msec (bson_int64_t msec_since_epoch)
       PyDict_SetItemString(mkwargs, "tzinfo", tzinfo);
       ret = PyObject_Call(method, margs, mkwargs);
 
-      Py_DECREF(tzinfo);
-      Py_DECREF(method);
-      Py_DECREF(mkwargs);
-      Py_DECREF(margs);
-      Py_DECREF(tmp);
+      Py_XDECREF(tzinfo);
+      Py_XDECREF(method);
+      Py_XDECREF(mkwargs);
+      Py_XDECREF(margs);
+      Py_XDECREF(tmp);
    }
 
    return ret;
@@ -361,12 +364,13 @@ cbson_fixed_offset_utc_ref (void)
    if (!utc) {
       PyObject *args;
 
-      args = Py_BuildValue("is#", 0, "UTC", 3);
-      utc = cbson_fixed_offset_tp_new(cbson_fixed_offset_get_type(), args, NULL);
-      Py_DECREF(args);
+      if ((args = Py_BuildValue("is#", 0, "UTC", 3))) {
+         utc = cbson_fixed_offset_tp_new(cbson_fixed_offset_get_type(), args, NULL);
+         Py_DECREF(args);
+      }
    }
 
-   Py_INCREF(utc);
+   Py_XINCREF(utc);
 
    return utc;
 }
