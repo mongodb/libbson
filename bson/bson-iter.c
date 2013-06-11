@@ -939,8 +939,8 @@ bson_iter_visit_all (bson_iter_t          *iter,
             bson_t b;
 
             code = bson_iter_codewscope(iter, &length, &doclen, &docbuf);
-            bson_init_static(&b, docbuf, doclen);
-            if (VISIT_FIELD(codewscope)(iter, key, length, code, &b, data)) {
+            if (bson_init_static(&b, docbuf, doclen) &&
+                VISIT_FIELD(codewscope)(iter, key, length, code, &b, data)) {
                return TRUE;
             }
          }
