@@ -81,9 +81,9 @@ cbson_fixed_offset_tp_new (PyTypeObject *self,
          PyDict_SetItemString(dkwargs, "minutes", offset);
          offset = PyType_GenericNew(PyDateTimeAPI->DeltaType, NULL, dkwargs);
          Py_DECREF(dkwargs);
+      } else {
+         return NULL;
       }
-
-      return NULL;
    } else {
       PyErr_SetString(PyExc_TypeError, "`offset` must be timedelta or int.");
       return NULL;
@@ -97,9 +97,10 @@ cbson_fixed_offset_tp_new (PyTypeObject *self,
       return NULL;
    }
 
-   ret = PyType_GenericNew(self, args, kwargs);
-   ((cbson_fixed_offset_t *)ret)->name = name;
-   ((cbson_fixed_offset_t *)ret)->offset = offset;
+   if ((ret = PyType_GenericNew(self, args, kwargs))) {
+      ((cbson_fixed_offset_t *)ret)->name = name;
+      ((cbson_fixed_offset_t *)ret)->offset = offset;
+   }
 
    return ret;
 }
