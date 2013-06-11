@@ -848,9 +848,9 @@ bson_iter_visit_all (bson_iter_t          *iter,
          break;
       case BSON_TYPE_BINARY:
          {
-            const bson_uint8_t *binary;
-            bson_subtype_t subtype;
-            bson_uint32_t binary_len;
+            const bson_uint8_t *binary = NULL;
+            bson_subtype_t subtype = 0;
+            bson_uint32_t binary_len = 0;
 
             bson_iter_binary(iter, &subtype, &binary_len, &binary);
             if (VISIT_FIELD(binary)(iter, key, subtype,
