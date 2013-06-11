@@ -822,8 +822,8 @@ bson_iter_visit_all (bson_iter_t          *iter,
          break;
       case BSON_TYPE_DOCUMENT:
          {
-            const bson_uint8_t *docbuf;
-            bson_uint32_t doclen;
+            const bson_uint8_t *docbuf = NULL;
+            bson_uint32_t doclen = 0;
             bson_t b;
 
             bson_iter_document(iter, &doclen, &docbuf);
