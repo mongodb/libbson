@@ -213,9 +213,14 @@ bson_reader_data_read (bson_reader_data_t *reader,
       memcpy(&blen, &reader->data[reader->offset], sizeof blen);
       blen = BSON_UINT32_FROM_LE(blen);
       if ((blen + reader->offset) <= reader->length) {
-         bson_init_static(&reader->inline_bson,
-                          &reader->data[reader->offset],
-                          blen);
+         if (!bson_init_static(&reader->inline_bson,
+                               &reader->data[reader->offset],
+                               blen)) {
+            if (reached_eof) {
+               *reached_eof = FALSE;
+            }
+            return NULL;
+         }
          reader->offset += blen;
          return &reader->inline_bson;
       }
