@@ -153,8 +153,11 @@ cbson_loads_visit_int32 (const bson_iter_t *iter,
 #else
    value = PyInt_FromLong(v_int32);
 #endif
-   cbson_loads_set_item(*ret, key, value);
-   Py_DECREF(value);
+
+   if (value) {
+      cbson_loads_set_item(*ret, key, value);
+      Py_DECREF(value);
+   }
 
    return FALSE;
 }

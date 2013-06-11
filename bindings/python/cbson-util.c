@@ -347,7 +347,7 @@ dec_timetuple:
    Py_DECREF(timetuple);
 dec_offset:
    Py_DECREF(offset);
-   Py_DECREF(date_time);
+   Py_XDECREF(date_time);
 dec_timegm:
    Py_DECREF(timegm_);
 dec_calendar:
