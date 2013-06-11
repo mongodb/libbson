@@ -466,7 +466,7 @@ cbson_as_json (PyObject *self,
    bson_reader_t reader;
    const bson_t *b;
    PyObject *ret = NULL;
-   size_t len;
+   size_t len = 0;
    char *str;
 
    if (!PyArg_ParseTuple(args, "s#", &buffer, &buffer_length)) {

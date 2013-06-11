@@ -43,8 +43,8 @@ bson_bool_t
 bson_iter_recurse (const bson_iter_t *iter,
                    bson_iter_t       *child)
 {
-   const bson_uint8_t *data;
-   bson_uint32_t len;
+   const bson_uint8_t *data = NULL;
+   bson_uint32_t len = 0;
    bson_t b;
 
    bson_return_val_if_fail(iter, FALSE);
@@ -897,9 +897,9 @@ bson_iter_visit_all (bson_iter_t          *iter,
          break;
       case BSON_TYPE_DBPOINTER:
          {
-            bson_uint32_t collection_len;
-            const char *collection;
-            const bson_oid_t *oid;
+            bson_uint32_t collection_len = 0;
+            const char *collection = NULL;
+            const bson_oid_t *oid = NULL;
 
             bson_iter_dbpointer(iter, &collection_len, &collection, &oid);
             if (VISIT_FIELD(dbpointer)(iter, key, collection_len,
