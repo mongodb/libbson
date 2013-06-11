@@ -34,7 +34,7 @@
 BSON_BEGIN_DECLS
 
 
-typedef int      bson_bool_t;
+typedef uint32_t bson_bool_t;
 typedef int8_t   bson_int8_t;
 typedef int16_t  bson_int16_t;
 typedef int32_t  bson_int32_t;
