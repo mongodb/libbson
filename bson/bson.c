@@ -1110,7 +1110,7 @@ bson_sized_new (size_t size)
       bson_init(b);
       b->flags &= ~BSON_FLAG_STATIC;
    } else {
-      impl_a->flags = 0;
+      impl_a->flags = BSON_FLAG_NONE;
       impl_a->len = 5;
       impl_a->buf = &impl_a->alloc;
       impl_a->buflen = &impl_a->alloclen;

@@ -199,8 +199,8 @@ bson_iter_key (const bson_iter_t *iter)
 bson_type_t
 bson_iter_type (const bson_iter_t *iter)
 {
-   bson_return_val_if_fail(iter, 0);
-   bson_return_val_if_fail(iter->type, 0);
+   bson_return_val_if_fail(iter, BSON_TYPE_EOD);
+   bson_return_val_if_fail(iter->type, BSON_TYPE_EOD);
    return bson_iter_type_unsafe(iter);
 }
 
@@ -475,7 +475,7 @@ bson_iter_binary (const bson_iter_t   *iter,
    }
 
    if (subtype) {
-      *subtype = 0;
+      *subtype = BSON_SUBTYPE_BINARY;
    }
 }
 
@@ -849,7 +849,7 @@ bson_iter_visit_all (bson_iter_t          *iter,
       case BSON_TYPE_BINARY:
          {
             const bson_uint8_t *binary = NULL;
-            bson_subtype_t subtype = 0;
+            bson_subtype_t subtype = BSON_SUBTYPE_BINARY;
             bson_uint32_t binary_len = 0;
 
             bson_iter_binary(iter, &subtype, &binary_len, &binary);
@@ -934,8 +934,8 @@ bson_iter_visit_all (bson_iter_t          *iter,
          {
             bson_uint32_t length = 0;
             const char *code;
-            const bson_uint8_t *docbuf;
-            bson_uint32_t doclen;
+            const bson_uint8_t *docbuf = NULL;
+            bson_uint32_t doclen = 0;
             bson_t b;
 
             code = bson_iter_codewscope(iter, &length, &doclen, &docbuf);

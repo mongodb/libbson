@@ -153,6 +153,7 @@ BSON_STATIC_ASSERT(sizeof(bson_oid_t) == 12);
  * %BSON_VALIDATE_UTF8: Check that strings are valid UTF-8.
  * %BSON_VALIDATE_DOLLAR_KEYS: Check that keys do not start with $.
  * %BSON_VALIDATE_DOT_KEYS: Check that keys do not contain a period.
+ * %BSON_VALIDATE_UTF8_ALLOW_NULL: Allow NUL bytes in UTF-8 text.
  */
 typedef enum
 {

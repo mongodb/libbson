@@ -28,6 +28,7 @@ BSON_BEGIN_DECLS
 
 typedef enum
 {
+   BSON_FLAG_NONE     = 0,
    BSON_FLAG_INLINE   = 1 << 0,
    BSON_FLAG_STATIC   = 1 << 1,
    BSON_FLAG_RDONLY   = 1 << 2,
