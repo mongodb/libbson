@@ -924,6 +924,37 @@ test_bson_copy (void)
 
 
 static void
+test_bson_copy_to (void)
+{
+   bson_t b;
+   bson_t c;
+   int i;
+
+   /*
+    * Test inline structure copy.
+    */
+   bson_init(&b);
+   assert(bson_append_int32(&b, "foobar", -1, 1234));
+   bson_copy_to(&b, &c);
+   assert_bson_equal(&b, &c);
+   bson_destroy(&c);
+   bson_destroy(&b);
+
+   /*
+    * Test malloced copy.
+    */
+   bson_init(&b);
+   for (i = 0; i < 1000; i++) {
+      assert(bson_append_int32(&b, "foobar", -1, 1234));
+   }
+   bson_copy_to(&b, &c);
+   assert_bson_equal(&b, &c);
+   bson_destroy(&c);
+   bson_destroy(&b);
+}
+
+
+static void
 test_bson_append_overflow (void)
 {
    const char *key = "a";
@@ -996,6 +1027,7 @@ main (int   argc,
    run_test("/bson/build_child_array", test_bson_build_child_array);
    run_test("/bson/count", test_bson_count_keys);
    run_test("/bson/copy", test_bson_copy);
+   run_test("/bson/copy_to", test_bson_copy_to);
    run_test("/bson/initializer", test_bson_initializer);
 
    return 0;

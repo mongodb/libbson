@@ -1163,6 +1163,40 @@ bson_copy (const bson_t *bson)
 
 
 void
+bson_copy_to (const bson_t *src,
+              bson_t       *dst)
+{
+   const bson_uint8_t *data;
+   bson_impl_alloc_t *adst;
+   bson_uint32_t len;
+
+   bson_return_if_fail(src);
+   bson_return_if_fail(dst);
+
+   if ((src->flags & BSON_FLAG_INLINE)) {
+      memcpy(dst, src, sizeof *dst);
+      dst->flags = (BSON_FLAG_STATIC | BSON_FLAG_INLINE);
+      return;
+   }
+
+   data = bson_data(src);
+   len = npow2(src->len);
+
+   adst = (bson_impl_alloc_t *)dst;
+   adst->flags = BSON_FLAG_STATIC;
+   adst->len = src->len;
+   adst->parent = NULL;
+   adst->buf = &adst->alloc;
+   adst->buflen = &adst->alloclen;
+   adst->offset = 0;
+   adst->alloc = bson_malloc0(len);
+   adst->alloclen = len;
+   adst->realloc = bson_realloc;
+   memcpy(adst->alloc, data, src->len);
+}
+
+
+void
 bson_destroy (bson_t *bson)
 {
    const bson_uint32_t nofree = (BSON_FLAG_RDONLY |

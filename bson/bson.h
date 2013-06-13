@@ -166,6 +166,18 @@ bson_copy (const bson_t *bson);
 
 
 /**
+ * bson_copy_to:
+ * @src: The source bson_t.
+ * @dst: The destination bson_t.
+ *
+ * Initializes @dst and copies the content from @src into @dst.
+ */
+void
+bson_copy_to (const bson_t *src,
+              bson_t       *dst);
+
+
+/**
  * bson_destroy:
  * @bson: A bson_t.
  *
