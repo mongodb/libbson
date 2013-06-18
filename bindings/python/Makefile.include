@@ -1,5 +1,4 @@
-# TODO: Make this in configure
-pymoduledir = /usr/lib64/python2.7/site-packages
+pymoduledir = $(libdir)/python2.7/site-packages
 
 pymodule_LTLIBRARIES = cbson.la
 
