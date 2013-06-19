@@ -68,11 +68,34 @@ test_bson_writer_shared_buffer (void)
 }
 
 
+static void
+test_bson_writer_empty_sequence (void)
+{
+   const bson_uint8_t testdata[] = { 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0 };
+   bson_writer_t *writer;
+   bson_uint8_t *buf = NULL;
+   bson_t *b;
+   size_t len = 0;
+   int r;
+   int i;
+
+   writer = bson_writer_new(&buf, &len, 0, bson_realloc);
+   for (i = 0; i < 5; i++) {
+      bson_writer_begin(writer, &b);
+      bson_writer_end(writer);
+   }
+   r = memcmp(buf, testdata, 25);
+   assert(r == 0);
+   bson_writer_destroy(writer);
+}
+
+
 int
 main (int   argc,
       char *argv[])
 {
    run_test("/bson/writer/shared_buffer", test_bson_writer_shared_buffer);
+   run_test("/bson/writer/empty_sequence", test_bson_writer_empty_sequence);
 
    return 0;
 }
