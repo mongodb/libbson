@@ -16,6 +16,7 @@
 
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "bson-memory.h"
 
@@ -51,4 +52,15 @@ void
 bson_free (void *mem)
 {
    free(mem);
+}
+
+
+void
+bson_zero_free (void   *mem,
+                size_t  size)
+{
+   if (mem) {
+      memset(mem, 0, size);
+      bson_free(mem);
+   }
 }
