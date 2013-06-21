@@ -240,6 +240,8 @@ bson_reader_destroy (bson_reader_t *reader)
    bson_return_if_fail(reader);
 
    switch (reader->type) {
+   case 0:
+      break;
    case BSON_READER_FD:
       {
          bson_reader_fd_t *fd = (bson_reader_fd_t *)reader;
