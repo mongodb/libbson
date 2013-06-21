@@ -256,6 +256,8 @@ bson_reader_destroy (bson_reader_t *reader)
       fprintf(stderr, "No such reader type: %02x\n", reader->type);
       break;
    }
+
+   reader->type = 0;
 }
 
 
