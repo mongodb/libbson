@@ -184,7 +184,7 @@ bson_oid_init_sequence (bson_oid_t     *oid,
  */
 void
 bson_oid_to_string (const bson_oid_t *oid,
-                    char              str[static 25]);
+                    char              str[25]);
 
 
 /**
