@@ -55,7 +55,7 @@ BSON_BEGIN_DECLS
  * a 5 byte document which contains the length (4 bytes) and a single NUL
  * byte indicating end of fields.
  */
-#define bson_empty(b) ((b)->len == 5)
+#define bson_empty(b) (((b)->len == 5) || !bson_get_data((b))[4])
 
 
 /**
