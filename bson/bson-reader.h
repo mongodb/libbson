@@ -100,6 +100,17 @@ bson_reader_read (bson_reader_t *reader,
                   bson_bool_t   *reached_eof);
 
 
+/**
+ * bson_reader_tell:
+ * @reader: A bson_reader_t.
+ *
+ * Return the current position in the underlying file. This will always
+ * be at the beginning of a bson document or end of file.
+ */
+off_t
+bson_reader_tell (bson_reader_t *reader);
+
+
 BSON_END_DECLS
 
 

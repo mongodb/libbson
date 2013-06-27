@@ -138,6 +138,21 @@ bson_reader_fd_grow_buffer (bson_reader_fd_t *reader)
 }
 
 
+static off_t
+bson_reader_fd_tell (bson_reader_fd_t *reader)
+{
+   off_t off;
+
+   bson_return_val_if_fail(reader, -1);
+
+   off = lseek(reader->fd, 0, SEEK_CUR);
+   off -= reader->end;
+   off += reader->offset;
+
+   return off;
+}
+
+
 static const bson_t *
 bson_reader_fd_read (bson_reader_fd_t *reader,
                      bson_bool_t      *reached_eof)
@@ -234,6 +249,14 @@ bson_reader_data_read (bson_reader_data_t *reader,
 }
 
 
+static off_t
+bson_reader_data_tell (bson_reader_data_t *reader)
+{
+   bson_return_val_if_fail(reader, -1);
+   return reader->offset;
+}
+
+
 void
 bson_reader_destroy (bson_reader_t *reader)
 {
@@ -278,4 +301,21 @@ bson_reader_read (bson_reader_t *reader,
    }
 
    return NULL;
+}
+
+
+off_t
+bson_reader_tell (bson_reader_t *reader)
+{
+   bson_return_val_if_fail(reader, -1);
+
+   switch (reader->type) {
+   case BSON_READER_FD:
+      return bson_reader_fd_tell((bson_reader_fd_t *)reader);
+   case BSON_READER_DATA:
+      return bson_reader_data_tell((bson_reader_data_t *)reader);
+   default:
+      fprintf(stderr, "No such reader type: %02x\n", reader->type);
+      return -1;
+   }
 }
