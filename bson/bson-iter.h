@@ -105,9 +105,10 @@ BSON_BEGIN_DECLS
 static BSON_INLINE bson_uint32_t
 bson_iter_utf8_len_unsafe (const bson_iter_t *iter)
 {
-   bson_uint32_t val;
+   bson_int32_t val;
    memcpy(&val, iter->data1, 4);
-   return BSON_UINT32_FROM_LE(val) - 1;
+   val = BSON_UINT32_FROM_LE(val);
+   return MAX(0, val - 1);
 }
 
 
