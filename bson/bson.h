@@ -719,6 +719,22 @@ bson_append_timeval (bson_t         *bson,
 
 
 /**
+ * bson_append_now_utc:
+ * @bson: A bson_t.
+ * @key: The key for the field.
+ * @key_length: The length of @key or -1 if it is NULL terminated.
+ *
+ * Appends a BSON_TYPE_DATE_TIME field to @bson using the current time in UTC
+ * as the field value.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
+ */
+bson_bool_t
+bson_append_now_utc (bson_t     *bson,
+                     const char *key,
+                     int         key_length);
+
+/**
  * bson_append_timestamp:
  * @bson: A bson_t.
  * @key: The key for the field.

@@ -981,6 +981,19 @@ bson_append_timestamp (bson_t        *bson,
 
 
 bson_bool_t
+bson_append_now_utc (bson_t     *bson,
+                     const char *key,
+                     int         key_length)
+{
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
+   bson_return_val_if_fail(key_length >= -1, FALSE);
+
+   return bson_append_time_t(bson, key, key_length, time(NULL));
+}
+
+
+bson_bool_t
 bson_append_timeval (bson_t         *bson,
                      const char     *key,
                      int             key_length,
