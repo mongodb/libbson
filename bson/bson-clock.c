@@ -44,7 +44,7 @@ bson_get_monotonic_time (void)
       clock_get_time(cclock, &mts);
       mach_port_deallocate(mach_task_self(), cclock);
 
-      return (mts.tv_sec * 1000000UL) + (ts.tv_nsec / 1000UL);
+      return (mts.tv_sec * 1000000UL) + (mts.tv_nsec / 1000UL);
    }
 #else
    {
