@@ -67,7 +67,7 @@ dnl Check for necessary libraries.
 dnl **************************************************************************
 AC_CHECK_FUNCS([clock_gettime], [CLOCK_LIB=],
 	       [AC_CHECK_LIB([rt], [clock_gettime], [CLOCK_LIB=-lrt],
-			     [AC_MSG_ERROR([Couldn't find clock_gettime])])])
+			     [CLOCK_LIB=])])
 AC_SUBST([CLOCK_LIB])
 
 
