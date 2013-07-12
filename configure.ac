@@ -31,7 +31,7 @@ AS_AM_REALLY_SILENT
 LT_PREREQ([2.2])
 LT_INIT
 
-AM_INIT_AUTOMAKE([1.11.1 no-dist-gzip dist-xz])
+AM_INIT_AUTOMAKE([1.10 no-dist-gzip dist-xz])
 AM_PROG_CC_C_O
 
 
