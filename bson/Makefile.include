@@ -50,3 +50,7 @@ libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson-writer.c
 
 libbson_1_0_la_CPPFLAGS =
 libbson_1_0_la_CPPFLAGS += -DBSON_COMPILATION
+
+
+libbson_1_0_la_LIBADD =
+libbson_1_0_la_LIBADD += $(CLOCK_LIB)

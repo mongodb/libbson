@@ -63,6 +63,15 @@ AM_CONDITIONAL([HAVE_PYTHON], [test x$ax_python_header != xno])
 
 
 dnl **************************************************************************
+dnl Check for necessary libraries.
+dnl **************************************************************************
+AC_CHECK_FUNCS([clock_gettime], [CLOCK_LIB=],
+	       [AC_CHECK_LIB([rt], [clock_gettime], [CLOCK_LIB=-lrt],
+			     [AC_MSG_ERROR([Couldn't find clock_gettime])])])
+AC_SUBST([CLOCK_LIB])
+
+
+dnl **************************************************************************
 dnl Check Host Endianness
 dnl **************************************************************************
 AC_C_BIGENDIAN
