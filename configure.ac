@@ -17,13 +17,14 @@ m4_define([lt_age], [m4_eval(bson_binary_age - bson_interface_age)])
 dnl **************************************************************************
 dnl Initialize Automake
 dnl **************************************************************************
-AC_PREREQ([2.64])
+AC_PREREQ([2.61])
 AC_INIT([bson],[bson_version],[https://github.com/chergert/libbson])
 
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
-m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES],
+	 [AC_SUBST([AM_DEFAULT_VERBOSITY], [1])])
 AS_AM_REALLY_SILENT
 
 # Initialize libtool
