@@ -23,6 +23,11 @@
 #include "bson-private.h"
 
 
+#ifndef BSON_MAX_RECURSION
+#define BSON_MAX_RECURSION 100
+#endif
+
+
 typedef struct
 {
    bson_validate_flags_t flags;
@@ -34,6 +39,7 @@ typedef struct
 {
    bson_uint32_t  count;
    bson_bool_t    keys;
+   bson_uint32_t  depth;
    bson_string_t *str;
 } bson_json_state_t;
 
@@ -1655,8 +1661,14 @@ bson_as_json_visit_document (const bson_iter_t *iter,
    bson_json_state_t child_state = { 0, TRUE };
    bson_iter_t child;
 
+   if (state->depth >= BSON_MAX_RECURSION) {
+      bson_string_append(state->str, "{ ... }");
+      return FALSE;
+   }
+
    if (bson_iter_init(&child, v_document)) {
       child_state.str = bson_string_new("{ ");
+      child_state.depth = state->depth + 1;
       bson_iter_visit_all(&child, &bson_as_json_visitors, &child_state);
       bson_string_append(child_state.str, " }");
       bson_string_append(state->str, child_state.str->str);
@@ -1677,8 +1689,14 @@ bson_as_json_visit_array (const bson_iter_t *iter,
    bson_json_state_t child_state = { 0, FALSE };
    bson_iter_t child;
 
+   if (state->depth >= BSON_MAX_RECURSION) {
+      bson_string_append(state->str, "{ ... }");
+      return FALSE;
+   }
+
    if (bson_iter_init(&child, v_array)) {
       child_state.str = bson_string_new("[ ");
+      child_state.depth = state->depth + 1;
       bson_iter_visit_all(&child, &bson_as_json_visitors, &child_state);
       bson_string_append(child_state.str, " ]");
       bson_string_append(state->str, child_state.str->str);
