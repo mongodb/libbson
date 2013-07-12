@@ -1734,6 +1734,7 @@ bson_as_json (const bson_t *bson,
    state.count = 0;
    state.keys = TRUE;
    state.str = bson_string_new("{ ");
+   state.depth = 0;
    bson_iter_visit_all(&iter, &bson_as_json_visitors, &state);
    bson_string_append(state.str, " }");
 
