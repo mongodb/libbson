@@ -54,3 +54,6 @@ libbson_1_0_la_CPPFLAGS += -DBSON_COMPILATION
 
 libbson_1_0_la_LIBADD =
 libbson_1_0_la_LIBADD += $(CLOCK_LIB)
+
+
+CLEANFILES += bson/bson-stdint.h

@@ -24,6 +24,61 @@ TEST_PROGS += test-bson-utf8
 TEST_PROGS += test-bson-writer
 
 
+EXTRA_DIST += $(top_srcdir)/tests/bson-tests.h
+EXTRA_DIST += $(top_srcdir)/tests/binary/dollarquery.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/dotkey.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/dotquery.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/eurokey.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/overflow1.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/overflow2.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/overflow3.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/overflow4.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/readergrow.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/stackoverflow.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/stream.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/stream_corrupt.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test10.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test11.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test12.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test13.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test14.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test15.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test16.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test17.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test18.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test19.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test1.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test20.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test21.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test22.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test23.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test24.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test25.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test26.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test27.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test28.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test29.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test2.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test30.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test31.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test32.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test33.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test34.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test35.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test36.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test37.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test38.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test39.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test3.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test4.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test5.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test6.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test7.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test8.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/test9.bson
+EXTRA_DIST += $(top_srcdir)/tests/binary/trailingnull.bson
+
+
 test_bson_SOURCES = $(top_srcdir)/tests/test-bson.c
 test_bson_CPPFLAGS = -I$(top_srcdir) -DBSON_COMPILATION
 test_bson_LDADD = libbson-1.0.la
@@ -75,7 +130,7 @@ test_bson_writer_LDADD = libbson-1.0.la
 
 
 if HAVE_PYTHON
-PYTEST_DEPS := cbson.la
+PYTEST_DEPS = cbson.la
 endif
 
 

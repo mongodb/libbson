@@ -5,9 +5,15 @@ pymodule_LTLIBRARIES = cbson.la
 cbson_la_SOURCES =
 cbson_la_SOURCES += $(top_srcdir)/bindings/python/cbson.c
 cbson_la_SOURCES += $(top_srcdir)/bindings/python/cbson-dbref.c
+cbson_la_SOURCES += $(top_srcdir)/bindings/python/cbson-dbref.h
 cbson_la_SOURCES += $(top_srcdir)/bindings/python/cbson-oid.c
+cbson_la_SOURCES += $(top_srcdir)/bindings/python/cbson-oid.h
 cbson_la_SOURCES += $(top_srcdir)/bindings/python/cbson-util.c
+cbson_la_SOURCES += $(top_srcdir)/bindings/python/cbson-util.h
 cbson_la_SOURCES += $(top_srcdir)/bindings/python/time64.c
+cbson_la_SOURCES += $(top_srcdir)/bindings/python/time64.h
+cbson_la_SOURCES += $(top_srcdir)/bindings/python/time64_config.h
+cbson_la_SOURCES += $(top_srcdir)/bindings/python/time64_limits.h
 
 
 cbson_la_LIBADD =
