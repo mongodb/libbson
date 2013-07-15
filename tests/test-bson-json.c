@@ -1,6 +1,9 @@
 #include <assert.h>
 #include <bson/bson.h>
 #include <bson/bson-string.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <unistd.h>
 
 #include "bson-tests.h"
 
@@ -140,6 +143,39 @@ test_bson_as_json_utf8 (void)
 }
 
 
+static void
+test_bson_as_json_stack_overflow (void)
+{
+   bson_uint8_t *buf;
+   bson_t b;
+   size_t buflen = 1024 * 1024 * 17;
+   char *str;
+   int fd;
+   int r;
+
+   buf = bson_malloc0(buflen);
+
+   fd = open("tests/binary/stackoverflow.bson", O_RDONLY);
+   BSON_ASSERT(fd != -1);
+
+   r = read(fd, buf, buflen);
+   BSON_ASSERT(r == 16777220);
+
+   r = bson_init_static(&b, buf, 16777220);
+   BSON_ASSERT(r);
+
+   str = bson_as_json(&b, NULL);
+   BSON_ASSERT(str);
+
+   r = !!strstr(str, "...");
+   BSON_ASSERT(str);
+
+   bson_free(str);
+   bson_destroy(&b);
+   bson_free(buf);
+}
+
+
 int
 main (int   argc,
       char *argv[])
@@ -150,6 +186,7 @@ main (int   argc,
    run_test("/bson/as_json/int64", test_bson_as_json_int64);
    run_test("/bson/as_json/double", test_bson_as_json_double);
    run_test("/bson/as_json/utf8", test_bson_as_json_utf8);
+   run_test("/bson/as_json/stack_overflow", test_bson_as_json_stack_overflow);
 
    return 0;
 }
