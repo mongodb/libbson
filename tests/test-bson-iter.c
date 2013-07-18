@@ -393,6 +393,36 @@ test_bson_iter_find_descendant (void)
 }
 
 
+static void
+test_bson_iter_as_bool (void)
+{
+   bson_iter_t iter;
+   bson_t b;
+
+   bson_init(&b);
+   bson_append_int32(&b, "int32[true]", -1, 1);
+   bson_append_int32(&b, "int32[false]", -1, 0);
+   bson_append_int64(&b, "int64[true]", -1, 1);
+   bson_append_int64(&b, "int64[false]", -1, 0);
+   bson_append_double(&b, "int64[true]", -1, 1.0);
+   bson_append_double(&b, "int64[false]", -1, 0.0);
+
+   bson_iter_init(&iter, &b);
+   bson_iter_next(&iter);
+   assert_cmpint(TRUE, ==, bson_iter_as_bool(&iter));
+   bson_iter_next(&iter);
+   assert_cmpint(FALSE, ==, bson_iter_as_bool(&iter));
+   bson_iter_next(&iter);
+   assert_cmpint(TRUE, ==, bson_iter_as_bool(&iter));
+   bson_iter_next(&iter);
+   assert_cmpint(FALSE, ==, bson_iter_as_bool(&iter));
+   bson_iter_next(&iter);
+   assert_cmpint(TRUE, ==, bson_iter_as_bool(&iter));
+   bson_iter_next(&iter);
+   assert_cmpint(FALSE, ==, bson_iter_as_bool(&iter));
+}
+
+
 int
 main (int   argc,
       char *argv[])
@@ -411,6 +441,7 @@ main (int   argc,
    run_test("/bson/iter/recurse", test_bson_iter_recurse);
    run_test("/bson/iter/init_find_case", test_bson_iter_init_find_case);
    run_test("/bson/iter/find_descendant", test_bson_iter_find_descendant);
+   run_test("/bson/iter/as_bool", test_bson_iter_as_bool);
 
    return 0;
 }
