@@ -628,6 +628,22 @@ bson_iter_bool_unsafe (const bson_iter_t *iter)
 
 
 /**
+ * bson_iter_as_bool:
+ * @iter: (in): A bson_iter_t.
+ *
+ * If @iter is on a boolean field, returns the boolean. If it is on a
+ * non-boolean field such as int32, int64, or double, it will convert
+ * the value to a boolean.
+ *
+ * Zero is FALSE, and non-zero is TRUE.
+ *
+ * Returns: TRUE or FALSE.
+ */
+bson_bool_t
+bson_iter_as_bool (const bson_iter_t *iter);
+
+
+/**
  * bson_iter_symbol:
  * @iter: A bson_iter_t.
  * @length: A location for the length of the symbol.

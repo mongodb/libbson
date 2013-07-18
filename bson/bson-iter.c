@@ -491,6 +491,31 @@ bson_iter_bool (const bson_iter_t *iter)
 }
 
 
+bson_bool_t
+bson_iter_as_bool (const bson_iter_t *iter)
+{
+   bson_return_val_if_fail(iter, 0);
+
+   switch (*iter->type) {
+   case BSON_TYPE_BOOL:
+      return bson_iter_bool(iter);
+   case BSON_TYPE_DOUBLE:
+      return !(bson_iter_double(iter) == 0.0);
+   case BSON_TYPE_INT64:
+      return !(bson_iter_int64(iter) == 0);
+   case BSON_TYPE_INT32:
+      return !(bson_iter_int32(iter) == 0);
+   case BSON_TYPE_UTF8:
+      return TRUE;
+   case BSON_TYPE_NULL:
+   case BSON_TYPE_UNDEFINED:
+      return FALSE;
+   default:
+      return TRUE;
+   }
+}
+
+
 double
 bson_iter_double (const bson_iter_t *iter)
 {
