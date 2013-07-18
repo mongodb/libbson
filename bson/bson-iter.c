@@ -549,6 +549,26 @@ bson_iter_int64 (const bson_iter_t *iter)
 }
 
 
+bson_int64_t
+bson_iter_as_int64 (const bson_iter_t *iter)
+{
+   bson_return_val_if_fail(iter, 0);
+
+   switch (*iter->type) {
+   case BSON_TYPE_BOOL:
+      return bson_iter_bool(iter);
+   case BSON_TYPE_DOUBLE:
+      return bson_iter_double(iter);
+   case BSON_TYPE_INT64:
+      return bson_iter_int64(iter);
+   case BSON_TYPE_INT32:
+      return bson_iter_int32(iter);
+   default:
+      return 0;
+   }
+}
+
+
 const bson_oid_t *
 bson_iter_oid (const bson_iter_t *iter)
 {

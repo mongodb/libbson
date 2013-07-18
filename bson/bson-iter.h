@@ -366,6 +366,19 @@ bson_iter_int64 (const bson_iter_t *iter);
 
 
 /**
+ * bson_iter_as_int64:
+ * @iter: (in): A bson_iter_t.
+ *
+ * If @iter is not an int64 field, it will try to convert the value to
+ * an int64. Such field types include bool, double, and int32.
+ *
+ * Returns: A bson_int64_t.
+ */
+bson_int64_t
+bson_iter_as_int64 (const bson_iter_t *iter);
+
+
+/**
  * bson_iter_int64_unsafe:
  * @iter: a bson_iter_t.
  *
