@@ -32,6 +32,20 @@ $ sudo make install
 ```
 
 
+# Developing using libbson
+
+In your source code:
+
+```c
+#include <bson.h>
+```
+
+To get the include path and libraries appropriate for your system.
+
+```sh
+gcc my_program.c $(pkg-config --cflags --libs libbson-1.0)
+```
+
 # Overview
 
 
