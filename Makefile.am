@@ -1,5 +1,6 @@
 EXTRA_DIST =
 CLEANFILES =
+DISTCLEANFILES =
 
 include bson/Makefile.include
 include tests/Makefile.include

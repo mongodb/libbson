@@ -56,4 +56,4 @@ libbson_1_0_la_LIBADD =
 libbson_1_0_la_LIBADD += $(CLOCK_LIB)
 
 
-CLEANFILES += bson/bson-stdint.h
+DISTCLEANFILES += bson/bson-stdint.h
