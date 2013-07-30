@@ -45,6 +45,7 @@ typedef uint32_t bson_uint32_t;
 typedef uint64_t bson_uint64_t;
 typedef uint32_t bson_unichar_t;
 
+typedef ssize_t (*bson_read_func_t)(int fd, void *buf, size_t count);
 
 /**
  * bson_context_flags_t:

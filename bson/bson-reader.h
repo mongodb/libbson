@@ -77,6 +77,20 @@ bson_reader_destroy (bson_reader_t *reader);
 
 
 /**
+ * bson_reader_set_read:
+ * @reader: A bson_reader_t.
+ * 
+ * Tell @reader to use a customized read(). By default, @reader uses read() in 
+ * libc.
+ * 
+ * Note that @reader must be initialized by bson_reader_init_from_fd(), or data
+ * will be destroyed.
+ */
+void 
+bson_reader_set_read (bson_reader_t    *reader, 
+                      bson_read_func_t  func);
+
+/**
  * bson_reader_read:
  * @reader: A bson_reader_t.
  * @reached_eof: A location for a bson_bool_t.

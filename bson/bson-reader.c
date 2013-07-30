@@ -42,6 +42,7 @@ typedef struct
    size_t              offset;
    bson_t              inline_bson;
    bson_uint8_t       *data;
+   bson_read_func_t    read_func;
 } bson_reader_fd_t;
 
 
@@ -71,7 +72,7 @@ bson_reader_fd_fill_buffer (bson_reader_fd_t *reader)
     * Handle first read specially.
     */
    if ((!reader->done) && (!reader->offset) && (!reader->end)) {
-      ret = read(reader->fd, &reader->data[0], reader->len);
+      ret = reader->read_func(reader->fd, &reader->data[0], reader->len);
       if (ret <= 0) {
          reader->done = TRUE;
          return;
@@ -92,9 +93,9 @@ bson_reader_fd_fill_buffer (bson_reader_fd_t *reader)
    /*
     * Read in data to fill the buffer.
     */
-   ret = read(reader->fd,
-              &reader->data[reader->end],
-              reader->len - reader->end);
+   ret = reader->read_func(reader->fd,
+                           &reader->data[reader->end],
+                           reader->len - reader->end);
    if (ret <= 0) {
       reader->done = TRUE;
       reader->failed = (ret < 0);
@@ -121,7 +122,17 @@ bson_reader_init_from_fd (bson_reader_t *reader,
    real->len = 1024;
    real->offset = 0;
 
+   bson_reader_set_read (reader, read);
    bson_reader_fd_fill_buffer(real);
+}
+
+
+void
+bson_reader_set_read (bson_reader_t    *reader,
+                      bson_read_func_t  func)
+{
+   bson_reader_fd_t *real = (bson_reader_fd_t *)reader;
+   real->read_func = func;
 }
 
 
