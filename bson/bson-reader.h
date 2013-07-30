@@ -87,8 +87,8 @@ bson_reader_destroy (bson_reader_t *reader);
  * will be destroyed.
  */
 void 
-bson_reader_set_read (bson_reader_t    *reader, 
-                      bson_read_func_t  func);
+bson_reader_set_read_func (bson_reader_t    *reader, 
+                           bson_read_func_t  func);
 
 /**
  * bson_reader_read:

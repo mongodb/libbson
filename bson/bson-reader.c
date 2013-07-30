@@ -122,15 +122,18 @@ bson_reader_init_from_fd (bson_reader_t *reader,
    real->len = 1024;
    real->offset = 0;
 
-   bson_reader_set_read (reader, read);
+   bson_reader_set_read_func(reader, read);
    bson_reader_fd_fill_buffer(real);
 }
 
 
 void
-bson_reader_set_read (bson_reader_t    *reader,
-                      bson_read_func_t  func)
+bson_reader_set_read_func (bson_reader_t    *reader,
+                           bson_read_func_t  func)
 {
+   bson_return_if_fail (reader);
+   bson_return_if_fail (func);
+
    bson_reader_fd_t *real = (bson_reader_fd_t *)reader;
    real->read_func = func;
 }
