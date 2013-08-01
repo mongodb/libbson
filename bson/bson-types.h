@@ -45,7 +45,22 @@ typedef uint32_t bson_uint32_t;
 typedef uint64_t bson_uint64_t;
 typedef uint32_t bson_unichar_t;
 
-typedef ssize_t (*bson_read_func_t) (int fd, void *buf, size_t count);
+
+/**
+ * bson_read_func_t:
+ * @fd: The file descriptor to read from.
+ * @buf: The buffer to read into.
+ * @count: The number of bytes to read.
+ *
+ * This function describes a read function that can be used to read from a file
+ * descriptor.
+ *
+ * Returns: -1 on failure and errno is set, otherwise the number of bytes read.
+ *    0 may be returned on end of stream.
+ */
+typedef ssize_t (*bson_read_func_t) (int     fd,
+                                     void   *buf,
+                                     size_t  count);
 
 /**
  * bson_context_flags_t:
