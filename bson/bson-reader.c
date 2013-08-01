@@ -131,10 +131,12 @@ void
 bson_reader_set_read_func (bson_reader_t    *reader,
                            bson_read_func_t  func)
 {
-   bson_return_if_fail (reader);
-   bson_return_if_fail (func);
-
    bson_reader_fd_t *real = (bson_reader_fd_t *)reader;
+
+   bson_return_if_fail(reader);
+   bson_return_if_fail(reader->type == BSON_READER_FD);
+   bson_return_if_fail(func);
+
    real->read_func = func;
 }
 
