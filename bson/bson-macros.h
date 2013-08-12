@@ -131,6 +131,13 @@
 #endif /* __GNUC__ */
 
 
+#if defined(__LP64__) || defined(_LP64)
+#define BSON_WORD_SIZE 64
+#else
+#define BSON_WORD_SIZE 32
+#endif
+
+
 #define BSON_INLINE inline
 
 
