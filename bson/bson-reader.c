@@ -56,8 +56,8 @@ typedef struct
 } bson_reader_data_t;
 
 
-BSON_STATIC_ASSERT(sizeof(bson_reader_fd_t) < sizeof(bson_reader_t));
-BSON_STATIC_ASSERT(sizeof(bson_reader_data_t) < sizeof(bson_reader_t));
+BSON_STATIC_ASSERT(sizeof(bson_reader_fd_t) <= sizeof(bson_reader_t));
+BSON_STATIC_ASSERT(sizeof(bson_reader_data_t) <= sizeof(bson_reader_t));
 
 
 static void

@@ -270,8 +270,11 @@ typedef struct
 typedef struct
 {
    bson_uint32_t  type;
-   void          *padding[31];
+   char           padding[252];
 } bson_reader_t;
+
+
+BSON_STATIC_ASSERT(sizeof(bson_reader_t) == 256);
 
 
 /**
