@@ -87,11 +87,10 @@ static void
 bson_context_get_oid_pid (bson_context_t *context,
                           bson_oid_t     *oid)
 {
-   pid_t tpid = getpid();
-   bson_uint16_t pid;
+   bson_uint16_t pid = getpid();
    bson_uint8_t *bytes = (bson_uint8_t *)&pid;
 
-   pid = BSON_UINT16_TO_BE(tpid);
+   pid = BSON_UINT16_TO_BE(pid);
    oid->bytes[7] = bytes[0];
    oid->bytes[8] = bytes[1];
 }
