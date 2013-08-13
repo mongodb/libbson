@@ -91,8 +91,7 @@ bson_context_get_oid_pid (bson_context_t *context,
    bson_uint16_t pid;
    bson_uint8_t *bytes = (bson_uint8_t *)&pid;
 
-   pid = BSON_UINT16_TO_BE(tpid); /* BSON_UINT16_TO_BE() may use byteswapping macro which uses its parameter several times
-				     thus it's better to pass a variable rathen than a function call */
+   pid = BSON_UINT16_TO_BE(tpid);
    oid->bytes[7] = bytes[0];
    oid->bytes[8] = bytes[1];
 }
@@ -113,8 +112,7 @@ bson_context_get_oid_seq32 (bson_context_t *context,
 {
    bson_uint32_t seq = context->seq32++;
 
-   seq = BSON_UINT32_TO_BE(seq); /* BSON_UINT32_TO_BE() may use byteswapping macro which uses its parameter several times
-				    thus a bare variable must be passed */
+   seq = BSON_UINT32_TO_BE(seq);
    memcpy(&oid->bytes[9], ((bson_uint8_t *)&seq) + 1, 3);
 }
 
@@ -125,8 +123,7 @@ bson_context_get_oid_seq32_threadsafe (bson_context_t *context,
 {
    bson_uint32_t seq = __sync_fetch_and_add_4(&context->seq32, 1);
 
-   seq = BSON_UINT32_TO_BE(seq);/* BSON_UINT32_TO_BE() may use byteswapping macro which uses its parameter several times
-				   thus a bare variable must be passed */
+   seq = BSON_UINT32_TO_BE(seq);
    memcpy(&oid->bytes[9], ((bson_uint8_t *)&seq) + 1, 3);
 }
 
@@ -137,8 +134,7 @@ bson_context_get_oid_seq64 (bson_context_t *context,
 {
    bson_uint64_t seq = context->seq64++;
 
-   seq = BSON_UINT64_TO_BE(seq);/* BSON_UINT64_TO_BE() may use byteswapping macro which uses its parameter several times
-				   thus a bare variable must be passed */
+   seq = BSON_UINT64_TO_BE(seq);
    memcpy(&oid->bytes[4], &seq, 8);
 }
 
@@ -149,8 +145,7 @@ bson_context_get_oid_seq64_threadsafe (bson_context_t *context,
 {
    bson_uint64_t seq = __sync_fetch_and_add_8(&context->seq64, 1);
 
-   seq = BSON_UINT64_TO_BE(seq); /* BSON_UINT64_TO_BE() may use byteswapping macro which uses its parameter several times
-				    thus a bare variable must be passed */
+   seq = BSON_UINT64_TO_BE(seq);
    memcpy(&oid->bytes[4], &seq, 8);
 }
 
@@ -205,9 +200,8 @@ bson_context_new (bson_context_flags_t  flags)
    if ((flags & BSON_CONTEXT_DISABLE_PID_CACHE)) {
       context->oid_get_pid = bson_context_get_oid_pid;
    } else {
-       pid = getpid();
-       pid = BSON_UINT16_TO_BE(pid); /* BSON_UINT16_TO_BE() may use byteswapping macro which uses its parameter several times
-					thus it's better to pass a variable rathen than a function call */
+      pid = getpid();
+      pid = BSON_UINT16_TO_BE(pid);
 #if defined(__linux__)
       if ((flags & BSON_CONTEXT_USE_TASK_ID)) {
          bson_int32_t tid;

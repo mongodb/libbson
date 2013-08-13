@@ -95,7 +95,7 @@ void
 bson_oid_init_sequence (bson_oid_t     *oid,
                         bson_context_t *context)
 {
-   bson_uint32_t now = (bson_uint32_t)time(NULL);
+   bson_uint32_t now = time(NULL);
 
    now = BSON_UINT32_TO_BE(now);
 
