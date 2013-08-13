@@ -27,14 +27,13 @@
 #include <sys/syscall.h>
 #endif
 
-#if defined WITH_OID32_PT || defined WITH_OID64_PT
-#include "bson-thread.h"
-#endif
+#include "config.h"
 
 #include "bson-context.h"
 #include "bson-context-private.h"
 #include "bson-md5.h"
 #include "bson-memory.h"
+#include "bson-thread.h"
 
 #if defined(HAVE_WINDOWS)
 #include <winsock2.h>
