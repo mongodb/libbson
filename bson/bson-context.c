@@ -27,6 +27,10 @@
 #include <sys/syscall.h>
 #endif
 
+#if defined WITH_OID32_PT || defined WITH_OID64_PT
+#include "bson-thread.h"
+#endif
+
 #include "bson-context.h"
 #include "bson-context-private.h"
 #include "bson-md5.h"
@@ -120,7 +124,14 @@ static void
 bson_context_get_oid_seq32_threadsafe (bson_context_t *context,
                                        bson_oid_t     *oid)
 {
+#if defined WITH_OID32_PT
+   bson_uint32_t seq;
+   bson_mutex_lock(&context->_m32);
+   seq = context->seq32++;
+   bson_mutex_unlock(&context->_m32);
+#else
    bson_uint32_t seq = __sync_fetch_and_add_4(&context->seq32, 1);
+#endif
 
    seq = BSON_UINT32_TO_BE(seq);
    memcpy(&oid->bytes[9], ((bson_uint8_t *)&seq) + 1, 3);
@@ -142,7 +153,14 @@ static void
 bson_context_get_oid_seq64_threadsafe (bson_context_t *context,
                                        bson_oid_t     *oid)
 {
+#if defined WITH_OID32_PT
+   bson_uint32_t seq;
+   bson_mutex_lock(&context->_m32);
+   seq = context->seq32++;
+   bson_mutex_unlock(&context->_m32);
+#else
    bson_uint64_t seq = __sync_fetch_and_add_8(&context->seq64, 1);
+#endif
 
    seq = BSON_UINT64_TO_BE(seq);
    memcpy(&oid->bytes[4], &seq, 8);
@@ -192,6 +210,12 @@ bson_context_new (bson_context_flags_t  flags)
    }
 
    if ((flags & BSON_CONTEXT_THREAD_SAFE)) {
+#if defined WITH_OID32_PT
+      bson_mutex_init(&context->_m32);
+#endif
+#if defined WITH_OID32_PT
+      bson_mutex_init(&context->_m64);
+#endif
       context->oid_get_seq32 = bson_context_get_oid_seq32_threadsafe;
       context->oid_get_seq64 = bson_context_get_oid_seq64_threadsafe;
    }
@@ -219,6 +243,12 @@ bson_context_new (bson_context_flags_t  flags)
 void
 bson_context_destroy (bson_context_t *context)
 {
+#if defined WITH_OID32_PT
+   bson_mutex_destroy(&context->_m32);
+#endif
+#if defined WITH_OID32_PT
+   bson_mutex_destroy(&context->_m64);
+#endif
    memset(context, 0, sizeof *context);
    bson_free(context);
 }
