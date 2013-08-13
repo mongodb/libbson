@@ -153,7 +153,7 @@ static void
 bson_context_get_oid_seq64_threadsafe (bson_context_t *context,
                                        bson_oid_t     *oid)
 {
-#if defined WITH_OID32_PT
+#if defined WITH_OID64_PT
    bson_uint32_t seq;
    bson_mutex_lock(&context->_m32);
    seq = context->seq32++;
