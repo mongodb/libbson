@@ -211,10 +211,10 @@ bson_context_new (bson_context_flags_t  flags)
 
    if ((flags & BSON_CONTEXT_THREAD_SAFE)) {
 #if defined WITH_OID32_PT
-      bson_mutex_init(&context->_m32);
+      bson_mutex_init(&context->_m32, NULL);
 #endif
-#if defined WITH_OID32_PT
-      bson_mutex_init(&context->_m64);
+#if defined WITH_OID64_PT
+      bson_mutex_init(&context->_m64, NULL);
 #endif
       context->oid_get_seq32 = bson_context_get_oid_seq32_threadsafe;
       context->oid_get_seq64 = bson_context_get_oid_seq64_threadsafe;
@@ -246,7 +246,7 @@ bson_context_destroy (bson_context_t *context)
 #if defined WITH_OID32_PT
    bson_mutex_destroy(&context->_m32);
 #endif
-#if defined WITH_OID32_PT
+#if defined WITH_OID64_PT
    bson_mutex_destroy(&context->_m64);
 #endif
    memset(context, 0, sizeof *context);

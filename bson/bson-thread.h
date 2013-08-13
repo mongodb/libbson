@@ -58,7 +58,7 @@ BSON_BEGIN_DECLS
 #include <windows.h>
 #endif
 #define bson_mutex_t                 HANDLE
-#define bson_mutex_init(m)           CreateMutex(NULL, FALSE, NULL)
+#define bson_mutex_init(m,x)         CreateMutex(NULL, FALSE, NULL)
 #define bson_mutex_lock(m)           WaitforSingleObject((m))
 #define bson_mutex_unlock(m)         ReleaseMutex((m))
 #define bson_mutex_destroy(m)        CloseHandle((m))
