@@ -154,10 +154,10 @@ bson_context_get_oid_seq64_threadsafe (bson_context_t *context,
                                        bson_oid_t     *oid)
 {
 #if defined WITH_OID64_PT
-   bson_uint32_t seq;
-   bson_mutex_lock(&context->_m32);
-   seq = context->seq32++;
-   bson_mutex_unlock(&context->_m32);
+   bson_uint64_t seq;
+   bson_mutex_lock(&context->_m64);
+   seq = context->seq64++;
+   bson_mutex_unlock(&context->_m64);
 #else
    bson_uint64_t seq = __sync_fetch_and_add_8(&context->seq64, 1);
 #endif

@@ -27,6 +27,7 @@
 #include <assert.h>
 #include <stdio.h>
 
+#include "config.h"
 #include "bson-endian.h"
 
 

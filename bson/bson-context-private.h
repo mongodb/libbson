@@ -20,7 +20,7 @@
 
 
 #include "bson-context.h"
-
+#include "bson-thread.h"
 
 BSON_BEGIN_DECLS
 
