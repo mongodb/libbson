@@ -95,7 +95,9 @@ void
 bson_oid_init_sequence (bson_oid_t     *oid,
                         bson_context_t *context)
 {
-   bson_uint32_t now = BSON_UINT32_TO_BE(time(NULL));
+   bson_uint32_t now = (bson_uint32_t)time(NULL);
+
+   now = BSON_UINT32_TO_BE(now);
 
    memcpy(&oid->bytes[0], &now, 4);
    context->oid_get_seq64(context, oid);
