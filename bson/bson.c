@@ -1000,13 +1000,12 @@ bson_append_now_utc (bson_t     *bson,
 
 
 bson_bool_t
-bson_append_timeval (bson_t         *bson,
-                     const char     *key,
-                     int             key_length,
-                     struct timeval *value)
+bson_append_date_time (bson_t       *bson,
+                       const char   *key,
+                       int           key_length,
+                       bson_int64_t  value)
 {
    static const bson_uint8_t type = BSON_TYPE_DATE_TIME;
-   bson_uint64_t unix_msec;
 
    bson_return_val_if_fail(bson, FALSE);
    bson_return_val_if_fail(key, FALSE);
@@ -1016,14 +1015,29 @@ bson_append_timeval (bson_t         *bson,
       key_length = strlen(key);
    }
 
-   unix_msec = BSON_UINT64_TO_LE((((bson_uint64_t)value->tv_sec) * 1000UL) +
-                                 (value->tv_usec / 1000UL));
-
    return bson_append(bson, 4,
                       1, &type,
                       key_length, key,
                       1, &gZero,
-                      8, &unix_msec);
+                      8, &value);
+}
+
+
+bson_bool_t
+bson_append_timeval (bson_t         *bson,
+                     const char     *key,
+                     int             key_length,
+                     struct timeval *value)
+{
+   bson_uint64_t unix_msec;
+
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
+   bson_return_val_if_fail(value, FALSE);
+
+   unix_msec = BSON_UINT64_TO_LE((((bson_uint64_t)value->tv_sec) * 1000UL) +
+                                 (value->tv_usec / 1000UL));
+   return bson_append_date_time(bson, key, key_length, unix_msec);
 }
 
 

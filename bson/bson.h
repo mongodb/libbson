@@ -720,6 +720,24 @@ bson_append_timeval (bson_t         *bson,
 
 
 /**
+ * bson_append_date_time:
+ * @bson: A bson_t.
+ * @key: The key for the field.
+ * @key_length: The length of @key in bytes or -1 if \0 terminated.
+ * @value: The number of milliseconds elapsed since UNIX epoch.
+ *
+ * Appends a new field to @bson of type BSON_TYPE_DATE_TIME.
+ *
+ * Returns: TRUE if sucessful; otherwise FALSE.
+ */
+bson_bool_t
+bson_append_date_time (bson_t       *bson,
+                       const char   *key,
+                       int           key_length,
+                       bson_int64_t  value);
+
+
+/**
  * bson_append_now_utc:
  * @bson: A bson_t.
  * @key: The key for the field.
