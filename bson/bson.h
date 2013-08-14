@@ -32,6 +32,7 @@
 #include "bson-iter.h"
 #include "bson-keys.h"
 #include "bson-macros.h"
+#include "bson-md5.h"
 #include "bson-memory.h"
 #include "bson-oid.h"
 #include "bson-reader.h"
