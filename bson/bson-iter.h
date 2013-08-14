@@ -540,6 +540,20 @@ bson_iter_utf8_unsafe (const bson_iter_t *iter,
 
 
 /**
+ * bson_iter_dup_utf8:
+ * @iter: A bson_iter_t.
+ *
+ * Copies the current UTF-8 element into a newly allocated string. The string
+ * should be freed using bson_free() when the caller is finished with it.
+ *
+ * Returns: A newly allocated char*.
+ */
+char *
+bson_iter_dup_utf8 (const bson_iter_t *iter,
+                    bson_uint32_t     *length);
+
+
+/**
  * bson_iter_date_time:
  * @iter: A bson_iter_t.
  *

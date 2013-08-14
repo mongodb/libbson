@@ -50,8 +50,10 @@ get_bson (const char *filename)
 static void
 test_bson_iter_utf8 (void)
 {
+   bson_uint32_t len = 0;
    bson_iter_t iter;
    bson_t *b;
+   char *s;
 
    b = bson_new();
    assert(bson_append_utf8(b, "foo", -1, "bar", -1));
@@ -61,6 +63,10 @@ test_bson_iter_utf8 (void)
    assert(BSON_ITER_HOLDS_UTF8(&iter));
    assert(!strcmp(bson_iter_key(&iter), "foo"));
    assert(!strcmp(bson_iter_utf8(&iter, NULL), "bar"));
+   s = bson_iter_dup_utf8(&iter, &len);
+   assert_cmpstr("bar", s);
+   assert_cmpint(len, ==, 3);
+   bson_free(s);
    assert(bson_iter_next(&iter));
    assert(BSON_ITER_HOLDS_UTF8(&iter));
    assert(!strcmp(bson_iter_key(&iter), "bar"));
