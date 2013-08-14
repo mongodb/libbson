@@ -48,6 +48,12 @@
  */
 
 
+/*
+ * The following MD5 implementation has been modified to use types as
+ * specified in libbson.
+ */
+
+
 #if !defined (BSON_INSIDE) && !defined (BSON_COMPILATION)
 #error "Only <bson.h> can be included directly."
 #endif

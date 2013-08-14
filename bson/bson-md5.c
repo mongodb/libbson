@@ -51,6 +51,11 @@
   1999-05-03 lpd Original version.
  */
 
+/*
+ * The following MD5 implementation has been modified to use types as
+ * specified in libbson.
+ */
+
 
 #include <string.h>
 
