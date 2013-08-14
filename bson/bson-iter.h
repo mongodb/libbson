@@ -625,6 +625,20 @@ bson_iter_timeval_unsafe (const bson_iter_t *iter,
 }
 
 
+/*
+ * bson_iter_timestamp:
+ * @iter: A bson_iter_t.
+ * @timestamp: a location for the timestamp.
+ * @increment: A location for the increment.
+ *
+ * Fetches the current field if it is a BSON_TYPE_TIMESTAMP.
+ */
+void
+bson_iter_timestamp (const bson_iter_t *iter,
+                     bson_uint32_t     *timestamp,
+                     bson_uint32_t     *increment);
+
+
 /**
  * bson_iter_bool:
  * @iter: A bson_iter_t.
@@ -668,6 +682,22 @@ bson_iter_bool_unsafe (const bson_iter_t *iter)
  */
 bson_bool_t
 bson_iter_as_bool (const bson_iter_t *iter);
+
+
+/**
+ * bson_iter_regex:
+ * @iter: A bson_iter_t.
+ * @options: a location of regex options.
+ *
+ * Fetches the current field from the iter which should be of type
+ * BSON_TYPE_REGEX.
+ *
+ * Returns: The regex from the iter. This value should not be modified or
+ *    freed.
+ */
+const char *
+bson_iter_regex (const bson_iter_t  *iter,
+                 const char        **options);
 
 
 /**
