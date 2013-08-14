@@ -455,6 +455,59 @@ test_bson_append_int64 (void)
 
 
 static void
+test_bson_append_iter (void)
+{
+   bson_iter_t iter;
+   bson_bool_t r;
+   bson_t b;
+   bson_t c;
+
+   bson_init(&b);
+   bson_append_int32(&b, "a", 1, 1);
+   bson_append_int32(&b, "b", 1, 2);
+   bson_append_int32(&b, "c", 1, 3);
+   bson_append_utf8(&b, "d", 1, "hello", 5);
+
+   bson_init(&c);
+
+   r = bson_iter_init_find(&iter, &b, "a");
+   assert(r);
+   r = bson_append_iter(&c, NULL, 0, &iter);
+   assert(r);
+
+   r = bson_iter_init_find(&iter, &b, "c");
+   assert(r);
+   r = bson_append_iter(&c, NULL, 0, &iter);
+   assert(r);
+
+   r = bson_iter_init_find(&iter, &b, "d");
+   assert(r);
+   r = bson_append_iter(&c, "world", -1, &iter);
+   assert(r);
+
+   bson_iter_init(&iter, &c);
+   r = bson_iter_next(&iter);
+   assert(r);
+   assert_cmpstr("a", bson_iter_key(&iter));
+   assert_cmpint(BSON_TYPE_INT32, ==, bson_iter_type(&iter));
+   assert_cmpint(1, ==, bson_iter_int32(&iter));
+   r = bson_iter_next(&iter);
+   assert(r);
+   assert_cmpstr("c", bson_iter_key(&iter));
+   assert_cmpint(BSON_TYPE_INT32, ==, bson_iter_type(&iter));
+   assert_cmpint(3, ==, bson_iter_int32(&iter));
+   r = bson_iter_next(&iter);
+   assert(r);
+   assert_cmpint(BSON_TYPE_UTF8, ==, bson_iter_type(&iter));
+   assert_cmpstr("world", bson_iter_key(&iter));
+   assert_cmpstr("hello", bson_iter_utf8(&iter, NULL));
+
+   bson_destroy(&b);
+   bson_destroy(&c);
+}
+
+
+static void
 test_bson_append_timestamp (void)
 {
    bson_t *b;
@@ -1004,6 +1057,7 @@ main (int   argc,
    run_test("/bson/append_double", test_bson_append_double);
    run_test("/bson/append_int32", test_bson_append_int32);
    run_test("/bson/append_int64", test_bson_append_int64);
+   run_test("/bson/append_iter", test_bson_append_iter);
    run_test("/bson/append_maxkey", test_bson_append_maxkey);
    run_test("/bson/append_minkey", test_bson_append_minkey);
    run_test("/bson/append_null", test_bson_append_null);

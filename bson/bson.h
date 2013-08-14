@@ -539,6 +539,25 @@ bson_append_int64 (bson_t       *bson,
 
 
 /**
+ * bson_append_iter:
+ * @bson: A bson_t to append to.
+ * @key: The key name or %NULL to take current key from @iter.
+ * @key_length: The key length or -1 to use strlen().
+ * @iter: The iter located on the position of the element to append.
+ *
+ * Appends a new field to @bson that is equivalent to the field currently
+ * pointed to by @iter.
+ *
+ * Returns: TRUE if successful; FALSE if append would overflow max size.
+ */
+bson_bool_t
+bson_append_iter (bson_t            *bson,
+                  const char        *key,
+                  int                key_length,
+                  const bson_iter_t *iter);
+
+
+/**
  * bson_append_minkey:
  * @bson: A bson_t.
  * @key: The key for the field.

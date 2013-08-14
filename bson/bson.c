@@ -749,6 +749,170 @@ bson_append_int64 (bson_t       *bson,
 
 
 bson_bool_t
+bson_append_iter (bson_t            *bson,
+                  const char        *key,
+                  int                key_length,
+                  const bson_iter_t *iter)
+{
+   bson_bool_t ret = FALSE;
+
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(iter, FALSE);
+
+   if (!key) {
+      key = bson_iter_key(iter);
+      key_length = -1;
+   }
+
+   switch (*iter->type) {
+   case BSON_TYPE_DOUBLE:
+      ret = bson_append_double(bson, key, key_length, bson_iter_double(iter));
+      break;
+   case BSON_TYPE_UTF8:
+      {
+         bson_uint32_t len;
+         const char *str;
+
+         str = bson_iter_utf8(iter, &len);
+         ret = bson_append_utf8(bson, key, key_length, str, len);
+      }
+      break;
+   case BSON_TYPE_DOCUMENT:
+      {
+         const bson_uint8_t *buf;
+         bson_uint32_t len;
+         bson_t doc;
+
+         bson_iter_document(iter, &len, &buf);
+         if (bson_init_static(&doc, buf, len)) {
+            ret = bson_append_document(bson, key, key_length, &doc);
+            bson_destroy(&doc);
+         }
+      }
+      break;
+   case BSON_TYPE_ARRAY:
+      {
+         const bson_uint8_t *buf;
+         bson_uint32_t len;
+         bson_t doc;
+
+         bson_iter_array(iter, &len, &buf);
+         if (bson_init_static(&doc, buf, len)) {
+            ret = bson_append_array(bson, key, key_length, &doc);
+            bson_destroy(&doc);
+         }
+      }
+      break;
+   case BSON_TYPE_BINARY:
+      {
+         const bson_uint8_t *binary;
+         bson_subtype_t subtype;
+         bson_uint32_t len;
+
+         bson_iter_binary(iter, &subtype, &len, &binary);
+         ret = bson_append_binary(bson, key, key_length,
+                                  subtype, binary, len);
+      }
+      break;
+   case BSON_TYPE_UNDEFINED:
+      ret = bson_append_undefined(bson, key, key_length);
+      break;
+   case BSON_TYPE_OID:
+      ret = bson_append_oid(bson, key, key_length, bson_iter_oid(iter));
+      break;
+   case BSON_TYPE_BOOL:
+      ret = bson_append_bool(bson, key, key_length, bson_iter_bool(iter));
+      break;
+   case BSON_TYPE_DATE_TIME:
+      ret = bson_append_date_time(bson, key, key_length,
+                                  bson_iter_date_time(iter));
+      break;
+   case BSON_TYPE_NULL:
+      ret = bson_append_undefined(bson, key, key_length);
+      break;
+   case BSON_TYPE_REGEX:
+      {
+         const char *regex;
+         const char *options;
+
+         regex = bson_iter_regex(iter, &options);
+         ret = bson_append_regex(bson, key, key_length, regex, options);
+      }
+      break;
+   case BSON_TYPE_DBPOINTER:
+      {
+         const bson_oid_t *oid;
+         bson_uint32_t len;
+         const char *collection;
+
+         bson_iter_dbpointer(iter, &len, &collection, &oid);
+         ret = bson_append_dbpointer(bson, key, key_length, collection, oid);
+      }
+      break;
+   case BSON_TYPE_CODE:
+      {
+         bson_uint32_t len;
+         const char *code;
+
+         code = bson_iter_code(iter, &len);
+         ret = bson_append_code(bson, key, key_length, code);
+      }
+      break;
+   case BSON_TYPE_SYMBOL:
+      {
+         bson_uint32_t len;
+         const char *symbol;
+
+         symbol = bson_iter_symbol(iter, &len);
+         ret = bson_append_symbol(bson, key, key_length, symbol, len);
+      }
+      break;
+   case BSON_TYPE_CODEWSCOPE:
+      {
+         const bson_uint8_t *scope;
+         bson_uint32_t scope_len;
+         bson_uint32_t len;
+         const char *javascript;
+         bson_t doc;
+
+         javascript = bson_iter_codewscope(iter, &len, &scope_len, &scope);
+         if (bson_init_static(&doc, scope, scope_len)) {
+            ret = bson_append_code_with_scope(bson, key, key_length,
+                                              javascript, &doc);
+            bson_destroy(&doc);
+         }
+      }
+      break;
+   case BSON_TYPE_INT32:
+      ret = bson_append_int32(bson, key, key_length, bson_iter_int32(iter));
+      break;
+   case BSON_TYPE_TIMESTAMP:
+      {
+         bson_uint32_t ts;
+         bson_uint32_t inc;
+
+         bson_iter_timestamp(iter, &ts, &inc);
+         ret = bson_append_timestamp(bson, key, key_length, ts, inc);
+      }
+      break;
+   case BSON_TYPE_INT64:
+      ret = bson_append_int64(bson, key, key_length, bson_iter_int64(iter));
+      break;
+   case BSON_TYPE_MAXKEY:
+      ret = bson_append_maxkey(bson, key, key_length);
+      break;
+   case BSON_TYPE_MINKEY:
+      ret = bson_append_minkey(bson, key, key_length);
+      break;
+   default:
+      break;
+   }
+
+   return ret;
+}
+
+
+bson_bool_t
 bson_append_maxkey (bson_t     *bson,
                     const char *key,
                     int         key_length)
