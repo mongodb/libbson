@@ -1008,6 +1008,36 @@ test_bson_copy_to (void)
 
 
 static void
+test_bson_copy_to_excluding (void)
+{
+   bson_iter_t iter;
+   bson_bool_t r;
+   bson_t b;
+   bson_t c;
+   int i;
+
+   bson_init(&b);
+   bson_append_int32(&b, "a", 1, 1);
+   bson_append_int32(&b, "b", 1, 2);
+
+   bson_copy_to_excluding(&b, &c, "b", NULL);
+   r = bson_iter_init_find(&iter, &c, "a");
+   assert(r);
+   r = bson_iter_init_find(&iter, &c, "b");
+   assert(!r);
+
+   i = bson_count_keys(&b);
+   assert_cmpint(i, ==, 2);
+
+   i = bson_count_keys(&c);
+   assert_cmpint(i, ==, 1);
+
+   bson_destroy(&b);
+   bson_destroy(&c);
+}
+
+
+static void
 test_bson_append_overflow (void)
 {
    const char *key = "a";
@@ -1082,6 +1112,7 @@ main (int   argc,
    run_test("/bson/count", test_bson_count_keys);
    run_test("/bson/copy", test_bson_copy);
    run_test("/bson/copy_to", test_bson_copy_to);
+   run_test("/bson/copy_to_excluding", test_bson_copy_to_excluding);
    run_test("/bson/initializer", test_bson_initializer);
 
    return 0;

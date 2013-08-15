@@ -180,6 +180,23 @@ bson_copy_to (const bson_t *src,
 
 
 /**
+ * bson_copy_to_excluding:
+ * @src: A bson_t.
+ * @dst: A bson_t to initialize and copy into.
+ * @first_exclude: First field name to exclude.
+ *
+ * Copies @src into @dst excluding any field that is provided.
+ * This is handy for situations when you need to remove one or
+ * more fields in a bson_t.
+ */
+void
+bson_copy_to_excluding (const bson_t *src,
+                        bson_t       *dst,
+                        const char   *first_exclude,
+                        ...) BSON_GNUC_NULL_TERMINATED;
+
+
+/**
  * bson_destroy:
  * @bson: A bson_t.
  *

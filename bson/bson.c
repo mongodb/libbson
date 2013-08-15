@@ -1393,6 +1393,73 @@ bson_copy_to (const bson_t *src,
 }
 
 
+static bson_bool_t
+should_ignore (const char *first_exclude,
+               va_list     args,
+               const char *name)
+{
+   bson_bool_t ret = FALSE;
+   const char *exclude = first_exclude;
+   va_list args_copy;
+
+   va_copy(args_copy, args);
+   do {
+      if (!strcmp(name, exclude)) {
+         ret = TRUE;
+         break;
+      }
+   } while ((exclude = va_arg(args_copy, const char *)));
+   va_end(args_copy);
+
+   return ret;
+}
+
+
+static void
+bson_copy_to_excluding_va (const bson_t *src,
+                           bson_t       *dst,
+                           const char   *first_exclude,
+                           va_list       args)
+{
+   bson_iter_t iter;
+
+   bson_init(dst);
+
+   if (bson_iter_init(&iter, src)) {
+      while (bson_iter_next(&iter)) {
+         if (!should_ignore(first_exclude, args, bson_iter_key(&iter))) {
+            if (!bson_append_iter(dst, NULL, 0, &iter)) {
+               /*
+                * This should not be able to happen since we are copying
+                * from within a valid bson_t.
+                */
+               BSON_ASSERT(FALSE);
+               return;
+            }
+         }
+      }
+   }
+}
+
+
+void
+bson_copy_to_excluding (const bson_t *src,
+                        bson_t       *dst,
+                        const char   *first_exclude,
+                        ...)
+{
+   va_list args;
+
+   bson_return_if_fail(src);
+   bson_return_if_fail(dst);
+   bson_return_if_fail(first_exclude);
+
+   va_start(args, first_exclude);
+   bson_copy_to_excluding_va(src, dst, first_exclude, args);
+   va_end(args);
+}
+
+
 void
 bson_destroy (bson_t *bson)
 {
