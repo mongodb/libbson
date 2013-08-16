@@ -77,6 +77,7 @@ dnl Check if pthread_mutex synchronisation needed
 dnl **************************************************************************
 PTHREAD_CFLAGS=""
 PTHREAD_LDFLAGS=""
+PTHREAD_LIB="-lpthread"
 AC_TRY_LINK([#include <stdint.h>],
    [uint32_t seq = __sync_fetch_and_add_4(&seq, 1);],
    ,
@@ -95,6 +96,7 @@ AC_TRY_LINK([#include <stdint.h>],
 )
 CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
 LDFLAGS="$LDFLAGS $PTHREAD_LDFLAGS"
+AC_SUBST(PTHREAD_LIB)
 
 
 dnl **************************************************************************

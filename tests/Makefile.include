@@ -106,7 +106,7 @@ test_bson_json_LDADD = libbson-1.0.la
 
 test_bson_oid_SOURCES = $(top_srcdir)/tests/test-bson-oid.c
 test_bson_oid_CPPFLAGS = -I$(top_srcdir) -DBSON_COMPILATION
-test_bson_oid_LDADD = libbson-1.0.la -lpthread
+test_bson_oid_LDADD = libbson-1.0.la
 
 
 test_bson_reader_SOURCES = $(top_srcdir)/tests/test-bson-reader.c
