@@ -229,6 +229,22 @@ bson_count_keys (const bson_t *bson);
 
 
 /**
+ * bson_has_field:
+ * @bson: A bson_t.
+ * @key: The key to lookup.
+ *
+ * Checks to see if @bson contains a field named @key.
+ *
+ * This function is case-sensitive.
+ *
+ * Returns: TRUE if @key exists in @bson; otherwise FALSE.
+ */
+bson_bool_t
+bson_has_field (const bson_t *bson,
+                const char   *key);
+
+
+/**
  * bson_compare:
  * @bson: A bson_t.
  * @other: A bson_t.

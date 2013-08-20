@@ -1504,6 +1504,19 @@ bson_count_keys (const bson_t *bson)
 }
 
 
+bson_bool_t
+bson_has_field (const bson_t *bson,
+                const char   *key)
+{
+   bson_iter_t iter;
+
+   bson_return_val_if_fail(bson, FALSE);
+   bson_return_val_if_fail(key, FALSE);
+
+   return bson_iter_init_find(&iter, bson, key);
+}
+
+
 int
 bson_compare (const bson_t *bson,
               const bson_t *other)
