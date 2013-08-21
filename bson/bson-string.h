@@ -74,7 +74,8 @@ bson_strdup_printf (const char *format,
 
 char *
 bson_strdupv_printf (const char *format,
-                     va_list     args);
+                     va_list     args)
+   BSON_GNUC_PRINTF(1, 0);
 
 
 char *
