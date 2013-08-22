@@ -31,9 +31,6 @@ bson_set_error (bson_error_t  *error,
                 ...)
 {
    va_list args;
-   char *buf;
-   int len = 32;
-   int n;
 
    if (error) {
       error->domain = domain;
