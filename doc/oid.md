@@ -18,8 +18,8 @@ The last 3 bytes contain a monotonically increasing counter in big-endian format
 ## Comparing
 
 The typical way to sort in C is using `qsort()`.
-Therefore, Libbson provides a qsort() compatible callback function named `bson_oid_compare()`.
-It returns less than 1, greater than 1, or 0 depending on the equality of the two `bson_oid_t` structures.
+Therefore, Libbson provides a `qsort()` compatible callback function named `bson_oid_compare()`.
+It returns `less than 1`, `greater than 1`, or `0` depending on the equality of two `bson_oid_t` structures.
 
 If you simply want to compare two `bson_oid_t` structures for equality, use `bson_oid_equal()`.
 
