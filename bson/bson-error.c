@@ -38,37 +38,11 @@ bson_set_error (bson_error_t  *error,
    if (error) {
       error->domain = domain;
       error->code = code;
-      error->message = NULL;
 
-      if (format) {
-         buf = bson_malloc0(len);
-         while (TRUE) {
-            va_start(args, format);
-            n = vsnprintf(buf, len, format, args);
-            va_end(args);
+      va_start(args, format);
+      vsnprintf(error->message, sizeof error->message, format, args);
+      va_end(args);
 
-            if (n > -1 && n < len) {
-               error->message = buf;
-               return;
-            }
-
-            if (n > -1) {
-               len = n + 1;
-            } else {
-               len *= 2;
-            }
-
-            buf = bson_realloc(buf, len);
-         }
-      }
-   }
-}
-
-
-void
-bson_error_destroy (bson_error_t *error)
-{
-   if (error) {
-      bson_free(error->message);
+      error->message[sizeof error->message - 1] = '\0';
    }
 }

@@ -420,8 +420,11 @@ typedef struct
 {
    bson_uint32_t  domain;
    bson_uint32_t  code;
-   char          *message;
+   char           message[504];
 } bson_error_t;
+
+
+BSON_STATIC_ASSERT(sizeof(bson_error_t) == 512);
 
 
 BSON_END_DECLS

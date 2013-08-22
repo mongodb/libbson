@@ -29,7 +29,6 @@ test_bson_error_basic (void)
    assert(!strcmp(error.message, "localhost 27017"));
    assert_cmpint(error.domain, ==, 123);
    assert_cmpint(error.code, ==, 456);
-   bson_error_destroy(&error);
 }
 
 

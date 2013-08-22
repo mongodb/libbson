@@ -27,10 +27,6 @@ BSON_BEGIN_DECLS
 
 
 void
-bson_error_destroy (bson_error_t *error);
-
-
-void
 bson_set_error (bson_error_t  *error,
                 bson_uint32_t  domain,
                 bson_uint32_t  code,
