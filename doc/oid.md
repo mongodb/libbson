@@ -5,15 +5,10 @@ It is a 96-bit identifier that includes various information about the system gen
 
 ## Composition
 
-The first 4 bytes of the `bson_oid_t` structure contain the UNIX timestamp (seconds since 1/1/1970 UTC) in big-endian format.
-They are in big-endian format so that the structure can be compared lexicographically using `memcmp()`.
-
-The following 3 bytes contain the first 3 bytes of the MD5 of the system hostname.
-
-After that, 2 bytes representing the systems process id (`pid_t` on most systems).
-
-The last 3 bytes contain a monotonically increasing counter in big-endian format.
-
+ * 4 bytes : The UNIX timestamp in big-endian format.
+ * 3 bytes : The first 3 bytes of `MD5(hostname)`.
+ * 2 bytes : The `pid_t` of the current process. Alternatively the task-id if configured.
+ * 3 bytes : A 24-bit monotonic counter incrementing from `rand()` in big-endian.
 
 ## Comparing
 
