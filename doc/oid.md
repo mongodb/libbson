@@ -26,7 +26,7 @@ If you simply want to compare two `bson_oid_t` structures for equality, use `bso
 ## Generating
 
 To generate a `bson_oid_t`, you may use the following.
-It is suggested that you reuse the `bson_context_t` instead of creating one each time you generate a `bson_oid_t`.
+I suggest that you reuse the `bson_context_t` instead of creating one each time you generate a `bson_oid_t`.
 
 ```c
 bson_context_t *ctx;
