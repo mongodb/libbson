@@ -344,6 +344,24 @@ test_bson_iter_overwrite_double (void)
 
 
 static void
+test_bson_iter_overwrite_bool (void)
+{
+   bson_iter_t iter;
+   bson_t b;
+
+   bson_init(&b);
+   assert(bson_append_bool(&b, "key", -1, TRUE));
+   assert(bson_iter_init_find(&iter, &b, "key"));
+   assert(BSON_ITER_HOLDS_BOOL(&iter));
+   bson_iter_overwrite_bool(&iter, FALSE);
+   assert(bson_iter_init_find(&iter, &b, "key"));
+   assert(BSON_ITER_HOLDS_BOOL(&iter));
+   assert_cmpint(bson_iter_bool(&iter), ==, FALSE);
+   bson_destroy(&b);
+}
+
+
+static void
 test_bson_iter_recurse (void)
 {
    bson_iter_t iter;
@@ -444,6 +462,7 @@ main (int   argc,
    run_test("/bson/iter/test_overwrite_int32", test_bson_iter_overwrite_int32);
    run_test("/bson/iter/test_overwrite_int64", test_bson_iter_overwrite_int64);
    run_test("/bson/iter/test_overwrite_double", test_bson_iter_overwrite_double);
+   run_test("/bson/iter/test_overwrite_bool", test_bson_iter_overwrite_bool);
    run_test("/bson/iter/recurse", test_bson_iter_recurse);
    run_test("/bson/iter/init_find_case", test_bson_iter_init_find_case);
    run_test("/bson/iter/find_descendant", test_bson_iter_find_descendant);

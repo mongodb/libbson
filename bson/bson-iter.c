@@ -1067,6 +1067,19 @@ bson_iter_visit_all (bson_iter_t          *iter,
 
 
 void
+bson_iter_overwrite_bool (bson_iter_t *iter,
+                          bson_bool_t  value)
+{
+   bson_return_if_fail(iter);
+   bson_return_if_fail(value == 1 || value == 0);
+
+   if (*iter->type == BSON_TYPE_BOOL) {
+      memcpy((void *)iter->data1, &value, 1);
+   }
+}
+
+
+void
 bson_iter_overwrite_int32 (bson_iter_t  *iter,
                            bson_int32_t  value)
 {

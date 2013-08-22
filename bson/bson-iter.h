@@ -764,7 +764,7 @@ bson_iter_recurse (const bson_iter_t *iter,
  * @value: A 32-bit integer.
  *
  * Overwrites the current %BSON_TYPE_INT32 field with a new value. This is
- * performed inline and therefore no keys are moved.
+ * performed in-place and therefore no keys are moved.
  */
 void
 bson_iter_overwrite_int32 (bson_iter_t  *iter,
@@ -777,7 +777,7 @@ bson_iter_overwrite_int32 (bson_iter_t  *iter,
  * @value: A 64-bit integer.
  *
  * Overwrites the current %BSON_TYPE_INT64 field with a new value. This is
- * performed inline and therefore no keys are moved.
+ * performed in-place and therefore no keys are moved.
  */
 void
 bson_iter_overwrite_int64 (bson_iter_t  *iter,
@@ -790,11 +790,27 @@ bson_iter_overwrite_int64 (bson_iter_t  *iter,
  * @value: A double.
  *
  * Overwrites the current %BSON_TYPE_DOUBLE field with a new value. This is
- * performed inline and therefore no keys are moved.
+ * performed in-place and therefore no keys are moved.
  */
 void
 bson_iter_overwrite_double (bson_iter_t  *iter,
                             double        value);
+
+
+/**
+ * bson_iter_overwrite_bool:
+ * @iter: A #bson_iter_t.
+ * @value: A boolean.
+ *
+ * Overwrites the current %BSON_TYPE_BOOLEAN field with a new value. This is
+ * performed in-place and therefore no keys are moved.
+ *
+ * Returns: None.
+ * Side effects: None.
+ */
+void
+bson_iter_overwrite_bool (bson_iter_t *iter,
+                          bson_bool_t  value);
 
 
 /**
@@ -807,7 +823,7 @@ bson_iter_overwrite_double (bson_iter_t  *iter,
  * field found a function in @visitor will be called. Typically you will
  * use this immediately after initializing a bson_iter_t.
  *
- *   bson_iter_init(&iter, b);
+ * bson_iter_init(&iter, b);
  *   bson_iter_visit_all(&iter, my_visitor, NULL);
  *
  * @iter will no longer be valid after this function has executed and will
