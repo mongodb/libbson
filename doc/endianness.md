@@ -6,6 +6,6 @@ Libbson, tries to handle the system endianness as well as be careful with alignm
 This means we use `memcpy()` where appropriate instead of dereferencing and expect the compiler intrinstics to optimize it to a dereference when possible.
 
 However, a few issues remain.
-No checks are in place for double values.
-Therefore, they are always encoded in the system format.
-This may be an issue, but warrants further investigation.
+No endianness checks are in place for `double`'s.
+Therefore, they are always encoded in the native format.
+This may be an issue on some platforms, and warrants further investigation.
