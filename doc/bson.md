@@ -60,3 +60,23 @@ overwrite_int32_key (bson_t *doc, const char *key, int value)
   }
 }
 ```
+
+## Validating BSON Documents
+
+Libbson comes with routines to help you validate a BSON document such as those received from unsafe peers like over the network.
+The efficient way to do this is to create a static `bson_t` structure to represent the network data.
+Creating this document will only succeed if the encoded BSON length matches the length provided by the caller.
+Aferwards, we can simply call the `bson_validate()` routine to check the validity.
+
+```c
+bson_t doc;
+size_t err_off;
+
+if (!bson_init_static(&doc, network_data, network_data_length)) {
+	fprintf(stderr, "Invalid length of bson document.\n");
+}
+
+if (!bson_validate(&doc, (BSON_VALIDATE_UTF8 | BSON_VALIDATE_UTF8_ALLOW_NULL), &err_off)) {
+	fprintf(stderr, "Invalid bson document at offset %u\n", (unsigned)err_off);
+}
+```
