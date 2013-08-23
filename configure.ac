@@ -2,8 +2,8 @@ dnl **************************************************************************
 dnl Versioning Macros
 dnl **************************************************************************
 m4_define([bson_major_version], [0])
-m4_define([bson_minor_version], [1])
-m4_define([bson_micro_version], [11])
+m4_define([bson_minor_version], [2])
+m4_define([bson_micro_version], [0])
 m4_define([bson_version],
           [bson_major_version.bson_minor_version.bson_micro_version])
 m4_define([bson_binary_age], [m4_eval(100 * bson_minor_version +

@@ -1,0 +1,21 @@
+Libbson 0.2.0
+=============
+
+This is the initial release of Libbson. It has not yet reached API and ABI
+maturity and is therefore subject to change without notice.  Developers are
+encouraged to start using Libbson as we journey on the road to 1.0, where ABI
+stability will be guaranteed.
+
+Libbson is Apache 2.0 licensed so that it can be embedded in a multitude of
+scenarios. This means that we try hard to not rely on external libraries.
+Therefore, Libbson contains useful routines to help in portability as well
+as BSON support.
+
+Libbson is the basis of a new MongoDB C driver that will follow shortly.
+
+Please see the doc/ directory for documentation on how to use Libbson. We
+would love for you to contribute to Libbson, whether that is code,
+documentation or packaging.
+
+You can contact Libbson's author, Christian Hergert at
+christian.hergert@10gen.com if you have questions about using Libbson.
