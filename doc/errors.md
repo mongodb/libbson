@@ -10,4 +10,4 @@ If you simply want to print an error message, use the `message` field of `bson_e
 
 You do not need to destroy this structure.
 For those who use `GLib` and `GError`, this may feel unnatural.
-However, since our error cases are non-generic, it is suitable to additional memory allocations.
+However, since our error cases are non-generic, it is preferred to additional memory allocations.
