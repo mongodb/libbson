@@ -904,8 +904,8 @@ bson_iter_visit_all (bson_iter_t          *iter,
          break;
       case BSON_TYPE_ARRAY:
          {
-            const bson_uint8_t *docbuf;
-            bson_uint32_t doclen;
+            const bson_uint8_t *docbuf = NULL;
+            bson_uint32_t doclen = 0;
             bson_t b;
 
             bson_iter_array(iter, &doclen, &docbuf);

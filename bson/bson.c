@@ -497,7 +497,7 @@ bson_append_binary (bson_t             *bson,
 {
    static const bson_uint8_t type = BSON_TYPE_BINARY;
    bson_uint32_t length_le;
-   bson_uint8_t subtype8;
+   bson_uint8_t subtype8 = 0;
 
    bson_return_val_if_fail(bson, FALSE);
    bson_return_val_if_fail(key, FALSE);
@@ -770,7 +770,7 @@ bson_append_iter (bson_t            *bson,
       break;
    case BSON_TYPE_UTF8:
       {
-         bson_uint32_t len;
+         bson_uint32_t len = 0;
          const char *str;
 
          str = bson_iter_utf8(iter, &len);
@@ -779,8 +779,8 @@ bson_append_iter (bson_t            *bson,
       break;
    case BSON_TYPE_DOCUMENT:
       {
-         const bson_uint8_t *buf;
-         bson_uint32_t len;
+         const bson_uint8_t *buf = NULL;
+         bson_uint32_t len = 0;
          bson_t doc;
 
          bson_iter_document(iter, &len, &buf);
@@ -792,8 +792,8 @@ bson_append_iter (bson_t            *bson,
       break;
    case BSON_TYPE_ARRAY:
       {
-         const bson_uint8_t *buf;
-         bson_uint32_t len;
+         const bson_uint8_t *buf = NULL;
+         bson_uint32_t len = 0;
          bson_t doc;
 
          bson_iter_array(iter, &len, &buf);
@@ -805,9 +805,9 @@ bson_append_iter (bson_t            *bson,
       break;
    case BSON_TYPE_BINARY:
       {
-         const bson_uint8_t *binary;
-         bson_subtype_t subtype;
-         bson_uint32_t len;
+         const bson_uint8_t *binary = NULL;
+         bson_subtype_t subtype = BSON_SUBTYPE_BINARY;
+         bson_uint32_t len = 0;
 
          bson_iter_binary(iter, &subtype, &len, &binary);
          ret = bson_append_binary(bson, key, key_length,
@@ -869,10 +869,10 @@ bson_append_iter (bson_t            *bson,
       break;
    case BSON_TYPE_CODEWSCOPE:
       {
-         const bson_uint8_t *scope;
-         bson_uint32_t scope_len;
-         bson_uint32_t len;
-         const char *javascript;
+         const bson_uint8_t *scope = NULL;
+         bson_uint32_t scope_len = 0;
+         bson_uint32_t len = 0;
+         const char *javascript = NULL;
          bson_t doc;
 
          javascript = bson_iter_codewscope(iter, &len, &scope_len, &scope);
