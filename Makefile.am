@@ -13,7 +13,7 @@ endif
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 DISTCHECK_CONFIGURE_FLAGS = --enable-silent-rules
 
-bsondocdir = ${datadir}/doc/libbson-@VERSION@
+bsondocdir = ${docdir}
 bsondoc_DATA =
 bsondoc_DATA += COPYING
 bsondoc_DATA += NEWS
