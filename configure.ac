@@ -86,28 +86,32 @@ AC_SUBST([CLOCK_LIB])
 dnl **************************************************************************
 dnl Check if pthread_mutex synchronisation needed
 dnl **************************************************************************
-PTHREAD_CFLAGS=""
-PTHREAD_LDFLAGS=""
-PTHREAD_LIB="-lpthread"
-AC_TRY_LINK([#include <stdint.h>],
-   [uint32_t seq = __sync_fetch_and_add_4(&seq, 1);],
-   ,
-   AC_DEFINE([WITH_OID32_PT], [],
-	     [pthread locking for bson_context_get_oid_seq32_threadsafe()])
-   PTHREAD_CFLAGS="-pthread"
-   PTHREAD_LDFLAGS="-pthread"
-)
-AC_TRY_LINK([#include <stdint.h>],
-   [uint64_t seq = __sync_fetch_and_add_8(&seq, 1);],
-   ,
-   AC_DEFINE([WITH_OID64_PT], [],
-	     [pthread locking for bson_context_get_oid_seq64_threadsafe()])
-   PTHREAD_CFLAGS="-pthread"
-   PTHREAD_LDFLAGS="-pthread"
-)
-CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
-LDFLAGS="$LDFLAGS $PTHREAD_LDFLAGS"
-AC_SUBST(PTHREAD_LIB)
+AX_PTHREAD([
+	PTHREAD_LIB="-lpthread"
+	AC_TRY_LINK([#include <stdint.h>],
+	   [uint32_t seq = __sync_fetch_and_add_4(&seq, 1);],
+	   ,
+	   AC_DEFINE([WITH_OID32_PT], [],
+		     [pthread locking for bson_context_get_oid_seq32_threadsafe()])
+	   PTHREAD_CFLAGS="-pthread"
+	   PTHREAD_LDFLAGS="-pthread"
+	)
+	AC_TRY_LINK([#include <stdint.h>],
+	   [uint64_t seq = __sync_fetch_and_add_8(&seq, 1);],
+	   ,
+	   AC_DEFINE([WITH_OID64_PT], [],
+		     [pthread locking for bson_context_get_oid_seq64_threadsafe()])
+	   PTHREAD_CFLAGS="-pthread"
+	   PTHREAD_LDFLAGS="-pthread"
+	)
+	CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+	LDFLAGS="$LDFLAGS $PTHREAD_LDFLAGS"
+	AC_SUBST(PTHREAD_LIB)
+	enable_pthreads=yes
+],[
+	enable_pthreads=no
+])
+AM_CONDITIONAL(HAVE_PTHREADS, test "x$enable_pthreads" = "xyes")
 
 
 dnl **************************************************************************
