@@ -1,60 +1,76 @@
-headerdir = $(prefix)/include/libbson-1.0
+headerdir = $(prefix)/include/libbson-@BSON_API_VERSION@
 header_DATA = $(INST_H_FILES)
 
-lib_LTLIBRARIES =
-lib_LTLIBRARIES += libbson-1.0.la
 
-INST_H_FILES =
-INST_H_FILES += $(top_srcdir)/bson/bson.h
-INST_H_FILES += $(top_srcdir)/bson/bson-context.h
-INST_H_FILES += $(top_srcdir)/bson/bson-clock.h
-INST_H_FILES += $(top_srcdir)/bson/bson-endian.h
-INST_H_FILES += $(top_srcdir)/bson/bson-error.h
-INST_H_FILES += $(top_srcdir)/bson/bson-iter.h
-INST_H_FILES += $(top_srcdir)/bson/bson-keys.h
-INST_H_FILES += $(top_srcdir)/bson/bson-macros.h
-INST_H_FILES += $(top_srcdir)/bson/bson-md5.h
-INST_H_FILES += $(top_srcdir)/bson/bson-memory.h
-INST_H_FILES += $(top_srcdir)/bson/bson-oid.h
-INST_H_FILES += $(top_srcdir)/bson/bson-reader.h
-INST_H_FILES += $(top_srcdir)/bson/bson-stdint.h
-INST_H_FILES += $(top_srcdir)/bson/bson-string.h
-INST_H_FILES += $(top_srcdir)/bson/bson-thread.h
-INST_H_FILES += $(top_srcdir)/bson/bson-types.h
-INST_H_FILES += $(top_srcdir)/bson/bson-utf8.h
-INST_H_FILES += $(top_srcdir)/bson/bson-version.h
-INST_H_FILES += $(top_srcdir)/bson/bson-writer.h
+lib_LTLIBRARIES = libbson-1.0.la
 
 
-NOINST_H_FILES =
-NOINST_H_FILES += $(top_srcdir)/bson/b64_ntop.h
-NOINST_H_FILES += $(top_srcdir)/bson/bson-context-private.h
-NOINST_H_FILES += $(top_srcdir)/bson/bson-private.h
-
-libbson_1_0_la_SOURCES =
-libbson_1_0_la_SOURCES += $(INST_H_FILES)
-libbson_1_0_la_SOURCES += $(NOINST_H_FILES)
-libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson.c
-libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson-context.c
-libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson-clock.c
-libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson-error.c
-libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson-iter.c
-libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson-keys.c
-libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson-md5.c
-libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson-memory.c
-libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson-oid.c
-libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson-reader.c
-libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson-string.c
-libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson-utf8.c
-libbson_1_0_la_SOURCES += $(top_srcdir)/bson/bson-writer.c
-
-libbson_1_0_la_CPPFLAGS =
-libbson_1_0_la_CPPFLAGS += -DBSON_COMPILATION
+INST_H_FILES = \
+	bson/bson.h \
+	bson/bson-context.h \
+	bson/bson-clock.h \
+	bson/bson-endian.h \
+	bson/bson-error.h \
+	bson/bson-iter.h \
+	bson/bson-keys.h \
+	bson/bson-macros.h \
+	bson/bson-md5.h \
+	bson/bson-memory.h \
+	bson/bson-oid.h \
+	bson/bson-reader.h \
+	bson/bson-stdint.h \
+	bson/bson-string.h \
+	bson/bson-thread.h \
+	bson/bson-types.h \
+	bson/bson-utf8.h \
+	bson/bson-version.h \
+	bson/bson-writer.h
 
 
-libbson_1_0_la_LIBADD =
-libbson_1_0_la_LIBADD += $(CLOCK_LIB)
-libbson_1_0_la_LIBADD += $(PTHREAD_LIB)
+NOINST_H_FILES = \
+	bson/b64_ntop.h \
+	bson/bson-context-private.h \
+	bson/bson-private.h
 
 
-DISTCLEANFILES += bson/bson-stdint.h
+libbson_1_0_la_SOURCES = \
+	$(INST_H_FILES) \
+	$(NOINST_H_FILES) \
+	bson/bson.c \
+	bson/bson-context.c \
+	bson/bson-clock.c \
+	bson/bson-error.c \
+	bson/bson-iter.c \
+	bson/bson-keys.c \
+	bson/bson-md5.c \
+	bson/bson-memory.c \
+	bson/bson-oid.c \
+	bson/bson-reader.c \
+	bson/bson-string.c \
+	bson/bson-utf8.c \
+	bson/bson-writer.c
+
+
+libbson_1_0_la_CPPFLAGS = \
+	-DBSON_COMPILATION
+
+
+libbson_1_0_la_LIBADD = \
+	$(CLOCK_LIB) \
+	$(PTHREAD_LIB)
+
+
+libbson_1_0_la_LDFLAGS = \
+	$(BSON_LT_LDFLAGS) \
+	-no-undefined \
+	-export-symbols $(top_srcdir)/bson/libbson.symbols \
+	-rpath $(libdir)
+
+
+DISTCLEANFILES += \
+	bson/bson-stdint.h
+
+
+EXTRA_DIST += \
+	bson/libbson.symbols \
+	bson/bson-version.h.in

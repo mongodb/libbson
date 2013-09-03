@@ -24,6 +24,11 @@ TEST_PROGS += test-bson-utf8
 TEST_PROGS += test-bson-writer
 
 
+if OS_LINUX
+TEST_PROGS += abicheck.sh
+endif
+
+
 EXTRA_DIST += $(top_srcdir)/tests/bson-tests.h
 EXTRA_DIST += $(top_srcdir)/tests/binary/dollarquery.bson
 EXTRA_DIST += $(top_srcdir)/tests/binary/dotkey.bson

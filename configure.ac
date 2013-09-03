@@ -1,15 +1,18 @@
 dnl **************************************************************************
 dnl Versioning Macros
 dnl **************************************************************************
+
 m4_define([bson_major_version], [0])
 m4_define([bson_minor_version], [2])
 m4_define([bson_micro_version], [1])
-m4_define([bson_version],
-          [bson_major_version.bson_minor_version.bson_micro_version])
-m4_define([bson_binary_age], [m4_eval(100 * bson_minor_version +
-           bson_micro_version)])
-m4_define([lt_current], [m4_eval(100 * bson_minor_version +
-           bson_micro_version - bson_interface_age)])
+m4_define([bson_version], [bson_major_version.bson_minor_version.bson_micro_version])
+
+# bump up by 1 for every micro release with no API changes, otherwise
+# set to 0. after release, bump up by 1
+m4_define([bson_interface_age], [0])
+m4_define([bson_binary_age], [m4_eval(100 * bson_minor_version + bson_micro_version)])
+
+m4_define([lt_current], [m4_eval(100 * bson_minor_version + bson_micro_version - bson_interface_age)])
 m4_define([lt_revision], [bson_interface_age])
 m4_define([lt_age], [m4_eval(bson_binary_age - bson_interface_age)])
 
@@ -48,6 +51,66 @@ AC_SUBST(BSON_MINOR_VERSION)
 AC_SUBST(BSON_MICRO_VERSION)
 AC_SUBST(BSON_API_VERSION)
 AC_SUBST(BSON_VERSION)
+
+BSON_LT_CURRENT=lt_current
+BSON_LT_REVISION=lt_revision
+BSON_LT_AGE=lt_age
+BSON_LT_VERSION="$BSON_LT_CURRENT:$BSON_LT_REVISION:$BSON_LT_AGE"
+BSON_LT_LDFLAGS="-version-info $BSON_LT_VERSION"
+
+
+dnl **************************************************************************
+dnl Platform Checks
+dnl **************************************************************************
+platform_linux=no
+platform_win32=no
+
+AC_CANONICAL_HOST
+AC_MSG_CHECKING([if building for some Win32 platform])
+AS_CASE([$host],
+	[*-*-mingw*|*-*-cygwin*],
+	[
+		BSON_LT_LDFLAGS="$BSON_LT_LDFLAGS -no-undefined"
+		platform_win32=yes
+	],
+
+	[*-*-linux*],
+	[
+		platform_linux=yes
+	],
+
+	[]
+)
+AC_MSG_RESULT([$platform_win32])
+
+AM_CONDITIONAL(OS_LINUX, [test "$platform_linux" = "yes"])
+AM_CONDITIONAL(OS_WIN32, [test "$platform_win32" = "yes"])
+
+# Check for -Bsymbolic-functions to avoid intra-library PLT jumps
+AC_ARG_ENABLE([Bsymbolic],
+              [AS_HELP_STRING([--disable-Bsymbolic],
+                              [Avoid linking with -Bsymbolic])],
+              [],
+              [
+                saved_LDFLAGS="${LDFLAGS}"
+                AC_MSG_CHECKING([for -Bsymbolic-functions linker flag])
+                LDFLAGS=-Wl,-Bsymbolic-functions
+                AC_TRY_LINK([], [int main (void) { return 0; }],
+                            [
+                              AC_MSG_RESULT([yes])
+                              enable_Bsymbolic=yes
+                            ],
+                            [
+                              AC_MSG_RESULT([no])
+                              enable_Bsymbolic=no
+                            ])
+                LDFLAGS="${saved_LDFLAGS}"
+              ])
+
+AS_IF([test "x$enable_Bsymbolic" = "xyes"], [BSON_LINK_FLAGS=-Wl[,]-Bsymbolic-functions])
+BSON_LT_LDFLAGS="$BSON_LT_LDFLAGS $BSON_LINK_FLAGS"
+
+AC_SUBST(BSON_LT_LDFLAGS)
 
 
 dnl **************************************************************************
