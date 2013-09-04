@@ -72,6 +72,15 @@
 #endif
 
 
+#if defined(_MSC_VER)
+#define BSON_ALIGNED_BEGIN(_N) __declspec(align(_N))
+#define BSON_ALIGNED_END(_N)
+#else
+#define BSON_ALIGNED_BEGIN(_N)
+#define BSON_ALIGNED_END(_N) __attribute__((aligned (_N)))
+#endif
+
+
 #if defined(_MSC_VER) || defined(_WIN32) || defined(_WIN64)
 #define HAVE_WINDOWS
 #endif
