@@ -1,27 +1,27 @@
-noinst_PROGRAMS =
-noinst_PROGRAMS += test-bson
-noinst_PROGRAMS += test-bson-clock
-noinst_PROGRAMS += test-bson-error
-noinst_PROGRAMS += test-bson-iter
-noinst_PROGRAMS += test-bson-json
-noinst_PROGRAMS += test-bson-oid
-noinst_PROGRAMS += test-bson-reader
-noinst_PROGRAMS += test-bson-string
-noinst_PROGRAMS += test-bson-utf8
-noinst_PROGRAMS += test-bson-writer
+noinst_PROGRAMS = \
+	test-bson \
+	test-bson-clock \
+	test-bson-error \
+	test-bson-iter \
+	test-bson-json \
+	test-bson-oid \
+	test-bson-reader \
+	test-bson-string \
+	test-bson-utf8 \
+	test-bson-writer
 
 
-TEST_PROGS =
-TEST_PROGS += test-bson
-TEST_PROGS += test-bson-clock
-TEST_PROGS += test-bson-error
-TEST_PROGS += test-bson-iter
-TEST_PROGS += test-bson-json
-TEST_PROGS += test-bson-oid
-TEST_PROGS += test-bson-reader
-TEST_PROGS += test-bson-string
-TEST_PROGS += test-bson-utf8
-TEST_PROGS += test-bson-writer
+TEST_PROGS = \
+	test-bson \
+	test-bson-clock \
+	test-bson-error \
+	test-bson-iter \
+	test-bson-json \
+	test-bson-oid \
+	test-bson-reader \
+	test-bson-string \
+	test-bson-utf8 \
+	test-bson-writer
 
 
 if OS_LINUX
@@ -29,59 +29,60 @@ TEST_PROGS += abicheck.sh
 endif
 
 
-EXTRA_DIST += $(top_srcdir)/tests/bson-tests.h
-EXTRA_DIST += $(top_srcdir)/tests/binary/dollarquery.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/dotkey.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/dotquery.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/eurokey.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/overflow1.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/overflow2.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/overflow3.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/overflow4.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/readergrow.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/stackoverflow.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/stream.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/stream_corrupt.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test10.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test11.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test12.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test13.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test14.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test15.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test16.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test17.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test18.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test19.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test1.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test20.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test21.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test22.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test23.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test24.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test25.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test26.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test27.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test28.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test29.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test2.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test30.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test31.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test32.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test33.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test34.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test35.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test36.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test37.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test38.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test39.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test3.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test4.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test5.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test6.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test7.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test8.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/test9.bson
-EXTRA_DIST += $(top_srcdir)/tests/binary/trailingnull.bson
+EXTRA_DIST += \
+	tests/bson-tests.h \
+	tests/binary/dollarquery.bson \
+	tests/binary/dotkey.bson \
+	tests/binary/dotquery.bson \
+	tests/binary/eurokey.bson \
+	tests/binary/overflow1.bson \
+	tests/binary/overflow2.bson \
+	tests/binary/overflow3.bson \
+	tests/binary/overflow4.bson \
+	tests/binary/readergrow.bson \
+	tests/binary/stackoverflow.bson \
+	tests/binary/stream.bson \
+	tests/binary/stream_corrupt.bson \
+	tests/binary/test10.bson \
+	tests/binary/test11.bson \
+	tests/binary/test12.bson \
+	tests/binary/test13.bson \
+	tests/binary/test14.bson \
+	tests/binary/test15.bson \
+	tests/binary/test16.bson \
+	tests/binary/test17.bson \
+	tests/binary/test18.bson \
+	tests/binary/test19.bson \
+	tests/binary/test1.bson \
+	tests/binary/test20.bson \
+	tests/binary/test21.bson \
+	tests/binary/test22.bson \
+	tests/binary/test23.bson \
+	tests/binary/test24.bson \
+	tests/binary/test25.bson \
+	tests/binary/test26.bson \
+	tests/binary/test27.bson \
+	tests/binary/test28.bson \
+	tests/binary/test29.bson \
+	tests/binary/test2.bson \
+	tests/binary/test30.bson \
+	tests/binary/test31.bson \
+	tests/binary/test32.bson \
+	tests/binary/test33.bson \
+	tests/binary/test34.bson \
+	tests/binary/test35.bson \
+	tests/binary/test36.bson \
+	tests/binary/test37.bson \
+	tests/binary/test38.bson \
+	tests/binary/test39.bson \
+	tests/binary/test3.bson \
+	tests/binary/test4.bson \
+	tests/binary/test5.bson \
+	tests/binary/test6.bson \
+	tests/binary/test7.bson \
+	tests/binary/test8.bson \
+	tests/binary/test9.bson \
+	tests/binary/trailingnull.bson
 
 
 test_bson_SOURCES = $(top_srcdir)/tests/test-bson.c
