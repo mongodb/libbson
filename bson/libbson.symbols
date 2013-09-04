@@ -79,6 +79,7 @@ bson_iter_type
 bson_iter_utf8
 bson_iter_visit_all
 bson_malloc0
+bson_memalign0
 bson_new
 bson_new_from_data
 bson_oid_compare

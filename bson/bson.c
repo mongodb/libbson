@@ -1279,7 +1279,7 @@ bson_new (void)
    bson_impl_inline_t *impl;
    bson_t *bson;
 
-   bson = bson_malloc0(sizeof *bson);
+   bson = bson_memalign0(128, sizeof *bson);
 
    impl = (bson_impl_inline_t *)bson;
    impl->flags = BSON_FLAG_INLINE;
@@ -1299,7 +1299,7 @@ bson_sized_new (size_t size)
 
    bson_return_val_if_fail(size <= INT32_MAX, NULL);
 
-   b = bson_malloc0(sizeof *b);
+   b = bson_memalign0(128, sizeof *b);
    impl_a = (bson_impl_alloc_t *)b;
    impl_i = (bson_impl_inline_t *)b;
 

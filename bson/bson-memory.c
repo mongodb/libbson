@@ -15,6 +15,7 @@
  */
 
 
+#include <malloc.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -29,6 +30,22 @@ bson_malloc0 (size_t num_bytes)
    if (!(mem = calloc(1, num_bytes))) {
       abort();
    }
+
+   return mem;
+}
+
+
+void *
+bson_memalign0 (size_t alignment,
+                size_t size)
+{
+   void *mem;
+
+   if (!(mem = memalign(alignment, size))) {
+      abort();
+   }
+
+   memset(mem, 0, size);
 
    return mem;
 }
