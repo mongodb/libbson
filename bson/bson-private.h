@@ -38,17 +38,20 @@ typedef enum
 } bson_flags_t;
 
 
+BSON_ALIGNED_BEGIN(128)
 typedef struct
 {
    bson_flags_t   flags;
    bson_uint32_t  len;
    bson_uint8_t   data[120];
-} bson_impl_inline_t;
+} bson_impl_inline_t
+BSON_ALIGNED_END(128);
 
 
 BSON_STATIC_ASSERT(sizeof(bson_impl_inline_t) == 128);
 
 
+BSON_ALIGNED_BEGIN(128)
 typedef struct
 {
    bson_flags_t        flags;    /* flags describing the bson_t */
@@ -60,7 +63,8 @@ typedef struct
    bson_uint8_t       *alloc;    /* buffer that we own. */
    size_t              alloclen; /* length of buffer that we own. */
    bson_realloc_func   realloc;  /* our realloc implementation */
-} bson_impl_alloc_t;
+} bson_impl_alloc_t
+BSON_ALIGNED_END(128);
 
 
 BSON_STATIC_ASSERT(sizeof(bson_impl_alloc_t) <= 128);
