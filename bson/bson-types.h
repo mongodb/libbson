@@ -267,14 +267,13 @@ typedef struct
  * memory allocations under certain circumstances such as reading from an
  * incoming mongo packet.
  */
+BSON_ALIGNED_BEGIN(128)
 typedef struct
 {
-   bson_uint32_t  type;
-   char           padding[252];
-} bson_reader_t;
-
-
-BSON_STATIC_ASSERT(sizeof(bson_reader_t) == 256);
+   bson_uint32_t type;
+   /*< private >*/
+} bson_reader_t
+BSON_ALIGNED_END(128);
 
 
 /**

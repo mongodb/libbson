@@ -93,8 +93,8 @@ bson_oid_init_sequence
 bson_oid_is_valid
 bson_oid_to_string
 bson_reader_destroy
-bson_reader_init_from_data
-bson_reader_init_from_fd
+bson_reader_new_from_data
+bson_reader_new_from_fd
 bson_reader_read
 bson_reader_set_read_func
 bson_reader_tell

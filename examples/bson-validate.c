@@ -32,7 +32,7 @@ int
 main (int   argc,
       char *argv[])
 {
-   bson_reader_t reader;
+   bson_reader_t *reader;
    const bson_t *b;
    const char *filename;
    size_t offset;
@@ -68,12 +68,12 @@ main (int   argc,
       /*
        * Initialize a new reader for this file descriptor.
        */
-      bson_reader_init_from_fd(&reader, fd, TRUE);
+      reader = bson_reader_new_from_fd(fd, TRUE);
 
       /*
        * Convert each incoming document to JSON and print to stdout.
        */
-      while ((b = bson_reader_read(&reader, NULL))) {
+      while ((b = bson_reader_read(reader, NULL))) {
          docnum++;
          if (!bson_validate(b,
                             (BSON_VALIDATE_UTF8 |
@@ -91,7 +91,7 @@ main (int   argc,
       /*
        * Cleanup after our reader, which closes the file descriptor.
        */
-      bson_reader_destroy(&reader);
+      bson_reader_destroy(reader);
    }
 
    return 0;

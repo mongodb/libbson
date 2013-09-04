@@ -56,10 +56,6 @@ typedef struct
 } bson_reader_data_t;
 
 
-BSON_STATIC_ASSERT(sizeof(bson_reader_fd_t) <= sizeof(bson_reader_t));
-BSON_STATIC_ASSERT(sizeof(bson_reader_data_t) <= sizeof(bson_reader_t));
-
-
 static void
 bson_reader_fd_fill_buffer (bson_reader_fd_t *reader)
 {
@@ -108,22 +104,23 @@ bson_reader_fd_fill_buffer (bson_reader_fd_t *reader)
 }
 
 
-void
-bson_reader_init_from_fd (bson_reader_t *reader,
-                          int            fd,
-                          bson_bool_t    close_fd)
+bson_reader_t *
+bson_reader_new_from_fd (int         fd,
+                         bson_bool_t close_fd)
 {
-   bson_reader_fd_t *real = (bson_reader_fd_t *)reader;
+   bson_reader_fd_t *real;
 
-   memset(reader, 0, sizeof *reader);
+   real = bson_malloc0(sizeof *real);
    real->type = BSON_READER_FD;
    real->data = bson_malloc0(1024);
    real->fd = fd;
    real->len = 1024;
    real->offset = 0;
 
-   bson_reader_set_read_func(reader, read);
+   bson_reader_set_read_func((bson_reader_t *)real, read);
    bson_reader_fd_fill_buffer(real);
+
+   return (bson_reader_t *)real;
 }
 
 
@@ -212,19 +209,19 @@ bson_reader_fd_read (bson_reader_fd_t *reader,
 }
 
 
-void
-bson_reader_init_from_data (bson_reader_t      *reader,
-                            const bson_uint8_t *data,
-                            size_t              length)
+bson_reader_t *
+bson_reader_new_from_data (const bson_uint8_t *data,
+                           size_t              length)
 {
-   bson_reader_data_t *real = (bson_reader_data_t *)reader;
+   bson_reader_data_t *real;
 
-   bson_return_if_fail(real);
-
+   real = bson_malloc0(sizeof *real);
    real->type = BSON_READER_DATA;
    real->data = data;
    real->length = length;
    real->offset = 0;
+
+   return (bson_reader_t *)real;
 }
 
 
@@ -297,6 +294,8 @@ bson_reader_destroy (bson_reader_t *reader)
    }
 
    reader->type = 0;
+
+   bson_free(reader);
 }
 
 

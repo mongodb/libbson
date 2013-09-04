@@ -32,36 +32,38 @@ BSON_BEGIN_DECLS
 
 
 /**
- * bson_reader_init_from_fd:
- * @reader: A bson_reader_t
+ * bson_reader_new_from_fd:
  * @fd: A file-descriptor to read from.
  * @close_fd: If the file-descriptor should be closed when done.
  *
- * Initializes new bson_reader_t that will read BSON documents into bson_t
- * structures from an underlying file-descriptor.
+ * Allocates and initializes a new bson_reader_t that will read BSON documents
+ * into bson_t structures from an underlying file-descriptor.
  *
  * If you would like the reader to call close() on @fd in
  * bson_reader_destroy(), then specify TRUE for close_fd.
+ *
+ * Returns: (transfer full): A newly allocated bson_reader_t that should be
+ *   freed with bson_reader_destroy().
  */
-void
-bson_reader_init_from_fd (bson_reader_t *reader,
-                          int            fd,
-                          bson_bool_t    close_fd);
+bson_reader_t *
+bson_reader_new_from_fd (int         fd,
+                         bson_bool_t close_fd);
 
 
 /**
- * bson_reader_t:
- * @reader: A bson_reader_t.
+ * bson_reader_new_from_data:
  * @data: A buffer to read BSON documents from.
  * @length: The length of @data.
  *
- * Initializes bson_reader_t that will read BSON documents from a memory
- * buffer.
+ * Allocates and initializes a new bson_reader_t that will the memory
+ * provided as a stream of BSON documents.
+ *
+ * Returns: (transfer full): A newly allocated bson_reader_t that should be
+ *   freed with bson_reader_destroy().
  */
-void
-bson_reader_init_from_data (bson_reader_t      *reader,
-                            const bson_uint8_t *data,
-                            size_t              length);
+bson_reader_t *
+bson_reader_new_from_data (const bson_uint8_t *data,
+                           size_t              length);
 
 
 
