@@ -26,23 +26,21 @@
 BSON_BEGIN_DECLS
 
 
-typedef enum
-{
-   BSON_FLAG_NONE     = 0,
-   BSON_FLAG_INLINE   = 1 << 0,
-   BSON_FLAG_STATIC   = 1 << 1,
-   BSON_FLAG_RDONLY   = 1 << 2,
-   BSON_FLAG_CHILD    = 1 << 3,
-   BSON_FLAG_IN_CHILD = 1 << 4,
-   BSON_FLAG_NO_FREE  = 1 << 5,
-} bson_flags_t;
+typedef bson_uint64_t bson_flags_t;
 
+#define BSON_FLAG_NONE     0
+#define BSON_FLAG_INLINE   (1 << 0)
+#define BSON_FLAG_STATIC   (1 << 1)
+#define BSON_FLAG_RDONLY   (1 << 2)
+#define BSON_FLAG_CHILD    (1 << 3)
+#define BSON_FLAG_IN_CHILD (1 << 4)
+#define BSON_FLAG_NO_FREE  (1 << 5)
 
 typedef struct
 {
-   bson_flags_t   flags;
+   bson_flags_t  flags;
    bson_uint32_t  len;
-   bson_uint8_t   data[120];
+   bson_uint8_t   data[116];
 } bson_impl_inline_t;
 
 

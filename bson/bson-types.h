@@ -131,9 +131,9 @@ typedef struct _bson_context_t bson_context_t;
  */
 typedef struct
 {
-   bson_uint32_t flags;        /* Internal flags for the bson_t. */
+   bson_uint64_t flags;        /* Internal flags for the bson_t. */
    bson_uint32_t len;          /* Length of BSON data. */
-   bson_uint8_t  padding[120]; /* Padding for stack allocation. */
+   bson_uint8_t  padding[116]; /* Padding for stack allocation. */
 } bson_t;
 
 
@@ -269,8 +269,8 @@ typedef struct
  */
 typedef struct
 {
-   bson_uint32_t  type;
-   char           padding[252];
+   bson_uint64_t  type;
+   char           padding[248];
 } bson_reader_t;
 
 

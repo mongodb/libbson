@@ -23,12 +23,10 @@
 #include "bson-memory.h"
 
 
-typedef enum
-{
-   BSON_READER_FD = 1,
-   BSON_READER_DATA = 2,
-} bson_reader_type_t;
+typedef bson_uint64_t bson_reader_type_t;
 
+#define BSON_READER_FD   1
+#define BSON_READER_DATA 2
 
 typedef struct
 {
