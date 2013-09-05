@@ -444,6 +444,8 @@ test_bson_iter_as_bool (void)
    assert_cmpint(TRUE, ==, bson_iter_as_bool(&iter));
    bson_iter_next(&iter);
    assert_cmpint(FALSE, ==, bson_iter_as_bool(&iter));
+
+   bson_destroy(&b);
 }
 
 
