@@ -1287,7 +1287,7 @@ bson_new (void)
    bson_impl_inline_t *impl;
    bson_t *bson;
 
-   bson = bson_memalign0(128, sizeof *bson);
+   bson = bson_malloc0(sizeof *bson);
 
    impl = (bson_impl_inline_t *)bson;
    impl->flags = BSON_FLAG_INLINE;
