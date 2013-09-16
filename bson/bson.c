@@ -100,15 +100,15 @@ bson_impl_inline_grow (bson_impl_inline_t *impl,
    }
 
    if ((req = npow2(impl->len + size)) <= INT32_MAX) {
-      data = bson_malloc0(req);
+      data = bson_malloc(req);
       memcpy(data, impl->data, impl->len);
       alloc->flags &= ~BSON_FLAG_INLINE;
       alloc->parent = NULL;
       alloc->buf = &alloc->alloc;
       alloc->buflen = &alloc->alloclen;
+      alloc->offset = 0;
       alloc->alloc = data;
       alloc->alloclen = req;
-      alloc->offset = 0;
       alloc->realloc = bson_realloc;
       return TRUE;
    }
@@ -1241,11 +1241,13 @@ bson_init (bson_t *bson)
 
    bson_return_if_fail(bson);
 
-   memset(bson, 0, sizeof *bson);
-
    impl->flags = BSON_FLAG_INLINE | BSON_FLAG_STATIC;
    impl->len = 5;
    impl->data[0] = 5;
+   impl->data[1] = 0;
+   impl->data[2] = 0;
+   impl->data[3] = 0;
+   impl->data[4] = 0;
 }
 
 
@@ -1269,13 +1271,15 @@ bson_init_static (bson_t             *bson,
       return FALSE;
    }
 
-   memset(bson, 0, sizeof *bson);
    impl->flags = BSON_FLAG_STATIC | BSON_FLAG_RDONLY;
    impl->len = length;
+   impl->parent = NULL;
    impl->buf = &impl->alloc;
    impl->buflen = &impl->alloclen;
+   impl->offset = 0;
    impl->alloc = (bson_uint8_t *)data;
    impl->alloclen = length;
+   impl->realloc = NULL;
 
    return TRUE;
 }
@@ -1287,12 +1291,16 @@ bson_new (void)
    bson_impl_inline_t *impl;
    bson_t *bson;
 
-   bson = bson_malloc0(sizeof *bson);
+   bson = bson_malloc(sizeof *bson);
 
    impl = (bson_impl_inline_t *)bson;
    impl->flags = BSON_FLAG_INLINE;
    impl->len = 5;
    impl->data[0] = 5;
+   impl->data[1] = 0;
+   impl->data[2] = 0;
+   impl->data[3] = 0;
+   impl->data[4] = 0;
 
    return bson;
 }
@@ -1307,7 +1315,7 @@ bson_sized_new (size_t size)
 
    bson_return_val_if_fail(size <= INT32_MAX, NULL);
 
-   b = bson_memalign0(128, sizeof *b);
+   b = bson_malloc(sizeof *b);
    impl_a = (bson_impl_alloc_t *)b;
    impl_i = (bson_impl_inline_t *)b;
 
@@ -1317,11 +1325,17 @@ bson_sized_new (size_t size)
    } else {
       impl_a->flags = BSON_FLAG_NONE;
       impl_a->len = 5;
+      impl_a->parent = NULL;
       impl_a->buf = &impl_a->alloc;
       impl_a->buflen = &impl_a->alloclen;
+      impl_a->offset = 0;
       impl_a->alloclen = MAX(5, size);
-      impl_a->alloc = bson_malloc0(impl_a->alloclen);
+      impl_a->alloc = bson_malloc(impl_a->alloclen);
       impl_a->alloc[0] = 5;
+      impl_a->alloc[1] = 0;
+      impl_a->alloc[2] = 0;
+      impl_a->alloc[3] = 0;
+      impl_a->alloc[4] = 0;
       impl_a->realloc = bson_realloc;
    }
 
@@ -1394,7 +1408,7 @@ bson_copy_to (const bson_t *src,
    adst->buf = &adst->alloc;
    adst->buflen = &adst->alloclen;
    adst->offset = 0;
-   adst->alloc = bson_malloc0(len);
+   adst->alloc = bson_malloc(len);
    adst->alloclen = len;
    adst->realloc = bson_realloc;
    memcpy(adst->alloc, data, src->len);
