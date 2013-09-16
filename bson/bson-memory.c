@@ -23,6 +23,19 @@
 
 
 void *
+bson_malloc (size_t num_bytes)
+{
+   void *mem;
+
+   if (!(mem = malloc(num_bytes))) {
+      abort();
+   }
+
+   return mem;
+}
+
+
+void *
 bson_malloc0 (size_t num_bytes)
 {
    void *mem;
