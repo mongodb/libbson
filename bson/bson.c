@@ -164,7 +164,7 @@ bson_grow (bson_t        *bson,
 }
 
 
-static bson_uint8_t *
+static BSON_INLINE bson_uint8_t *
 bson_data (const bson_t *bson)
 {
    BSON_ASSERT(bson);
