@@ -264,13 +264,6 @@ bson_append_va (bson_t             *bson,
 
    bson_encode_length(bson);
    bson_data(bson)[bson->len - 1] = '\0';
-
-   while ((bson->flags & BSON_FLAG_CHILD) &&
-          (bson = ((bson_impl_alloc_t *)bson)->parent)) {
-      bson->len += n_bytes;
-      bson_data(bson)[bson->len - 1] = '\0';
-      bson_encode_length(bson);
-   }
 }
 
 
@@ -380,7 +373,6 @@ bson_append_bson_begin (bson_t      *bson,
     * buffers. This allows us to realloc directly from the child without
     * walking up to the parent bson_t.
     */
-   memset(child, 0, sizeof *child);
    achild->flags = (BSON_FLAG_CHILD |
                     BSON_FLAG_NO_FREE |
                     BSON_FLAG_STATIC);
@@ -405,7 +397,23 @@ bson_append_bson_end (bson_t *bson,
    bson_return_val_if_fail((bson->flags & BSON_FLAG_IN_CHILD), FALSE);
    bson_return_val_if_fail(!(child->flags & BSON_FLAG_IN_CHILD), FALSE);
 
+   /*
+    * Unmark the IN_CHILD flag.
+    */
    bson->flags &= ~BSON_FLAG_IN_CHILD;
+
+   /*
+    * Now that we are done building the sub-document, add the size to the
+    * parent, not including the default 5 byte empty document already added.
+    */
+   bson->len = (bson->len + child->len - 5);
+
+   /*
+    * Ensure we have a \0 byte at the end and proper length encoded at
+    * the beginning of the document.
+    */
+   bson_data(bson)[bson->len - 1] = '\0';
+   bson_encode_length(bson);
 
    return TRUE;
 }
