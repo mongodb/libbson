@@ -57,6 +57,7 @@ typedef struct
    bson_flags_t        flags;    /* flags describing the bson_t */
    bson_uint32_t       len;      /* length of bson document in bytes */
    bson_t             *parent;   /* parent bson if a child */
+   bson_uint32_t       depth;    /* Subdocument depth. */
    bson_uint8_t      **buf;      /* pointer to buffer pointer */
    size_t             *buflen;   /* pointer to buffer length */
    size_t              offset;   /* our offset inside *buf  */

@@ -94,6 +94,7 @@ bson_impl_inline_grow (bson_impl_inline_t *impl,
 
    BSON_ASSERT(impl);
    BSON_ASSERT(!(impl->flags & BSON_FLAG_RDONLY));
+   BSON_ASSERT(!(impl->flags & BSON_FLAG_CHILD));
 
    if ((impl->len + size) <= sizeof impl->data) {
       return TRUE;
@@ -104,6 +105,7 @@ bson_impl_inline_grow (bson_impl_inline_t *impl,
       memcpy(data, impl->data, impl->len);
       alloc->flags &= ~BSON_FLAG_INLINE;
       alloc->parent = NULL;
+      alloc->depth = 0;
       alloc->buf = &alloc->alloc;
       alloc->buflen = &alloc->alloclen;
       alloc->offset = 0;
@@ -121,25 +123,15 @@ static bson_bool_t
 bson_impl_alloc_grow (bson_impl_alloc_t *impl,
                       bson_uint32_t      size)
 {
-   bson_impl_alloc_t *tmp = impl;
    size_t req;
 
    BSON_ASSERT(impl);
 
    /*
-    * Determine how many bytes we need for this document in the buffer.
+    * Determine how many bytes we need for this document in the buffer
+    * including necessary trailing bytes for parent documents.
     */
-   req = impl->offset + impl->len + size;
-
-   /*
-    * Add enough bytes for trainling byte of each parent document. This
-    * could be optimized out with a "depth" parameter in the child
-    * document.
-    */
-   while ((tmp->flags & BSON_FLAG_CHILD) &&
-          (tmp = (bson_impl_alloc_t *)tmp->parent)) {
-      req++;
-   }
+   req = impl->offset + impl->len + size + impl->depth;
 
    if (req <= *impl->buflen) {
       return TRUE;
@@ -356,6 +348,11 @@ bson_append_bson_begin (bson_t      *bson,
                     BSON_FLAG_NO_FREE |
                     BSON_FLAG_STATIC);
    achild->parent = bson;
+   if ((bson->flags & BSON_FLAG_CHILD)) {
+      achild->depth = ((bson_impl_alloc_t *)bson)->depth + 1;
+   } else {
+      achild->depth = 1;
+   }
    achild->buf = aparent->buf;
    achild->buflen = aparent->buflen;
    achild->offset = aparent->offset + aparent->len - 1 - 5;
@@ -1278,6 +1275,7 @@ bson_init_static (bson_t             *bson,
    impl->flags = BSON_FLAG_STATIC | BSON_FLAG_RDONLY;
    impl->len = length;
    impl->parent = NULL;
+   impl->depth = 0;
    impl->buf = &impl->alloc;
    impl->buflen = &impl->alloclen;
    impl->offset = 0;
@@ -1330,6 +1328,7 @@ bson_sized_new (size_t size)
       impl_a->flags = BSON_FLAG_NONE;
       impl_a->len = 5;
       impl_a->parent = NULL;
+      impl_a->depth = 0;
       impl_a->buf = &impl_a->alloc;
       impl_a->buflen = &impl_a->alloclen;
       impl_a->offset = 0;
@@ -1409,6 +1408,7 @@ bson_copy_to (const bson_t *src,
    adst->flags = BSON_FLAG_STATIC;
    adst->len = src->len;
    adst->parent = NULL;
+   adst->depth = 0;
    adst->buf = &adst->alloc;
    adst->buflen = &adst->alloclen;
    adst->offset = 0;
