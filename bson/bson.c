@@ -1068,7 +1068,7 @@ bson_append_utf8 (bson_t     *bson,
    length_le = BSON_UINT32_TO_LE(length + 1);
 
    return bson_append(bson, 6,
-                      ( 1 + key_length + 1 + 4 + length + 1),
+                      (1 + key_length + 1 + 4 + length + 1),
                       1, &type,
                       key_length, key,
                       1, &gZero,
