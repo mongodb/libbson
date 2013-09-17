@@ -212,6 +212,7 @@ bson_append_va (bson_t             *bson,
 {
    const bson_uint8_t *data;
    bson_uint32_t data_len;
+   bson_uint8_t *buf;
 
    BSON_ASSERT(bson);
    BSON_ASSERT(!(bson->flags & BSON_FLAG_IN_CHILD));
@@ -225,10 +226,13 @@ bson_append_va (bson_t             *bson,
    data = first_data;
    data_len = first_len;
 
+   buf = bson_data(bson) + bson->len - 1;
+
    do {
       n_pairs--;
-      memcpy(bson_data(bson) + bson->len - 1, data, data_len);
+      memcpy(buf, data, data_len);
       bson->len += data_len;
+      buf += data_len;
       if (n_pairs) {
          data_len = va_arg(args, bson_uint32_t);
          data = va_arg(args, const bson_uint8_t *);
@@ -236,7 +240,7 @@ bson_append_va (bson_t             *bson,
    } while (n_pairs);
 
    bson_encode_length(bson);
-   bson_data(bson)[bson->len - 1] = '\0';
+   *buf = '\0';
 }
 
 
