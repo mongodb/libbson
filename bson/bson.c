@@ -1489,13 +1489,9 @@ bson_copy_to_excluding (const bson_t *src,
 void
 bson_destroy (bson_t *bson)
 {
-   const bson_uint32_t nofree = (BSON_FLAG_RDONLY |
-                                 BSON_FLAG_INLINE |
-                                 BSON_FLAG_NO_FREE);
-
    BSON_ASSERT(bson);
 
-   if (!(bson->flags & nofree)) {
+   if (!(bson->flags & (BSON_FLAG_RDONLY | BSON_FLAG_INLINE | BSON_FLAG_NO_FREE))) {
       bson_free(*((bson_impl_alloc_t *)bson)->buf);
    }
    if (!(bson->flags & BSON_FLAG_STATIC)) {
