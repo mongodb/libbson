@@ -1047,7 +1047,6 @@ bson_append_utf8 (bson_t     *bson,
                   const char *value,
                   int         length)
 {
-   static const bson_uint8_t zero = 0;
    static const bson_uint8_t type = BSON_TYPE_UTF8;
    bson_uint32_t length_le;
 
@@ -1075,7 +1074,7 @@ bson_append_utf8 (bson_t     *bson,
                       1, &gZero,
                       4, &length_le,
                       length, value,
-                      1, &zero);
+                      1, &gZero);
 }
 
 
