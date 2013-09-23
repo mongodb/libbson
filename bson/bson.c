@@ -61,29 +61,6 @@ bson_as_json_visit_document (const bson_iter_t *iter,
 static const bson_uint8_t gZero;
 
 
-/**
- * npow2:
- * @v: A 32-bit unsigned integer of requested bytes.
- *
- * Determines the next larger power of two for the value of @v.
- *
- * Returns: The next power of 2 from @v.
- */
-static BSON_INLINE bson_uint32_t
-npow2 (bson_uint32_t v)
-{
-   v--;
-   v |= v >> 1;
-   v |= v >> 2;
-   v |= v >> 4;
-   v |= v >> 8;
-   v |= v >> 16;
-   v++;
-
-   return v;
-}
-
-
 static bson_bool_t
 bson_impl_inline_grow (bson_impl_inline_t *impl,
                        bson_uint32_t       size)
@@ -100,7 +77,7 @@ bson_impl_inline_grow (bson_impl_inline_t *impl,
       return TRUE;
    }
 
-   if ((req = npow2(impl->len + size)) <= INT32_MAX) {
+   if ((req = bson_next_power_of_two(impl->len + size)) <= INT32_MAX) {
       data = bson_malloc(req);
       memcpy(data, impl->data, impl->len);
       alloc->flags &= ~BSON_FLAG_INLINE;
@@ -137,7 +114,7 @@ bson_impl_alloc_grow (bson_impl_alloc_t *impl,
       return TRUE;
    }
 
-   req = npow2(req);
+   req = bson_next_power_of_two(req);
 
    if (req <= INT32_MAX) {
       *impl->buf = impl->realloc(*impl->buf, req);
@@ -1405,7 +1382,7 @@ bson_copy_to (const bson_t *src,
    }
 
    data = bson_data(src);
-   len = npow2(src->len);
+   len = bson_next_power_of_two(src->len);
 
    adst = (bson_impl_alloc_t *)dst;
    adst->flags = BSON_FLAG_STATIC;

@@ -428,6 +428,32 @@ typedef struct
 BSON_STATIC_ASSERT(sizeof(bson_error_t) == 512);
 
 
+/**
+ * bson_next_power_of_two:
+ * @v: A 32-bit unsigned integer of required bytes.
+ *
+ * Determines the next larger power of two for the value of @v
+ * in a constant number of operations.
+ *
+ * It is up to the caller to guarantee this will not overflow.
+ *
+ * Returns: The next power of 2 from @v.
+ */
+static BSON_INLINE bson_uint32_t
+bson_next_power_of_two (bson_uint32_t v)
+{
+   v--;
+   v |= v >> 1;
+   v |= v >> 2;
+   v |= v >> 4;
+   v |= v >> 8;
+   v |= v >> 16;
+   v++;
+
+   return v;
+}
+
+
 BSON_END_DECLS
 
 
