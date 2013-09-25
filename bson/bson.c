@@ -144,8 +144,6 @@ bson_grow (bson_t        *bson,
 static BSON_INLINE bson_uint8_t *
 bson_data (const bson_t *bson)
 {
-   BSON_ASSERT(bson);
-
    if ((bson->flags & BSON_FLAG_INLINE)) {
       return ((bson_impl_inline_t *)bson)->data;
    } else {
