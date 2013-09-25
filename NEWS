@@ -1,3 +1,21 @@
+Libbson 0.2.2
+=============
+
+This release includes a few performance improvements and bug fixes.
+
+The bson_t structure is more efficient when growing allocated buffers.
+The use of memalign() was unnecessary for allocated bson_t structures
+and has therefore been removed. Performance sensitive allocations now
+use bson_malloc() instead of calloc() and initialize fields directly.
+Stack alignment of bson_t is now enforced through compiler intrinsics.
+
+The unit tests can now support running inside of valgrind to check for
+various memory leaks. Simply defing VALGRIND=valgrind when running
+`make test`.
+
+Enjoy libbson-0.2.2!
+
+
 Libbson 0.2.0
 =============
 
