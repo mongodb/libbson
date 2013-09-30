@@ -250,6 +250,9 @@ bson_reader_data_read (bson_reader_data_t *reader,
             return NULL;
          }
          reader->offset += blen;
+         if (reached_eof) {
+            *reached_eof = (reader->offset == reader->length);
+         }
          return &reader->inline_bson;
       }
    }
