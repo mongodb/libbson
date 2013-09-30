@@ -71,6 +71,20 @@ void
 bson_context_destroy (bson_context_t *context);
 
 
+/**
+ * bson_get_default:
+ *
+ * Fetches the default, thread-safe implementation of bson_context_t.
+ * If you need faster generation, it is recommended you create your
+ * own bson_context_t with bson_context_new().
+ *
+ * Returns: A shared instance to a bson_context_t. This should not
+ *    be modified or freed.
+ */
+bson_context_t *
+bson_context_get_default (void);
+
+
 BSON_END_DECLS
 
 

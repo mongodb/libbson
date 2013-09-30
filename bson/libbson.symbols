@@ -30,6 +30,7 @@ bson_as_json
 bson_compare
 bson_context_destroy
 bson_context_new
+bson_context_get_default
 bson_copy
 bson_copy_to
 bson_copy_to_excluding

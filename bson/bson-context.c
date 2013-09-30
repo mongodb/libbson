@@ -45,6 +45,9 @@
 #endif
 
 
+static bson_context_t *gContextDefault;
+
+
 #if defined(__linux__)
 static bson_uint16_t
 gettid (void)
@@ -250,4 +253,21 @@ bson_context_destroy (bson_context_t *context)
 #endif
    memset(context, 0, sizeof *context);
    bson_free(context);
+}
+
+
+static void
+bson_context_init_default (void)
+{
+   gContextDefault = bson_context_new((BSON_CONTEXT_THREAD_SAFE |
+                                       BSON_CONTEXT_DISABLE_PID_CACHE));
+}
+
+
+bson_context_t *
+bson_context_get_default (void)
+{
+   static pthread_once_t once = PTHREAD_ONCE_INIT;
+   pthread_once(&once, bson_context_init_default);
+   return gContextDefault;
 }
