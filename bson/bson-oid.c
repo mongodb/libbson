@@ -97,6 +97,10 @@ bson_oid_init_sequence (bson_oid_t     *oid,
 {
    bson_uint32_t now = time(NULL);
 
+   if (!context) {
+      context = bson_context_get_default();
+   }
+
    now = BSON_UINT32_TO_BE(now);
 
    memcpy(&oid->bytes[0], &now, 4);
@@ -111,7 +115,10 @@ bson_oid_init (bson_oid_t     *oid,
    bson_uint32_t now = time(NULL);
 
    bson_return_if_fail(oid);
-   bson_return_if_fail(context);
+
+   if (!context) {
+      context = bson_context_get_default();
+   }
 
    now = BSON_UINT32_TO_BE(now);
    memcpy(&oid->bytes[0], &now, 4);

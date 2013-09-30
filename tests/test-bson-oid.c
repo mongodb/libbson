@@ -154,6 +154,12 @@ test_bson_oid_init (void)
       bson_oid_copy(&oid2, &oid);
    }
    bson_context_destroy(context);
+
+   /*
+    * Test that the shared context works.
+    */
+   bson_oid_init(&oid, NULL);
+   BSON_ASSERT(bson_context_get_default());
 }
 
 

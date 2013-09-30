@@ -245,6 +245,8 @@ bson_context_new (bson_context_flags_t  flags)
 void
 bson_context_destroy (bson_context_t *context)
 {
+   bson_return_if_fail(context != gContextDefault);
+
 #if defined WITH_OID32_PT
    bson_mutex_destroy(&context->_m32);
 #endif
