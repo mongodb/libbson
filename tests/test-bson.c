@@ -1068,10 +1068,30 @@ test_bson_initializer (void)
 }
 
 
+static void
+init_rand (void)
+{
+   unsigned seed;
+   int fd;
+
+   fd = open("/dev/urandom", O_RDONLY);
+   if (sizeof seed != read(fd, &seed, sizeof seed)) {
+      fprintf(stderr, "Failed to read from /dev/urandom.\n");
+      abort();
+   }
+   close(fd);
+
+   fprintf(stderr, "srand(%u)\n", seed);
+   srand(seed);
+}
+
+
 int
 main (int   argc,
       char *argv[])
 {
+   init_rand();
+
    run_test("/bson/new", test_bson_new);
    run_test("/bson/init", test_bson_init);
    run_test("/bson/init_static", test_bson_init_static);
