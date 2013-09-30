@@ -15,7 +15,6 @@
  */
 
 
-#include <malloc.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -54,7 +53,8 @@ bson_memalign0 (size_t alignment,
 {
    void *mem;
 
-   if (!(mem = memalign(alignment, size))) {
+   if (0 != posix_memalign(&mem, alignment, size)) {
+      perror("posix_memalign() failure:");
       abort();
    }
 
