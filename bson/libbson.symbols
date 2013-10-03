@@ -111,6 +111,7 @@ bson_strdup_printf
 bson_strdupv_printf
 bson_string_append
 bson_string_append_c
+bson_string_append_printf
 bson_string_append_unichar
 bson_string_free
 bson_string_new

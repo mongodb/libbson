@@ -109,6 +109,25 @@ bson_string_append_unichar (bson_string_t  *string,
 }
 
 
+void
+bson_string_append_printf (bson_string_t *string,
+                           const char    *format,
+                           ...)
+{
+   va_list args;
+   char *ret;
+
+   bson_return_if_fail(string);
+   bson_return_if_fail(format);
+
+   va_start(args, format);
+   ret = bson_strdupv_printf(format, args);
+   va_end(args);
+   bson_string_append(string, ret);
+   bson_free(ret);
+}
+
+
 char *
 bson_strdup (const char *str)
 {

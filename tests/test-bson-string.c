@@ -98,6 +98,18 @@ test_bson_string_append_c (void)
 
 
 static void
+test_bson_string_append_printf (void)
+{
+   bson_string_t *str;
+
+   str = bson_string_new("abcd ");
+   bson_string_append_printf(str, "%d %d %d", 1, 2, 3);
+   BSON_ASSERT(!strcmp(str->str, "abcd 1 2 3"));
+   bson_string_free(str, TRUE);
+}
+
+
+static void
 test_bson_string_append_unichar (void)
 {
    static const char test1[] = {0xe2, 0x82, 0xac, 0};
@@ -153,6 +165,7 @@ main (int   argc,
    run_test("/bson/string/new", test_bson_string_new);
    run_test("/bson/string/append", test_bson_string_append);
    run_test("/bson/string/append_c", test_bson_string_append_c);
+   run_test("/bson/string/append_printf", test_bson_string_append_printf);
    run_test("/bson/string/append_unichar", test_bson_string_append_unichar);
    run_test("/bson/string/strdup", test_bson_strdup);
    run_test("/bson/string/strdup_printf", test_bson_strdup_printf);

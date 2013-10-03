@@ -62,6 +62,13 @@ bson_string_append_unichar (bson_string_t  *string,
                             bson_unichar_t  unichar);
 
 
+void
+bson_string_append_printf (bson_string_t *string,
+                           const char    *format,
+                           ...)
+   BSON_GNUC_PRINTF(2, 3);
+
+
 char *
 bson_strdup (const char *str);
 
