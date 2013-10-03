@@ -128,6 +128,20 @@ bson_string_append_printf (bson_string_t *string,
 }
 
 
+void
+bson_string_truncate (bson_string_t *string,
+                      bson_uint32_t  len)
+{
+   bson_return_if_fail(string);
+
+   if (len < string->len) {
+      string->str[len] = '\0';
+      string->len = len + 1;
+      string->str = bson_realloc(string->str, string->len);
+   }
+}
+
+
 char *
 bson_strdup (const char *str)
 {

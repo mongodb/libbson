@@ -115,6 +115,7 @@ bson_string_append_printf
 bson_string_append_unichar
 bson_string_free
 bson_string_new
+bson_string_truncate
 bson_strndup
 bson_uint32_to_string
 bson_utf8_escape_for_json

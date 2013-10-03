@@ -69,6 +69,11 @@ bson_string_append_printf (bson_string_t *string,
    BSON_GNUC_PRINTF(2, 3);
 
 
+void
+bson_string_truncate (bson_string_t *string,
+                      bson_uint32_t  len);
+
+
 char *
 bson_strdup (const char *str);
 

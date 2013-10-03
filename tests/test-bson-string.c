@@ -105,6 +105,8 @@ test_bson_string_append_printf (void)
    str = bson_string_new("abcd ");
    bson_string_append_printf(str, "%d %d %d", 1, 2, 3);
    BSON_ASSERT(!strcmp(str->str, "abcd 1 2 3"));
+   bson_string_truncate(str, 2);
+   BSON_ASSERT(!strcmp(str->str, "ab"));
    bson_string_free(str, TRUE);
 }
 
