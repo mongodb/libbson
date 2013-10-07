@@ -1250,6 +1250,10 @@ bson_init_static (bson_t             *bson,
       return FALSE;
    }
 
+   if (data[length - 1]) {
+      return FALSE;
+   }
+
    impl->flags = BSON_FLAG_STATIC | BSON_FLAG_RDONLY;
    impl->len = length;
    impl->parent = NULL;
@@ -1334,6 +1338,10 @@ bson_new_from_data (const bson_uint8_t *data,
    bson_return_val_if_fail(data, NULL);
 
    if (length < 5) {
+      return NULL;
+   }
+
+   if (data[length - 1]) {
       return NULL;
    }
 

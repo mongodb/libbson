@@ -170,8 +170,14 @@ test_bson_iter_fuzz (void)
          memcpy(&data[i], &r, 4);
       }
 
-      b = bson_new_from_data(data, len);
-      assert(b);
+      if (!(b = bson_new_from_data(data, len))) {
+         /*
+          * It could fail on buffer length or missing trailing null byte.
+          */
+         continue;
+      }
+
+      BSON_ASSERT(b);
 
       /*
        * TODO: Most of the following ignores the key. That should be fixed
