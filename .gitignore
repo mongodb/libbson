@@ -25,6 +25,7 @@ stamp-h1
 *.swp
 test-bson
 test-bson-clock
+test-bson-endian
 test-bson-error
 test-bson-iter
 test-bson-json

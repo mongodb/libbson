@@ -1,6 +1,7 @@
 noinst_PROGRAMS = \
 	test-bson \
 	test-bson-clock \
+	test-bson-endian \
 	test-bson-error \
 	test-bson-iter \
 	test-bson-json \
@@ -14,6 +15,7 @@ noinst_PROGRAMS = \
 TEST_PROGS = \
 	test-bson \
 	test-bson-clock \
+	test-bson-endian \
 	test-bson-error \
 	test-bson-iter \
 	test-bson-json \
@@ -93,6 +95,11 @@ test_bson_LDADD = libbson-1.0.la
 test_bson_clock_SOURCES = $(top_srcdir)/tests/test-bson-clock.c
 test_bson_clock_CPPFLAGS = -I$(top_srcdir) -DBSON_COMPILATION
 test_bson_clock_LDADD = libbson-1.0.la
+
+
+test_bson_endian_SOURCES = $(top_srcdir)/tests/test-endian.c
+test_bson_endian_CPPFLAGS = -I$(top_srcdir) -DBSON_COMPILATION
+test_bson_endian_LDADD = libbson-1.0.la
 
 
 test_bson_error_SOURCES = $(top_srcdir)/tests/test-bson-error.c
