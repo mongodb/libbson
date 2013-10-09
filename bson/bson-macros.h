@@ -27,6 +27,7 @@
 #include <assert.h>
 #include <stdio.h>
 
+#include "bson-config.h"
 #include "bson-endian.h"
 
 
@@ -173,6 +174,15 @@
    } while (0)
 #else
 #define bson_return_val_if_fail(test, val)
+#endif
+
+
+#if BSON_OS == 1
+#  define BSON_OS_UNIX
+#elif BSON_OS == 2
+#  define BSON_OS_WIN32
+#else
+#error Unknown operating system.
 #endif
 
 

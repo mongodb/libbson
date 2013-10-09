@@ -24,12 +24,8 @@
 #define BSON_ENDIAN_H
 
 
+#include "bson-config.h"
 #include "bson-stdint.h"
-
-
-#ifndef BSON_BYTE_ORDER
-#error BSON_BYTE_ORDER is not defined.
-#endif
 
 
 #define BSON_BIG_ENDIAN    4321

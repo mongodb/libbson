@@ -66,6 +66,8 @@ platform_linux=no
 platform_solaris=no
 platform_win32=no
 
+BSON_OS=1
+
 AC_CANONICAL_HOST
 AC_MSG_CHECKING([if building for some Win32 platform])
 AS_CASE([$host],
@@ -73,6 +75,7 @@ AS_CASE([$host],
 	[
 		BSON_LT_LDFLAGS="$BSON_LT_LDFLAGS -no-undefined"
 		platform_win32=yes
+		BSON_OS=2
 	],
 
 	[*-*-linux*],
@@ -93,6 +96,12 @@ AM_CONDITIONAL(OS_LINUX,   [test "$platform_linux" = "yes"])
 AM_CONDITIONAL(OS_SOLARIS, [test "$platform_solaris" = "yes"])
 AM_CONDITIONAL(OS_WIN32,   [test "$platform_win32" = "yes"])
 
+AC_SUBST([BSON_OS])
+
+
+dnl **************************************************************************
+dnl Symbolic Linking options
+dnl **************************************************************************
 # Check for -Bsymbolic-functions to avoid intra-library PLT jumps
 AC_ARG_ENABLE([Bsymbolic],
               [AS_HELP_STRING([--disable-Bsymbolic],
@@ -196,7 +205,7 @@ else
 	host_endianness="Little Endian"
 fi
 CPPFLAGS="$CPPFLAGS -DBSON_BYTE_ORDER=$BSON_BYTE_ORDER"
-AC_SUBST(BSON_BYTE_ORDER)
+AC_SUBST([BSON_BYTE_ORDER])
 
 
 dnl **************************************************************************
@@ -254,6 +263,7 @@ AC_CONFIG_FILES([
 	Makefile
 	libbson-1.0.pc
 	bson/bson-version.h
+	bson/bson-config.h
 ])
 AC_OUTPUT
 

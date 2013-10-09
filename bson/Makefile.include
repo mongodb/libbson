@@ -22,6 +22,7 @@ endif
 
 INST_H_FILES = \
 	bson/bson.h \
+	bson/bson-config.h \
 	bson/bson-context.h \
 	bson/bson-clock.h \
 	bson/bson-endian.h \
@@ -88,4 +89,5 @@ DISTCLEANFILES += \
 
 EXTRA_DIST += \
 	bson/libbson.symbols \
+	bson/bson-config.h.in \
 	bson/bson-version.h.in
