@@ -24,6 +24,9 @@
 #define BSON_ENDIAN_H
 
 
+#include "bson-stdint.h"
+
+
 #ifndef BSON_BYTE_ORDER
 #error BSON_BYTE_ORDER is not defined.
 #endif
@@ -33,81 +36,98 @@
 #define BSON_LITTLE_ENDIAN 1234
 
 
-#if defined(__linux__)
-#ifndef _BSD_SOURCE
-#define _BSD_SOURCE 1
-#include <endian.h>
-#undef _BSD_SOURCE
+static inline uint16_t
+__bson_uint16_swap_slow (uint16_t v)
+{
+   return ((v & 0xFF) << 8) | ((v & 0xFF00) >> 8);
+}
+
+
+static inline uint32_t
+__bson_uint32_swap_slow (uint32_t v)
+{
+   return (((v & 0xFF000000) >> 24) |
+           ((v & 0x00FF0000) >> 8)  |
+           ((v & 0x0000FF00) << 8)  |
+           ((v & 0x000000FF) << 24));
+}
+
+
+static inline uint64_t
+__bson_uint64_swap_slow (uint64_t v)
+{
+   return (((v & 0xFF00000000000000) >> 56) |
+           ((v & 0x00FF000000000000) >> 40) |
+           ((v & 0x0000FF0000000000) >> 24) |
+           ((v & 0x000000FF00000000) >> 8)  |
+           ((v & 0x00000000FF000000) << 8)  |
+           ((v & 0x0000000000FF0000) << 24) |
+           ((v & 0x000000000000FF00) << 40) |
+           ((v & 0x00000000000000FF) << 56));
+}
+
+
+/*
+ * TODO: Someone please take the time to add optimized swap functions
+ *       for other architectures if you would like them. I imagine
+ *       we need some intrinsics for clang at least.
+ */
+
+
+#if defined (__GNUC__) && (__GNUC__ >= 4)
+#  if __GNUC__ >= 4 && defined (__GNUC_MINOR__) && __GNUC_MINOR__ >= 3
+#    define BSON_UINT32_SWAP_LE_BE(v) __builtin_bswap32((uint32_t)v)
+#    define BSON_UINT64_SWAP_LE_BE(v) __builtin_bswap64((uint64_t)v)
+#  endif
+#  if __GNUC__ >= 4 && defined (__GNUC_MINOR__) && __GNUC_MINOR__ >= 8
+#    define BSON_UINT16_SWAP_LE_BE(v) __builtin_bswap16((uint32_t)v)
+#  endif
+#endif
+
+
+#ifndef BSON_UINT16_SWAP_LE_BE
+# define BSON_UINT16_SWAP_LE_BE(v) __bson_uint16_swap_slow(v)
+#endif
+
+
+#ifndef BSON_UINT32_SWAP_LE_BE
+# define BSON_UINT32_SWAP_LE_BE(v) __bson_uint32_swap_slow(v)
+#endif
+
+
+#ifndef BSON_UINT64_SWAP_LE_BE
+# define BSON_UINT64_SWAP_LE_BE(v) __bson_uint64_swap_slow(v)
+#endif
+
+
+#if BSON_BYTE_ORDER == BSON_LITTLE_ENDIAN
+#    define BSON_UINT16_FROM_LE(v)  ((uint16_t) v)
+#    define BSON_UINT16_TO_LE(v)    ((uint16_t) v)
+#    define BSON_UINT16_FROM_BE(v)  BSON_UINT16_SWAP_LE_BE(v)
+#    define BSON_UINT16_TO_BE(v)    BSON_UINT16_SWAP_LE_BE(v)
+#    define BSON_UINT32_FROM_LE(v)  ((uint32_t) v)
+#    define BSON_UINT32_TO_LE(v)    ((uint32_t) v)
+#    define BSON_UINT32_FROM_BE(v)  BSON_UINT32_SWAP_LE_BE(v)
+#    define BSON_UINT32_TO_BE(v)    BSON_UINT32_SWAP_LE_BE(v)
+#    define BSON_UINT64_FROM_LE(v)  ((uint64_t) v)
+#    define BSON_UINT64_TO_LE(v)    ((uint64_t) v)
+#    define BSON_UINT64_FROM_BE(v)  BSON_UINT64_SWAP_LE_BE(v)
+#    define BSON_UINT64_TO_BE(v)    BSON_UINT64_SWAP_LE_BE(v)
+#elif BSON_BYTE_ORDER == BSON_BIG_ENDIAN
+#    define BSON_UINT16_FROM_LE(v)  BSON_UINT16_SWAP_LE_BE(v)
+#    define BSON_UINT16_TO_LE(v)    BSON_UINT16_SWAP_LE_BE(v)
+#    define BSON_UINT16_FROM_BE(v)  ((uint16_t) v)
+#    define BSON_UINT16_TO_BE(v)    ((uint16_t) v)
+#    define BSON_UINT32_FROM_LE(v)  BSON_UINT32_SWAP_LE_BE(v)
+#    define BSON_UINT32_TO_LE(v)    BSON_UINT32_SWAP_LE_BE(v)
+#    define BSON_UINT32_FROM_BE(v)  ((uint32_t) v)
+#    define BSON_UINT32_TO_BE(v)    ((uint32_t) v)
+#    define BSON_UINT64_FROM_LE(v)  BSON_UINT64_SWAP_LE_BE(v)
+#    define BSON_UINT64_TO_LE(v)    BSON_UINT64_SWAP_LE_BE(v)
+#    define BSON_UINT64_FROM_BE(v)  ((uint64_t) v)
+#    define BSON_UINT64_TO_BE(v)    ((uint64_t) v)
 #else
-#include <endian.h>
-#endif /* _BSD_SOURCE */
-#endif /* __linux__ */
-
-
-#if defined(__FreeBSD__)
-#include <sys/endian.h>
-#endif /* __FreeBSD__ */
-
-
-
-#if defined(__linux__) || defined(__FreeBSD__)
-
-
-#define BSON_UINT16_FROM_LE(v) ((bson_uint16_t) le16toh(v))
-#define BSON_UINT16_TO_LE(v)   ((bson_uint16_t) le16toh(v))
-#define BSON_UINT16_FROM_BE(v) ((bson_uint16_t) be16toh(v))
-#define BSON_UINT16_TO_BE(v)   ((bson_uint16_t) be16toh(v))
-#define BSON_UINT32_FROM_LE(v) ((bson_uint32_t) le32toh(v))
-#define BSON_UINT32_TO_LE(v)   ((bson_uint32_t) htole32(v))
-#define BSON_UINT32_FROM_BE(v) ((bson_uint32_t) be32toh(v))
-#define BSON_UINT32_TO_BE(v)   ((bson_uint32_t) htobe32(v))
-#define BSON_UINT64_FROM_LE(v) ((bson_uint64_t) le64toh(v))
-#define BSON_UINT64_TO_LE(v)   ((bson_uint64_t) htole64(v))
-#define BSON_UINT64_FROM_BE(v) ((bson_uint64_t) be64toh(v))
-#define BSON_UINT64_TO_BE(v)   ((bson_uint64_t) htobe64(v))
-
-
-#elif defined(__APPLE__)
-
-
-#include <libkern/OSByteOrder.h>
-#define BSON_UINT16_FROM_LE(v) ((bson_uint16_t) OSSwapLittleToHostInt16((v)))
-#define BSON_UINT16_TO_LE(v)   ((bson_uint16_t) OSSwapHostToLittleInt16((v)))
-#define BSON_UINT16_FROM_BE(v) ((bson_uint16_t) OSSwapBigToHostInt16((v)))
-#define BSON_UINT16_TO_BE(v)   ((bson_uint16_t) OSSwapHostToBigInt16((v)))
-#define BSON_UINT32_FROM_LE(v) ((bson_uint32_t) OSSwapLittleToHostInt32((v)))
-#define BSON_UINT32_TO_LE(v)   ((bson_uint32_t) OSSwapHostToLittleInt32((v)))
-#define BSON_UINT32_FROM_BE(v) ((bson_uint32_t) OSSwapBigToHostInt32((v)))
-#define BSON_UINT32_TO_BE(v)   ((bson_uint32_t) OSSwapHostToBigInt32((v)))
-#define BSON_UINT64_FROM_LE(v) ((bson_uint64_t) OSSwapLittleToHostInt64((v)))
-#define BSON_UINT64_TO_LE(v)   ((bson_uint64_t) OSSwapHostToLittleInt64((v)))
-#define BSON_UINT64_FROM_BE(v) ((bson_uint64_t) OSSwapBigToHostInt64((v)))
-#define BSON_UINT64_TO_BE(v)   ((bson_uint64_t) OSSwapHostToBigInt64((v)))
-
-
-#elif defined(_WIN32) || defined(_WIN64)
-
-
-#define BSON_UINT16_FROM_LE(v) ((bson_uint16_t) (v))
-#define BSON_UINT16_TO_LE(v)   ((bson_uint16_t) (v))
-#define BSON_UINT16_FROM_BE(v) ((bson_uint16_t) _byteswap_ushort((v)))
-#define BSON_UINT16_TO_BE(v)   ((bson_uint16_t) _byteswap_ushort((v)))
-#define BSON_UINT32_FROM_LE(v) ((bson_uint32_t) (v))
-#define BSON_UINT32_TO_LE(v)   ((bson_uint32_t) (v))
-#define BSON_UINT32_FROM_BE(v) ((bson_uint32_t) _byteswap_ulong((v)))
-#define BSON_UINT32_TO_BE(v)   ((bson_uint32_t) _byteswap_ulong((v)))
-#define BSON_UINT64_FROM_LE(v) ((bson_uint64_t) (v))
-#define BSON_UINT64_TO_LE(v)   ((bson_uint64_t) (v))
-#define BSON_UINT64_FROM_BE(v) ((bson_uint64_t) _byteswap_uint64((v)))
-#define BSON_UINT64_TO_BE(v)   ((bson_uint64_t) _byteswap_uint64((v)))
-
-
-#else
-
-
-#error your platform is not yet supported.
-
-
+#error Unknown platform detected
 #endif
 
 
