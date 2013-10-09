@@ -5,6 +5,21 @@ header_DATA = $(INST_H_FILES)
 lib_LTLIBRARIES = libbson-1.0.la
 
 
+AM_CPPFLAGS =
+
+if OS_SOLARIS
+AM_CPPFLAGS += -DOS_SOLARIS
+endif
+
+if OS_LINUX
+AM_CPPFLAGS += -DOS_LINUX
+endif
+
+if OS_LINUX
+AM_CPPFLAGS += -DOS_WIN32
+endif
+
+
 INST_H_FILES = \
 	bson/bson.h \
 	bson/bson-context.h \

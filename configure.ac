@@ -63,6 +63,7 @@ dnl **************************************************************************
 dnl Platform Checks
 dnl **************************************************************************
 platform_linux=no
+platform_solaris=no
 platform_win32=no
 
 AC_CANONICAL_HOST
@@ -79,12 +80,18 @@ AS_CASE([$host],
 		platform_linux=yes
 	],
 
+	[*-*-solaris*],
+	[
+		platform_solaris=yes
+	],
+
 	[]
 )
 AC_MSG_RESULT([$platform_win32])
 
-AM_CONDITIONAL(OS_LINUX, [test "$platform_linux" = "yes"])
-AM_CONDITIONAL(OS_WIN32, [test "$platform_win32" = "yes"])
+AM_CONDITIONAL(OS_LINUX,   [test "$platform_linux" = "yes"])
+AM_CONDITIONAL(OS_SOLARIS, [test "$platform_solaris" = "yes"])
+AM_CONDITIONAL(OS_WIN32,   [test "$platform_win32" = "yes"])
 
 # Check for -Bsymbolic-functions to avoid intra-library PLT jumps
 AC_ARG_ENABLE([Bsymbolic],
