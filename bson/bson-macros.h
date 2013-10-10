@@ -82,16 +82,6 @@
 #endif
 
 
-#if defined(_MSC_VER) || defined(_WIN32) || defined(_WIN64)
-#define HAVE_WINDOWS
-#endif
-
-
-#if defined(__linux__) || defined(__FreeBSD__) || defined(__APPLE__)
-#define HAVE_PTHREADS
-#endif
-
-
 #define bson_str_empty(s)  (!s[0])
 #define bson_str_empty0(s) (!s || !s[0])
 
@@ -112,18 +102,27 @@
 
 
 #if defined(__GNUC__)
-#define BSON_GNUC_CONST __attribute__((const))
-#define BSON_GNUC_NULL_TERMINATED __attribute__((__sentinel__))
-#define BSON_GNUC_WARN_UNUSED_RESULT __attribute__((warn_unused_result))
+#  define BSON_GNUC_CONST __attribute__((const))
+#  define BSON_GNUC_WARN_UNUSED_RESULT __attribute__((warn_unused_result))
+#else
+# define BSON_GNUC_CONST
+# define BSON_GNUC_WARN_UNUSED_RESULT
+#endif
+
+
+#if defined(__GNUC__) && (__GNUC__ >= 4)
+#  define BSON_GNUC_NULL_TERMINATED __attribute__((sentinel))
+#else
+#  define BSON_GNUC_NULL_TERMINATED
 #endif
 
 
 #if defined(__GNUC__)
-#define BSON_LIKELY(x)    __builtin_expect (!!(x), 1)
-#define BSON_UNLIKELY(x)  __builtin_expect (!!(x), 0)
+#  define BSON_LIKELY(x)    __builtin_expect (!!(x), 1)
+#  define BSON_UNLIKELY(x)  __builtin_expect (!!(x), 0)
 #else
-#define BSON_LIKELY(v)   v
-#define BSON_UNLIKELY(v) v
+#  define BSON_LIKELY(v)   v
+#  define BSON_UNLIKELY(v) v
 #endif
 
 
