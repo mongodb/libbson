@@ -43,10 +43,10 @@ test_swap32 (void)
 static void
 test_swap64 (void)
 {
-   bson_uint64_t v = 0x0011223344556677;
+   bson_uint64_t v = 0x0011223344556677ULL;
 
-   BSON_ASSERT(BSON_UINT64_SWAP_LE_BE(v) == 0x7766554433221100);
-   BSON_ASSERT(__bson_uint64_swap_slow(v) == 0x7766554433221100);
+   BSON_ASSERT(BSON_UINT64_SWAP_LE_BE(v) == 0x7766554433221100ULL);
+   BSON_ASSERT(__bson_uint64_swap_slow(v) == 0x7766554433221100ULL);
 }
 
 

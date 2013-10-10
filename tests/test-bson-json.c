@@ -101,7 +101,7 @@ test_bson_as_json_int64 (void)
    char *str;
 
    b = bson_new();
-   assert(bson_append_int64(b, "foo", -1, 341234123412341234UL));
+   assert(bson_append_int64(b, "foo", -1, 341234123412341234ULL));
    str = bson_as_json(b, &len);
    assert(len == 30);
    assert(!strcmp("{ \"foo\" : 341234123412341234 }", str));

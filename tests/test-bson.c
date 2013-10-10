@@ -446,7 +446,7 @@ test_bson_append_int64 (void)
    bson_t *b2;
 
    b = bson_new();
-   assert(bson_append_int64(b, "a", -1, 100000000000000));
+   assert(bson_append_int64(b, "a", -1, 100000000000000ULL));
    b2 = get_bson("test34.bson");
    assert_bson_equal(b, b2);
    bson_destroy(b);
