@@ -120,8 +120,9 @@ test_bson_as_json_double (void)
    b = bson_new();
    assert(bson_append_double(b, "foo", -1, 123.456));
    str = bson_as_json(b, &len);
-   assert(len == 22);
-   assert(!strcmp("{ \"foo\" : 123.456000 }", str));
+   assert(len >= 19);
+   assert(!strncmp("{ \"foo\" : 123.456", str, 17));
+   assert(!strcmp(" }", str + len - 2));
    bson_free(str);
    bson_destroy(b);
 }
