@@ -42,24 +42,36 @@ __bson_uint16_swap_slow (uint16_t v)
 static inline uint32_t
 __bson_uint32_swap_slow (uint32_t v)
 {
-   return (((v & 0xFF000000) >> 24) |
-           ((v & 0x00FF0000) >> 8)  |
-           ((v & 0x0000FF00) << 8)  |
-           ((v & 0x000000FF) << 24));
+   uint32_t ret;
+   const char *src = (const char *)&v;
+   char *dst = (char *)&ret;
+
+   dst[0] = src[3];
+   dst[1] = src[2];
+   dst[2] = src[1];
+   dst[3] = src[0];
+
+   return ret;
 }
 
 
 static inline uint64_t
 __bson_uint64_swap_slow (uint64_t v)
 {
-   return (((v & 0xFF00000000000000UL) >> 56) |
-           ((v & 0x00FF000000000000UL) >> 40) |
-           ((v & 0x0000FF0000000000UL) >> 24) |
-           ((v & 0x000000FF00000000UL) >> 8)  |
-           ((v & 0x00000000FF000000UL) << 8)  |
-           ((v & 0x0000000000FF0000UL) << 24) |
-           ((v & 0x000000000000FF00UL) << 40) |
-           ((v & 0x00000000000000FFUL) << 56));
+   uint64_t ret;
+   const char *src = (const char *)&v;
+   char *dst = (char *)&ret;
+
+   dst[0] = src[7];
+   dst[1] = src[6];
+   dst[2] = src[5];
+   dst[3] = src[4];
+   dst[4] = src[3];
+   dst[5] = src[2];
+   dst[6] = src[1];
+   dst[7] = src[0];
+
+   return ret;
 }
 
 
