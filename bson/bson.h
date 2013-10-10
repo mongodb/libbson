@@ -126,6 +126,17 @@ bson_init (bson_t *b);
 
 
 /**
+ * bson_reinit:
+ * @b: (inout): A bson_t.
+ *
+ * Calls bson_destroy() on @b followed by bson_init(). This is useful as a
+ * short helper to rebuild documents.
+ */
+void
+bson_reinit (bson_t *b);
+
+
+/**
  * bson_new_from_data:
  * @data: A buffer containing a serialized bson document.
  * @length: The length of the document in bytes.

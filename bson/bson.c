@@ -1242,6 +1242,14 @@ bson_init (bson_t *bson)
 }
 
 
+void
+bson_reinit (bson_t *bson)
+{
+   bson_destroy(bson);
+   bson_init(bson);
+}
+
+
 bson_bool_t
 bson_init_static (bson_t             *bson,
                   const bson_uint8_t *data,
