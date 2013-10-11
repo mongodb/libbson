@@ -135,7 +135,7 @@ __bson_uint64_swap_slow (uint64_t v)
 #    define BSON_UINT64_FROM_BE(v)  ((uint64_t) v)
 #    define BSON_UINT64_TO_BE(v)    ((uint64_t) v)
 #else
-#error Unknown platform detected
+#error The endianness of build arch is unknown.
 #endif
 
 
