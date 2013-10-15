@@ -79,7 +79,19 @@ EXTRA_DIST += \
 	tests/binary/test39.bson \
 	tests/binary/test3.bson \
 	tests/binary/test4.bson \
+	tests/binary/test40.bson \
+	tests/binary/test41.bson \
+	tests/binary/test42.bson \
+	tests/binary/test43.bson \
+	tests/binary/test44.bson \
+	tests/binary/test45.bson \
+	tests/binary/test46.bson \
+	tests/binary/test47.bson \
+	tests/binary/test48.bson \
+	tests/binary/test49.bson \
 	tests/binary/test5.bson \
+	tests/binary/test50.bson \
+	tests/binary/test51.bson \
 	tests/binary/test6.bson \
 	tests/binary/test7.bson \
 	tests/binary/test8.bson \
