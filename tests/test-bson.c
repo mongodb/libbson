@@ -731,6 +731,27 @@ test_bson_validate (void)
    b = get_bson("overflow4.bson");
    assert(!bson_validate(b, BSON_VALIDATE_NONE, &offset));
    bson_destroy(b);
+
+#define ENSURE_FAILURE(file) \
+   b = get_bson(file); \
+   printf("%s\n", file); \
+   assert(!bson_validate(b, BSON_VALIDATE_NONE, &offset)); \
+   bson_destroy(b);
+
+   ENSURE_FAILURE("test40.bson");
+   ENSURE_FAILURE("test41.bson");
+   ENSURE_FAILURE("test42.bson");
+   ENSURE_FAILURE("test43.bson");
+   ENSURE_FAILURE("test44.bson");
+   ENSURE_FAILURE("test45.bson");
+   ENSURE_FAILURE("test46.bson");
+   ENSURE_FAILURE("test47.bson");
+   ENSURE_FAILURE("test48.bson");
+   ENSURE_FAILURE("test49.bson");
+   ENSURE_FAILURE("test50.bson");
+   ENSURE_FAILURE("test51.bson");
+
+#undef ENSURE_FAILURE
 }
 
 
