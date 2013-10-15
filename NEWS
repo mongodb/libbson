@@ -1,3 +1,33 @@
+Libbson 0.2.4
+=============
+
+This release includes some more performance improvements and bug fixes.
+
+It contains an important fix for dealing with invalid string lengths that could
+cause an integer overflow when checking to see if the string length fits within
+the end of the buffer.
+
+There is preliminary support for Solaris on x86_64 and SPARC.
+
+Generating OIDs is now simpler with the use of bson_context_get_default(). This
+function will return a thread-safe generic bson_context_t implementation.
+Alternatively, you may pass NULL to bson_oid_init() for the context and the
+default context is automatically used.
+
+The fuzz tests now use srand() with a 32-bit integer derived from /dev/urandom.
+
+Endianess conversions are now performed by __builtin_bswap*() functions when
+available with the GCC compiler.
+
+Endianness conversions for the double type are now properly handled on
+big-endian systems.
+
+bson_reinit() has been added to cleanup code that needs to destroy and then
+initialize a bson_t.
+
+Validation of Code with Scope fields was absent from bson_validate(). This is
+now supported.
+
 Libbson 0.2.2
 =============
 
