@@ -2089,6 +2089,26 @@ bson_iter_validate_before (const bson_iter_t *iter,
 
 
 static bson_bool_t
+bson_iter_validate_codewscope (const bson_iter_t *iter,
+                               const char        *key,
+                               size_t             v_code_len,
+                               const char        *v_code,
+                               const bson_t      *v_scope,
+                               void              *data)
+{
+   bson_validate_state_t *state = data;
+   size_t offset;
+
+   if (!bson_validate(v_scope, state->flags, &offset)) {
+      state->err_offset = iter->offset + offset;
+      return FALSE;
+   }
+
+   return TRUE;
+}
+
+
+static bson_bool_t
 bson_iter_validate_document (const bson_iter_t *iter,
                              const char        *key,
                              const bson_t      *v_document,
@@ -2101,6 +2121,7 @@ static const bson_visitor_t bson_validate_funcs = {
    .visit_utf8 = bson_iter_validate_utf8,
    .visit_document = bson_iter_validate_document,
    .visit_array = bson_iter_validate_document,
+   .visit_codewscope = bson_iter_validate_codewscope,
 };
 
 
