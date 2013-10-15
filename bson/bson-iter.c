@@ -261,12 +261,17 @@ fill_data_fields:
          iter->data2 = &data[o + 4];
          memcpy(&l, iter->data1, 4);
          l = BSON_UINT32_FROM_LE(l);
+         if (l > (b->len - (o + 4))) {
+            iter->err_offset = o;
+            goto mark_invalid;
+         }
+
          iter->next_offset = o + 4 + l;
 
          /*
           * Make sure the string length includes the NUL byte.
           */
-         if (BSON_UNLIKELY((l < 1) || (iter->next_offset >= iter->bson->len))) {
+         if (BSON_UNLIKELY((l == 0) || (iter->next_offset >= iter->bson->len))) {
             iter->err_offset = o;
             goto mark_invalid;
          }
