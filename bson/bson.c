@@ -650,12 +650,6 @@ bson_append_double (bson_t     *bson,
                     double      value)
 {
    static const bson_uint8_t type = BSON_TYPE_DOUBLE;
-#if BSON_BYTE_ORDER == BSON_BIG_ENDIAN
-   union {
-      bson_uint64_t v64;
-      double        vdouble;
-   } u;
-#endif
 
    bson_return_val_if_fail(bson, FALSE);
    bson_return_val_if_fail(key, FALSE);
@@ -665,9 +659,7 @@ bson_append_double (bson_t     *bson,
    }
 
 #if BSON_BYTE_ORDER == BSON_BIG_ENDIAN
-   u.vdouble = value;
-   u.v64 = BSON_UINT64_TO_LE(u.v64);
-   value = u.vdouble;
+   value = BSON_DOUBLE_TO_LE(value);
 #endif
 
    return bson_append(bson, 4,

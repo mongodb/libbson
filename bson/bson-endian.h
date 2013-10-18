@@ -75,6 +75,26 @@ __bson_uint64_swap_slow (uint64_t v)
 }
 
 
+static inline double
+__bson_double_swap_slow (double v)
+{
+   double ret;
+   const char *src = (const char *)&v;
+   char *dst = (char *)&ret;
+
+   dst[0] = src[7];
+   dst[1] = src[6];
+   dst[2] = src[5];
+   dst[3] = src[4];
+   dst[4] = src[3];
+   dst[5] = src[2];
+   dst[6] = src[1];
+   dst[7] = src[0];
+
+   return ret;
+}
+
+
 /*
  * TODO: Someone please take the time to add optimized swap functions
  *       for other architectures if you would like them. I imagine
@@ -121,6 +141,8 @@ __bson_uint64_swap_slow (uint64_t v)
 #    define BSON_UINT64_TO_LE(v)    ((uint64_t) v)
 #    define BSON_UINT64_FROM_BE(v)  BSON_UINT64_SWAP_LE_BE(v)
 #    define BSON_UINT64_TO_BE(v)    BSON_UINT64_SWAP_LE_BE(v)
+#    define BSON_DOUBLE_FROM_LE(v)  ((double) v)
+#    define BSON_DOUBLE_TO_LE(v)    ((double) v)
 #elif BSON_BYTE_ORDER == BSON_BIG_ENDIAN
 #    define BSON_UINT16_FROM_LE(v)  BSON_UINT16_SWAP_LE_BE(v)
 #    define BSON_UINT16_TO_LE(v)    BSON_UINT16_SWAP_LE_BE(v)
@@ -134,6 +156,8 @@ __bson_uint64_swap_slow (uint64_t v)
 #    define BSON_UINT64_TO_LE(v)    BSON_UINT64_SWAP_LE_BE(v)
 #    define BSON_UINT64_FROM_BE(v)  ((uint64_t) v)
 #    define BSON_UINT64_TO_BE(v)    ((uint64_t) v)
+#    define BSON_DOUBLE_FROM_LE(v)  (__bson_double_swap_slow(v))
+#    define BSON_DOUBLE_TO_LE(v)    (__bson_double_swap_slow(v))
 #else
 #error The endianness of build arch is unknown.
 #endif

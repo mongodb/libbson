@@ -278,7 +278,7 @@ bson_iter_double_unsafe (const bson_iter_t *iter)
 {
    double val;
    memcpy(&val, iter->data1, 8);
-   return val;
+   return BSON_DOUBLE_FROM_LE(val);
 }
 
 
