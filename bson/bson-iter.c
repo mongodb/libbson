@@ -685,7 +685,7 @@ bson_iter_codewscope (const bson_iter_t    *iter,
    if (*iter->type == BSON_TYPE_CODEWSCOPE) {
       if (length) {
          memcpy(&len, iter->data2, 4);
-         *length = BSON_UINT32_FROM_LE(len);
+         *length = BSON_UINT32_FROM_LE(len) - 1;
       }
       memcpy(&len, iter->data4, 4);
       *scope_len = BSON_UINT32_FROM_LE(len);

@@ -377,6 +377,12 @@ test_bson_append_code (void)
 static void
 test_bson_append_code_with_scope (void)
 {
+   const bson_uint8_t *scope_buf = NULL;
+   bson_uint32_t scopelen = 0;
+   bson_uint32_t len = 0;
+   bson_iter_t iter;
+   bson_bool_t r;
+   const char *code = NULL;
    bson_t *b;
    bson_t *b2;
    bson_t *scope;
@@ -387,9 +393,13 @@ test_bson_append_code_with_scope (void)
    assert(bson_append_code_with_scope(b, "code", -1, "var a = {};", scope));
    b2 = get_bson("test30.bson");
    assert_bson_equal(b, b2);
+   r = bson_iter_init_find(&iter, b, "code");
+   assert(r);
+   assert(BSON_ITER_HOLDS_CODE(&iter)); /* Not codewscope */
    bson_destroy(b);
    bson_destroy(b2);
    bson_destroy(scope);
+
 
 
    /* Test with non-empty scope */
@@ -399,6 +409,13 @@ test_bson_append_code_with_scope (void)
    assert(bson_append_code_with_scope(b, "code", -1, "var a = {};", scope));
    b2 = get_bson("test31.bson");
    assert_bson_equal(b, b2);
+   r = bson_iter_init_find(&iter, b, "code");
+   assert(r);
+   assert(BSON_ITER_HOLDS_CODEWSCOPE(&iter));
+   code = bson_iter_codewscope(&iter, &len, &scopelen, &scope_buf);
+   assert(len == 11);
+   assert(scopelen == scope->len);
+   assert(!strcmp(code, "var a = {};"));
    bson_destroy(b);
    bson_destroy(b2);
    bson_destroy(scope);
