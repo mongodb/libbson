@@ -132,7 +132,7 @@ AC_SUBST(BSON_LT_LDFLAGS)
 dnl **************************************************************************
 dnl Check for Required Headers
 dnl **************************************************************************
-AC_NEED_STDINT_H([bson/bson-stdint.h])
+AC_CREATE_STDINT_H([bson/bson-stdint.h])
 
 
 dnl **************************************************************************
@@ -160,6 +160,8 @@ AC_CHECK_FUNCS([clock_gettime], [CLOCK_LIB=],
 	       [AC_CHECK_LIB([rt], [clock_gettime], [CLOCK_LIB=-lrt],
 			     [CLOCK_LIB=])])
 AC_SUBST([CLOCK_LIB])
+
+AC_CHECK_FUNCS(posix_memalign memalign)
 
 
 dnl **************************************************************************

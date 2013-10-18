@@ -15,6 +15,10 @@
  */
 
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -53,10 +57,20 @@ bson_memalign0 (size_t alignment,
 {
    void *mem;
 
+#if HAVE_POSIX_MEMALIGN
    if (0 != posix_memalign(&mem, alignment, size)) {
       perror("posix_memalign() failure:");
       abort();
    }
+#elif HAVE_MEMALIGN
+   mem = memalign(alignment, size);
+   if (!mem) {
+      perror("memalign() failure:");
+      abort();
+   }
+#else
+   mem = bson_malloc(size);
+#endif
 
    memset(mem, 0, size);
 
