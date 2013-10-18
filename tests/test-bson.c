@@ -293,6 +293,22 @@ test_bson_append_binary (void)
 
 
 static void
+test_bson_append_binary_deprecated (void)
+{
+   const static bson_uint8_t binary[] = { '1', '2', '3', '4' };
+   bson_t *b;
+   bson_t *b2;
+
+   b = bson_new();
+   assert(bson_append_binary(b, "binary", -1, BSON_SUBTYPE_BINARY_DEPRECATED, binary, 4));
+   b2 = get_bson("binary_deprecated.bson");
+   assert_bson_equal(b, b2);
+   bson_destroy(b);
+   bson_destroy(b2);
+}
+
+
+static void
 test_bson_append_time_t (void)
 {
    bson_t *b;
@@ -1136,6 +1152,7 @@ main (int   argc,
    run_test("/bson/append_overflow", test_bson_append_overflow);
    run_test("/bson/append_array", test_bson_append_array);
    run_test("/bson/append_binary", test_bson_append_binary);
+   run_test("/bson/append_binary_deprecated", test_bson_append_binary_deprecated);
    run_test("/bson/append_bool", test_bson_append_bool);
    run_test("/bson/append_code", test_bson_append_code);
    run_test("/bson/append_code_with_scope", test_bson_append_code_with_scope);
