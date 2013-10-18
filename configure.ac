@@ -86,7 +86,6 @@ AS_CASE([$host],
 	[*-*-solaris*],
 	[
 		platform_solaris=yes
-		CFLAGS="$CFLAGS -DSOLARIS_PTHREADS"
 	],
 
 	[]
@@ -263,6 +262,34 @@ AS_CASE([$enable_debug],
 	],
 	[AC_MSG_ERROR([Unknown argument to --enable-debug])]
 )
+
+
+dnl **************************************************************************
+dnl Pthread workarounds
+dnl **************************************************************************
+
+# The following is borrowed from the guile configure script.
+#
+# On past versions of Solaris, believe 8 through 10 at least, you
+# had to write "pthread_once_t foo = { PTHREAD_ONCE_INIT };".
+# This is contrary to POSIX:
+# http://www.opengroup.org/onlinepubs/000095399/functions/pthread_once.html
+# Check here if this style is required.
+#
+# glibc (2.3.6 at least) works both with or without braces, so the
+# test checks whether it works without.
+#
+
+AC_SUBST(NEED_BRACES_ON_PTHREAD_ONCE_INIT, 0)
+AC_CACHE_CHECK([whether PTHREAD_ONCE_INIT needs braces],
+  bson_cv_need_braces_on_pthread_once_init,
+  [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <pthread.h>
+     pthread_once_t foo = PTHREAD_ONCE_INIT;]])],
+    [bson_cv_need_braces_on_pthread_once_init=no],
+    [bson_cv_need_braces_on_pthread_once_init=yes])])
+if test "$bson_cv_need_braces_on_pthread_once_init" = yes; then
+  CFLAGS="$CFLAGS -D_PTHREAD_ONCE_INIT_NEEDS_BRACES"
+fi
 
 
 dnl **************************************************************************

@@ -273,11 +273,7 @@ bson_context_get_default (void)
     * TODO: This should be done in our thread abstraction.
     */
 
-#ifdef SOLARIS_PTHREADS
-   /*
-    * How lovely of solaris (and I think Irix) to do this to posix
-    * macros. Ugh.
-    */
+#ifdef _PTHREAD_ONCE_INIT_NEEDS_BRACES
    static pthread_once_t once = {PTHREAD_ONCE_INIT};
 #else
    static pthread_once_t once = PTHREAD_ONCE_INIT;
