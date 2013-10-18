@@ -269,7 +269,21 @@ bson_context_init_default (void)
 bson_context_t *
 bson_context_get_default (void)
 {
+   /*
+    * TODO: This should be done in our thread abstraction.
+    */
+
+#ifdef SOLARIS_PTHREADS
+   /*
+    * How lovely of solaris (and I think Irix) to do this to posix
+    * macros. Ugh.
+    */
+   static pthread_once_t once = {PTHREAD_ONCE_INIT};
+#else
    static pthread_once_t once = PTHREAD_ONCE_INIT;
+#endif
+
    pthread_once(&once, bson_context_init_default);
+
    return gContextDefault;
 }

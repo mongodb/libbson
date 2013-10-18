@@ -86,6 +86,7 @@ AS_CASE([$host],
 	[*-*-solaris*],
 	[
 		platform_solaris=yes
+		CFLAGS="$CFLAGS -DSOLARIS_PTHREADS"
 	],
 
 	[]
