@@ -1121,6 +1121,7 @@ bson_iter_overwrite_double (bson_iter_t *iter,
    bson_return_if_fail(iter);
 
    if (*iter->type == BSON_TYPE_DOUBLE) {
+      value = BSON_DOUBLE_TO_LE(value);
       memcpy((void *)iter->data1, &value, 8);
    }
 }
