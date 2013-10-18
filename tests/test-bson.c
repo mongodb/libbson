@@ -933,20 +933,23 @@ test_bson_build_child_deep_1 (bson_t *b,
 static void
 test_bson_build_child_deep (void)
 {
-   bson_t b;
+   union {
+      bson_t b;
+      bson_impl_alloc_t a;
+   } u;
    int count = 0;
 
-   bson_init(&b);
-   assert((b.flags & BSON_FLAG_INLINE));
-   test_bson_build_child_deep_1(&b, &count);
-   assert(!(b.flags & BSON_FLAG_INLINE));
-   assert((b.flags & BSON_FLAG_STATIC));
-   assert(!(b.flags & BSON_FLAG_NO_FREE));
-   assert(!(b.flags & BSON_FLAG_RDONLY));
-   assert(bson_validate(&b, BSON_VALIDATE_NONE, NULL));
-   assert(((bson_impl_alloc_t *)&b)->alloclen == 1024);
-   assert_bson_equal_file(&b, "test39.bson");
-   bson_destroy(&b);
+   bson_init(&u.b);
+   assert((u.b.flags & BSON_FLAG_INLINE));
+   test_bson_build_child_deep_1(&u.b, &count);
+   assert(!(u.b.flags & BSON_FLAG_INLINE));
+   assert((u.b.flags & BSON_FLAG_STATIC));
+   assert(!(u.b.flags & BSON_FLAG_NO_FREE));
+   assert(!(u.b.flags & BSON_FLAG_RDONLY));
+   assert(bson_validate(&u.b, BSON_VALIDATE_NONE, NULL));
+   assert(((bson_impl_alloc_t *)&u.b)->alloclen == 1024);
+   assert_bson_equal_file(&u.b, "test39.bson");
+   bson_destroy(&u.b);
 }
 
 
@@ -972,15 +975,19 @@ test_bson_build_child_deep_no_begin_end_1 (bson_t *b,
 static void
 test_bson_build_child_deep_no_begin_end (void)
 {
-   bson_t b;
+   union {
+      bson_t b;
+      bson_impl_alloc_t a;
+   } u;
+     
    int count = 0;
 
-   bson_init(&b);
-   test_bson_build_child_deep_no_begin_end_1(&b, &count);
-   assert(bson_validate(&b, BSON_VALIDATE_NONE, NULL));
-   assert(((bson_impl_alloc_t *)&b)->alloclen == 1024);
-   assert_bson_equal_file(&b, "test39.bson");
-   bson_destroy(&b);
+   bson_init(&u.b);
+   test_bson_build_child_deep_no_begin_end_1(&u.b, &count);
+   assert(bson_validate(&u.b, BSON_VALIDATE_NONE, NULL));
+   assert(u.a.alloclen == 1024);
+   assert_bson_equal_file(&u.b, "test39.bson");
+   bson_destroy(&u.b);
 }
 
 
