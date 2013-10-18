@@ -456,17 +456,27 @@ bson_iter_binary (const bson_iter_t   *iter,
                   bson_uint32_t       *binary_len,
                   const bson_uint8_t **binary)
 {
+   bson_subtype_t backup;
+
    bson_return_if_fail(iter);
    bson_return_if_fail(!binary || binary_len);
 
    if (*iter->type == BSON_TYPE_BINARY) {
-      if (subtype) {
-         *subtype = (bson_subtype_t)*iter->data2;
+      if (! subtype) {
+         subtype = &backup;
       }
+
+     *subtype = (bson_subtype_t)*iter->data2;
+
       if (binary) {
          memcpy(binary_len, iter->data1, 4);
          *binary_len = BSON_UINT32_FROM_LE(*binary_len);
          *binary = iter->data3;
+
+         if (*subtype == BSON_SUBTYPE_BINARY_DEPRECATED) {
+             *binary_len -= sizeof(bson_int32_t);
+             *binary += sizeof(bson_int32_t);
+         }
       }
       return;
    }
