@@ -460,7 +460,7 @@ bson_append_binary (bson_t             *bson,
                     bson_uint32_t       length)
 {
    static const bson_uint8_t type = BSON_TYPE_BINARY;
-   bson_uint32_t length_le;
+   bson_uint32_t length_le, deprecated_length_le;
    bson_uint8_t subtype8 = 0;
 
    bson_return_val_if_fail(bson, FALSE);
@@ -471,17 +471,33 @@ bson_append_binary (bson_t             *bson,
       key_length = strlen(key);
    }
 
-   length_le = BSON_UINT32_TO_LE(length);
    subtype8 = subtype;
 
-   return bson_append(bson, 6,
-                      (1 + key_length + 1 + 4 + 1 + length),
-                      1, &type,
-                      key_length, key,
-                      1, &gZero,
-                      4, &length_le,
-                      1, &subtype8,
-                      length, binary);
+   if (subtype == BSON_SUBTYPE_BINARY_DEPRECATED) {
+       length_le = BSON_UINT32_TO_LE(length + 4);
+       deprecated_length_le = BSON_UINT32_TO_LE(length);
+
+       return bson_append(bson, 7,
+                          (1 + key_length + 1 + 4 + 1 + 4 + length),
+                          1, &type,
+                          key_length, key,
+                          1, &gZero,
+                          4, &length_le,
+                          1, &subtype8,
+                          4, &deprecated_length_le,
+                          length, binary);
+   } else {
+       length_le = BSON_UINT32_TO_LE(length);
+
+       return bson_append(bson, 6,
+                          (1 + key_length + 1 + 4 + 1 + length),
+                          1, &type,
+                          key_length, key,
+                          1, &gZero,
+                          4, &length_le,
+                          1, &subtype8,
+                          length, binary);
+   }
 }
 
 

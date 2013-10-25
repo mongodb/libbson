@@ -134,6 +134,28 @@ test_bson_iter_overflow (void)
 
 
 static void
+test_bson_iter_binary_deprecated (void)
+{
+   bson_subtype_t subtype;
+   bson_uint32_t binary_len;
+   const bson_uint8_t * binary;
+   bson_iter_t iter;
+   bson_t * b;
+
+   b = get_bson("tests/binary/binary_deprecated.bson");
+   assert(b);
+
+   assert(bson_iter_init(&iter, b));
+   assert(bson_iter_next(&iter));
+   bson_iter_binary(&iter, &subtype, &binary_len, &binary);
+   assert(binary_len == 4);
+   assert(memcmp(binary, "1234", 4) == 0);
+
+   bson_destroy(b);
+}
+
+
+static void
 test_bson_iter_trailing_null (void)
 {
    bson_iter_t iter;
@@ -475,6 +497,7 @@ main (int   argc,
    run_test("/bson/iter/init_find_case", test_bson_iter_init_find_case);
    run_test("/bson/iter/find_descendant", test_bson_iter_find_descendant);
    run_test("/bson/iter/as_bool", test_bson_iter_as_bool);
+   run_test("/bson/iter/binary_deprecated", test_bson_iter_binary_deprecated);
 
    return 0;
 }
