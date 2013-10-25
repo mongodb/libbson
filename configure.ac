@@ -219,49 +219,66 @@ AC_SUBST([BSON_BYTE_ORDER])
 dnl **************************************************************************
 dnl Enable extra debugging options
 dnl **************************************************************************
-m4_define([debug_default],
-	  [m4_if(m4_eval(bson_minor_version % 2), [1],
-	  [yes], [minimum])])
+
+m4_define([debug_default], [m4_if(m4_eval(bson_minor_version % 2), [1], [yes], [minimum])])
 AC_ARG_ENABLE([debug],
 	      [AS_HELP_STRING([--enable-debug=@<:@no/minimum/yes@:>@],
 	      		      [turn on debugging @<:@default=debug_default@:>@])],
 	      		      [],
-	      		      [enable_debug=debug_default])
+              [enable_debug=debug_default])
 AS_CASE([$enable_debug],
 	[yes], [
-		CFLAGS="$CFLAGS -Wall"
-		CFLAGS="$CFLAGS -Werror"
+	 	BSON_DEBUG_CFLAGS="-DBSON_ENABLE_DEBUG"
 	],
 	[minimum], [
-		CFLAGS="$CFLAGS -Wold-style-definition"
-		CFLAGS="$CFLAGS -Wdeclaration-after-statement"
-		CFLAGS="$CFLAGS -Wredundant-decls"
-		CFLAGS="$CFLAGS -Wmissing-noreturn"
-		CFLAGS="$CFLAGS -Wcast-align"
-		CFLAGS="$CFLAGS -Wwrite-strings"
-		CFLAGS="$CFLAGS -Winline"
-		CFLAGS="$CFLAGS -Wformat"
-		CFLAGS="$CFLAGS -Wformat-nonliteral"
-		CFLAGS="$CFLAGS -Wformat-security"
-		CFLAGS="$CFLAGS -Wswitch-enum"
-		CFLAGS="$CFLAGS -Wswitch-default"
-		CFLAGS="$CFLAGS -Winit-self"
-		CFLAGS="$CFLAGS -Wmissing-include-dirs"
-		CFLAGS="$CFLAGS -Wundef"
-		CFLAGS="$CFLAGS -Waggregate-return"
-		CFLAGS="$CFLAGS -Wmissing-format-attribute"
-		CFLAGS="$CFLAGS -Wnested-externs"
-		CFLAGS="$CFLAGS -Wshadow"
-		CFLAGS="$CFLAGS -Wreturn-type"
-		CFLAGS="$CFLAGS -Wunused-but-set-parameter"
-		CFLAGS="$CFLAGS -Wuninitialized"
+		BSON_DEBUG_CFLAGS="-DBSON_ENABLE_DEBUG -DBSON_DISABLE_ASSERT"
 	],
 	[no], [
-		CFLAGS="$CFLAGS -DBSON_DISABLE_ASSERT"
-		CFLAGS="$CFLAGS -DBSON_DISABLE_CHECKS"
+	 	BSON_DEBUG_CFLAGS="-DBSON_DISABLE_ASSERT -DBSON_DISABLE_CHECKS"
 	],
-	[AC_MSG_ERROR([Unknown argument to --enable-debug])]
+	[AC_MSG_ERROR([Unknown argument to --enable-debug])])
+AC_SUBST([BSON_DEBUG_CFLAGS])
+
+
+dnl **************************************************************************
+dnl Enable strict compiler flags
+dnl **************************************************************************
+
+# use strict compiler flags only on development releases
+m4_define([maintainer_flags_default], [m4_if(m4_eval(bson_minor_version % 2), [1], [yes], [no])])
+AC_ARG_ENABLE([maintainer-flags],
+              [AS_HELP_STRING([--enable-maintainer-flags=@<:@no/yes@:>@],
+                              [Use strict compiler flags @<:@default=]maintainer_flags_default[@:>@])],
+              [],
+              [enable_maintainer_flags=maintainer_flags_default])
+
+AS_IF([test "x$enable_maintainer_flags" = "xyes" && test "x$GCC" = "xyes"],
+      [AS_COMPILER_FLAGS([MAINTAINER_CFLAGS],
+                         ["-Wall
+                           -Waggregate-return
+                           -Wcast-align
+                           -Wdeclaration-after-statement
+                           -Wempty-body
+                           -Wformat
+                           -Wformat-nonliteral
+                           -Wformat-security
+                           -Winit-self
+                           -Winline
+                           -Wmissing-include-dirs
+                           -Wno-strict-aliasing
+                           -Wno-uninitialized
+		           -Wredundant-decls
+                           -Wreturn-type
+                           -Wshadow
+                           -Wswitch-default
+                           -Wswitch-enum
+                           -Wundef
+                           -Wunused-but-set-parameter
+                           -Wuninitialized
+                          "])]
 )
+MAINTAINER_CFLAGS="${MAINTAINER_CFLAGS#*  }"
+AC_SUBST([MAINTAINER_CFLAGS])
 
 
 dnl **************************************************************************
@@ -334,6 +351,7 @@ echo "  Prefix ....................: ${prefix}"
 echo "  Endianness ................: ${host_endianness}"
 echo "  Debug Level ...............: ${enable_debug}"
 echo "  CFLAGS ....................: ${CFLAGS}"
+echo "  Maintainer ................: ${enable_maintainer_flags}"
 echo ""
 echo "Experimental Bindings"
 echo ""

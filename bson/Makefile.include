@@ -68,7 +68,9 @@ libbson_1_0_la_SOURCES = \
 
 
 libbson_1_0_la_CPPFLAGS = \
-	-DBSON_COMPILATION
+	-DBSON_COMPILATION \
+	$(BSON_DEBUG_CFLAGS) \
+	$(MAINTAINER_CFLAGS)
 
 
 libbson_1_0_la_LIBADD = \
