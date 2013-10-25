@@ -462,7 +462,7 @@ bson_iter_binary (const bson_iter_t   *iter,
    bson_return_if_fail(!binary || binary_len);
 
    if (*iter->type == BSON_TYPE_BINARY) {
-      if (! subtype) {
+      if (!subtype) {
          subtype = &backup;
       }
 

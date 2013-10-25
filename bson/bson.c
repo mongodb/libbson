@@ -460,7 +460,8 @@ bson_append_binary (bson_t             *bson,
                     bson_uint32_t       length)
 {
    static const bson_uint8_t type = BSON_TYPE_BINARY;
-   bson_uint32_t length_le, deprecated_length_le;
+   bson_uint32_t length_le;
+   bson_uint32_t deprecated_length_le;
    bson_uint8_t subtype8 = 0;
 
    bson_return_val_if_fail(bson, FALSE);
