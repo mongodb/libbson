@@ -25,24 +25,28 @@
 
 
 #include "bson-config.h"
-#include "bson-stdint.h"
+#include "bson-macros.h"
+#include "bson-types.h"
+
+
+BSON_BEGIN_DECLS
 
 
 #define BSON_BIG_ENDIAN    4321
 #define BSON_LITTLE_ENDIAN 1234
 
 
-static inline uint16_t
+static BSON_INLINE bson_uint16_t
 __bson_uint16_swap_slow (uint16_t v)
 {
    return ((v & 0xFF) << 8) | ((v & 0xFF00) >> 8);
 }
 
 
-static inline uint32_t
-__bson_uint32_swap_slow (uint32_t v)
+static BSON_INLINE bson_uint32_t
+__bson_uint32_swap_slow (bson_uint32_t v)
 {
-   uint32_t ret;
+   bson_uint32_t ret;
    const char *src = (const char *)&v;
    char *dst = (char *)&ret;
 
@@ -55,8 +59,8 @@ __bson_uint32_swap_slow (uint32_t v)
 }
 
 
-static inline uint64_t
-__bson_uint64_swap_slow (uint64_t v)
+static BSON_INLINE bson_uint64_t
+__bson_uint64_swap_slow (bson_uint64_t v)
 {
    uint64_t ret;
    const char *src = (const char *)&v;
@@ -75,7 +79,7 @@ __bson_uint64_swap_slow (uint64_t v)
 }
 
 
-static inline double
+static BSON_INLINE double
 __bson_double_swap_slow (double v)
 {
    double ret;
@@ -114,53 +118,56 @@ __bson_double_swap_slow (double v)
 
 
 #ifndef BSON_UINT16_SWAP_LE_BE
-# define BSON_UINT16_SWAP_LE_BE(v) __bson_uint16_swap_slow(v)
+#  define BSON_UINT16_SWAP_LE_BE(v) __bson_uint16_swap_slow(v)
 #endif
 
 
 #ifndef BSON_UINT32_SWAP_LE_BE
-# define BSON_UINT32_SWAP_LE_BE(v) __bson_uint32_swap_slow(v)
+#  define BSON_UINT32_SWAP_LE_BE(v) __bson_uint32_swap_slow(v)
 #endif
 
 
 #ifndef BSON_UINT64_SWAP_LE_BE
-# define BSON_UINT64_SWAP_LE_BE(v) __bson_uint64_swap_slow(v)
+#  define BSON_UINT64_SWAP_LE_BE(v) __bson_uint64_swap_slow(v)
 #endif
 
 
 #if BSON_BYTE_ORDER == BSON_LITTLE_ENDIAN
-#    define BSON_UINT16_FROM_LE(v)  ((uint16_t) v)
-#    define BSON_UINT16_TO_LE(v)    ((uint16_t) v)
-#    define BSON_UINT16_FROM_BE(v)  BSON_UINT16_SWAP_LE_BE(v)
-#    define BSON_UINT16_TO_BE(v)    BSON_UINT16_SWAP_LE_BE(v)
-#    define BSON_UINT32_FROM_LE(v)  ((uint32_t) v)
-#    define BSON_UINT32_TO_LE(v)    ((uint32_t) v)
-#    define BSON_UINT32_FROM_BE(v)  BSON_UINT32_SWAP_LE_BE(v)
-#    define BSON_UINT32_TO_BE(v)    BSON_UINT32_SWAP_LE_BE(v)
-#    define BSON_UINT64_FROM_LE(v)  ((uint64_t) v)
-#    define BSON_UINT64_TO_LE(v)    ((uint64_t) v)
-#    define BSON_UINT64_FROM_BE(v)  BSON_UINT64_SWAP_LE_BE(v)
-#    define BSON_UINT64_TO_BE(v)    BSON_UINT64_SWAP_LE_BE(v)
-#    define BSON_DOUBLE_FROM_LE(v)  ((double) v)
-#    define BSON_DOUBLE_TO_LE(v)    ((double) v)
+#  define BSON_UINT16_FROM_LE(v)  ((uint16_t) v)
+#  define BSON_UINT16_TO_LE(v)    ((uint16_t) v)
+#  define BSON_UINT16_FROM_BE(v)  BSON_UINT16_SWAP_LE_BE(v)
+#  define BSON_UINT16_TO_BE(v)    BSON_UINT16_SWAP_LE_BE(v)
+#  define BSON_UINT32_FROM_LE(v)  ((uint32_t) v)
+#  define BSON_UINT32_TO_LE(v)    ((uint32_t) v)
+#  define BSON_UINT32_FROM_BE(v)  BSON_UINT32_SWAP_LE_BE(v)
+#  define BSON_UINT32_TO_BE(v)    BSON_UINT32_SWAP_LE_BE(v)
+#  define BSON_UINT64_FROM_LE(v)  ((uint64_t) v)
+#  define BSON_UINT64_TO_LE(v)    ((uint64_t) v)
+#  define BSON_UINT64_FROM_BE(v)  BSON_UINT64_SWAP_LE_BE(v)
+#  define BSON_UINT64_TO_BE(v)    BSON_UINT64_SWAP_LE_BE(v)
+#  define BSON_DOUBLE_FROM_LE(v)  ((double) v)
+#  define BSON_DOUBLE_TO_LE(v)    ((double) v)
 #elif BSON_BYTE_ORDER == BSON_BIG_ENDIAN
-#    define BSON_UINT16_FROM_LE(v)  BSON_UINT16_SWAP_LE_BE(v)
-#    define BSON_UINT16_TO_LE(v)    BSON_UINT16_SWAP_LE_BE(v)
-#    define BSON_UINT16_FROM_BE(v)  ((uint16_t) v)
-#    define BSON_UINT16_TO_BE(v)    ((uint16_t) v)
-#    define BSON_UINT32_FROM_LE(v)  BSON_UINT32_SWAP_LE_BE(v)
-#    define BSON_UINT32_TO_LE(v)    BSON_UINT32_SWAP_LE_BE(v)
-#    define BSON_UINT32_FROM_BE(v)  ((uint32_t) v)
-#    define BSON_UINT32_TO_BE(v)    ((uint32_t) v)
-#    define BSON_UINT64_FROM_LE(v)  BSON_UINT64_SWAP_LE_BE(v)
-#    define BSON_UINT64_TO_LE(v)    BSON_UINT64_SWAP_LE_BE(v)
-#    define BSON_UINT64_FROM_BE(v)  ((uint64_t) v)
-#    define BSON_UINT64_TO_BE(v)    ((uint64_t) v)
-#    define BSON_DOUBLE_FROM_LE(v)  (__bson_double_swap_slow(v))
-#    define BSON_DOUBLE_TO_LE(v)    (__bson_double_swap_slow(v))
+#  define BSON_UINT16_FROM_LE(v)  BSON_UINT16_SWAP_LE_BE(v)
+#  define BSON_UINT16_TO_LE(v)    BSON_UINT16_SWAP_LE_BE(v)
+#  define BSON_UINT16_FROM_BE(v)  ((uint16_t) v)
+#  define BSON_UINT16_TO_BE(v)    ((uint16_t) v)
+#  define BSON_UINT32_FROM_LE(v)  BSON_UINT32_SWAP_LE_BE(v)
+#  define BSON_UINT32_TO_LE(v)    BSON_UINT32_SWAP_LE_BE(v)
+#  define BSON_UINT32_FROM_BE(v)  ((uint32_t) v)
+#  define BSON_UINT32_TO_BE(v)    ((uint32_t) v)
+#  define BSON_UINT64_FROM_LE(v)  BSON_UINT64_SWAP_LE_BE(v)
+#  define BSON_UINT64_TO_LE(v)    BSON_UINT64_SWAP_LE_BE(v)
+#  define BSON_UINT64_FROM_BE(v)  ((uint64_t) v)
+#  define BSON_UINT64_TO_BE(v)    ((uint64_t) v)
+#  define BSON_DOUBLE_FROM_LE(v)  (__bson_double_swap_slow(v))
+#  define BSON_DOUBLE_TO_LE(v)    (__bson_double_swap_slow(v))
 #else
-#error The endianness of build arch is unknown.
+#  error The endianness of build arch is unknown.
 #endif
+
+
+BSON_END_DECLS
 
 
 #endif /* BSON_ENDIAN_H */
