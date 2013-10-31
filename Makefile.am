@@ -21,7 +21,7 @@ bsondoc_DATA += README
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA =
-pkgconfig_DATA += $(top_builddir)/libbson-1.0.pc
+pkgconfig_DATA += $(top_builddir)/bson/libbson-1.0.pc
 
 EXTRA_DIST += $(bsondoc_DATA)
 

@@ -314,9 +314,9 @@ dnl Output
 dnl **************************************************************************
 AC_CONFIG_FILES([
 	Makefile
-	libbson-1.0.pc
 	bson/bson-version.h
 	bson/bson-config.h
+	bson/libbson-1.0.pc
 ])
 AC_OUTPUT
 
