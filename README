@@ -46,116 +46,12 @@ To get the include path and libraries appropriate for your system.
 gcc my_program.c $(pkg-config --cflags --libs libbson-1.0)
 ```
 
-# Overview
+# Examples
 
+See the `examples/` directory for how to use the libbson library in your
+application.
 
-## Types
+# Documentation
 
-The following list details the various types in libbson and their use.  See
-their individual headers for documentation on the available functions and
-macros.
-
-
-### bson\_t
-
-The bson\_t structure is encapsulates a BSON document buffer. It manages
-growing the buffer using power of 2 allocations as new fields are appended to
-the BSON document.
-
-Functions working upon a bson\_t that do not mutate state are marked as
-"const bson\_t \*". These functions are safe to use with an inline sequence of
-BSON documents as such might be found in a MongoDB wire-protocol packet.
-
-
-### bson\_iter\_t
-
-Iterating upon a bson\_t is performed using a stack allocated bson\_iter\_t.
-These structures do not need to be cleaned up after and therefore can be
-discarded at any time (meaning there is no bson\_iter\_destroy() function).
-
-Various functions are provided to access fields of different types. You can get
-the field name with bson\_iter\_key() and the field type with
-bson\_iter\_type(). Additionally, the BSON\_ITER\_HOLDS\_\*() macros are a
-convenient way to check a fields type.
-
-
-### bson\_visitor\_t
-
-If you would like to iterate upon all of the fields of a BSON you may be
-interested in bson\_visitor\_t. It provides a callback style visitor that will
-call a function for each field found. This is typically useful when building a
-document in a higher level language binding such as Python, Ruby, or Perl.
-
-
-### bson\_context\_t
-
-To aid in performance critical functions, a bson\_context\_t may be required.
-Think of this structure as a "library" handle. It allows fine tuning of
-configuration so that various optimizations may occur. This is particularly
-useful with OID generation so that shared state may be avoided. Optimizations
-that avoid mutexes or atomic increments can be performed here.
-
-Some systems may not know when fork() has been called underneath them as well
-as hostname changes. Checking for these often has serious performance
-implications and therefore are opt-in. See bson\_context\_flags\_t for more
-information.
-
-
-### bson\_oid\_t
-
-This structure contains a 12-byte BSON ObjectId. Various routines are provided
-to manipulate the ObjectId's as well as convert to and from strings.
-
-
-### bson\_reader\_t
-
-In various drivers you may need to parse a sequential stream of BSON documents.
-Reducing the number of allocations in this process has positive implications
-for speed of parsing. bson\_reader\_t helps abstract the parsing of a
-sequential list of BSON documents.
-
-Additionally, you can parse a stream of BSON documents from a file using
-bson\_reader\_init\_from\_fd(). This is handy if you are processing backups
-from the mongodump command.
-
-
-### bson\_writer\_t
-
-It would be useful to be able to create wire-protocol packets while serializing
-directly to the same buffer. bson\_writer\_t achieves this by allowing the
-caller to provide a malloc()d buffer and a realloc() function to resize the
-buffer. Additionally, you may set an offset in the buffer to start from. This
-is useful since you can start encoding to the buffer directly after the message
-header structure. Buffers are grown in powers of two.
-
-
-## Performance Tricks
-
-
-### Serialize Documents into Output Buffer
-
-You can use bson\_writer\_t to serialize your dictionary/hash types to the
-target packet buffer.  It supports providing a realloc function to resize the
-packet buffer as you go.  This saves you many small allocations and instead has
-one large growing allocation.  This should help with memory fragmentation
-greatly.
-
-
-### Build sub-documents with bson\_append\_document\_begin()
-
-When building a sub-document, you have two options. You can build the bson\_t
-structure on its own, using its own allocations. Or, you can use
-bson\_append\_document\_begin() and bson\_append\_document\_end() to build the
-document inside of the parent document. This allows you to use one allocation
-for both rather than multiple.
-
-
-### Keep small documents on the stack
-
-bson\_t will use an inline buffer for small documents. Any document under 56
-bytes can be built inline on the stack. bson\_t will automatically switch to a
-malloc()d buffer when overflowing that internal buffer.
-
-Remember that even if you are building a bson\_t on the stack, you are required
-to call bson\_destroy().
+See the `doc/` directory for documentation on individual types.
 
