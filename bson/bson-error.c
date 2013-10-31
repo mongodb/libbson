@@ -24,10 +24,10 @@
 
 
 void
-bson_set_error (bson_error_t  *error,
-                bson_uint32_t  domain,
-                bson_uint32_t  code,
-                const char    *format,
+bson_set_error (bson_error_t *error,
+                bson_uint32_t domain,
+                bson_uint32_t code,
+                const char   *format,
                 ...)
 {
    va_list args;
@@ -36,9 +36,9 @@ bson_set_error (bson_error_t  *error,
       error->domain = domain;
       error->code = code;
 
-      va_start(args, format);
-      vsnprintf(error->message, sizeof error->message, format, args);
-      va_end(args);
+      va_start (args, format);
+      vsnprintf (error->message, sizeof error->message, format, args);
+      va_end (args);
 
       error->message[sizeof error->message - 1] = '\0';
    }

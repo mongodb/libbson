@@ -35,10 +35,9 @@ BSON_BEGIN_DECLS
  *
  * Returns: A monotonic clock in microseconds.
  */
-bson_int64_t bson_get_monotonic_time (void);
+bson_int64_t
+bson_get_monotonic_time (void);
 
 
 BSON_END_DECLS
-
-
 #endif /* BSON_CLOCK_H */

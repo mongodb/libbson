@@ -29,17 +29,17 @@ BSON_BEGIN_DECLS
 
 struct _bson_context_t
 {
-   bson_context_flags_t   flags : 7;
-   bson_bool_t            pidbe_once : 1;
-   bson_uint8_t           pidbe[2];
-   bson_uint8_t           md5[3];
-   bson_uint32_t          seq32;
-   bson_uint64_t          seq64;
+   bson_context_flags_t flags      : 7;
+   bson_bool_t          pidbe_once : 1;
+   bson_uint8_t         pidbe[2];
+   bson_uint8_t         md5[3];
+   bson_uint32_t        seq32;
+   bson_uint64_t        seq64;
 #if defined WITH_OID32_PT
-   bson_mutex_t           _m32;
+   bson_mutex_t _m32;
 #endif
 #if defined WITH_OID64_PT
-   bson_mutex_t           _m64;
+   bson_mutex_t _m64;
 #endif
 
    void (*oid_get_host)  (bson_context_t *context,

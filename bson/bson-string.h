@@ -36,7 +36,7 @@ BSON_BEGIN_DECLS
 typedef struct
 {
    bson_uint32_t len;
-   char *str;
+   char         *str;
 } bson_string_t;
 
 
@@ -60,15 +60,14 @@ bson_string_append_c (bson_string_t *string,
 
 
 void
-bson_string_append_unichar (bson_string_t  *string,
-                            bson_unichar_t  unichar);
+bson_string_append_unichar (bson_string_t *string,
+                            bson_unichar_t unichar);
 
 
 void
 bson_string_append_printf (bson_string_t *string,
                            const char    *format,
-                           ...)
-   BSON_GNUC_PRINTF(2, 3);
+                           ...) BSON_GNUC_PRINTF (2, 3);
 
 
 void
@@ -82,14 +81,12 @@ bson_strdup (const char *str);
 
 char *
 bson_strdup_printf (const char *format,
-                    ...)
-   BSON_GNUC_PRINTF(1, 2);
+                    ...) BSON_GNUC_PRINTF (1, 2);
 
 
 char *
 bson_strdupv_printf (const char *format,
-                     va_list     args)
-   BSON_GNUC_PRINTF(1, 0);
+                     va_list     args) BSON_GNUC_PRINTF (1, 0);
 
 
 char *

@@ -95,16 +95,16 @@ void
 bson_oid_init_sequence (bson_oid_t     *oid,
                         bson_context_t *context)
 {
-   bson_uint32_t now = time(NULL);
+   bson_uint32_t now = time (NULL);
 
    if (!context) {
-      context = bson_context_get_default();
+      context = bson_context_get_default ();
    }
 
-   now = BSON_UINT32_TO_BE(now);
+   now = BSON_UINT32_TO_BE (now);
 
-   memcpy(&oid->bytes[0], &now, 4);
-   context->oid_get_seq64(context, oid);
+   memcpy (&oid->bytes[0], &now, 4);
+   context->oid_get_seq64 (context, oid);
 }
 
 
@@ -112,20 +112,20 @@ void
 bson_oid_init (bson_oid_t     *oid,
                bson_context_t *context)
 {
-   bson_uint32_t now = time(NULL);
+   bson_uint32_t now = time (NULL);
 
-   bson_return_if_fail(oid);
+   bson_return_if_fail (oid);
 
    if (!context) {
-      context = bson_context_get_default();
+      context = bson_context_get_default ();
    }
 
-   now = BSON_UINT32_TO_BE(now);
-   memcpy(&oid->bytes[0], &now, 4);
+   now = BSON_UINT32_TO_BE (now);
+   memcpy (&oid->bytes[0], &now, 4);
 
-   context->oid_get_host(context, oid);
-   context->oid_get_pid(context, oid);
-   context->oid_get_seq32(context, oid);
+   context->oid_get_host (context, oid);
+   context->oid_get_pid (context, oid);
+   context->oid_get_seq32 (context, oid);
 }
 
 
@@ -133,9 +133,9 @@ void
 bson_oid_init_from_data (bson_oid_t         *oid,
                          const bson_uint8_t *data)
 {
-   bson_return_if_fail(oid);
-   bson_return_if_fail(data);
-   memcpy(oid, data, 12);
+   bson_return_if_fail (oid);
+   bson_return_if_fail (data);
+   memcpy (oid, data, 12);
 }
 
 
@@ -143,17 +143,17 @@ void
 bson_oid_init_from_string (bson_oid_t *oid,
                            const char *str)
 {
-   bson_return_if_fail(oid);
-   bson_return_if_fail(str);
-   bson_oid_init_from_string_unsafe(oid, str);
+   bson_return_if_fail (oid);
+   bson_return_if_fail (str);
+   bson_oid_init_from_string_unsafe (oid, str);
 }
 
 
 time_t
 bson_oid_get_time_t (const bson_oid_t *oid)
 {
-   bson_return_val_if_fail(oid, 0);
-   return bson_oid_get_time_t_unsafe(oid);
+   bson_return_val_if_fail (oid, 0);
+   return bson_oid_get_time_t_unsafe (oid);
 }
 
 
@@ -164,8 +164,8 @@ bson_oid_to_string (const bson_oid_t *oid,
    bson_uint16_t *dst;
    bson_uint8_t *id = (bson_uint8_t *)oid;
 
-   bson_return_if_fail(oid);
-   bson_return_if_fail(str);
+   bson_return_if_fail (oid);
+   bson_return_if_fail (str);
 
    dst = (bson_uint16_t *)(void *)str;
    dst[0] = gHexCharPairs[id[0]];
@@ -187,8 +187,8 @@ bson_oid_to_string (const bson_oid_t *oid,
 bson_uint32_t
 bson_oid_hash (const bson_oid_t *oid)
 {
-   bson_return_val_if_fail(oid, 5381);
-   return bson_oid_hash_unsafe(oid);
+   bson_return_val_if_fail (oid, 5381);
+   return bson_oid_hash_unsafe (oid);
 }
 
 
@@ -196,9 +196,9 @@ int
 bson_oid_compare (const bson_oid_t *oid1,
                   const bson_oid_t *oid2)
 {
-   bson_return_val_if_fail(oid1, 0);
-   bson_return_val_if_fail(oid2, 0);
-   return bson_oid_compare_unsafe(oid1, oid2);
+   bson_return_val_if_fail (oid1, 0);
+   bson_return_val_if_fail (oid2, 0);
+   return bson_oid_compare_unsafe (oid1, oid2);
 }
 
 
@@ -206,9 +206,9 @@ bson_bool_t
 bson_oid_equal (const bson_oid_t *oid1,
                 const bson_oid_t *oid2)
 {
-   bson_return_val_if_fail(oid1, FALSE);
-   bson_return_val_if_fail(oid2, FALSE);
-   return bson_oid_equal_unsafe(oid1, oid2);
+   bson_return_val_if_fail (oid1, FALSE);
+   bson_return_val_if_fail (oid2, FALSE);
+   return bson_oid_equal_unsafe (oid1, oid2);
 }
 
 
@@ -216,9 +216,9 @@ void
 bson_oid_copy (const bson_oid_t *src,
                bson_oid_t       *dst)
 {
-   bson_return_if_fail(src);
-   bson_return_if_fail(dst);
-   bson_oid_copy_unsafe(src, dst);
+   bson_return_if_fail (src);
+   bson_return_if_fail (dst);
+   bson_oid_copy_unsafe (src, dst);
 }
 
 
@@ -228,7 +228,7 @@ bson_oid_is_valid (const char *str,
 {
    size_t i;
 
-   bson_return_val_if_fail(str, FALSE);
+   bson_return_val_if_fail (str, FALSE);
 
    if (length == 24) {
       for (i = 0; i < length; i++) {

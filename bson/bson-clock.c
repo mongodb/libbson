@@ -32,7 +32,7 @@ bson_get_monotonic_time (void)
    {
       struct timespec ts;
 
-      clock_gettime(CLOCK_MONOTONIC, &ts);
+      clock_gettime (CLOCK_MONOTONIC, &ts);
       return (ts.tv_sec * 1000000UL) + (ts.tv_nsec / 1000UL);
    }
 #elif defined(__APPLE__)
@@ -40,9 +40,9 @@ bson_get_monotonic_time (void)
       clock_serv_t cclock;
       mach_timespec_t mts;
 
-      host_get_clock_service(mach_host_self(), SYSTEM_CLOCK, &cclock);
-      clock_get_time(cclock, &mts);
-      mach_port_deallocate(mach_task_self(), cclock);
+      host_get_clock_service (mach_host_self (), SYSTEM_CLOCK, &cclock);
+      clock_get_time (cclock, &mts);
+      mach_port_deallocate (mach_task_self (), cclock);
 
       return (mts.tv_sec * 1000000UL) + (mts.tv_nsec / 1000UL);
    }
@@ -50,7 +50,7 @@ bson_get_monotonic_time (void)
    {
       struct timeval tv;
 
-      gettimeofday(&tv, NULL);
+      gettimeofday (&tv, NULL);
       return (tv.tv_sec * 1000000UL) + tv.tv_usec;
    }
 #endif

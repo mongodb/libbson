@@ -47,9 +47,9 @@ BSON_BEGIN_DECLS
  * Returns: TRUE if @utf8 is valid UTF-8.
  */
 bson_bool_t
-bson_utf8_validate (const char  *utf8,
-                    size_t       utf8_len,
-                    bson_bool_t  allow_null);
+bson_utf8_validate (const char *utf8,
+                    size_t      utf8_len,
+                    bson_bool_t allow_null);
 
 
 /**
@@ -106,12 +106,10 @@ bson_utf8_next_char (const char *utf8);
  * in @utf8. The number of bytes in the sequence are stored in @len.
  */
 void
-bson_utf8_from_unichar (bson_unichar_t  unichar,
-                        char            utf8[6],
-                        bson_uint32_t  *len);
+bson_utf8_from_unichar (bson_unichar_t unichar,
+                        char           utf8[6],
+                        bson_uint32_t *len);
 
 
 BSON_END_DECLS
-
-
 #endif /* BSON_UTF8_H */

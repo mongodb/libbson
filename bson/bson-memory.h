@@ -30,19 +30,35 @@
 BSON_BEGIN_DECLS
 
 
-typedef void *(*bson_realloc_func) (void   *mem,
-                                    size_t  num_bytes);
+typedef void *(*bson_realloc_func) (void  *mem,
+                                    size_t num_bytes);
 
 
-void *bson_malloc    (size_t  num_bytes);
-void *bson_malloc0   (size_t  num_bytes);
-void *bson_memalign0 (size_t  alignment,
-                      size_t  size);
-void *bson_realloc   (void   *mem,
-                      size_t  num_bytes);
-void  bson_free      (void   *mem);
-void  bson_zero_free (void   *mem,
-                      size_t  size);
+void *
+bson_malloc (size_t num_bytes);
+
+
+void *
+bson_malloc0 (size_t num_bytes);
+
+
+void *
+bson_memalign0 (size_t alignment,
+                size_t size);
+
+
+void *
+bson_realloc (void  *mem,
+              size_t num_bytes);
+
+
+void
+bson_free (void *mem);
+
+
+void
+bson_zero_free (void  *mem,
+                size_t size);
 
 
 BSON_END_DECLS

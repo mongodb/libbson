@@ -58,7 +58,7 @@ BSON_BEGIN_DECLS
  * a 5 byte document which contains the length (4 bytes) and a single NUL
  * byte indicating end of fields.
  */
-#define bson_empty(b) (((b)->len == 5) || !bson_get_data((b))[4])
+#define bson_empty(b) (((b)->len == 5) || !bson_get_data ((b))[4])
 
 
 /**
@@ -66,7 +66,7 @@ BSON_BEGIN_DECLS
  *
  * Like bson_empty() but treats NULL the same as an empty bson_t document.
  */
-#define bson_empty0(b) (!(b) || bson_empty(b))
+#define bson_empty0(b) (!(b) || bson_empty (b))
 
 
 /**
@@ -295,9 +295,9 @@ bson_equal (const bson_t *bson,
  * Returns: TRUE if @bson is valid; otherwise FALSE and @offset is set.
  */
 bson_bool_t
-bson_validate (const bson_t          *bson,
-               bson_validate_flags_t  flags,
-               size_t                *offset);
+bson_validate (const bson_t         *bson,
+               bson_validate_flags_t flags,
+               size_t               *offset);
 
 
 /**
@@ -370,10 +370,10 @@ bson_append_binary (bson_t             *bson,
  * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
 bson_bool_t
-bson_append_bool (bson_t      *bson,
-                  const char  *key,
-                  int          key_length,
-                  bson_bool_t  value);
+bson_append_bool (bson_t     *bson,
+                  const char *key,
+                  int         key_length,
+                  bson_bool_t value);
 
 
 /**
@@ -560,10 +560,10 @@ bson_append_array_end (bson_t *bson,
  * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
 bson_bool_t
-bson_append_int32 (bson_t       *bson,
-                   const char   *key,
-                   int           key_length,
-                   bson_int32_t  value);
+bson_append_int32 (bson_t      *bson,
+                   const char  *key,
+                   int          key_length,
+                   bson_int32_t value);
 
 
 /**
@@ -577,10 +577,10 @@ bson_append_int32 (bson_t       *bson,
  * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
 bson_bool_t
-bson_append_int64 (bson_t       *bson,
-                   const char   *key,
-                   int           key_length,
-                   bson_int64_t  value);
+bson_append_int64 (bson_t      *bson,
+                   const char  *key,
+                   int          key_length,
+                   bson_int64_t value);
 
 
 /**
@@ -795,10 +795,10 @@ bson_append_timeval (bson_t         *bson,
  * Returns: TRUE if sucessful; otherwise FALSE.
  */
 bson_bool_t
-bson_append_date_time (bson_t       *bson,
-                       const char   *key,
-                       int           key_length,
-                       bson_int64_t  value);
+bson_append_date_time (bson_t      *bson,
+                       const char  *key,
+                       int          key_length,
+                       bson_int64_t value);
 
 
 /**
@@ -834,11 +834,11 @@ bson_append_now_utc (bson_t     *bson,
  * Returns: TRUE if successful; FALSE if append would overflow max size.
  */
 bson_bool_t
-bson_append_timestamp (bson_t        *bson,
-                       const char    *key,
-                       int            key_length,
-                       bson_uint32_t  timestamp,
-                       bson_uint32_t  increment);
+bson_append_timestamp (bson_t       *bson,
+                       const char   *key,
+                       int           key_length,
+                       bson_uint32_t timestamp,
+                       bson_uint32_t increment);
 
 
 /**
@@ -859,6 +859,4 @@ bson_append_undefined (bson_t     *bson,
 
 
 BSON_END_DECLS
-
-
 #endif /* BSON_H */

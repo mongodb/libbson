@@ -45,10 +45,10 @@ BSON_BEGIN_DECLS
  * string. You will want to use this as your key.
  */
 void
-bson_uint32_to_string (bson_uint32_t   value,
-                       const char    **strptr,
-                       char           *str,
-                       size_t          size);
+bson_uint32_to_string (bson_uint32_t value,
+                       const char  **strptr,
+                       char         *str,
+                       size_t        size);
 
 
 BSON_END_DECLS

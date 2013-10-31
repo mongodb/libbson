@@ -124,16 +124,16 @@ static const char * gUint32Strs[] = {
 
 
 void
-bson_uint32_to_string (bson_uint32_t   value,
-                       const char    **strptr,
-                       char           *str,
-                       size_t          size)
+bson_uint32_to_string (bson_uint32_t value,
+                       const char  **strptr,
+                       char         *str,
+                       size_t        size)
 {
    if (value <= 1000) {
       *strptr = gUint32Strs[value];
       return;
    } else {
-      snprintf(str, size, "%u", value);
+      snprintf (str, size, "%u", value);
       *strptr = str;
    }
 }

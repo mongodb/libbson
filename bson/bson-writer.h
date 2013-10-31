@@ -55,10 +55,10 @@ typedef struct _bson_writer_t bson_writer_t;
  * Returns: A newly allocated bson_writer_t.
  */
 bson_writer_t *
-bson_writer_new (bson_uint8_t      **buf,
-                 size_t             *buflen,
-                 size_t              offset,
-                 bson_realloc_func   realloc_func);
+bson_writer_new (bson_uint8_t    **buf,
+                 size_t           *buflen,
+                 size_t            offset,
+                 bson_realloc_func realloc_func);
 
 
 /**
@@ -101,8 +101,8 @@ bson_writer_get_length (bson_writer_t *writer);
  * bson_writer_end() or bson_writer_rollback().
  */
 void
-bson_writer_begin (bson_writer_t  *writer,
-                   bson_t        **bson);
+bson_writer_begin (bson_writer_t *writer,
+                   bson_t       **bson);
 
 
 /**
@@ -128,6 +128,4 @@ bson_writer_rollback (bson_writer_t *writer);
 
 
 BSON_END_DECLS
-
-
 #endif /* BSON_WRITER_H */

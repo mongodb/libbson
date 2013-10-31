@@ -21,24 +21,24 @@
 
 struct _bson_writer_t
 {
-   bson_bool_t         ready;
-   bson_uint8_t      **buf;
-   size_t             *buflen;
-   size_t              offset;
-   bson_realloc_func   realloc_func;
-   bson_t              b;
+   bson_bool_t       ready;
+   bson_uint8_t    **buf;
+   size_t           *buflen;
+   size_t            offset;
+   bson_realloc_func realloc_func;
+   bson_t            b;
 };
 
 
 bson_writer_t *
-bson_writer_new (bson_uint8_t      **buf,
-                 size_t             *buflen,
-                 size_t              offset,
-                 bson_realloc_func   realloc_func)
+bson_writer_new (bson_uint8_t    **buf,
+                 size_t           *buflen,
+                 size_t            offset,
+                 bson_realloc_func realloc_func)
 {
    bson_writer_t *writer;
 
-   writer = bson_malloc0(sizeof *writer);
+   writer = bson_malloc0 (sizeof *writer);
    writer->buf = buf;
    writer->buflen = buflen;
    writer->offset = offset;
@@ -52,7 +52,7 @@ bson_writer_new (bson_uint8_t      **buf,
 void
 bson_writer_destroy (bson_writer_t *writer)
 {
-   bson_free(writer);
+   bson_free (writer);
 }
 
 
@@ -64,19 +64,19 @@ bson_writer_get_length (bson_writer_t *writer)
 
 
 void
-bson_writer_begin (bson_writer_t  *writer,
-                   bson_t        **bson)
+bson_writer_begin (bson_writer_t *writer,
+                   bson_t       **bson)
 {
    bson_impl_alloc_t *b;
    bson_bool_t grown = FALSE;
 
-   bson_return_if_fail(writer);
-   bson_return_if_fail(writer->ready);
-   bson_return_if_fail(bson);
+   bson_return_if_fail (writer);
+   bson_return_if_fail (writer->ready);
+   bson_return_if_fail (bson);
 
    writer->ready = FALSE;
 
-   memset(&writer->b, 0, sizeof(bson_t));
+   memset (&writer->b, 0, sizeof (bson_t));
 
    b = (bson_impl_alloc_t *)&writer->b;
    b->flags = BSON_FLAG_STATIC | BSON_FLAG_NO_FREE;
@@ -91,6 +91,7 @@ bson_writer_begin (bson_writer_t  *writer,
 
    while ((writer->offset + writer->b.len) > *writer->buflen) {
       grown = TRUE;
+
       if (!*writer->buflen) {
          *writer->buflen = 64;
       } else {
@@ -99,10 +100,10 @@ bson_writer_begin (bson_writer_t  *writer,
    }
 
    if (grown) {
-      *writer->buf = writer->realloc_func(*writer->buf, *writer->buflen);
+      *writer->buf = writer->realloc_func (*writer->buf, *writer->buflen);
    }
 
-   memset((*writer->buf) + writer->offset + 1, 0, 5);
+   memset ((*writer->buf) + writer->offset + 1, 0, 5);
    (*writer->buf)[writer->offset] = 5;
 
    *bson = &writer->b;
@@ -112,11 +113,11 @@ bson_writer_begin (bson_writer_t  *writer,
 void
 bson_writer_end (bson_writer_t *writer)
 {
-   bson_return_if_fail(writer);
-   bson_return_if_fail(!writer->ready);
+   bson_return_if_fail (writer);
+   bson_return_if_fail (!writer->ready);
 
    writer->offset += writer->b.len;
-   memset(&writer->b, 0, sizeof(bson_t));
+   memset (&writer->b, 0, sizeof (bson_t));
    writer->ready = TRUE;
 }
 
@@ -124,10 +125,11 @@ bson_writer_end (bson_writer_t *writer)
 void
 bson_writer_rollback (bson_writer_t *writer)
 {
-   bson_return_if_fail(writer);
+   bson_return_if_fail (writer);
 
    if (writer->b.len) {
-      memset(&writer->b, 0, sizeof(bson_t));
+      memset (&writer->b, 0, sizeof (bson_t));
    }
+
    writer->ready = TRUE;
 }

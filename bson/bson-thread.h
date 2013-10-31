@@ -62,17 +62,17 @@ BSON_BEGIN_DECLS
 #    include <windows.h>
 #  endif
 #  define bson_mutex_t                 HANDLE
-#  define bson_mutex_init(m,x)         CreateMutex(NULL, FALSE, NULL)
-#  define bson_mutex_lock(m)           WaitforSingleObject((m))
-#  define bson_mutex_unlock(m)         ReleaseMutex((m))
-#  define bson_mutex_destroy(m)        CloseHandle((m))
+#  define bson_mutex_init(m, x)         CreateMutex (NULL, FALSE, NULL)
+#  define bson_mutex_lock(m)           WaitforSingleObject ((m))
+#  define bson_mutex_unlock(m)         ReleaseMutex ((m))
+#  define bson_mutex_destroy(m)        CloseHandle ((m))
 #  define bson_thread_t                HANDLE
-#  define bson_thread_create(t,a,f,d)  (*(t) = CreateThread(NULL, 0, (void*)f, d, 0, NULL))
-#  define bson_thread_join(t,v)        WaitForSingleObject(t, 0)
+#  define bson_thread_create(t, a, f, d)  (*(t) = \
+                                              CreateThread (NULL, 0, (void *)f, \
+                                                            d, 0, NULL))
+#  define bson_thread_join(t, v)        WaitForSingleObject (t, 0)
 #endif
 
 
 BSON_END_DECLS
-
-
 #endif /* BSON_THREAD_H */

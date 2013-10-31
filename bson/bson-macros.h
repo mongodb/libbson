@@ -40,20 +40,20 @@
 
 
 #ifndef MIN
-#  define MIN(a,b) ({     \
-     typeof (a) _a = (a); \
-     typeof (b) _b = (b); \
-     _a < _b ? _a : _b;   \
-})
+#  define MIN(a, b) ({     \
+                        typeof (a)_a = (a); \
+                        typeof (b)_b = (b); \
+                        _a < _b ? _a : _b;   \
+                     })
 #endif
 
 
 #ifndef MAX
-#  define MAX(a,b) ({     \
-     typeof (a) _a = (a); \
-     typeof (b) _b = (b); \
-     _a > _b ? _a : _b;   \
-})
+#  define MAX(a, b) ({     \
+                        typeof (a)_a = (a); \
+                        typeof (b)_b = (b); \
+                        _a > _b ? _a : _b;   \
+                     })
 #endif
 
 
@@ -73,7 +73,7 @@
 
 
 #if defined(_MSC_VER)
-#  define BSON_ALIGNED_BEGIN(_N) __declspec(align(_N))
+#  define BSON_ALIGNED_BEGIN(_N) __declspec (align (_N))
 #  define BSON_ALIGNED_END(_N)
 #else
 #  define BSON_ALIGNED_BEGIN(_N)
@@ -86,18 +86,18 @@
 
 
 #ifndef BSON_DISABLE_ASSERT
-#  define BSON_ASSERT(s) assert((s))
+#  define BSON_ASSERT(s) assert ((s))
 #else
 #  define BSON_ASSERT(s)
 #endif
 
 
-#define BSON_STATIC_ASSERT(s) BSON_STATIC_ASSERT_(s, __LINE__)
-#define BSON_STATIC_ASSERT_JOIN(a,b) BSON_STATIC_ASSERT_JOIN2(a, b)
-#define BSON_STATIC_ASSERT_JOIN2(a,b) a##b
+#define BSON_STATIC_ASSERT(s) BSON_STATIC_ASSERT_ (s, __LINE__)
+#define BSON_STATIC_ASSERT_JOIN(a, b) BSON_STATIC_ASSERT_JOIN2 (a, b)
+#define BSON_STATIC_ASSERT_JOIN2(a, b) a##b
 #define BSON_STATIC_ASSERT_(s, l) \
-   typedef char BSON_STATIC_ASSERT_JOIN(static_assert_test_, \
-                                        __LINE__)[(s) ? 0 : -1]
+   typedef char BSON_STATIC_ASSERT_JOIN (static_assert_test_, \
+                                         __LINE__)[(s) ? 0 : -1]
 
 
 #if defined(__GNUC__)
@@ -130,12 +130,12 @@
                        + __GNUC_MINOR__ * 100 \
                        + __GNUC_PATCHLEVEL__)
 #  if GCC_VERSION > 40400
-#    define BSON_GNUC_PRINTF(f,v) __attribute__((format(gnu_printf, f, v)))
+#    define BSON_GNUC_PRINTF(f, v) __attribute__((format (gnu_printf, f, v)))
 #  else
-#    define BSON_GNUC_PRINTF(f,v)
+#    define BSON_GNUC_PRINTF(f, v)
 #  endif /* GCC_VERSION > 40400 */
 #else
-#  define BSON_GNUC_PRINTF(f,v)
+#  define BSON_GNUC_PRINTF(f, v)
 #endif /* __GNUC__ */
 
 
@@ -155,13 +155,13 @@
 
 #ifndef BSON_DISABLE_CHECKS
 #  define bson_return_if_fail(test) \
-     do { \
-        if (!(test)) { \
-           fprintf(stderr, "%s(): precondition failed: %s\n", \
-                   __FUNCTION__, #test); \
-           return; \
-        } \
-     } while (0)
+   do { \
+      if (!(test)) { \
+         fprintf (stderr, "%s(): precondition failed: %s\n", \
+                  __FUNCTION__, #test); \
+         return; \
+      } \
+   } while (0)
 #else
 #  define bson_return_if_fail(test)
 #endif
@@ -169,13 +169,13 @@
 
 #ifndef BSON_DISABLE_CHECKS
 #  define bson_return_val_if_fail(test, val) \
-     do { \
-        if (!(test)) { \
-           fprintf(stderr, "%s(): precondition failed: %s\n", \
-                   __FUNCTION__, #test); \
-           return (val); \
-        } \
-     } while (0)
+   do { \
+      if (!(test)) { \
+         fprintf (stderr, "%s(): precondition failed: %s\n", \
+                  __FUNCTION__, #test); \
+         return (val); \
+      } \
+   } while (0)
 #else
 #  define bson_return_val_if_fail(test, val)
 #endif

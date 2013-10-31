@@ -77,18 +77,21 @@ bson_utf8_validate (const char *utf8,
    int i;
    int j;
 
-   bson_return_val_if_fail(utf8, FALSE);
+   bson_return_val_if_fail (utf8, FALSE);
 
    for (i = 0; i < utf8_len; i += seq_length) {
-      bson_utf8_get_sequence(&utf8[i], &seq_length, &first_mask);
+      bson_utf8_get_sequence (&utf8[i], &seq_length, &first_mask);
+
       if (!seq_length) {
          return FALSE;
       }
+
       for (j = i + 1; j < (i + seq_length); j++) {
          if ((utf8[j] & 0xC0) != 0x80) {
             return FALSE;
          }
       }
+
       if (!allow_null) {
          for (j = 0; j < seq_length; j++) {
             if (((i + j) > utf8_len) || !utf8[i + j]) {
@@ -112,19 +115,19 @@ bson_utf8_escape_for_json (const char *utf8,
    bson_uint8_t mask;
    char *ret;
 
-   bson_return_val_if_fail(utf8, NULL);
+   bson_return_val_if_fail (utf8, NULL);
 
    if (utf8_len < 0) {
-      utf8_len = strlen(utf8);
+      utf8_len = strlen (utf8);
    }
 
-   ret = bson_malloc0((utf8_len * 2) + 1);
+   ret = bson_malloc0 ((utf8_len * 2) + 1);
 
    while (i < utf8_len) {
-      bson_utf8_get_sequence(&utf8[i], &seq_len, &mask);
+      bson_utf8_get_sequence (&utf8[i], &seq_len, &mask);
 
       if ((i + seq_len) > utf8_len) {
-         bson_free(ret);
+         bson_free (ret);
          return NULL;
       }
 
@@ -132,9 +135,9 @@ bson_utf8_escape_for_json (const char *utf8,
       case '"':
       case '\\':
          ret[o++] = '\\';
-         /* fall through */
+      /* fall through */
       default:
-         memcpy(&ret[o], &utf8[i], seq_len);
+         memcpy (&ret[o], &utf8[i], seq_len);
          o += seq_len;
          break;
       }
@@ -154,10 +157,11 @@ bson_utf8_get_char (const char *utf8)
    bson_uint8_t num;
    int i;
 
-   bson_return_val_if_fail(utf8, -1);
+   bson_return_val_if_fail (utf8, -1);
 
-   bson_utf8_get_sequence(utf8, &num, &mask);
+   bson_utf8_get_sequence (utf8, &num, &mask);
    c = (*utf8) & mask;
+
    for (i = 1; i < num; i++) {
       c = (c << 6) | (utf8[i] & 0x3F);
    }
@@ -172,20 +176,20 @@ bson_utf8_next_char (const char *utf8)
    bson_uint8_t mask;
    bson_uint8_t num;
 
-   bson_return_val_if_fail(utf8, NULL);
+   bson_return_val_if_fail (utf8, NULL);
 
-   bson_utf8_get_sequence(utf8, &num, &mask);
+   bson_utf8_get_sequence (utf8, &num, &mask);
 
    return utf8 + num;
 }
 
 
 void
-bson_utf8_from_unichar (bson_unichar_t  unichar,
-                        char            utf8[static 6],
-                        bson_uint32_t  *len)
+bson_utf8_from_unichar (bson_unichar_t unichar,
+                        char           utf8[static 6],
+                        bson_uint32_t *len)
 {
-   bson_return_if_fail(len);
+   bson_return_if_fail (len);
 
    if (unichar <= 0x7F) {
       utf8[0] = unichar;

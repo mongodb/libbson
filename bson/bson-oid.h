@@ -204,7 +204,7 @@ static BSON_INLINE int
 bson_oid_compare_unsafe (const bson_oid_t *oid1,
                          const bson_oid_t *oid2)
 {
-   return memcmp(oid1, oid2, sizeof *oid1);
+   return memcmp (oid1, oid2, sizeof *oid1);
 }
 
 
@@ -224,7 +224,7 @@ static BSON_INLINE bson_bool_t
 bson_oid_equal_unsafe (const bson_oid_t *oid1,
                        const bson_oid_t *oid2)
 {
-   return !memcmp(oid1, oid2, sizeof *oid1);
+   return !memcmp (oid1, oid2, sizeof *oid1);
 }
 
 /**
@@ -268,7 +268,7 @@ static BSON_INLINE void
 bson_oid_copy_unsafe (const bson_oid_t *src,
                       bson_oid_t       *dst)
 {
-   memcpy(dst, src, sizeof *src);
+   memcpy (dst, src, sizeof *src);
 }
 
 
@@ -286,23 +286,46 @@ static BSON_INLINE bson_uint8_t
 bson_oid_parse_hex_char (char hex)
 {
    switch (hex) {
-   case '0': return 0;
-   case '1': return 1;
-   case '2': return 2;
-   case '3': return 3;
-   case '4': return 4;
-   case '5': return 5;
-   case '6': return 6;
-   case '7': return 7;
-   case '8': return 8;
-   case '9': return 9;
-   case 'a': case 'A': return 0xa;
-   case 'b': case 'B': return 0xb;
-   case 'c': case 'C': return 0xc;
-   case 'd': case 'D': return 0xd;
-   case 'e': case 'E': return 0xe;
-   case 'f': case 'F': return 0xf;
-   default: return 0;
+   case '0':
+      return 0;
+   case '1':
+      return 1;
+   case '2':
+      return 2;
+   case '3':
+      return 3;
+   case '4':
+      return 4;
+   case '5':
+      return 5;
+   case '6':
+      return 6;
+   case '7':
+      return 7;
+   case '8':
+      return 8;
+   case '9':
+      return 9;
+   case 'a':
+   case 'A':
+      return 0xa;
+   case 'b':
+   case 'B':
+      return 0xb;
+   case 'c':
+   case 'C':
+      return 0xc;
+   case 'd':
+   case 'D':
+      return 0xd;
+   case 'e':
+   case 'E':
+      return 0xe;
+   case 'f':
+   case 'F':
+      return 0xf;
+   default:
+      return 0;
    }
 }
 
@@ -325,8 +348,8 @@ bson_oid_init_from_string_unsafe (bson_oid_t *oid,
    int i;
 
    for (i = 0; i < 12; i++) {
-      oid->bytes[i] = ((bson_oid_parse_hex_char(str[2*i]) << 4) |
-                       (bson_oid_parse_hex_char(str[2*i+1])));
+      oid->bytes[i] = ((bson_oid_parse_hex_char (str[2 * i]) << 4) |
+                       (bson_oid_parse_hex_char (str[2 * i + 1])));
    }
 }
 
@@ -343,8 +366,9 @@ static BSON_INLINE time_t
 bson_oid_get_time_t_unsafe (const bson_oid_t *oid)
 {
    bson_uint32_t t;
-   memcpy(&t, oid, 4);
-   return BSON_UINT32_FROM_BE(t);
+
+   memcpy (&t, oid, 4);
+   return BSON_UINT32_FROM_BE (t);
 }
 
 

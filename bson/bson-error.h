@@ -27,12 +27,11 @@ BSON_BEGIN_DECLS
 
 
 void
-bson_set_error (bson_error_t  *error,
-                bson_uint32_t  domain,
-                bson_uint32_t  code,
-                const char    *format,
-                ...)
-   BSON_GNUC_PRINTF(4, 5);
+bson_set_error (bson_error_t *error,
+                bson_uint32_t domain,
+                bson_uint32_t code,
+                const char   *format,
+                ...) BSON_GNUC_PRINTF (4, 5);
 
 
 BSON_END_DECLS

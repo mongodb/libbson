@@ -34,64 +34,64 @@ BSON_BEGIN_DECLS
 
 
 #define BSON_ITER_HOLDS_DOUBLE(iter) \
-   (bson_iter_type((iter)) == BSON_TYPE_DOUBLE)
+   (bson_iter_type ((iter)) == BSON_TYPE_DOUBLE)
 
 #define BSON_ITER_HOLDS_UTF8(iter) \
-   (bson_iter_type((iter)) == BSON_TYPE_UTF8)
+   (bson_iter_type ((iter)) == BSON_TYPE_UTF8)
 
 #define BSON_ITER_HOLDS_DOCUMENT(iter) \
-   (bson_iter_type((iter)) == BSON_TYPE_DOCUMENT)
+   (bson_iter_type ((iter)) == BSON_TYPE_DOCUMENT)
 
 #define BSON_ITER_HOLDS_ARRAY(iter) \
-   (bson_iter_type((iter)) == BSON_TYPE_ARRAY)
+   (bson_iter_type ((iter)) == BSON_TYPE_ARRAY)
 
 #define BSON_ITER_HOLDS_BINARY(iter) \
-   (bson_iter_type((iter)) == BSON_TYPE_BINARY)
+   (bson_iter_type ((iter)) == BSON_TYPE_BINARY)
 
 #define BSON_ITER_HOLDS_UNDEFINED(iter) \
-   (bson_iter_type((iter)) == BSON_TYPE_UNDEFINED)
+   (bson_iter_type ((iter)) == BSON_TYPE_UNDEFINED)
 
 #define BSON_ITER_HOLDS_OID(iter) \
-   (bson_iter_type((iter)) == BSON_TYPE_OID)
+   (bson_iter_type ((iter)) == BSON_TYPE_OID)
 
 #define BSON_ITER_HOLDS_BOOL(iter) \
-   (bson_iter_type((iter)) == BSON_TYPE_BOOL)
+   (bson_iter_type ((iter)) == BSON_TYPE_BOOL)
 
 #define BSON_ITER_HOLDS_DATE_TIME(iter) \
-   (bson_iter_type((iter)) == BSON_TYPE_DATE_TIME)
+   (bson_iter_type ((iter)) == BSON_TYPE_DATE_TIME)
 
 #define BSON_ITER_HOLDS_NULL(iter) \
-   (bson_iter_type((iter)) == BSON_TYPE_NULL)
+   (bson_iter_type ((iter)) == BSON_TYPE_NULL)
 
 #define BSON_ITER_HOLDS_REGEX(iter) \
-   (bson_iter_type((iter)) == BSON_TYPE_REGEX)
+   (bson_iter_type ((iter)) == BSON_TYPE_REGEX)
 
 #define BSON_ITER_HOLDS_DBPOINTER(iter) \
-   (bson_iter_type((iter)) == BSON_TYPE_DBPOINTER)
+   (bson_iter_type ((iter)) == BSON_TYPE_DBPOINTER)
 
 #define BSON_ITER_HOLDS_CODE(iter) \
-   (bson_iter_type((iter)) == BSON_TYPE_CODE)
+   (bson_iter_type ((iter)) == BSON_TYPE_CODE)
 
 #define BSON_ITER_HOLDS_SYMBOL(iter) \
-   (bson_iter_type((iter)) == BSON_TYPE_SYMBOL)
+   (bson_iter_type ((iter)) == BSON_TYPE_SYMBOL)
 
 #define BSON_ITER_HOLDS_CODEWSCOPE(iter) \
-   (bson_iter_type((iter)) == BSON_TYPE_CODEWSCOPE)
+   (bson_iter_type ((iter)) == BSON_TYPE_CODEWSCOPE)
 
 #define BSON_ITER_HOLDS_INT32(iter) \
-   (bson_iter_type((iter)) == BSON_TYPE_INT32)
+   (bson_iter_type ((iter)) == BSON_TYPE_INT32)
 
 #define BSON_ITER_HOLDS_TIMESTAMP(iter) \
-   (bson_iter_type((iter)) == BSON_TYPE_TIMESTAMP)
+   (bson_iter_type ((iter)) == BSON_TYPE_TIMESTAMP)
 
 #define BSON_ITER_HOLDS_INT64(iter) \
-   (bson_iter_type((iter)) == BSON_TYPE_INT64)
+   (bson_iter_type ((iter)) == BSON_TYPE_INT64)
 
 #define BSON_ITER_HOLDS_MAXKEY(iter) \
-   (bson_iter_type((iter)) == BSON_TYPE_MAXKEY)
+   (bson_iter_type ((iter)) == BSON_TYPE_MAXKEY)
 
 #define BSON_ITER_HOLDS_MINKEY(iter) \
-   (bson_iter_type((iter)) == BSON_TYPE_MINKEY)
+   (bson_iter_type ((iter)) == BSON_TYPE_MINKEY)
 
 
 /**
@@ -106,9 +106,10 @@ static BSON_INLINE bson_uint32_t
 bson_iter_utf8_len_unsafe (const bson_iter_t *iter)
 {
    bson_int32_t val;
-   memcpy(&val, iter->data1, 4);
-   val = BSON_UINT32_FROM_LE(val);
-   return MAX(0, val - 1);
+
+   memcpy (&val, iter->data1, 4);
+   val = BSON_UINT32_FROM_LE (val);
+   return MAX (0, val - 1);
 }
 
 
@@ -183,7 +184,7 @@ static BSON_INLINE const char *
 bson_iter_code_unsafe (const bson_iter_t *iter,
                        bson_uint32_t     *length)
 {
-   *length = bson_iter_utf8_len_unsafe(iter);
+   *length = bson_iter_utf8_len_unsafe (iter);
    return (const char *)iter->data2;
 }
 
@@ -222,10 +223,10 @@ bson_iter_codewscope (const bson_iter_t   *iter,
  * @collection and @oid should not be modified.
  */
 void
-bson_iter_dbpointer (const bson_iter_t  *iter,
-                     bson_uint32_t      *collection_len,
-                     const char        **collection,
-                     const bson_oid_t  **oid);
+bson_iter_dbpointer (const bson_iter_t *iter,
+                     bson_uint32_t     *collection_len,
+                     const char       **collection,
+                     const bson_oid_t **oid);
 
 
 /**
@@ -277,8 +278,9 @@ static BSON_INLINE double
 bson_iter_double_unsafe (const bson_iter_t *iter)
 {
    double val;
-   memcpy(&val, iter->data1, 8);
-   return BSON_DOUBLE_FROM_LE(val);
+
+   memcpy (&val, iter->data1, 8);
+   return BSON_DOUBLE_FROM_LE (val);
 }
 
 
@@ -348,8 +350,9 @@ static BSON_INLINE bson_int32_t
 bson_iter_int32_unsafe (const bson_iter_t *iter)
 {
    bson_int32_t val;
-   memcpy(&val, iter->data1, 4);
-   return BSON_UINT32_FROM_LE(val);
+
+   memcpy (&val, iter->data1, 4);
+   return BSON_UINT32_FROM_LE (val);
 }
 
 
@@ -390,8 +393,9 @@ static BSON_INLINE bson_int64_t
 bson_iter_int64_unsafe (const bson_iter_t *iter)
 {
    bson_int64_t val;
-   memcpy(&val, iter->data1, 8);
-   return BSON_UINT64_FROM_LE(val);
+
+   memcpy (&val, iter->data1, 8);
+   return BSON_UINT64_FROM_LE (val);
 }
 
 
@@ -534,7 +538,7 @@ static BSON_INLINE const char *
 bson_iter_utf8_unsafe (const bson_iter_t *iter,
                        bson_uint32_t     *length)
 {
-   *length = bson_iter_utf8_len_unsafe(iter);
+   *length = bson_iter_utf8_len_unsafe (iter);
    return (const char *)iter->data2;
 }
 
@@ -591,7 +595,7 @@ bson_iter_time_t (const bson_iter_t *iter);
 static BSON_INLINE time_t
 bson_iter_time_t_unsafe (const bson_iter_t *iter)
 {
-   return (time_t)(bson_iter_int64_unsafe(iter) / 1000UL);
+   return (time_t)(bson_iter_int64_unsafe (iter) / 1000UL);
 }
 
 
@@ -620,7 +624,7 @@ static BSON_INLINE void
 bson_iter_timeval_unsafe (const bson_iter_t *iter,
                           struct timeval    *tv)
 {
-   tv->tv_sec = bson_iter_int64_unsafe(iter);
+   tv->tv_sec = bson_iter_int64_unsafe (iter);
    tv->tv_usec = 0;
 }
 
@@ -663,7 +667,8 @@ static BSON_INLINE bson_bool_t
 bson_iter_bool_unsafe (const bson_iter_t *iter)
 {
    char val;
-   memcpy(&val, iter->data1, 1);
+
+   memcpy (&val, iter->data1, 1);
    return !!val;
 }
 
@@ -696,8 +701,8 @@ bson_iter_as_bool (const bson_iter_t *iter);
  *    freed.
  */
 const char *
-bson_iter_regex (const bson_iter_t  *iter,
-                 const char        **options);
+bson_iter_regex (const bson_iter_t *iter,
+                 const char       **options);
 
 
 /**
@@ -767,8 +772,8 @@ bson_iter_recurse (const bson_iter_t *iter,
  * performed in-place and therefore no keys are moved.
  */
 void
-bson_iter_overwrite_int32 (bson_iter_t  *iter,
-                           bson_int32_t  value);
+bson_iter_overwrite_int32 (bson_iter_t *iter,
+                           bson_int32_t value);
 
 
 /**
@@ -780,8 +785,8 @@ bson_iter_overwrite_int32 (bson_iter_t  *iter,
  * performed in-place and therefore no keys are moved.
  */
 void
-bson_iter_overwrite_int64 (bson_iter_t  *iter,
-                           bson_int64_t  value);
+bson_iter_overwrite_int64 (bson_iter_t *iter,
+                           bson_int64_t value);
 
 
 /**
@@ -793,8 +798,8 @@ bson_iter_overwrite_int64 (bson_iter_t  *iter,
  * performed in-place and therefore no keys are moved.
  */
 void
-bson_iter_overwrite_double (bson_iter_t  *iter,
-                            double        value);
+bson_iter_overwrite_double (bson_iter_t *iter,
+                            double       value);
 
 
 /**

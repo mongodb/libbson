@@ -30,8 +30,8 @@ bson_malloc (size_t num_bytes)
 {
    void *mem;
 
-   if (!(mem = malloc(num_bytes))) {
-      abort();
+   if (!(mem = malloc (num_bytes))) {
+      abort ();
    }
 
    return mem;
@@ -43,8 +43,8 @@ bson_malloc0 (size_t num_bytes)
 {
    void *mem;
 
-   if (!(mem = calloc(1, num_bytes))) {
-      abort();
+   if (!(mem = calloc (1, num_bytes))) {
+      abort ();
    }
 
    return mem;
@@ -58,36 +58,42 @@ bson_memalign0 (size_t alignment,
    void *mem;
 
 #if HAVE_POSIX_MEMALIGN
-   if (0 != posix_memalign(&mem, alignment, size)) {
-      perror("posix_memalign() failure:");
-      abort();
+
+   if (0 != posix_memalign (&mem, alignment, size)) {
+      perror ("posix_memalign() failure:");
+      abort ();
    }
+
 #elif HAVE_MEMALIGN
-   mem = memalign(alignment, size);
+   mem = memalign (alignment, size);
+
    if (!mem) {
-      perror("memalign() failure:");
-      abort();
+      perror ("memalign() failure:");
+      abort ();
    }
+
 #else
-   mem = bson_malloc(size);
+   mem = bson_malloc (size);
 #endif
 
-   memset(mem, 0, size);
+   memset (mem, 0, size);
 
    return mem;
 }
 
 
 void *
-bson_realloc (void   *mem,
-              size_t  num_bytes)
+bson_realloc (void  *mem,
+              size_t num_bytes)
 {
-   if (!(mem = realloc(mem, num_bytes))) {
+   if (!(mem = realloc (mem, num_bytes))) {
       if (!num_bytes) {
          return mem;
       }
-      abort();
+
+      abort ();
    }
+
    return mem;
 }
 
@@ -95,16 +101,16 @@ bson_realloc (void   *mem,
 void
 bson_free (void *mem)
 {
-   free(mem);
+   free (mem);
 }
 
 
 void
-bson_zero_free (void   *mem,
-                size_t  size)
+bson_zero_free (void  *mem,
+                size_t size)
 {
    if (mem) {
-      memset(mem, 0, size);
-      bson_free(mem);
+      memset (mem, 0, size);
+      bson_free (mem);
    }
 }
