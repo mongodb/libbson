@@ -27,7 +27,7 @@ TEST_PROGS = \
 
 
 if OS_LINUX
-TEST_PROGS += abicheck.sh
+TEST_PROGS += $(top_srcdir)/tests/abicheck.sh
 endif
 
 
