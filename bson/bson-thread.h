@@ -75,4 +75,6 @@ BSON_BEGIN_DECLS
 
 
 BSON_END_DECLS
+
+
 #endif /* BSON_THREAD_H */

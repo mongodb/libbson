@@ -31,98 +31,30 @@
 BSON_BEGIN_DECLS
 
 
-/**
- * bson_reader_new_from_fd:
- * @fd: A file-descriptor to read from.
- * @close_fd: If the file-descriptor should be closed when done.
- *
- * Allocates and initializes a new bson_reader_t that will read BSON documents
- * into bson_t structures from an underlying file-descriptor.
- *
- * If you would like the reader to call close() on @fd in
- * bson_reader_destroy(), then specify TRUE for close_fd.
- *
- * Returns: (transfer full): A newly allocated bson_reader_t that should be
- *   freed with bson_reader_destroy().
- */
 bson_reader_t *
 bson_reader_new_from_fd (int         fd,
                          bson_bool_t close_fd);
 
 
-/**
- * bson_reader_new_from_data:
- * @data: A buffer to read BSON documents from.
- * @length: The length of @data.
- *
- * Allocates and initializes a new bson_reader_t that will the memory
- * provided as a stream of BSON documents.
- *
- * Returns: (transfer full): A newly allocated bson_reader_t that should be
- *   freed with bson_reader_destroy().
- */
 bson_reader_t *
 bson_reader_new_from_data (const bson_uint8_t *data,
                            size_t              length);
 
 
-
-/**
- * bson_reader_destroy:
- * @reader: An initialized bson_reader_t.
- *
- * Releases resources that were allocated during the use of a bson_reader_t.
- * This should be called after you have finished using the structure.
- */
 void
 bson_reader_destroy (bson_reader_t *reader);
 
 
-/**
- * bson_reader_set_read_func:
- * @reader: A bson_reader_t.
- *
- * Tell @reader to use a customized read(). By default, @reader uses read() in
- * libc.
- *
- * Note that @reader must be initialized by bson_reader_init_from_fd(), or data
- * will be destroyed.
- */
 void
 bson_reader_set_read_func (bson_reader_t   *reader,
                            bson_read_func_t func);
 
-/**
- * bson_reader_read:
- * @reader: A bson_reader_t.
- * @reached_eof: A location for a bson_bool_t.
- *
- * Reads the next bson_t in the underlying memory or storage.  The resulting
- * bson_t should not be modified or freed. You may copy it and iterate over it.
- * Functions that take a const bson_t* are safe to use.
- *
- * This structure does not survive calls to bson_reader_read() or
- * bson_reader_destroy() as it uses memory allocated by the reader or
- * underlying storage/memory.
- *
- * If NULL is returned then @reached_eof will be set to TRUE if the end of the
- * file or buffer was reached. This indicates if there was an error parsing the
- * document stream.
- *
- * Returns: A const bson_t that should not be modified or freed.
- */
+
 const bson_t *
 bson_reader_read (bson_reader_t *reader,
                   bson_bool_t   *reached_eof);
 
 
-/**
- * bson_reader_tell:
- * @reader: A bson_reader_t.
- *
- * Return the current position in the underlying file. This will always
- * be at the beginning of a bson document or end of file.
- */
 off_t
 bson_reader_tell (bson_reader_t *reader);
 

@@ -23,6 +23,23 @@
 #include "bson-types.h"
 
 
+/**
+ * bson_set_error:
+ * @error: (out): A #bson_error_t.
+ * @domain: (in): The error domain.
+ * @code: (in): The error code.
+ * @format: (in): A printf style format string.
+ *
+ * Initializes @error using the parameters specified.
+ *
+ * @domain is an application specific error domain which should describe
+ * which module initiated the error. Think of this as the exception type.
+ *
+ * @code is the @domain specific error code.
+ *
+ * @format is used to generate the format string. It uses vsnprintf()
+ * internally so the format should match what you would use there.
+ */
 void
 bson_set_error (bson_error_t *error,
                 bson_uint32_t domain,

@@ -15,6 +15,11 @@
  */
 
 
+#if !defined (BSON_INSIDE) && !defined (BSON_COMPILATION)
+#error "Only <bson.h> can be included directly."
+#endif
+
+
 #ifndef BSON_CLOCK_H
 #define BSON_CLOCK_H
 
@@ -26,15 +31,6 @@
 BSON_BEGIN_DECLS
 
 
-/**
- * bson_get_monotonic_time:
- *
- * Returns the monotonic system time, if available. A best effort is made to
- * use the monotonic clock. However, some systems may not support such a
- * feature.
- *
- * Returns: A monotonic clock in microseconds.
- */
 bson_int64_t
 bson_get_monotonic_time (void);
 
