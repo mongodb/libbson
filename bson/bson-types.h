@@ -139,6 +139,16 @@ typedef struct
 BSON_ALIGNED_END (128);
 
 
+/**
+ * BSON_INITIALIZER:
+ *
+ * This macro can be used to initialize a #bson_t structure on the stack
+ * without calling bson_init().
+ *
+ * |[
+ * bson_t b = BSON_INITIALIZER;
+ * ]|
+ */
 #define BSON_INITIALIZER { 3, 5, { 5 } }
 
 
