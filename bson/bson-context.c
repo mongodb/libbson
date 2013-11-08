@@ -35,7 +35,8 @@
 #include "bson-memory.h"
 #include "bson-thread.h"
 
-#if defined(HAVE_WINDOWS)
+#ifdef BSON_OS_WIN32
+#include <windows.h>
 #include <winsock2.h>
 #endif
 
@@ -89,14 +90,32 @@ bson_context_get_oid_host_cached (bson_context_t *context,
 }
 
 
+static BSON_INLINE bson_uint16_t
+_bson_getpid (void)
+{
+   bson_uint16_t pid;
+#ifdef BSON_OS_WIN32
+   DWORD real_pid;
+
+   real_pid = GetCurrentProcessId ();
+   pid = (real_pid & 0xFFFF) ^ ((real_pid >> 16) & 0xFFFF);
+#else
+   pid = getpid ();
+#endif
+
+   return pid;
+}
+
+
 static void
 bson_context_get_oid_pid (bson_context_t *context,
                           bson_oid_t     *oid)
 {
-   bson_uint16_t pid = getpid ();
+   bson_uint16_t pid = _bson_getpid ();
    bson_uint8_t *bytes = (bson_uint8_t *)&pid;
 
    pid = BSON_UINT16_TO_BE (pid);
+
    oid->bytes[7] = bytes[0];
    oid->bytes[8] = bytes[1];
 }
@@ -250,8 +269,7 @@ bson_context_new (bson_context_flags_t flags)
    if ((flags & BSON_CONTEXT_DISABLE_PID_CACHE)) {
       context->oid_get_pid = bson_context_get_oid_pid;
    } else {
-      pid = getpid ();
-      pid = BSON_UINT16_TO_BE (pid);
+      pid = BSON_UINT16_TO_BE (_bson_getpid());
 #if defined(__linux__)
 
       if ((flags & BSON_CONTEXT_USE_TASK_ID)) {
