@@ -29,8 +29,8 @@ BSON_BEGIN_DECLS
  * bson_writer_t:
  *
  * The bson_writer_t structure is a helper for writing a series of BSON
- * documents to a single malloc() buffer. You can provided a realloc() style
- * function to do grow the buffer as we go.
+ * documents to a single malloc() buffer. You can provide a realloc() style
+ * function to grow the buffer as you go.
  *
  * This is useful if you want to build a series of BSON documents right into
  * the target buffer for an outgoing packet. The offset parameter allows you to
