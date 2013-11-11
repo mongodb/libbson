@@ -56,11 +56,15 @@ main (int   argc,
       /*
        * Open the filename provided in command line arguments.
        */
-      errno = 0;
-      fd = open(filename, O_RDONLY);
-      if (fd == -1) {
-         fprintf(stderr, "Failed to open %s: %s\n", filename, strerror(errno));
-         continue;
+      if (0 == strcmp(filename, "-")) {
+         fd = STDIN_FILENO;
+      } else {
+         errno = 0;
+         fd = open(filename, O_RDONLY);
+         if (fd == -1) {
+            fprintf(stderr, "Failed to open %s: %s\n", filename, strerror(errno));
+            continue;
+         }
       }
 
       /*
