@@ -26,8 +26,8 @@ char *str;
 
 bson_init(&doc);
 bson_append_document_begin(&doc, "sub", -1, &child);
-bson_append_int32(&child, "hello", -1, "world", -1);
-bson_append_document_end(&doc);
+bson_append_utf8(&child, "hello", -1, "world", -1);
+bson_append_document_end(&doc, &child);
 
 str = bson_as_json(&doc, NULL);
 printf("%s\n", str);
