@@ -782,6 +782,8 @@ test_bson_validate (void)
    ENSURE_FAILURE("test49.bson");
    ENSURE_FAILURE("test50.bson");
    ENSURE_FAILURE("test51.bson");
+   ENSURE_FAILURE("test52.bson");
+   ENSURE_FAILURE("test53.bson");
 
 #undef ENSURE_FAILURE
 }

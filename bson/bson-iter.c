@@ -426,13 +426,19 @@ fill_data_fields:
       {
          bson_uint32_t l;
 
-         if ((o + 4) >= b->len) {
+         if (o >= (b->len - 4)) {
             iter->err_offset = o;
             goto mark_invalid;
          }
 
          memcpy (&l, iter->data1, 4);
          l = BSON_UINT32_FROM_LE (l);
+
+         if ((l > b->len) || (l > (b->len - o))) {
+            iter->err_offset = o;
+            goto mark_invalid;
+         }
+
          iter->next_offset = o + l;
       }
       break;
@@ -479,7 +485,7 @@ fill_data_fields:
       {
          bson_uint32_t l;
 
-         if ((o + 4) >= b->len) {
+         if (o >= (b->len - 4)) {
             iter->err_offset = o;
             goto mark_invalid;
          }
@@ -487,6 +493,11 @@ fill_data_fields:
          iter->data2 = &data[o + 4];
          memcpy (&l, iter->data1, 4);
          l = BSON_UINT32_FROM_LE (l);
+
+         if ((l > b->len) || (l > (b->len - o))) {
+            iter->err_offset = o;
+            goto mark_invalid;
+         }
 
          iter->data3 = &data[o + 4 + l];
          iter->next_offset = o + 4 + l + 12;
