@@ -514,7 +514,7 @@ fill_data_fields:
          bson_uint32_t l;
          bson_uint32_t doclen;
 
-         if (o >= (b->len - 14)) {
+         if ((b->len < 19) || (o >= (b->len - 14))) {
             iter->err_offset = o;
             goto mark_invalid;
          }
