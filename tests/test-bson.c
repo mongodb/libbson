@@ -784,6 +784,7 @@ test_bson_validate (void)
    ENSURE_FAILURE("test51.bson");
    ENSURE_FAILURE("test52.bson");
    ENSURE_FAILURE("test53.bson");
+   ENSURE_FAILURE("test54.bson");
 
 #undef ENSURE_FAILURE
 }
@@ -997,7 +998,7 @@ test_bson_build_child_deep_no_begin_end (void)
       bson_t b;
       bson_impl_alloc_t a;
    } u;
-     
+
    int count = 0;
 
    bson_init(&u.b);
