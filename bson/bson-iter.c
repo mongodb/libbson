@@ -514,7 +514,7 @@ fill_data_fields:
          bson_uint32_t l;
          bson_uint32_t doclen;
 
-         if ((o + 8) >= b->len) {
+         if (o >= (b->len - 14)) {
             iter->err_offset = o;
             goto mark_invalid;
          }
@@ -525,7 +525,7 @@ fill_data_fields:
          memcpy (&l, iter->data1, 4);
          l = BSON_UINT32_FROM_LE (l);
 
-         if (l < 14) {
+         if ((l < 14) || (l >= (b->len - o))) {
             iter->err_offset = o;
             goto mark_invalid;
          }
@@ -539,6 +539,11 @@ fill_data_fields:
 
          memcpy (&l, iter->data2, 4);
          l = BSON_UINT32_FROM_LE (l);
+
+         if (l >= (b->len - o - 4 - 4)) {
+            iter->err_offset = o;
+            goto mark_invalid;
+         }
 
          if (BSON_UNLIKELY ((o + 4 + 4 + l + 4) >= iter->next_offset)) {
             iter->err_offset = o + 4;
