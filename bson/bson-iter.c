@@ -545,7 +545,7 @@ fill_data_fields:
             goto mark_invalid;
          }
 
-         if (BSON_UNLIKELY ((o + 4 + 4 + l + 4) >= iter->next_offset)) {
+         if ((o + 4 + 4 + l + 4) >= iter->next_offset) {
             iter->err_offset = o + 4;
             goto mark_invalid;
          }
