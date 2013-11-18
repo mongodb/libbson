@@ -581,7 +581,7 @@ fill_data_fields:
     * current BSON buffer. If so, set the error location to the offset
     * of where the field starts.
     */
-   if (!(iter->next_offset < b->len)) {
+   if (iter->next_offset >= b->len) {
       iter->err_offset = o;
       goto mark_invalid;
    }
