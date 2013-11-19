@@ -1353,7 +1353,13 @@ bson_iter_visit_all (bson_iter_t          *iter,
          {
             bson_uint32_t utf8_len;
             const char *utf8;
+
             utf8 = bson_iter_utf8 (iter, &utf8_len);
+
+            if (!bson_utf8_validate (utf8, utf8_len, TRUE)) {
+               iter->err_offset = iter->offset;
+               return TRUE;
+            }
 
             if (VISIT_UTF8 (iter, key, utf8_len, utf8, data)) {
                return TRUE;
