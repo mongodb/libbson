@@ -1332,6 +1332,11 @@ bson_iter_visit_all (bson_iter_t          *iter,
    while (bson_iter_next (iter)) {
       key = bson_iter_key_unsafe (iter);
 
+      if (*key && !bson_utf8_validate (key, strlen (key), FALSE)) {
+         iter->err_offset = iter->offset;
+         return TRUE;
+      }
+
       if (VISIT_BEFORE (iter, key, data)) {
          return TRUE;
       }

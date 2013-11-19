@@ -177,6 +177,35 @@ test_bson_as_json_stack_overflow (void)
 }
 
 
+static void
+test_bson_corrupt (void)
+{
+   bson_uint8_t *buf;
+   bson_t b;
+   size_t buflen = 1024;
+   char *str;
+   int fd;
+   int r;
+
+   buf = bson_malloc0(buflen);
+
+   fd = open("tests/binary/test55.bson", O_RDONLY);
+   BSON_ASSERT(fd != -1);
+
+   r = read(fd, buf, buflen);
+   BSON_ASSERT(r == 24);
+
+   r = bson_init_static(&b, buf, r);
+   BSON_ASSERT(r);
+
+   str = bson_as_json(&b, NULL);
+   BSON_ASSERT(!str);
+
+   bson_destroy(&b);
+   bson_free(buf);
+}
+
+
 int
 main (int   argc,
       char *argv[])
@@ -188,6 +217,7 @@ main (int   argc,
    run_test("/bson/as_json/double", test_bson_as_json_double);
    run_test("/bson/as_json/utf8", test_bson_as_json_utf8);
    run_test("/bson/as_json/stack_overflow", test_bson_as_json_stack_overflow);
+   run_test("/bson/as_json/corrupt", test_bson_corrupt);
 
    return 0;
 }

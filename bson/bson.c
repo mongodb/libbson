@@ -2062,6 +2062,15 @@ bson_as_json (const bson_t *bson,
    state.str = bson_string_new ("{ ");
    state.depth = 0;
    bson_iter_visit_all (&iter, &bson_as_json_visitors, &state);
+
+   if (iter.err_offset) {
+      bson_string_free (state.str, TRUE);
+      if (length) {
+         *length = 0;
+      }
+      return NULL;
+   }
+
    bson_string_append (state.str, " }");
 
    if (length) {
