@@ -2219,3 +2219,15 @@ failure:
 
    return state.err_offset < 0;
 }
+
+
+bson_bool_t
+bson_concat (bson_t       *dst,
+             const bson_t *src)
+{
+   BSON_ASSERT (dst);
+   BSON_ASSERT (src);
+
+   return bson_append (dst, 1, src->len - 5,
+                       src->len - 5, bson_data (src) + 4);
+}

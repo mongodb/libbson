@@ -28,6 +28,7 @@ bson_append_undefined
 bson_append_utf8
 bson_as_json
 bson_compare
+bson_concat
 bson_context_destroy
 bson_context_new
 bson_context_get_default

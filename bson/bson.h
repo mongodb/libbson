@@ -858,5 +858,12 @@ bson_append_undefined (bson_t     *bson,
                        int         key_length);
 
 
+bson_bool_t
+bson_concat (bson_t       *dst,
+             const bson_t *src);
+
+
 BSON_END_DECLS
+
+
 #endif /* BSON_H */
