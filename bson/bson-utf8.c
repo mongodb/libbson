@@ -22,9 +22,9 @@
 
 
 static BSON_INLINE void
-bson_utf8_get_sequence (const char   *utf8,
-                        bson_uint8_t *seq_length,
-                        bson_uint8_t *first_mask)
+_bson_utf8_get_sequence (const char   *utf8,
+                         bson_uint8_t *seq_length,
+                         bson_uint8_t *first_mask)
 {
    unsigned char c = *(const unsigned char *)utf8;
    bson_uint8_t m;
@@ -94,7 +94,7 @@ bson_utf8_validate (const char *utf8,
    bson_return_val_if_fail (utf8, FALSE);
 
    for (i = 0; i < utf8_len; i += seq_length) {
-      bson_utf8_get_sequence (&utf8[i], &seq_length, &first_mask);
+      _bson_utf8_get_sequence (&utf8[i], &seq_length, &first_mask);
 
       if (!seq_length) {
          return FALSE;
@@ -152,7 +152,7 @@ bson_utf8_escape_for_json (const char *utf8,
    ret = bson_malloc0 ((utf8_len * 2) + 1);
 
    while (i < utf8_len) {
-      bson_utf8_get_sequence (&utf8[i], &seq_len, &mask);
+      _bson_utf8_get_sequence (&utf8[i], &seq_len, &mask);
 
       if ((i + seq_len) > utf8_len) {
          bson_free (ret);
@@ -195,7 +195,7 @@ bson_utf8_get_char (const char *utf8)
 
    bson_return_val_if_fail (utf8, -1);
 
-   bson_utf8_get_sequence (utf8, &num, &mask);
+   _bson_utf8_get_sequence (utf8, &num, &mask);
    c = (*utf8) & mask;
 
    for (i = 1; i < num; i++) {
@@ -223,7 +223,7 @@ bson_utf8_next_char (const char *utf8)
 
    bson_return_val_if_fail (utf8, NULL);
 
-   bson_utf8_get_sequence (utf8, &num, &mask);
+   _bson_utf8_get_sequence (utf8, &num, &mask);
 
    return utf8 + num;
 }
