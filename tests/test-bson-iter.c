@@ -24,6 +24,9 @@
 #include "bson-tests.h"
 
 
+#define FUZZ_N_PASSES 100000
+
+
 static bson_t *
 get_bson (const char *filename)
 {
@@ -183,7 +186,7 @@ test_bson_iter_fuzz (void)
 
    len_le = BSON_UINT32_TO_LE(len);
 
-   for (pass = 0; pass < 10000; pass++) {
+   for (pass = 0; pass < FUZZ_N_PASSES; pass++) {
       data = bson_malloc0(len);
       memcpy(data, &len_le, 4);
 
@@ -477,10 +480,30 @@ test_bson_iter_as_bool (void)
 }
 
 
+static void
+init_rand (void)
+{
+   unsigned seed;
+   int fd;
+
+   fd = open("/dev/urandom", O_RDONLY);
+   if (sizeof seed != read(fd, &seed, sizeof seed)) {
+      fprintf(stderr, "Failed to read from /dev/urandom.\n");
+      abort();
+   }
+   close(fd);
+
+   fprintf(stderr, "srand(%u)\n", seed);
+   srand(seed);
+}
+
+
 int
 main (int   argc,
       char *argv[])
 {
+   init_rand();
+
    run_test("/bson/iter/test_string", test_bson_iter_utf8);
    run_test("/bson/iter/test_mixed", test_bson_iter_mixed);
    run_test("/bson/iter/test_overflow", test_bson_iter_overflow);
