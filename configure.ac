@@ -217,6 +217,17 @@ AC_SUBST([BSON_BYTE_ORDER])
 
 
 dnl **************************************************************************
+dnl Optionally check for Asciidoc and xmlto for documentation
+dnl **************************************************************************
+AC_ARG_VAR([XMLTO], [Path to xmlto command])
+AC_PATH_PROG([XMLTO], [xmlto])
+AC_ARG_VAR([ASCIIDOC], [Path to asciidoc command])
+AC_PATH_PROG([ASCIIDOC], [asciidoc])
+
+BSON_CHECK_DOC_BUILD
+
+
+dnl **************************************************************************
 dnl Enable extra debugging options
 dnl **************************************************************************
 

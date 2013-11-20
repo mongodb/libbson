@@ -5,6 +5,7 @@ DISTCLEANFILES =
 include bson/Makefile.include
 include tests/Makefile.include
 include examples/Makefile.include
+include doc/Makefile.include
 
 if HAVE_PYTHON
 include bindings/python/Makefile.include
