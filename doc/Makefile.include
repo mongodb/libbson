@@ -38,7 +38,8 @@ EXAMPLE_DIR = $(abs_top_srcdir)/examples
            -aexamples=$(EXAMPLE_DIR) -abson_version=@PACKAGE_VERSION@ -o$@ $<
 .txt.xml:
 	asciidoc -d manpage -b docbook -f $(top_srcdir)/doc/asciidoc.conf \
-           -aexamples=$(EXAMPLE_DIR) -abson_version=@PACKAGE_VERSION@ -o$@ $<
+           -aexamples=$(EXAMPLE_DIR) -abson_version=@PACKAGE_VERSION@ \
+	   -abson_manname=$(*F) -o$@ $<
 .xml.3:
 	xmlto man -o $(top_srcdir)/doc $<
 .xml.7:
