@@ -111,8 +111,10 @@
 
 #if defined(__GNUC__) && (__GNUC__ >= 4)
 #  define BSON_GNUC_NULL_TERMINATED __attribute__((sentinel))
+#  define BSON_GNUC_INTERNAL __attribute__((visibility ("hidden")))
 #else
 #  define BSON_GNUC_NULL_TERMINATED
+#  define BSON_GNUC_INTERNAL
 #endif
 
 
