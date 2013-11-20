@@ -154,9 +154,9 @@ bson_iter_init_find_case (bson_iter_t  *iter,
 
 
 static bson_bool_t
-bson_iter_find_with_len (bson_iter_t *iter,
-                         const char  *key,
-                         int          keylen)
+_bson_iter_find_with_len (bson_iter_t *iter,
+                          const char  *key,
+                          int          keylen)
 {
    bson_return_val_if_fail (iter, FALSE);
    bson_return_val_if_fail (key, FALSE);
@@ -193,7 +193,7 @@ bson_iter_find (bson_iter_t *iter,
    bson_return_val_if_fail (iter, FALSE);
    bson_return_val_if_fail (key, FALSE);
 
-   return bson_iter_find_with_len (iter, key, -1);
+   return _bson_iter_find_with_len (iter, key, -1);
 }
 
 
@@ -255,7 +255,7 @@ bson_iter_find_descendant (bson_iter_t *iter,
       sublen = strlen (dotkey);
    }
 
-   if (bson_iter_find_with_len (iter, dotkey, sublen)) {
+   if (_bson_iter_find_with_len (iter, dotkey, sublen)) {
       if (!dot) {
          *descendant = *iter;
          return TRUE;
