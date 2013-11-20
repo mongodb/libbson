@@ -97,6 +97,7 @@ EXTRA_DIST += \
 	tests/binary/test54.bson \
 	tests/binary/test55.bson \
 	tests/binary/test56.bson \
+	tests/binary/test57.bson \
 	tests/binary/test6.bson \
 	tests/binary/test7.bson \
 	tests/binary/test8.bson \

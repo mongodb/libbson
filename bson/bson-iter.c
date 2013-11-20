@@ -406,6 +406,7 @@ fill_data_fields:
       break;
    case BSON_TYPE_BINARY:
       {
+         bson_subtype_t subtype;
          bson_uint32_t l;
 
          if (o >= (b->len - 4)) {
@@ -422,6 +423,15 @@ fill_data_fields:
          if (l >= (b->len - o)) {
             iter->err_offset = o;
             goto mark_invalid;
+         }
+
+         subtype = *iter->data2;
+
+         if (subtype == BSON_SUBTYPE_BINARY_DEPRECATED) {
+            if (l < 4) {
+               iter->err_offset = o;
+               goto mark_invalid;
+            }
          }
 
          iter->next_offset = o + 5 + l;
