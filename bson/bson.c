@@ -45,25 +45,25 @@ typedef struct
 
 
 static bson_bool_t
-bson_as_json_visit_array (const bson_iter_t *iter,
-                          const char        *key,
-                          const bson_t      *v_array,
-                          void              *data);
+_bson_as_json_visit_array (const bson_iter_t *iter,
+                           const char        *key,
+                           const bson_t      *v_array,
+                           void              *data);
 
 
 static bson_bool_t
-bson_as_json_visit_document (const bson_iter_t *iter,
-                             const char        *key,
-                             const bson_t      *v_document,
-                             void              *data);
+_bson_as_json_visit_document (const bson_iter_t *iter,
+                              const char        *key,
+                              const bson_t      *v_document,
+                              void              *data);
 
 
 static const bson_uint8_t gZero;
 
 
 static bson_bool_t
-bson_impl_inline_grow (bson_impl_inline_t *impl,
-                       bson_uint32_t       size)
+_bson_impl_inline_grow (bson_impl_inline_t *impl,
+                        bson_uint32_t       size)
 {
    bson_impl_alloc_t *alloc = (bson_impl_alloc_t *)impl;
    bson_uint8_t *data;
@@ -101,8 +101,8 @@ bson_impl_inline_grow (bson_impl_inline_t *impl,
 
 
 static bson_bool_t
-bson_impl_alloc_grow (bson_impl_alloc_t *impl,
-                      bson_uint32_t      size)
+_bson_impl_alloc_grow (bson_impl_alloc_t *impl,
+                       bson_uint32_t      size)
 {
    size_t req;
 
@@ -131,22 +131,22 @@ bson_impl_alloc_grow (bson_impl_alloc_t *impl,
 
 
 static bson_bool_t
-bson_grow (bson_t       *bson,
-           bson_uint32_t size)
+_bson_grow (bson_t        *bson,
+            bson_uint32_t  size)
 {
    BSON_ASSERT (bson);
    BSON_ASSERT (!(bson->flags & BSON_FLAG_RDONLY));
 
    if ((bson->flags & BSON_FLAG_INLINE)) {
-      return bson_impl_inline_grow ((bson_impl_inline_t *)bson, size);
+      return _bson_impl_inline_grow ((bson_impl_inline_t *)bson, size);
    }
 
-   return bson_impl_alloc_grow ((bson_impl_alloc_t *)bson, size);
+   return _bson_impl_alloc_grow ((bson_impl_alloc_t *)bson, size);
 }
 
 
 static BSON_INLINE bson_uint8_t *
-bson_data (const bson_t *bson)
+_bson_data (const bson_t *bson)
 {
    if ((bson->flags & BSON_FLAG_INLINE)) {
       return ((bson_impl_inline_t *)bson)->data;
@@ -158,13 +158,13 @@ bson_data (const bson_t *bson)
 
 
 static BSON_INLINE void
-bson_encode_length (bson_t *bson)
+_bson_encode_length (bson_t *bson)
 {
 #if BSON_BYTE_ORDER == BSON_LITTLE_ENDIAN
-   memcpy (bson_data (bson), &bson->len, 4);
+   memcpy (_bson_data (bson), &bson->len, 4);
 #else
    bson_uint32_t length_le = BSON_UINT32_TO_LE (bson->len);
-   memcpy (bson_data (bson), &length_le, 4);
+   memcpy (_bson_data (bson), &length_le, 4);
 #endif
 }
 
@@ -182,12 +182,12 @@ bson_encode_length (bson_t *bson)
  * to perform one array growth rather than many small growths.
  */
 static BSON_INLINE void
-bson_append_va (bson_t             *bson,
-                bson_uint32_t       n_bytes,
-                bson_uint32_t       n_pairs,
-                bson_uint32_t       first_len,
-                const bson_uint8_t *first_data,
-                va_list             args)
+_bson_append_va (bson_t             *bson,
+                 bson_uint32_t       n_bytes,
+                 bson_uint32_t       n_pairs,
+                 bson_uint32_t       first_len,
+                 const bson_uint8_t *first_data,
+                 va_list             args)
 {
    const bson_uint8_t *data;
    bson_uint32_t data_len;
@@ -200,12 +200,12 @@ bson_append_va (bson_t             *bson,
    BSON_ASSERT (first_len);
    BSON_ASSERT (first_data);
 
-   bson_grow (bson, n_bytes);
+   _bson_grow (bson, n_bytes);
 
    data = first_data;
    data_len = first_len;
 
-   buf = bson_data (bson) + bson->len - 1;
+   buf = _bson_data (bson) + bson->len - 1;
 
    do {
       n_pairs--;
@@ -219,7 +219,7 @@ bson_append_va (bson_t             *bson,
       }
    } while (n_pairs);
 
-   bson_encode_length (bson);
+   _bson_encode_length (bson);
 
    *buf = '\0';
 }
@@ -240,12 +240,12 @@ bson_append_va (bson_t             *bson,
  * Returns: TRUE if successful; otherwise FALSE.
  */
 static bson_bool_t
-bson_append (bson_t             *bson,
-             bson_uint32_t       n_pairs,
-             size_t              n_bytes,
-             bson_uint32_t       first_len,
-             const bson_uint8_t *first_data,
-             ...)
+_bson_append (bson_t             *bson,
+              bson_uint32_t       n_pairs,
+              size_t              n_bytes,
+              bson_uint32_t       first_len,
+              const bson_uint8_t *first_data,
+              ...)
 {
    va_list args;
 
@@ -264,7 +264,7 @@ bson_append (bson_t             *bson,
    }
 
    va_start (args, first_data);
-   bson_append_va (bson, n_bytes, n_pairs, first_len, first_data, args);
+   _bson_append_va (bson, n_bytes, n_pairs, first_len, first_data, args);
    va_end (args);
 
    return TRUE;
@@ -272,11 +272,11 @@ bson_append (bson_t             *bson,
 
 
 static bson_bool_t
-bson_append_bson_begin (bson_t     *bson,
-                        const char *key,
-                        int         key_length,
-                        bson_type_t child_type,
-                        bson_t     *child)
+_bson_append_bson_begin (bson_t      *bson,
+                         const char  *key,
+                         int          key_length,
+                         bson_type_t  child_type,
+                         bson_t      *child)
 {
    const bson_uint8_t type = child_type;
    const bson_uint8_t empty[5] = { 5 };
@@ -301,19 +301,19 @@ bson_append_bson_begin (bson_t     *bson,
     */
    if ((bson->flags & BSON_FLAG_INLINE)) {
       BSON_ASSERT (bson->len <= 120);
-      bson_grow (bson, 128 - bson->len);
+      _bson_grow (bson, 128 - bson->len);
       BSON_ASSERT (!(bson->flags & BSON_FLAG_INLINE));
    }
 
    /*
     * Append the type and key for the field.
     */
-   if (!bson_append (bson, 4,
-                     (1 + key_length + 1 + 5),
-                     1, &type,
-                     key_length, key,
-                     1, &gZero,
-                     5, empty)) {
+   if (!_bson_append (bson, 4,
+                      (1 + key_length + 1 + 5),
+                      1, &type,
+                      key_length, key,
+                      1, &gZero,
+                      5, empty)) {
       return FALSE;
    }
 
@@ -350,9 +350,9 @@ bson_append_bson_begin (bson_t     *bson,
 }
 
 
-bson_bool_t
-bson_append_bson_end (bson_t *bson,
-                      bson_t *child)
+static bson_bool_t
+_bson_append_bson_end (bson_t *bson,
+                       bson_t *child)
 {
    bson_return_val_if_fail (bson, FALSE);
    bson_return_val_if_fail ((bson->flags & BSON_FLAG_IN_CHILD), FALSE);
@@ -373,8 +373,8 @@ bson_append_bson_end (bson_t *bson,
     * Ensure we have a \0 byte at the end and proper length encoded at
     * the beginning of the document.
     */
-   bson_data (bson)[bson->len - 1] = '\0';
-   bson_encode_length (bson);
+   _bson_data (bson)[bson->len - 1] = '\0';
+   _bson_encode_length (bson);
 
    return TRUE;
 }
@@ -390,8 +390,8 @@ bson_append_array_begin (bson_t     *bson,
    bson_return_val_if_fail (key, FALSE);
    bson_return_val_if_fail (child, FALSE);
 
-   return bson_append_bson_begin (bson, key, key_length, BSON_TYPE_ARRAY,
-                                  child);
+   return _bson_append_bson_begin (bson, key, key_length, BSON_TYPE_ARRAY,
+                                   child);
 }
 
 
@@ -402,7 +402,7 @@ bson_append_array_end (bson_t *bson,
    bson_return_val_if_fail (bson, FALSE);
    bson_return_val_if_fail (child, FALSE);
 
-   return bson_append_bson_end (bson, child);
+   return _bson_append_bson_end (bson, child);
 }
 
 
@@ -416,8 +416,8 @@ bson_append_document_begin (bson_t     *bson,
    bson_return_val_if_fail (key, FALSE);
    bson_return_val_if_fail (child, FALSE);
 
-   return bson_append_bson_begin (bson, key, key_length, BSON_TYPE_DOCUMENT,
-                                  child);
+   return _bson_append_bson_begin (bson, key, key_length, BSON_TYPE_DOCUMENT,
+                                   child);
 }
 
 
@@ -428,7 +428,7 @@ bson_append_document_end (bson_t *bson,
    bson_return_val_if_fail (bson, FALSE);
    bson_return_val_if_fail (child, FALSE);
 
-   return bson_append_bson_end (bson, child);
+   return _bson_append_bson_end (bson, child);
 }
 
 
@@ -448,12 +448,12 @@ bson_append_array (bson_t       *bson,
       key_length = strlen (key);
    }
 
-   return bson_append (bson, 4,
-                       (1 + key_length + 1 + array->len),
-                       1, &type,
-                       key_length, key,
-                       1, &gZero,
-                       array->len, bson_data (array));
+   return _bson_append (bson, 4,
+                        (1 + key_length + 1 + array->len),
+                        1, &type,
+                        key_length, key,
+                        1, &gZero,
+                        array->len, _bson_data (array));
 }
 
 
@@ -484,26 +484,26 @@ bson_append_binary (bson_t             *bson,
       length_le = BSON_UINT32_TO_LE (length + 4);
       deprecated_length_le = BSON_UINT32_TO_LE (length);
 
-      return bson_append (bson, 7,
-                          (1 + key_length + 1 + 4 + 1 + 4 + length),
-                          1, &type,
-                          key_length, key,
-                          1, &gZero,
-                          4, &length_le,
-                          1, &subtype8,
-                          4, &deprecated_length_le,
-                          length, binary);
+      return _bson_append (bson, 7,
+                           (1 + key_length + 1 + 4 + 1 + 4 + length),
+                           1, &type,
+                           key_length, key,
+                           1, &gZero,
+                           4, &length_le,
+                           1, &subtype8,
+                           4, &deprecated_length_le,
+                           length, binary);
    } else {
       length_le = BSON_UINT32_TO_LE (length);
 
-      return bson_append (bson, 6,
-                          (1 + key_length + 1 + 4 + 1 + length),
-                          1, &type,
-                          key_length, key,
-                          1, &gZero,
-                          4, &length_le,
-                          1, &subtype8,
-                          length, binary);
+      return _bson_append (bson, 6,
+                           (1 + key_length + 1 + 4 + 1 + length),
+                           1, &type,
+                           key_length, key,
+                           1, &gZero,
+                           4, &length_le,
+                           1, &subtype8,
+                           length, binary);
    }
 }
 
@@ -524,12 +524,12 @@ bson_append_bool (bson_t     *bson,
       key_length = strlen (key);
    }
 
-   return bson_append (bson, 4,
-                       (1 + key_length + 1 + 1),
-                       1, &type,
-                       key_length, key,
-                       1, &gZero,
-                       1, &byte);
+   return _bson_append (bson, 4,
+                        (1 + key_length + 1 + 1),
+                        1, &type,
+                        key_length, key,
+                        1, &gZero,
+                        1, &byte);
 }
 
 
@@ -554,13 +554,13 @@ bson_append_code (bson_t     *bson,
    length = strlen (javascript) + 1;
    length_le = BSON_UINT32_TO_LE (length);
 
-   return bson_append (bson, 5,
-                       (1 + key_length + 1 + 4 + length),
-                       1, &type,
-                       key_length, key,
-                       1, &gZero,
-                       4, &length_le,
-                       length, javascript);
+   return _bson_append (bson, 5,
+                        (1 + key_length + 1 + 4 + length),
+                        1, &type,
+                        key_length, key,
+                        1, &gZero,
+                        4, &length_le,
+                        length, javascript);
 }
 
 
@@ -595,15 +595,15 @@ bson_append_code_with_scope (bson_t       *bson,
    codews_length = 4 + 4 + js_length + scope->len;
    codews_length_le = BSON_UINT32_TO_LE (codews_length);
 
-   return bson_append (bson, 7,
-                       (1 + key_length + 1 + 4 + 4 + js_length + scope->len),
-                       1, &type,
-                       key_length, key,
-                       1, &gZero,
-                       4, &codews_length_le,
-                       4, &js_length_le,
-                       js_length, javascript,
-                       scope->len, bson_data (scope));
+   return _bson_append (bson, 7,
+                        (1 + key_length + 1 + 4 + 4 + js_length + scope->len),
+                        1, &type,
+                        key_length, key,
+                        1, &gZero,
+                        4, &codews_length_le,
+                        4, &js_length_le,
+                        js_length, javascript,
+                        scope->len, _bson_data (scope));
 }
 
 
@@ -630,14 +630,14 @@ bson_append_dbpointer (bson_t           *bson,
    length = strlen (collection) + 1;
    length_le = BSON_UINT32_TO_LE (length);
 
-   return bson_append (bson, 6,
-                       (1 + key_length + 1 + 4 + length + 12),
-                       1, &type,
-                       key_length, key,
-                       1, &gZero,
-                       4, &length_le,
-                       length, collection,
-                       12, oid);
+   return _bson_append (bson, 6,
+                        (1 + key_length + 1 + 4 + length + 12),
+                        1, &type,
+                        key_length, key,
+                        1, &gZero,
+                        4, &length_le,
+                        length, collection,
+                        12, oid);
 }
 
 
@@ -657,12 +657,12 @@ bson_append_document (bson_t       *bson,
       key_length = strlen (key);
    }
 
-   return bson_append (bson, 4,
-                       (1 + key_length + 1 + value->len),
-                       1, &type,
-                       key_length, key,
-                       1, &gZero,
-                       value->len, bson_data (value));
+   return _bson_append (bson, 4,
+                        (1 + key_length + 1 + value->len),
+                        1, &type,
+                        key_length, key,
+                        1, &gZero,
+                        value->len, _bson_data (value));
 }
 
 
@@ -685,12 +685,12 @@ bson_append_double (bson_t     *bson,
    value = BSON_DOUBLE_TO_LE (value);
 #endif
 
-   return bson_append (bson, 4,
-                       (1 + key_length + 1 + 8),
-                       1, &type,
-                       key_length, key,
-                       1, &gZero,
-                       8, &value);
+   return _bson_append (bson, 4,
+                        (1 + key_length + 1 + 8),
+                        1, &type,
+                        key_length, key,
+                        1, &gZero,
+                        8, &value);
 }
 
 
@@ -712,12 +712,12 @@ bson_append_int32 (bson_t      *bson,
 
    value_le = BSON_UINT32_TO_LE (value);
 
-   return bson_append (bson, 4,
-                       (1 + key_length + 1 + 4),
-                       1, &type,
-                       key_length, key,
-                       1, &gZero,
-                       4, &value_le);
+   return _bson_append (bson, 4,
+                        (1 + key_length + 1 + 4),
+                        1, &type,
+                        key_length, key,
+                        1, &gZero,
+                        4, &value_le);
 }
 
 
@@ -739,12 +739,12 @@ bson_append_int64 (bson_t      *bson,
 
    value_le = BSON_UINT64_TO_LE (value);
 
-   return bson_append (bson, 4,
-                       (1 + key_length + 1 + 8),
-                       1, &type,
-                       key_length, key,
-                       1, &gZero,
-                       8, &value_le);
+   return _bson_append (bson, 4,
+                        (1 + key_length + 1 + 8),
+                        1, &type,
+                        key_length, key,
+                        1, &gZero,
+                        8, &value_le);
 }
 
 
@@ -929,11 +929,11 @@ bson_append_maxkey (bson_t     *bson,
       key_length = strlen (key);
    }
 
-   return bson_append (bson, 3,
-                       (1 + key_length + 1),
-                       1, &type,
-                       key_length, key,
-                       1, &gZero);
+   return _bson_append (bson, 3,
+                        (1 + key_length + 1),
+                        1, &type,
+                        key_length, key,
+                        1, &gZero);
 }
 
 
@@ -951,11 +951,11 @@ bson_append_minkey (bson_t     *bson,
       key_length = strlen (key);
    }
 
-   return bson_append (bson, 3,
-                       (1 + key_length + 1),
-                       1, &type,
-                       key_length, key,
-                       1, &gZero);
+   return _bson_append (bson, 3,
+                        (1 + key_length + 1),
+                        1, &type,
+                        key_length, key,
+                        1, &gZero);
 }
 
 
@@ -973,11 +973,11 @@ bson_append_null (bson_t     *bson,
       key_length = strlen (key);
    }
 
-   return bson_append (bson, 3,
-                       (1 + key_length + 1),
-                       1, &type,
-                       key_length, key,
-                       1, &gZero);
+   return _bson_append (bson, 3,
+                        (1 + key_length + 1),
+                        1, &type,
+                        key_length, key,
+                        1, &gZero);
 }
 
 
@@ -997,12 +997,12 @@ bson_append_oid (bson_t           *bson,
       key_length = strlen (key);
    }
 
-   return bson_append (bson, 4,
-                       (1 + key_length + 1 + 12),
-                       1, &type,
-                       key_length, key,
-                       1, &gZero,
-                       12, value);
+   return _bson_append (bson, 4,
+                        (1 + key_length + 1 + 12),
+                        1, &type,
+                        key_length, key,
+                        1, &gZero,
+                        12, value);
 }
 
 
@@ -1035,13 +1035,13 @@ bson_append_regex (bson_t     *bson,
    regex_len = strlen (regex) + 1;
    options_len = strlen (options) + 1;
 
-   return bson_append (bson, 5,
-                       (1 + key_length + 1 + regex_len + options_len),
-                       1, &type,
-                       key_length, key,
-                       1, &gZero,
-                       regex_len, regex,
-                       options_len, options);
+   return _bson_append (bson, 5,
+                        (1 + key_length + 1 + regex_len + options_len),
+                        1, &type,
+                        key_length, key,
+                        1, &gZero,
+                        regex_len, regex,
+                        options_len, options);
 }
 
 
@@ -1072,14 +1072,14 @@ bson_append_utf8 (bson_t     *bson,
 
    length_le = BSON_UINT32_TO_LE (length + 1);
 
-   return bson_append (bson, 6,
-                       (1 + key_length + 1 + 4 + length + 1),
-                       1, &type,
-                       key_length, key,
-                       1, &gZero,
-                       4, &length_le,
-                       length, value,
-                       1, &gZero);
+   return _bson_append (bson, 6,
+                        (1 + key_length + 1 + 4 + length + 1),
+                        1, &type,
+                        key_length, key,
+                        1, &gZero,
+                        4, &length_le,
+                        length, value,
+                        1, &gZero);
 }
 
 
@@ -1110,14 +1110,14 @@ bson_append_symbol (bson_t     *bson,
 
    length_le = BSON_UINT32_TO_LE (length + 1);
 
-   return bson_append (bson, 6,
-                       (1 + key_length + 1 + 4 + length + 1),
-                       1, &type,
-                       key_length, key,
-                       1, &gZero,
-                       4, &length_le,
-                       length, value,
-                       1, &gZero);
+   return _bson_append (bson, 6,
+                        (1 + key_length + 1 + 4 + length + 1),
+                        1, &type,
+                        key_length, key,
+                        1, &gZero,
+                        4, &length_le,
+                        length, value,
+                        1, &gZero);
 }
 
 
@@ -1156,12 +1156,12 @@ bson_append_timestamp (bson_t       *bson,
    value = ((((bson_uint64_t)timestamp) << 32) | ((bson_uint64_t)increment));
    value = BSON_UINT64_TO_LE (value);
 
-   return bson_append (bson, 4,
-                       (1 + key_length + 1 + 8),
-                       1, &type,
-                       key_length, key,
-                       1, &gZero,
-                       8, &value);
+   return _bson_append (bson, 4,
+                        (1 + key_length + 1 + 8),
+                        1, &type,
+                        key_length, key,
+                        1, &gZero,
+                        8, &value);
 }
 
 
@@ -1194,12 +1194,12 @@ bson_append_date_time (bson_t      *bson,
       key_length = strlen (key);
    }
 
-   return bson_append (bson, 4,
-                       (1 + key_length + 1 + 8),
-                       1, &type,
-                       key_length, key,
-                       1, &gZero,
-                       8, &value);
+   return _bson_append (bson, 4,
+                        (1 + key_length + 1 + 8),
+                        1, &type,
+                        key_length, key,
+                        1, &gZero,
+                        8, &value);
 }
 
 
@@ -1235,11 +1235,11 @@ bson_append_undefined (bson_t     *bson,
       key_length = strlen (key);
    }
 
-   return bson_append (bson, 3,
-                       (1 + key_length + 1),
-                       1, &type,
-                       key_length, key,
-                       1, &gZero);
+   return _bson_append (bson, 3,
+                        (1 + key_length + 1),
+                        1, &type,
+                        key_length, key,
+                        1, &gZero);
 }
 
 
@@ -1393,7 +1393,7 @@ bson_new_from_data (const bson_uint8_t *data,
    }
 
    bson = bson_sized_new (length);
-   memcpy (bson_data (bson), data, length);
+   memcpy (_bson_data (bson), data, length);
    bson->len = length;
 
    return bson;
@@ -1407,7 +1407,7 @@ bson_copy (const bson_t *bson)
 
    bson_return_val_if_fail (bson, NULL);
 
-   data = bson_data (bson);
+   data = _bson_data (bson);
    return bson_new_from_data (data, bson->len);
 }
 
@@ -1429,7 +1429,7 @@ bson_copy_to (const bson_t *src,
       return;
    }
 
-   data = bson_data (src);
+   data = _bson_data (src);
    len = bson_next_power_of_two (src->len);
 
    adst = (bson_impl_alloc_t *)dst;
@@ -1472,10 +1472,10 @@ should_ignore (const char *first_exclude,
 
 
 static void
-bson_copy_to_excluding_va (const bson_t *src,
-                           bson_t       *dst,
-                           const char   *first_exclude,
-                           va_list       args)
+_bson_copy_to_excluding_va (const bson_t *src,
+                            bson_t       *dst,
+                            const char   *first_exclude,
+                            va_list       args)
 {
    bson_iter_t iter;
 
@@ -1511,7 +1511,7 @@ bson_copy_to_excluding (const bson_t *src,
    bson_return_if_fail (first_exclude);
 
    va_start (args, first_exclude);
-   bson_copy_to_excluding_va (src, dst, first_exclude, args);
+   _bson_copy_to_excluding_va (src, dst, first_exclude, args);
    va_end (args);
 }
 
@@ -1536,7 +1536,8 @@ const bson_uint8_t *
 bson_get_data (const bson_t *bson)
 {
    bson_return_val_if_fail (bson, NULL);
-   return bson_data (bson);
+
+   return _bson_data (bson);
 }
 
 
@@ -1581,11 +1582,11 @@ bson_compare (const bson_t *bson,
    if (bson->len != other->len) {
       len = MIN (bson->len, other->len);
 
-      if (!(ret = memcmp (bson_data (bson), bson_data (other), len))) {
+      if (!(ret = memcmp (_bson_data (bson), _bson_data (other), len))) {
          ret = bson->len - other->len;
       }
    } else {
-      ret = memcmp (bson_data (bson), bson_data (other), bson->len);
+      ret = memcmp (_bson_data (bson), _bson_data (other), bson->len);
    }
 
    return ret;
@@ -1601,11 +1602,11 @@ bson_equal (const bson_t *bson,
 
 
 static bson_bool_t
-bson_as_json_visit_utf8 (const bson_iter_t *iter,
-                         const char        *key,
-                         size_t             v_utf8_len,
-                         const char        *v_utf8,
-                         void              *data)
+_bson_as_json_visit_utf8 (const bson_iter_t *iter,
+                          const char        *key,
+                          size_t             v_utf8_len,
+                          const char        *v_utf8,
+                          void              *data)
 {
    bson_json_state_t *state = data;
    char *escaped;
@@ -1621,10 +1622,10 @@ bson_as_json_visit_utf8 (const bson_iter_t *iter,
 
 
 static bson_bool_t
-bson_as_json_visit_int32 (const bson_iter_t *iter,
-                          const char        *key,
-                          bson_int32_t       v_int32,
-                          void              *data)
+_bson_as_json_visit_int32 (const bson_iter_t *iter,
+                           const char        *key,
+                           bson_int32_t       v_int32,
+                           void              *data)
 {
    bson_json_state_t *state = data;
    char str[32];
@@ -1637,10 +1638,10 @@ bson_as_json_visit_int32 (const bson_iter_t *iter,
 
 
 static bson_bool_t
-bson_as_json_visit_int64 (const bson_iter_t *iter,
-                          const char        *key,
-                          bson_int64_t       v_int64,
-                          void              *data)
+_bson_as_json_visit_int64 (const bson_iter_t *iter,
+                           const char        *key,
+                           bson_int64_t       v_int64,
+                           void              *data)
 {
    bson_json_state_t *state = data;
    char str[32];
@@ -1653,10 +1654,10 @@ bson_as_json_visit_int64 (const bson_iter_t *iter,
 
 
 static bson_bool_t
-bson_as_json_visit_double (const bson_iter_t *iter,
-                           const char        *key,
-                           double             v_double,
-                           void              *data)
+_bson_as_json_visit_double (const bson_iter_t *iter,
+                            const char        *key,
+                            double             v_double,
+                            void              *data)
 {
    bson_json_state_t *state = data;
    char str[32];
@@ -1669,9 +1670,9 @@ bson_as_json_visit_double (const bson_iter_t *iter,
 
 
 static bson_bool_t
-bson_as_json_visit_undefined (const bson_iter_t *iter,
-                              const char        *key,
-                              void              *data)
+_bson_as_json_visit_undefined (const bson_iter_t *iter,
+                               const char        *key,
+                               void              *data)
 {
    bson_json_state_t *state = data;
 
@@ -1682,9 +1683,9 @@ bson_as_json_visit_undefined (const bson_iter_t *iter,
 
 
 static bson_bool_t
-bson_as_json_visit_null (const bson_iter_t *iter,
-                         const char        *key,
-                         void              *data)
+_bson_as_json_visit_null (const bson_iter_t *iter,
+                          const char        *key,
+                          void              *data)
 {
    bson_json_state_t *state = data;
 
@@ -1695,10 +1696,10 @@ bson_as_json_visit_null (const bson_iter_t *iter,
 
 
 static bson_bool_t
-bson_as_json_visit_oid (const bson_iter_t *iter,
-                        const char        *key,
-                        const bson_oid_t  *oid,
-                        void              *data)
+_bson_as_json_visit_oid (const bson_iter_t *iter,
+                         const char        *key,
+                         const bson_oid_t  *oid,
+                         void              *data)
 {
    bson_json_state_t *state = data;
    char str[25];
@@ -1715,12 +1716,12 @@ bson_as_json_visit_oid (const bson_iter_t *iter,
 
 
 static bson_bool_t
-bson_as_json_visit_binary (const bson_iter_t  *iter,
-                           const char         *key,
-                           bson_subtype_t      v_subtype,
-                           size_t              v_binary_len,
-                           const bson_uint8_t *v_binary,
-                           void               *data)
+_bson_as_json_visit_binary (const bson_iter_t  *iter,
+                            const char         *key,
+                            bson_subtype_t      v_subtype,
+                            size_t              v_binary_len,
+                            const bson_uint8_t *v_binary,
+                            void               *data)
 {
    bson_json_state_t *state = data;
    size_t b64_len;
@@ -1744,10 +1745,10 @@ bson_as_json_visit_binary (const bson_iter_t  *iter,
 
 
 static bson_bool_t
-bson_as_json_visit_bool (const bson_iter_t *iter,
-                         const char        *key,
-                         bson_bool_t        v_bool,
-                         void              *data)
+_bson_as_json_visit_bool (const bson_iter_t *iter,
+                          const char        *key,
+                          bson_bool_t        v_bool,
+                          void              *data)
 {
    bson_json_state_t *state = data;
 
@@ -1758,10 +1759,10 @@ bson_as_json_visit_bool (const bson_iter_t *iter,
 
 
 static bson_bool_t
-bson_as_json_visit_date_time (const bson_iter_t *iter,
-                              const char        *key,
-                              bson_int64_t       msec_since_epoch,
-                              void              *data)
+_bson_as_json_visit_date_time (const bson_iter_t *iter,
+                               const char        *key,
+                               bson_int64_t       msec_since_epoch,
+                               void              *data)
 {
    bson_json_state_t *state = data;
    char secstr[32];
@@ -1777,11 +1778,11 @@ bson_as_json_visit_date_time (const bson_iter_t *iter,
 
 
 static bson_bool_t
-bson_as_json_visit_regex (const bson_iter_t *iter,
-                          const char        *key,
-                          const char        *v_regex,
-                          const char        *v_options,
-                          void              *data)
+_bson_as_json_visit_regex (const bson_iter_t *iter,
+                           const char        *key,
+                           const char        *v_regex,
+                           const char        *v_options,
+                           void              *data)
 {
    bson_json_state_t *state = data;
 
@@ -1796,11 +1797,11 @@ bson_as_json_visit_regex (const bson_iter_t *iter,
 
 
 static bson_bool_t
-bson_as_json_visit_timestamp (const bson_iter_t *iter,
-                              const char        *key,
-                              bson_uint32_t      v_timestamp,
-                              bson_uint32_t      v_increment,
-                              void              *data)
+_bson_as_json_visit_timestamp (const bson_iter_t *iter,
+                               const char        *key,
+                               bson_uint32_t      v_timestamp,
+                               bson_uint32_t      v_increment,
+                               void              *data)
 {
    bson_json_state_t *state = data;
    char str[32];
@@ -1818,12 +1819,12 @@ bson_as_json_visit_timestamp (const bson_iter_t *iter,
 
 
 static bson_bool_t
-bson_as_json_visit_dbpointer (const bson_iter_t *iter,
-                              const char        *key,
-                              size_t             v_collection_len,
-                              const char        *v_collection,
-                              const bson_oid_t  *v_oid,
-                              void              *data)
+_bson_as_json_visit_dbpointer (const bson_iter_t *iter,
+                               const char        *key,
+                               size_t             v_collection_len,
+                               const char        *v_collection,
+                               const bson_oid_t  *v_oid,
+                               void              *data)
 {
    bson_json_state_t *state = data;
    char str[25];
@@ -1846,9 +1847,9 @@ bson_as_json_visit_dbpointer (const bson_iter_t *iter,
 
 
 static bson_bool_t
-bson_as_json_visit_minkey (const bson_iter_t *iter,
-                           const char        *key,
-                           void              *data)
+_bson_as_json_visit_minkey (const bson_iter_t *iter,
+                            const char        *key,
+                            void              *data)
 {
    bson_json_state_t *state = data;
 
@@ -1859,9 +1860,9 @@ bson_as_json_visit_minkey (const bson_iter_t *iter,
 
 
 static bson_bool_t
-bson_as_json_visit_maxkey (const bson_iter_t *iter,
-                           const char        *key,
-                           void              *data)
+_bson_as_json_visit_maxkey (const bson_iter_t *iter,
+                            const char        *key,
+                            void              *data)
 {
    bson_json_state_t *state = data;
 
@@ -1874,9 +1875,9 @@ bson_as_json_visit_maxkey (const bson_iter_t *iter,
 
 
 static bson_bool_t
-bson_as_json_visit_before (const bson_iter_t *iter,
-                           const char        *key,
-                           void              *data)
+_bson_as_json_visit_before (const bson_iter_t *iter,
+                            const char        *key,
+                            void              *data)
 {
    bson_json_state_t *state = data;
    char *escaped;
@@ -1900,11 +1901,11 @@ bson_as_json_visit_before (const bson_iter_t *iter,
 
 
 static bson_bool_t
-bson_as_json_visit_code (const bson_iter_t *iter,
-                         const char        *key,
-                         size_t             v_code_len,
-                         const char        *v_code,
-                         void              *data)
+_bson_as_json_visit_code (const bson_iter_t *iter,
+                          const char        *key,
+                          size_t             v_code_len,
+                          const char        *v_code,
+                          void              *data)
 {
    bson_json_state_t *state = data;
 
@@ -1917,11 +1918,11 @@ bson_as_json_visit_code (const bson_iter_t *iter,
 
 
 static bson_bool_t
-bson_as_json_visit_symbol (const bson_iter_t *iter,
-                           const char        *key,
-                           size_t             v_symbol_len,
-                           const char        *v_symbol,
-                           void              *data)
+_bson_as_json_visit_symbol (const bson_iter_t *iter,
+                            const char        *key,
+                            size_t             v_symbol_len,
+                            const char        *v_symbol,
+                            void              *data)
 {
    bson_json_state_t *state = data;
 
@@ -1934,12 +1935,12 @@ bson_as_json_visit_symbol (const bson_iter_t *iter,
 
 
 static bson_bool_t
-bson_as_json_visit_codewscope (const bson_iter_t *iter,
-                               const char        *key,
-                               size_t             v_code_len,
-                               const char        *v_code,
-                               const bson_t      *v_scope,
-                               void              *data)
+_bson_as_json_visit_codewscope (const bson_iter_t *iter,
+                                const char        *key,
+                                size_t             v_code_len,
+                                const char        *v_code,
+                                const bson_t      *v_scope,
+                                void              *data)
 {
    bson_json_state_t *state = data;
 
@@ -1952,35 +1953,35 @@ bson_as_json_visit_codewscope (const bson_iter_t *iter,
 
 
 static const bson_visitor_t bson_as_json_visitors = {
-   .visit_before     = bson_as_json_visit_before,
-   .visit_double     = bson_as_json_visit_double,
-   .visit_utf8       = bson_as_json_visit_utf8,
-   .visit_document   = bson_as_json_visit_document,
-   .visit_array      = bson_as_json_visit_array,
-   .visit_binary     = bson_as_json_visit_binary,
-   .visit_undefined  = bson_as_json_visit_undefined,
-   .visit_oid        = bson_as_json_visit_oid,
-   .visit_bool       = bson_as_json_visit_bool,
-   .visit_date_time  = bson_as_json_visit_date_time,
-   .visit_null       = bson_as_json_visit_null,
-   .visit_regex      = bson_as_json_visit_regex,
-   .visit_dbpointer  = bson_as_json_visit_dbpointer,
-   .visit_code       = bson_as_json_visit_code,
-   .visit_symbol     = bson_as_json_visit_symbol,
-   .visit_codewscope = bson_as_json_visit_codewscope,
-   .visit_int32      = bson_as_json_visit_int32,
-   .visit_timestamp  = bson_as_json_visit_timestamp,
-   .visit_int64      = bson_as_json_visit_int64,
-   .visit_minkey     = bson_as_json_visit_minkey,
-   .visit_maxkey     = bson_as_json_visit_maxkey,
+   .visit_before     = _bson_as_json_visit_before,
+   .visit_double     = _bson_as_json_visit_double,
+   .visit_utf8       = _bson_as_json_visit_utf8,
+   .visit_document   = _bson_as_json_visit_document,
+   .visit_array      = _bson_as_json_visit_array,
+   .visit_binary     = _bson_as_json_visit_binary,
+   .visit_undefined  = _bson_as_json_visit_undefined,
+   .visit_oid        = _bson_as_json_visit_oid,
+   .visit_bool       = _bson_as_json_visit_bool,
+   .visit_date_time  = _bson_as_json_visit_date_time,
+   .visit_null       = _bson_as_json_visit_null,
+   .visit_regex      = _bson_as_json_visit_regex,
+   .visit_dbpointer  = _bson_as_json_visit_dbpointer,
+   .visit_code       = _bson_as_json_visit_code,
+   .visit_symbol     = _bson_as_json_visit_symbol,
+   .visit_codewscope = _bson_as_json_visit_codewscope,
+   .visit_int32      = _bson_as_json_visit_int32,
+   .visit_timestamp  = _bson_as_json_visit_timestamp,
+   .visit_int64      = _bson_as_json_visit_int64,
+   .visit_minkey     = _bson_as_json_visit_minkey,
+   .visit_maxkey     = _bson_as_json_visit_maxkey,
 };
 
 
 static bson_bool_t
-bson_as_json_visit_document (const bson_iter_t *iter,
-                             const char        *key,
-                             const bson_t      *v_document,
-                             void              *data)
+_bson_as_json_visit_document (const bson_iter_t *iter,
+                              const char        *key,
+                              const bson_t      *v_document,
+                              void              *data)
 {
    bson_json_state_t *state = data;
    bson_json_state_t child_state = { 0, TRUE };
@@ -2005,10 +2006,10 @@ bson_as_json_visit_document (const bson_iter_t *iter,
 
 
 static bson_bool_t
-bson_as_json_visit_array (const bson_iter_t *iter,
-                          const char        *key,
-                          const bson_t      *v_array,
-                          void              *data)
+_bson_as_json_visit_array (const bson_iter_t *iter,
+                           const char        *key,
+                           const bson_t      *v_array,
+                           void              *data)
 {
    bson_json_state_t *state = data;
    bson_json_state_t child_state = { 0, FALSE };
@@ -2082,11 +2083,11 @@ bson_as_json (const bson_t *bson,
 
 
 static bson_bool_t
-bson_iter_validate_utf8 (const bson_iter_t *iter,
-                         const char        *key,
-                         size_t             v_utf8_len,
-                         const char        *v_utf8,
-                         void              *data)
+_bson_iter_validate_utf8 (const bson_iter_t *iter,
+                          const char        *key,
+                          size_t             v_utf8_len,
+                          const char        *v_utf8,
+                          void              *data)
 {
    bson_validate_state_t *state = data;
    bson_bool_t allow_null;
@@ -2105,8 +2106,8 @@ bson_iter_validate_utf8 (const bson_iter_t *iter,
 
 
 static void
-bson_iter_validate_corrupt (const bson_iter_t *iter,
-                            void              *data)
+_bson_iter_validate_corrupt (const bson_iter_t *iter,
+                             void              *data)
 {
    bson_validate_state_t *state = data;
 
@@ -2115,9 +2116,9 @@ bson_iter_validate_corrupt (const bson_iter_t *iter,
 
 
 static bson_bool_t
-bson_iter_validate_before (const bson_iter_t *iter,
-                           const char        *key,
-                           void              *data)
+_bson_iter_validate_before (const bson_iter_t *iter,
+                            const char        *key,
+                            void              *data)
 {
    bson_validate_state_t *state = data;
 
@@ -2140,12 +2141,12 @@ bson_iter_validate_before (const bson_iter_t *iter,
 
 
 static bson_bool_t
-bson_iter_validate_codewscope (const bson_iter_t *iter,
-                               const char        *key,
-                               size_t             v_code_len,
-                               const char        *v_code,
-                               const bson_t      *v_scope,
-                               void              *data)
+_bson_iter_validate_codewscope (const bson_iter_t *iter,
+                                const char        *key,
+                                size_t             v_code_len,
+                                const char        *v_code,
+                                const bson_t      *v_scope,
+                                void              *data)
 {
    bson_validate_state_t *state = data;
    size_t offset;
@@ -2160,27 +2161,27 @@ bson_iter_validate_codewscope (const bson_iter_t *iter,
 
 
 static bson_bool_t
-bson_iter_validate_document (const bson_iter_t *iter,
-                             const char        *key,
-                             const bson_t      *v_document,
-                             void              *data);
+_bson_iter_validate_document (const bson_iter_t *iter,
+                              const char        *key,
+                              const bson_t      *v_document,
+                              void              *data);
 
 
 static const bson_visitor_t bson_validate_funcs = {
-   .visit_before     = bson_iter_validate_before,
-   .visit_corrupt    = bson_iter_validate_corrupt,
-   .visit_utf8       = bson_iter_validate_utf8,
-   .visit_document   = bson_iter_validate_document,
-   .visit_array      = bson_iter_validate_document,
-   .visit_codewscope = bson_iter_validate_codewscope,
+   .visit_before     = _bson_iter_validate_before,
+   .visit_corrupt    = _bson_iter_validate_corrupt,
+   .visit_utf8       = _bson_iter_validate_utf8,
+   .visit_document   = _bson_iter_validate_document,
+   .visit_array      = _bson_iter_validate_document,
+   .visit_codewscope = _bson_iter_validate_codewscope,
 };
 
 
 static bson_bool_t
-bson_iter_validate_document (const bson_iter_t *iter,
-                             const char        *key,
-                             const bson_t      *v_document,
-                             void              *data)
+_bson_iter_validate_document (const bson_iter_t *iter,
+                              const char        *key,
+                              const bson_t      *v_document,
+                              void              *data)
 {
    bson_validate_state_t *state = data;
    bson_iter_t child;
@@ -2209,7 +2210,7 @@ bson_validate (const bson_t         *bson,
       goto failure;
    }
 
-   bson_iter_validate_document (&iter, NULL, bson, &state);
+   _bson_iter_validate_document (&iter, NULL, bson, &state);
 
 failure:
 
@@ -2228,6 +2229,6 @@ bson_concat (bson_t       *dst,
    BSON_ASSERT (dst);
    BSON_ASSERT (src);
 
-   return bson_append (dst, 1, src->len - 5,
-                       src->len - 5, bson_data (src) + 4);
+   return _bson_append (dst, 1, src->len - 5,
+                        src->len - 5, _bson_data (src) + 4);
 }
