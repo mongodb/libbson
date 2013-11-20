@@ -81,7 +81,7 @@ libbson_1_0_la_LIBADD = \
 libbson_1_0_la_LDFLAGS = \
 	$(BSON_LT_LDFLAGS) \
 	-no-undefined \
-	-export-symbols $(top_srcdir)/bson/libbson.symbols \
+	-export-symbols-regex "^bson_" \
 	-rpath $(libdir)
 
 
