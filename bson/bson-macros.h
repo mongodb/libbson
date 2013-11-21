@@ -193,7 +193,7 @@
 
 
 #if defined(__GNUC__)
-# if (__GNUC__ >= 4)
+# if (__GNUC__ >= 4) && (__GNUC_MINOR__ >= 1)
 #  define bson_sync_synchronize() __sync_synchronize()
 # else
 #  define bson_sync_synchronize() asm volatile("": : :"memory")
