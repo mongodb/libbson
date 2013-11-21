@@ -192,4 +192,11 @@
 #endif
 
 
+#if defined(__GNUC__) && (__GNUC__ >= 4)
+# define bson_sync_synchronize() __sync_synchronize()
+#else
+# define bson_sync_synchronize() asm volatile("": : :"memory")
+#endif
+
+
 #endif /* BSON_MACROS_H */
