@@ -4,7 +4,7 @@ MAN3 = \
 	$(top_srcdir)/doc/bson_sized_new.3
 
 MAN7 = \
-	$(top_srcdir)/doc/bson.7
+	$(top_srcdir)/doc/libbson.7
 
 MAN_DOC = $(MAN3) $(MAN7)
 
