@@ -442,7 +442,7 @@ bson_iter_type (const bson_iter_t *iter);
 static BSON_INLINE bson_type_t
 bson_iter_type_unsafe (const bson_iter_t *iter)
 {
-   return iter->type[0];
+   return (bson_type_t) iter->type[0];
 }
 
 
