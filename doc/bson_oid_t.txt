@@ -1,0 +1,91 @@
+bson_oid_t(3)
+============
+
+
+NAME
+----
+
+bson_oid_t, bson_oid_init, bson_oid_init_from_data, bson_oid_init_from_string, bson_oid_init_sequence - create and parse BSON ObjectIds
+
+SYNOPSIS
+--------
+
+[source, c]
+-------------------
+#include <bson.h>
+
+typedef struct {
+    bson_uint8_t bytes[12];
+} bson_oid_t;
+
+void bson_oid_init (bson_oid_t *oid, bson_context_t *context);
+void bson_oid_init_from_data (bson_oid_t *oid, const bson_uint8_t *data);
+void bson_oid_init_from_string (bson_oid_t *oid, const char *str);
+void bson_oid_init_sequence (bson_oid_t *oid, bson_context_t *context);
+-------------------
+
+
+DESCRIPTION
+-----------
+
+A `bson_oid_t` is a 12-byte structure containing the following:
+
+ * Byte 0-3: 32-bit UNIX timestamp in big-endian encoding.
+ * Byte 4-6: First 3 bytes of MD5 of the nodes hostname.
+ * Byte 7-8: A 2-byte representation of the process id. This might be not correlate directly to process id on systems with a process id that is larger than 2-bytes.
+ * Byte 9-11: A 24-bit monotonic counter incremented after each OID generation.
+
+When generating a `bson_oid_t`, a `bson_context_t` is used to provide thread-safety. You may pass NULL instead of a `bson_context_t` to use the default thread-safe instance. It is generally good practice to use NULL unless you have a specific performance concern.
+
+
+ERRORS
+------
+
+No errors are defined.
+
+
+EXAMPLES
+--------
+
+[source, c]
+-------------------
+#include <bson.h>
+#include <stdio.h>
+
+int main (int argc, char *argv[])
+{
+   bson_oid_t oid;
+   char str[25];
+
+   bson_oid_init (&oid, NULL);
+   bson_oid_to_string (&oid, str);
+   printf ("%s\n", str);
+
+   return 0;
+}
+-------------------
+
+
+SEE ALSO
+--------
+
+linkbson:bson_context_t[7]
+linkbson:bson_oid_compare[3]
+linkbson:bson_oid_copy[3]
+linkbson:bson_oid_equal[3]
+linkbson:bson_oid_is_valid[3]
+linkbson:bson_oid_get_time_t[3]
+linkbson:bson_oid_hash[3]
+linkbson:bson_oid_to_string[3]
+
+
+REFERENCES
+----------
+
+http://docs.mongodb.org/manual/reference/object-id/
+
+
+AUTHORS
+-------
+
+This page was written by MongoDB Inc.

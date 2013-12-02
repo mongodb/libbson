@@ -1,7 +1,12 @@
 MAN3 = \
 	$(top_srcdir)/doc/bson_new.3 \
 	$(top_srcdir)/doc/bson_new_from_data.3 \
-	$(top_srcdir)/doc/bson_sized_new.3
+	$(top_srcdir)/doc/bson_sized_new.3 \
+	$(top_srcdir)/doc/bson_oid_t.3 \
+	$(top_srcdir)/doc/bson_oid_init.3 \
+	$(top_srcdir)/doc/bson_oid_init_from_data.3 \
+	$(top_srcdir)/doc/bson_oid_init_from_string.3 \
+	$(top_srcdir)/doc/bson_oid_init_sequence.3
 
 MAN7 = \
 	$(top_srcdir)/doc/libbson.7
