@@ -5,7 +5,7 @@ bson_append_timestamp(3)
 NAME
 ----
 
-bson_append_timestamp - TODO
+bson_append_timestamp - append a timestamp element to a bson document
 
 
 SYNOPSIS
@@ -27,27 +27,32 @@ bson_append_timestamp (bson_t       *bson,
 DESCRIPTION
 -----------
 
-The _bson_append_timestamp()_ function shall 
+This function is not similar in functionality to _bson_append_date_time()_.
+Timestamp elements are different in that they include only second precision and an increment field.
+They are primarily used for intra-MongoDB server communication.
+
+The _bson_append_timestamp()_ function shall append a new element of type BSON_TYPE_TIMESTAMP.
 
 
 RETURN VALUE
 ------------
 
-TODO
+TRUE if successful. Otherwise FALSE and no modifications are made.
 
 
 ERRORS
 ------
-No errors are defined.
+
+FALSE if there was insufficient space to append the element.
 
 
 SEE ALSO
 --------
 
-TODO
+http://bsonspec.org/#/specification
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
