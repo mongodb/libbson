@@ -3,8 +3,6 @@ MAN3 = \
 	doc/bson_new_from_data.3 \
 	doc/bson_sized_new.3 \
 	doc/bson_oid_t.3 \
-	doc/bson_append_array_begin.3 \
-	doc/bson_append_array_end.3 \
 	doc/bson_append_array.3 \
 	doc/bson_append_binary.3 \
 	doc/bson_append_bool.3 \
