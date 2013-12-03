@@ -5,7 +5,7 @@ bson_append_dbpointer(3)
 NAME
 ----
 
-bson_append_dbpointer - TODO
+bson_append_dbpointer - append a dbpointer element to a bson document
 
 
 SYNOPSIS
@@ -27,27 +27,33 @@ bson_append_dbpointer (bson_t           *bson,
 DESCRIPTION
 -----------
 
-The _bson_append_dbpointer()_ function shall 
+The dbpointer field type is *DEPRECATED* and should only be used when interacting with legacy systems.
+
+The _bson_append_dbpointer()_ function shall append a dbpointer element to a bson document.
+
+New code should use _Database References_ instead of the dbpointer element type.
 
 
 RETURN VALUE
 ------------
 
-TODO
+TRUE if successful. Otherwise FALSE.
 
 
 ERRORS
 ------
-No errors are defined.
+
+FALSE is returned if there was insufficient space to append the element.
 
 
 SEE ALSO
 --------
 
-TODO
+http://bsonspec.org/#/specification
+http://docs.mongodb.org/manual/reference/database-references/
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
