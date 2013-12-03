@@ -10,8 +10,6 @@ MAN3 = \
 	doc/bson_append_code_with_scope.3 \
 	doc/bson_append_date_time.3 \
 	doc/bson_append_dbpointer.3 \
-	doc/bson_append_document_begin.3 \
-	doc/bson_append_document_end.3 \
 	doc/bson_append_document.3 \
 	doc/bson_append_double.3 \
 	doc/bson_append_int32.3 \
