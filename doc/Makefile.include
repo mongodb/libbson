@@ -22,8 +22,6 @@ MAN3 = \
 	doc/bson_append_regex.3 \
 	doc/bson_append_symbol.3 \
 	doc/bson_append_timestamp.3 \
-	doc/bson_append_time_t.3 \
-	doc/bson_append_timeval.3 \
 	doc/bson_append_undefined.3 \
 	doc/bson_append_utf8.3 \
 	doc/bson_as_json.3 \
