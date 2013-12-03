@@ -1,0 +1,53 @@
+bson_append_code_with_scope(3)
+==============================
+
+
+NAME
+----
+
+bson_append_code_with_scope - TODO
+
+
+SYNOPSIS
+--------
+
+[source, c]
+-----------------------
+#include <bson.h>
+
+bson_bool_t
+bson_append_code_with_scope (bson_t       *bson,
+                             const char   *key,
+                             int           key_length,
+                             const char   *javascript,
+                             const bson_t *scope);
+-----------------------
+
+
+DESCRIPTION
+-----------
+
+The _bson_append_code_with_scope()_ function shall 
+
+
+RETURN VALUE
+------------
+
+TODO
+
+
+ERRORS
+------
+No errors are defined.
+
+
+SEE ALSO
+--------
+
+TODO
+
+
+AUTHORS
+-------
+This page was written by MongoDB, Inc.
+

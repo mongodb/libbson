@@ -1,0 +1,53 @@
+bson_append_timestamp(3)
+========================
+
+
+NAME
+----
+
+bson_append_timestamp - TODO
+
+
+SYNOPSIS
+--------
+
+[source, c]
+-----------------------
+#include <bson.h>
+
+bson_bool_t
+bson_append_timestamp (bson_t       *bson,
+                       const char   *key,
+                       int           key_length,
+                       bson_uint32_t timestamp,
+                       bson_uint32_t increment);
+-----------------------
+
+
+DESCRIPTION
+-----------
+
+The _bson_append_timestamp()_ function shall 
+
+
+RETURN VALUE
+------------
+
+TODO
+
+
+ERRORS
+------
+No errors are defined.
+
+
+SEE ALSO
+--------
+
+TODO
+
+
+AUTHORS
+-------
+This page was written by MongoDB, Inc.
+

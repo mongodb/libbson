@@ -1,0 +1,51 @@
+bson_validate(3)
+================
+
+
+NAME
+----
+
+bson_validate - TODO
+
+
+SYNOPSIS
+--------
+
+[source, c]
+-----------------------
+#include <bson.h>
+
+bson_bool_t
+bson_validate (const bson_t         *bson,
+               bson_validate_flags_t flags,
+               size_t               *offset);
+-----------------------
+
+
+DESCRIPTION
+-----------
+
+The _bson_validate()_ function shall 
+
+
+RETURN VALUE
+------------
+
+TODO
+
+
+ERRORS
+------
+No errors are defined.
+
+
+SEE ALSO
+--------
+
+TODO
+
+
+AUTHORS
+-------
+This page was written by MongoDB, Inc.
+

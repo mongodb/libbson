@@ -1,0 +1,51 @@
+bson_append_now_utc(3)
+======================
+
+
+NAME
+----
+
+bson_append_now_utc - TODO
+
+
+SYNOPSIS
+--------
+
+[source, c]
+-----------------------
+#include <bson.h>
+
+bson_bool_t
+bson_append_now_utc (bson_t     *bson,
+                     const char *key,
+                     int         key_length);
+-----------------------
+
+
+DESCRIPTION
+-----------
+
+The _bson_append_now_utc()_ function shall 
+
+
+RETURN VALUE
+------------
+
+TODO
+
+
+ERRORS
+------
+No errors are defined.
+
+
+SEE ALSO
+--------
+
+TODO
+
+
+AUTHORS
+-------
+This page was written by MongoDB, Inc.
+

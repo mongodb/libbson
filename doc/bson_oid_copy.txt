@@ -1,0 +1,50 @@
+bson_oid_copy(3)
+================
+
+
+NAME
+----
+
+bson_oid_copy - TODO
+
+
+SYNOPSIS
+--------
+
+[source, c]
+-----------------------
+#include <bson.h>
+
+void
+bson_oid_copy (const bson_oid_t *src,
+               bson_oid_t       *dst);
+-----------------------
+
+
+DESCRIPTION
+-----------
+
+The _bson_oid_copy()_ function shall 
+
+
+RETURN VALUE
+------------
+
+TODO
+
+
+ERRORS
+------
+No errors are defined.
+
+
+SEE ALSO
+--------
+
+TODO
+
+
+AUTHORS
+-------
+This page was written by MongoDB, Inc.
+

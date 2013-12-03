@@ -1,0 +1,52 @@
+bson_writer_new(3)
+==================
+
+
+NAME
+----
+
+bson_writer_new - TODO
+
+
+SYNOPSIS
+--------
+
+[source, c]
+-----------------------
+#include <bson.h>
+
+bson_writer_t *
+bson_writer_new (bson_uint8_t    **buf,
+                 size_t           *buflen,
+                 size_t            offset,
+                 bson_realloc_func realloc_func);
+-----------------------
+
+
+DESCRIPTION
+-----------
+
+The _bson_writer_new()_ function shall 
+
+
+RETURN VALUE
+------------
+
+TODO
+
+
+ERRORS
+------
+No errors are defined.
+
+
+SEE ALSO
+--------
+
+TODO
+
+
+AUTHORS
+-------
+This page was written by MongoDB, Inc.
+

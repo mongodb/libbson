@@ -1,0 +1,48 @@
+bson_md5_init(3)
+================
+
+
+NAME
+----
+
+bson_md5_init - TODO
+
+
+SYNOPSIS
+--------
+
+[source, c]
+-----------------------
+#include <bson.h>
+
+void bson_md5_init   (bson_md5_t         *pms);
+-----------------------
+
+
+DESCRIPTION
+-----------
+
+The _bson_md5_init()_ function shall 
+
+
+RETURN VALUE
+------------
+
+TODO
+
+
+ERRORS
+------
+No errors are defined.
+
+
+SEE ALSO
+--------
+
+TODO
+
+
+AUTHORS
+-------
+This page was written by MongoDB, Inc.
+

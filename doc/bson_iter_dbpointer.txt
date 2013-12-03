@@ -1,0 +1,52 @@
+bson_iter_dbpointer(3)
+======================
+
+
+NAME
+----
+
+bson_iter_dbpointer - TODO
+
+
+SYNOPSIS
+--------
+
+[source, c]
+-----------------------
+#include <bson.h>
+
+void
+bson_iter_dbpointer (const bson_iter_t *iter,
+                     bson_uint32_t     *collection_len,
+                     const char       **collection,
+                     const bson_oid_t **oid);
+-----------------------
+
+
+DESCRIPTION
+-----------
+
+The _bson_iter_dbpointer()_ function shall 
+
+
+RETURN VALUE
+------------
+
+TODO
+
+
+ERRORS
+------
+No errors are defined.
+
+
+SEE ALSO
+--------
+
+TODO
+
+
+AUTHORS
+-------
+This page was written by MongoDB, Inc.
+

@@ -1,0 +1,50 @@
+bson_oid_to_string(3)
+=====================
+
+
+NAME
+----
+
+bson_oid_to_string - TODO
+
+
+SYNOPSIS
+--------
+
+[source, c]
+-----------------------
+#include <bson.h>
+
+void
+bson_oid_to_string (const bson_oid_t *oid,
+                    char              str[25]);
+-----------------------
+
+
+DESCRIPTION
+-----------
+
+The _bson_oid_to_string()_ function shall 
+
+
+RETURN VALUE
+------------
+
+TODO
+
+
+ERRORS
+------
+No errors are defined.
+
+
+SEE ALSO
+--------
+
+TODO
+
+
+AUTHORS
+-------
+This page was written by MongoDB, Inc.
+

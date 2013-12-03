@@ -1,0 +1,51 @@
+bson_iter_array(3)
+==================
+
+
+NAME
+----
+
+bson_iter_array - TODO
+
+
+SYNOPSIS
+--------
+
+[source, c]
+-----------------------
+#include <bson.h>
+
+void
+bson_iter_array (const bson_iter_t   *iter,
+                 bson_uint32_t       *array_len,
+                 const bson_uint8_t **array);
+-----------------------
+
+
+DESCRIPTION
+-----------
+
+The _bson_iter_array()_ function shall 
+
+
+RETURN VALUE
+------------
+
+TODO
+
+
+ERRORS
+------
+No errors are defined.
+
+
+SEE ALSO
+--------
+
+TODO
+
+
+AUTHORS
+-------
+This page was written by MongoDB, Inc.
+

@@ -1,0 +1,93 @@
+bson_oid_parse_hex_char(3)
+==========================
+
+
+NAME
+----
+
+bson_oid_parse_hex_char - TODO
+
+
+SYNOPSIS
+--------
+
+[source, c]
+-----------------------
+#include <bson.h>
+
+static BSON_INLINE bson_uint8_t
+bson_oid_parse_hex_char (char hex)
+{
+   switch (hex) {
+   case '0':
+      return 0;
+   case '1':
+      return 1;
+   case '2':
+      return 2;
+   case '3':
+      return 3;
+   case '4':
+      return 4;
+   case '5':
+      return 5;
+   case '6':
+      return 6;
+   case '7':
+      return 7;
+   case '8':
+      return 8;
+   case '9':
+      return 9;
+   case 'a':
+   case 'A':
+      return 0xa;
+   case 'b':
+   case 'B':
+      return 0xb;
+   case 'c':
+   case 'C':
+      return 0xc;
+   case 'd':
+   case 'D':
+      return 0xd;
+   case 'e':
+   case 'E':
+      return 0xe;
+   case 'f':
+   case 'F':
+      return 0xf;
+   default:
+      return 0;
+   }
+};
+-----------------------
+
+
+DESCRIPTION
+-----------
+
+The _bson_oid_parse_hex_char()_ function shall 
+
+
+RETURN VALUE
+------------
+
+TODO
+
+
+ERRORS
+------
+No errors are defined.
+
+
+SEE ALSO
+--------
+
+TODO
+
+
+AUTHORS
+-------
+This page was written by MongoDB, Inc.
+

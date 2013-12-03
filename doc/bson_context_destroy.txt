@@ -1,0 +1,49 @@
+bson_context_destroy(3)
+=======================
+
+
+NAME
+----
+
+bson_context_destroy - TODO
+
+
+SYNOPSIS
+--------
+
+[source, c]
+-----------------------
+#include <bson.h>
+
+void
+bson_context_destroy (bson_context_t *context);
+-----------------------
+
+
+DESCRIPTION
+-----------
+
+The _bson_context_destroy()_ function shall 
+
+
+RETURN VALUE
+------------
+
+TODO
+
+
+ERRORS
+------
+No errors are defined.
+
+
+SEE ALSO
+--------
+
+TODO
+
+
+AUTHORS
+-------
+This page was written by MongoDB, Inc.
+

@@ -1,0 +1,52 @@
+bson_append_document_begin(3)
+=============================
+
+
+NAME
+----
+
+bson_append_document_begin - TODO
+
+
+SYNOPSIS
+--------
+
+[source, c]
+-----------------------
+#include <bson.h>
+
+bson_bool_t
+bson_append_document_begin (bson_t     *bson,
+                            const char *key,
+                            int         key_length,
+                            bson_t     *child);
+-----------------------
+
+
+DESCRIPTION
+-----------
+
+The _bson_append_document_begin()_ function shall 
+
+
+RETURN VALUE
+------------
+
+TODO
+
+
+ERRORS
+------
+No errors are defined.
+
+
+SEE ALSO
+--------
+
+TODO
+
+
+AUTHORS
+-------
+This page was written by MongoDB, Inc.
+

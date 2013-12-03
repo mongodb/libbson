@@ -1,0 +1,55 @@
+bson_iter_double_unsafe(3)
+==========================
+
+
+NAME
+----
+
+bson_iter_double_unsafe - TODO
+
+
+SYNOPSIS
+--------
+
+[source, c]
+-----------------------
+#include <bson.h>
+
+static BSON_INLINE double
+bson_iter_double_unsafe (const bson_iter_t *iter)
+{
+   double val;
+
+   memcpy (&val, iter->data1, 8);
+   return BSON_DOUBLE_FROM_LE (val);
+};
+-----------------------
+
+
+DESCRIPTION
+-----------
+
+The _bson_iter_double_unsafe()_ function shall 
+
+
+RETURN VALUE
+------------
+
+TODO
+
+
+ERRORS
+------
+No errors are defined.
+
+
+SEE ALSO
+--------
+
+TODO
+
+
+AUTHORS
+-------
+This page was written by MongoDB, Inc.
+

@@ -1,0 +1,50 @@
+bson_utf8_escape_for_json(3)
+============================
+
+
+NAME
+----
+
+bson_utf8_escape_for_json - TODO
+
+
+SYNOPSIS
+--------
+
+[source, c]
+-----------------------
+#include <bson.h>
+
+char *
+bson_utf8_escape_for_json (const char *utf8,
+                           ssize_t     utf8_len);
+-----------------------
+
+
+DESCRIPTION
+-----------
+
+The _bson_utf8_escape_for_json()_ function shall 
+
+
+RETURN VALUE
+------------
+
+TODO
+
+
+ERRORS
+------
+No errors are defined.
+
+
+SEE ALSO
+--------
+
+TODO
+
+
+AUTHORS
+-------
+This page was written by MongoDB, Inc.
+

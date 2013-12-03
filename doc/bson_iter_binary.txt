@@ -1,0 +1,52 @@
+bson_iter_binary(3)
+===================
+
+
+NAME
+----
+
+bson_iter_binary - TODO
+
+
+SYNOPSIS
+--------
+
+[source, c]
+-----------------------
+#include <bson.h>
+
+void
+bson_iter_binary (const bson_iter_t   *iter,
+                  bson_subtype_t      *subtype,
+                  bson_uint32_t       *binary_len,
+                  const bson_uint8_t **binary);
+-----------------------
+
+
+DESCRIPTION
+-----------
+
+The _bson_iter_binary()_ function shall 
+
+
+RETURN VALUE
+------------
+
+TODO
+
+
+ERRORS
+------
+No errors are defined.
+
+
+SEE ALSO
+--------
+
+TODO
+
+
+AUTHORS
+-------
+This page was written by MongoDB, Inc.
+

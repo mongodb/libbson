@@ -1,0 +1,50 @@
+bson_iter_overwrite_int64(3)
+============================
+
+
+NAME
+----
+
+bson_iter_overwrite_int64 - TODO
+
+
+SYNOPSIS
+--------
+
+[source, c]
+-----------------------
+#include <bson.h>
+
+void
+bson_iter_overwrite_int64 (bson_iter_t *iter,
+                           bson_int64_t value);
+-----------------------
+
+
+DESCRIPTION
+-----------
+
+The _bson_iter_overwrite_int64()_ function shall 
+
+
+RETURN VALUE
+------------
+
+TODO
+
+
+ERRORS
+------
+No errors are defined.
+
+
+SEE ALSO
+--------
+
+TODO
+
+
+AUTHORS
+-------
+This page was written by MongoDB, Inc.
+

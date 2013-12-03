@@ -1,0 +1,50 @@
+bson_oid_compare(3)
+===================
+
+
+NAME
+----
+
+bson_oid_compare - TODO
+
+
+SYNOPSIS
+--------
+
+[source, c]
+-----------------------
+#include <bson.h>
+
+int
+bson_oid_compare (const bson_oid_t *oid1,
+                  const bson_oid_t *oid2);
+-----------------------
+
+
+DESCRIPTION
+-----------
+
+The _bson_oid_compare()_ function shall 
+
+
+RETURN VALUE
+------------
+
+TODO
+
+
+ERRORS
+------
+No errors are defined.
+
+
+SEE ALSO
+--------
+
+TODO
+
+
+AUTHORS
+-------
+This page was written by MongoDB, Inc.
+

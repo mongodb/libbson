@@ -1,0 +1,50 @@
+bson_concat(3)
+==============
+
+
+NAME
+----
+
+bson_concat - TODO
+
+
+SYNOPSIS
+--------
+
+[source, c]
+-----------------------
+#include <bson.h>
+
+bson_bool_t
+bson_concat (bson_t       *dst,
+             const bson_t *src);
+-----------------------
+
+
+DESCRIPTION
+-----------
+
+The _bson_concat()_ function shall 
+
+
+RETURN VALUE
+------------
+
+TODO
+
+
+ERRORS
+------
+No errors are defined.
+
+
+SEE ALSO
+--------
+
+TODO
+
+
+AUTHORS
+-------
+This page was written by MongoDB, Inc.
+

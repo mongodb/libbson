@@ -1,0 +1,54 @@
+bson_append_binary(3)
+=====================
+
+
+NAME
+----
+
+bson_append_binary - TODO
+
+
+SYNOPSIS
+--------
+
+[source, c]
+-----------------------
+#include <bson.h>
+
+bson_bool_t
+bson_append_binary (bson_t             *bson,
+                    const char         *key,
+                    int                 key_length,
+                    bson_subtype_t      subtype,
+                    const bson_uint8_t *binary,
+                    bson_uint32_t       length);
+-----------------------
+
+
+DESCRIPTION
+-----------
+
+The _bson_append_binary()_ function shall 
+
+
+RETURN VALUE
+------------
+
+TODO
+
+
+ERRORS
+------
+No errors are defined.
+
+
+SEE ALSO
+--------
+
+TODO
+
+
+AUTHORS
+-------
+This page was written by MongoDB, Inc.
+

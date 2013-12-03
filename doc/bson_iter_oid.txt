@@ -1,0 +1,49 @@
+bson_iter_oid(3)
+================
+
+
+NAME
+----
+
+bson_iter_oid - TODO
+
+
+SYNOPSIS
+--------
+
+[source, c]
+-----------------------
+#include <bson.h>
+
+const bson_oid_t *
+bson_iter_oid (const bson_iter_t *iter);
+-----------------------
+
+
+DESCRIPTION
+-----------
+
+The _bson_iter_oid()_ function shall 
+
+
+RETURN VALUE
+------------
+
+TODO
+
+
+ERRORS
+------
+No errors are defined.
+
+
+SEE ALSO
+--------
+
+TODO
+
+
+AUTHORS
+-------
+This page was written by MongoDB, Inc.
+
