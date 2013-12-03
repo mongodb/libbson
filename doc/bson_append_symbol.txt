@@ -5,7 +5,7 @@ bson_append_symbol(3)
 NAME
 ----
 
-bson_append_symbol - TODO
+bson_append_symbol - append a new symbol element to a bson document
 
 
 SYNOPSIS
@@ -27,27 +27,29 @@ bson_append_symbol (bson_t     *bson,
 DESCRIPTION
 -----------
 
-The _bson_append_symbol()_ function shall 
+Appends a new field to _bson_ of type BSON_TYPE_SYMBOL. This BSON type is
+deprecated and should not be used in new code.
 
 
 RETURN VALUE
 ------------
 
-TODO
+TRUE if successful. Otherwise FALSE and no modifications are made.
 
 
 ERRORS
 ------
-No errors are defined.
+
+FALSE is returned if there was insufficient space to append the element.
 
 
 SEE ALSO
 --------
 
-TODO
+http://bsonspec.org/#/specification
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
