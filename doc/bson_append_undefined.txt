@@ -5,7 +5,7 @@ bson_append_undefined(3)
 NAME
 ----
 
-bson_append_undefined - TODO
+bson_append_undefined - append an undefined element to a bson document
 
 
 SYNOPSIS
@@ -25,27 +25,28 @@ bson_append_undefined (bson_t     *bson,
 DESCRIPTION
 -----------
 
-The _bson_append_undefined()_ function shall 
+The _bson_append_undefined()_ function shall append a new element to _bson_ of type BSON_TYPE_UNDEFINED. Undefined is common in Javascript. However, this element type is deprecated and should not be used in new code.
 
 
 RETURN VALUE
 ------------
 
-TODO
+TRUE if successful. Otherwise FALSE and no modifications are made.
 
 
 ERRORS
 ------
-No errors are defined.
+
+FALSE is returned if there was insufficient space to append the element.
 
 
 SEE ALSO
 --------
 
-TODO
+http://bsonspec.org/#/specification
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
