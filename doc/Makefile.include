@@ -27,6 +27,9 @@ MAN3 = \
 	doc/bson_as_json.3 \
 	doc/bson_compare.3 \
 	doc/bson_concat.3 \
+	doc/bson_context_destroy.3 \
+	doc/bson_context_get_default.3 \
+	doc/bson_context_new.3 \
 	doc/bson_copy_to_excluding.3 \
 	doc/bson_copy_to.3 \
 	doc/bson_copy.3 \
