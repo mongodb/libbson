@@ -5,7 +5,7 @@ bson_append_regex(3)
 NAME
 ----
 
-bson_append_regex - TODO
+bson_append_regex - append a regex element to a bson document
 
 
 SYNOPSIS
@@ -27,24 +27,35 @@ bson_append_regex (bson_t     *bson,
 DESCRIPTION
 -----------
 
-The _bson_append_regex()_ function shall 
+Appends a new field to _bson_ of type BSON_TYPE_REGEX. _regex_ should
+be the regex string. _options_ should contain the options for the regex.
+
+Valid characters for _options_ include:
+
+	'i' for case-insensitive.
+	'm' for multiple matching.
+	'x' for verbose mode.
+	'l' to make \w and \W locale dependent.
+	's' for dotall mode ('.' matches everything)
+	'u' to make \w and \W match unicode.
 
 
 RETURN VALUE
 ------------
 
-TODO
+TRUE is returned if successful. Otherwise FALSE and no modifications are made.
 
 
 ERRORS
 ------
-No errors are defined.
+
+FALSE is returned if there was insufficient space for the element.
 
 
 SEE ALSO
 --------
 
-TODO
+http://bsonspec.org/#/specification
 
 
 AUTHORS
