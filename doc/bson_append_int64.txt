@@ -5,7 +5,7 @@ bson_append_int64(3)
 NAME
 ----
 
-bson_append_int64 - TODO
+bson_append_int64 - append an int64 element to a bson document
 
 
 SYNOPSIS
@@ -26,27 +26,33 @@ bson_append_int64 (bson_t      *bson,
 DESCRIPTION
 -----------
 
-The _bson_append_int64()_ function shall 
+The _bson_append_int64()_ function shall append a new element to _bson_ containing a 64-bit signed integer.
+
+If _key_ is NULL terminated, -1 may be passed for _key_length_.
 
 
 RETURN VALUE
 ------------
 
-TODO
+TRUE if successful. Otherwise FALSE and no modifications are made to _bson_.
 
 
 ERRORS
 ------
-No errors are defined.
+
+FALSE is returned if there is insufficient space for the element.
 
 
 SEE ALSO
 --------
 
-TODO
+linkbson:bson_append_double[3]
+linkbson:bson_append_int32[3]
+
+http://bsonspec.org/#/specification
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
