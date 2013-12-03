@@ -5,7 +5,7 @@ bson_append_bool(3)
 NAME
 ----
 
-bson_append_bool - TODO
+bson_append_bool - append a boolean element to a bson document
 
 
 SYNOPSIS
@@ -26,18 +26,21 @@ bson_append_bool (bson_t     *bson,
 DESCRIPTION
 -----------
 
-The _bson_append_bool()_ function shall 
+The _bson_append_bool()_ function shall append a new element to _bson_ containing the boolean provided.
+
+You may specify -1 for _key_length_ if _key_ is NULL terminated.
 
 
 RETURN VALUE
 ------------
 
-TODO
+TRUE if the element was appended to _bson_. Otherwise FALSE.
 
 
 ERRORS
 ------
-No errors are defined.
+
+If appending the element would cause _bson_ to grow past it's maximum size, FALSE is returned and no modifications are made.
 
 
 SEE ALSO
