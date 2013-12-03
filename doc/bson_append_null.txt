@@ -5,7 +5,7 @@ bson_append_null(3)
 NAME
 ----
 
-bson_append_null - TODO
+bson_append_null - append an element of type BSON_TYPE_NULL to a bson document
 
 
 SYNOPSIS
@@ -25,27 +25,30 @@ bson_append_null (bson_t     *bson,
 DESCRIPTION
 -----------
 
-The _bson_append_null()_ function shall 
+The _bson_append_null()_ function shall append a new element to _bson_ of type BSON_TYPE_NULL.
+
+If _key_ is NULL terminated, -1 may be passed for _key_length_.
 
 
 RETURN VALUE
 ------------
 
-TODO
+TRUE if successful. Otherwise FALSE and no modifications are made.
 
 
 ERRORS
 ------
-No errors are defined.
+
+FALSE is returned if there was insufficient space to append the element.
 
 
 SEE ALSO
 --------
 
-TODO
+linkbson:bson_append_undefined[3]
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
