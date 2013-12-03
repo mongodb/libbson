@@ -5,7 +5,7 @@ bson_append_minkey(3)
 NAME
 ----
 
-bson_append_minkey - TODO
+bson_append_minkey - append a minkey element to a bson document
 
 
 SYNOPSIS
@@ -25,27 +25,30 @@ bson_append_minkey (bson_t     *bson,
 DESCRIPTION
 -----------
 
-The _bson_append_minkey()_ function shall 
+The _bson_append_minkey()_ function shall append an element of type BSON_TYPE_MINKEY to a bson document. This is primarily used in queries and unlikely to be used when storing a document to MongoDB.
 
 
 RETURN VALUE
 ------------
 
-TODO
+TRUE if successful. Otherwise FALSE and no modifications to _bson_ are made.
 
 
 ERRORS
 ------
-No errors are defined.
+
+FALSE is returned if there is insufficient space for the element.
 
 
 SEE ALSO
 --------
 
-TODO
+linkbson:bson_append_maxkey[3]
+
+http://bsonspec.org/#/specification
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
