@@ -5,7 +5,7 @@ bson_concat(3)
 NAME
 ----
 
-bson_concat - TODO
+bson_concat - join two bson documents
 
 
 SYNOPSIS
@@ -24,27 +24,22 @@ bson_concat (bson_t       *dst,
 DESCRIPTION
 -----------
 
-The _bson_concat()_ function shall 
+The _bson_concat()_ function shall append the contents of _src_ to _dst_.
 
 
 RETURN VALUE
 ------------
 
-TODO
+TRUE if successful. Otherwise FALSE and no modifications are made.
 
 
 ERRORS
 ------
-No errors are defined.
 
-
-SEE ALSO
---------
-
-TODO
+FALSE is returned if there was insufficient space to append _src_.
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
