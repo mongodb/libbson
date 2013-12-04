@@ -1,7 +1,4 @@
 MAN3 = \
-	doc/bson_new.3 \
-	doc/bson_new_from_data.3 \
-	doc/bson_sized_new.3 \
 	doc/bson_oid_t.3 \
 	doc/bson_append_array.3 \
 	doc/bson_append_binary.3 \
@@ -92,7 +89,6 @@ MAN3 = \
 	doc/bson_iter_visit_all.3 \
 	doc/bson_malloc0.3 \
 	doc/bson_malloc.3 \
-	doc/bson_new_from_data.3 \
 	doc/bson_new.3 \
 	doc/bson_oid_compare.3 \
 	doc/bson_oid_compare_unsafe.3 \
