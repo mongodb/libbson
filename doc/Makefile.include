@@ -39,6 +39,7 @@ MAN3 = \
 	doc/bson_has_field.3 \
 	doc/bson_init_static.3 \
 	doc/bson_init.3 \
+	doc/bson_iter_t.3 \
 	doc/bson_iter_array.3 \
 	doc/bson_iter_as_bool.3 \
 	doc/bson_iter_as_int64.3 \
@@ -54,9 +55,6 @@ MAN3 = \
 	doc/bson_iter_find_case.3 \
 	doc/bson_iter_find_descendant.3 \
 	doc/bson_iter_find.3 \
-	doc/bson_iter_init_find_case.3 \
-	doc/bson_iter_init_find.3 \
-	doc/bson_iter_init.3 \
 	doc/bson_iter_int32.3 \
 	doc/bson_iter_int64.3 \
 	doc/bson_iter_key.3 \
