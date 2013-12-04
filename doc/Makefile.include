@@ -44,15 +44,12 @@ MAN3 = \
 	doc/bson_iter_as_int64.3 \
 	doc/bson_iter_binary.3 \
 	doc/bson_iter_bool.3 \
-	doc/bson_iter_bool_unsafe.3 \
 	doc/bson_iter_code.3 \
-	doc/bson_iter_code_unsafe.3 \
 	doc/bson_iter_codewscope.3 \
 	doc/bson_iter_date_time.3 \
 	doc/bson_iter_dbpointer.3 \
 	doc/bson_iter_document.3 \
 	doc/bson_iter_double.3 \
-	doc/bson_iter_double_unsafe.3 \
 	doc/bson_iter_dup_utf8.3 \
 	doc/bson_iter_find_case.3 \
 	doc/bson_iter_find_descendant.3 \
@@ -61,14 +58,10 @@ MAN3 = \
 	doc/bson_iter_init_find.3 \
 	doc/bson_iter_init.3 \
 	doc/bson_iter_int32.3 \
-	doc/bson_iter_int32_unsafe.3 \
 	doc/bson_iter_int64.3 \
-	doc/bson_iter_int64_unsafe.3 \
 	doc/bson_iter_key.3 \
-	doc/bson_iter_key_unsafe.3 \
 	doc/bson_iter_next.3 \
 	doc/bson_iter_oid.3 \
-	doc/bson_iter_oid_unsafe.3 \
 	doc/bson_iter_overwrite_bool.3 \
 	doc/bson_iter_overwrite_double.3 \
 	doc/bson_iter_overwrite_int32.3 \
@@ -78,31 +71,20 @@ MAN3 = \
 	doc/bson_iter_symbol.3 \
 	doc/bson_iter_timestamp.3 \
 	doc/bson_iter_time_t.3 \
-	doc/bson_iter_time_t_unsafe.3 \
 	doc/bson_iter_timeval.3 \
-	doc/bson_iter_timeval_unsafe.3 \
 	doc/bson_iter_type.3 \
-	doc/bson_iter_type_unsafe.3 \
-	doc/bson_iter_utf8_len_unsafe.3 \
 	doc/bson_iter_utf8.3 \
-	doc/bson_iter_utf8_unsafe.3 \
 	doc/bson_iter_visit_all.3 \
 	doc/bson_malloc0.3 \
 	doc/bson_malloc.3 \
 	doc/bson_new.3 \
 	doc/bson_oid_compare.3 \
-	doc/bson_oid_compare_unsafe.3 \
 	doc/bson_oid_copy.3 \
-	doc/bson_oid_copy_unsafe.3 \
 	doc/bson_oid_equal.3 \
-	doc/bson_oid_equal_unsafe.3 \
 	doc/bson_oid_get_time_t.3 \
-	doc/bson_oid_get_time_t_unsafe.3 \
 	doc/bson_oid_hash.3 \
-	doc/bson_oid_hash_unsafe.3 \
 	doc/bson_oid_init_from_data.3 \
 	doc/bson_oid_init_from_string.3 \
-	doc/bson_oid_init_from_string_unsafe.3 \
 	doc/bson_oid_init_sequence.3 \
 	doc/bson_oid_init.3 \
 	doc/bson_oid_is_valid.3 \
