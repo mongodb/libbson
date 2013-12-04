@@ -5,7 +5,7 @@ bson_string_new(3)
 NAME
 ----
 
-bson_string_new - TODO
+bson_string_new - create a new bson_string_t
 
 
 SYNOPSIS
@@ -23,24 +23,28 @@ bson_string_new (const char *str);
 DESCRIPTION
 -----------
 
-The _bson_string_new()_ function shall 
+The _bson_string_new()_ function shall create a new instance of _bson_string_t_.
+
+If _str_ is non-NULL, it will be copied.
 
 
 RETURN VALUE
 ------------
 
-TODO
+A newly allocated _bson_string_t_.
 
 
 ERRORS
 ------
+
 No errors are defined.
 
 
 SEE ALSO
 --------
 
-TODO
+linkbson:bson_string_append[3]
+linkbson:bson_string_free[3]
 
 
 AUTHORS
