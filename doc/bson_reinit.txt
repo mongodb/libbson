@@ -5,7 +5,7 @@ bson_reinit(3)
 NAME
 ----
 
-bson_reinit - TODO
+bson_reinit - re-initialize a bson document
 
 
 SYNOPSIS
@@ -23,27 +23,23 @@ bson_reinit (bson_t *b);
 DESCRIPTION
 -----------
 
-The _bson_reinit()_ function shall 
-
-
-RETURN VALUE
-------------
-
-TODO
+The _bson_reinit()_ function shall be equivalent to calling _bson_destroy()_ and _bson_init()_.
 
 
 ERRORS
 ------
+
 No errors are defined.
 
 
 SEE ALSO
 --------
 
-TODO
+linkbson:bson_init[3]
+linkbson:bson_destroy[3]
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
