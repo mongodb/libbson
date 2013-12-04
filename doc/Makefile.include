@@ -92,9 +92,6 @@ MAN3 = \
 	doc/bson_iter_visit_all.3 \
 	doc/bson_malloc0.3 \
 	doc/bson_malloc.3 \
-	doc/bson_md5_append.3 \
-	doc/bson_md5_finish.3 \
-	doc/bson_md5_init.3 \
 	doc/bson_memalign0.3 \
 	doc/bson_new_from_data.3 \
 	doc/bson_new.3 \
