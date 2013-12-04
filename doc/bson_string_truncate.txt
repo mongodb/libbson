@@ -5,7 +5,7 @@ bson_string_truncate(3)
 NAME
 ----
 
-bson_string_truncate - TODO
+bson_string_truncate - truncate the length of a bson_string_t
 
 
 SYNOPSIS
@@ -24,27 +24,17 @@ bson_string_truncate (bson_string_t *string,
 DESCRIPTION
 -----------
 
-The _bson_string_truncate()_ function shall 
-
-
-RETURN VALUE
-------------
-
-TODO
+The _bson_string_truncate()_ function shall truncate the length of _string_ to the given length.
+The string will still be NULL terminated.
 
 
 ERRORS
 ------
+
 No errors are defined.
-
-
-SEE ALSO
---------
-
-TODO
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
