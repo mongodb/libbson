@@ -84,7 +84,6 @@ MAN3 = \
 	doc/bson_oid_get_time_t.3 \
 	doc/bson_oid_hash.3 \
 	doc/bson_oid_is_valid.3 \
-	doc/bson_oid_parse_hex_char.3 \
 	doc/bson_oid_to_string.3 \
 	doc/bson_reader_destroy.3 \
 	doc/bson_reader_new_from_data.3 \

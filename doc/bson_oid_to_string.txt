@@ -5,7 +5,7 @@ bson_oid_to_string(3)
 NAME
 ----
 
-bson_oid_to_string - TODO
+bson_oid_to_string - encode a bson_oid_t as a hex-encoded string
 
 
 SYNOPSIS
@@ -24,27 +24,34 @@ bson_oid_to_string (const bson_oid_t *oid,
 DESCRIPTION
 -----------
 
-The _bson_oid_to_string()_ function shall 
+The _bson_oid_to_string()_ function shall encode a bson_oid_t as a hex-encoded string.
 
 
-RETURN VALUE
-------------
+EXAMPLE
+-------
 
-TODO
+[source, c]
+-----------------------
+#include <bson.h>
+
+static void
+print_oid (const bson_oid_t *oid)
+{
+   char oidstr[25];
+
+   bson_oid_to_string (oid, oidstr);
+   printf ("%s\n", oidstr);
+}
+-----------------------
 
 
 ERRORS
 ------
+
 No errors are defined.
-
-
-SEE ALSO
---------
-
-TODO
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
