@@ -5,7 +5,7 @@ bson_count_keys(3)
 NAME
 ----
 
-bson_count_keys - TODO
+bson_count_keys - count elements within a bson document
 
 
 SYNOPSIS
@@ -23,27 +23,16 @@ bson_count_keys (const bson_t *bson);
 DESCRIPTION
 -----------
 
-The _bson_count_keys()_ function shall 
+The _bson_count_keys()_ function shall count the number of elements within _bson_.
 
 
 RETURN VALUE
 ------------
 
-TODO
-
-
-ERRORS
-------
-No errors are defined.
-
-
-SEE ALSO
---------
-
-TODO
+A positive integer greather than or equal to zero.
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
