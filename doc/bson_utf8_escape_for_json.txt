@@ -5,7 +5,7 @@ bson_utf8_escape_for_json(3)
 NAME
 ----
 
-bson_utf8_escape_for_json - TODO
+bson_utf8_escape_for_json - escape an UTF-8 encoded string for use within JSON
 
 
 SYNOPSIS
@@ -24,27 +24,27 @@ bson_utf8_escape_for_json (const char *utf8,
 DESCRIPTION
 -----------
 
-The _bson_utf8_escape_for_json()_ function shall 
+The _bson_utf8_escape_for_json()_ function shall escape the contents of _utf8_ for use within JSON.
+The result is a newly allocated string that should be freed with _bson_free()_.
+
+This function escapes '"' and "\" characters.
+
+_utf8_ *MUST* be valid UTF-8.
 
 
 RETURN VALUE
 ------------
 
-TODO
+A newly allocated string that should be freed with _bson_free()_.
 
 
 ERRORS
 ------
+
 No errors are defined.
-
-
-SEE ALSO
---------
-
-TODO
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.

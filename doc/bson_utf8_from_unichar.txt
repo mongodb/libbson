@@ -5,7 +5,7 @@ bson_utf8_from_unichar(3)
 NAME
 ----
 
-bson_utf8_from_unichar - TODO
+bson_utf8_from_unichar - convert a unicode character to UTF-8
 
 
 SYNOPSIS
@@ -25,27 +25,11 @@ bson_utf8_from_unichar (bson_unichar_t unichar,
 DESCRIPTION
 -----------
 
-The _bson_utf8_from_unichar()_ function shall 
-
-
-RETURN VALUE
-------------
-
-TODO
-
-
-ERRORS
-------
-No errors are defined.
-
-
-SEE ALSO
---------
-
-TODO
+The _bson_utf8_from_unichar()_ function shall convert _unichar_ to a UTF-8 sequence and store it in _utf8_.
+The length of the sequence in bytes will be placed in _len_.
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
