@@ -5,7 +5,7 @@ bson_zero_free(3)
 NAME
 ----
 
-bson_zero_free - TODO
+bson_zero_free - free memory after zeroing it
 
 
 SYNOPSIS
@@ -24,27 +24,19 @@ bson_zero_free (void  *mem,
 DESCRIPTION
 -----------
 
-The _bson_zero_free()_ function shall 
+The _bson_zero_free()_ function shall act like bson_free() except for it tries to zero it first.
 
-
-RETURN VALUE
-------------
-
-TODO
-
-
-ERRORS
-------
-No errors are defined.
+_size_ bytes will be zeroed before freeing _mem_.
+This is equivalent to calling _memset()_ and then _bson_free()_.
 
 
 SEE ALSO
 --------
 
-TODO
+linkbson:bson_free[3]
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
