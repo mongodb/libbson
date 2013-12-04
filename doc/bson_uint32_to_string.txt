@@ -5,7 +5,7 @@ bson_uint32_to_string(3)
 NAME
 ----
 
-bson_uint32_to_string - TODO
+bson_uint32_to_string - fast conversion of an integer to a string
 
 
 SYNOPSIS
@@ -26,27 +26,25 @@ bson_uint32_to_string (bson_uint32_t value,
 DESCRIPTION
 -----------
 
-The _bson_uint32_to_string()_ function shall 
+Converts _value_ to a string.
 
+If _value_ is from 0 to 1000, it will use a constant string in the data section of the library.
 
-RETURN VALUE
-------------
+If not, a string will be formatted using _str_ and _snprintf()_.
+This is much slower, of course and therefore we try to optimize it out.
 
-TODO
+_strptr_ will always be set.
+It will either point to _str_ or a constant string.
+You will want to use this as your key.
 
 
 ERRORS
 ------
+
 No errors are defined.
-
-
-SEE ALSO
---------
-
-TODO
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
