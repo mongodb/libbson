@@ -43,13 +43,7 @@ ERRORS
 If appending the element would cause _bson_ to grow past it's maximum size, FALSE is returned and no modifications are made.
 
 
-SEE ALSO
---------
-
-TODO
-
-
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
