@@ -5,7 +5,7 @@ bson_malloc0(3)
 NAME
 ----
 
-bson_malloc0 - TODO
+bson_malloc0 - a libbson wrapper around calloc
 
 
 SYNOPSIS
@@ -23,27 +23,28 @@ bson_malloc0 (size_t num_bytes);
 DESCRIPTION
 -----------
 
-The _bson_malloc0()_ function shall 
+The _bson_malloc0()_ function shall act like the system _calloc()_ except it will _abort()_ upon failure to allocate memory.
 
 
 RETURN VALUE
 ------------
 
-TODO
+Always returns a valid allocation.
 
 
 ERRORS
 ------
-No errors are defined.
+
+_abort()_ is called upon failure to allocate memory.
 
 
 SEE ALSO
 --------
 
-TODO
+linkbson:bson_malloc[3]
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
