@@ -5,7 +5,7 @@ bson_oid_get_time_t(3)
 NAME
 ----
 
-bson_oid_get_time_t - TODO
+bson_oid_get_time_t - get the UNIX timestamp of a bson_oid_t
 
 
 SYNOPSIS
@@ -23,27 +23,16 @@ bson_oid_get_time_t (const bson_oid_t *oid);
 DESCRIPTION
 -----------
 
-The _bson_oid_get_time_t()_ function shall 
+The _bson_oid_get_time_t()_ function shall return the UNIX timestamp used when generating _oid_.
 
 
 RETURN VALUE
 ------------
 
-TODO
-
-
-ERRORS
-------
-No errors are defined.
-
-
-SEE ALSO
---------
-
-TODO
+A time_t containing the UNIX timestamp in seconds of _oid_.
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.

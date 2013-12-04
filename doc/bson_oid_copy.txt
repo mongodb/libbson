@@ -5,7 +5,7 @@ bson_oid_copy(3)
 NAME
 ----
 
-bson_oid_copy - TODO
+bson_oid_copy - copy the contents of a bson_oid_t
 
 
 SYNOPSIS
@@ -24,27 +24,19 @@ bson_oid_copy (const bson_oid_t *src,
 DESCRIPTION
 -----------
 
-The _bson_oid_copy()_ function shall 
+The _bson_oid_copy()_ function shall copy the contents of _src_ into _dst_.
 
+_dst_ should be a pointer to a _bson_oid_t_.
 
-RETURN VALUE
-------------
-
-TODO
 
 
 ERRORS
 ------
+
 No errors are defined.
-
-
-SEE ALSO
---------
-
-TODO
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.

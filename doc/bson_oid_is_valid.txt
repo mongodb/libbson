@@ -5,7 +5,7 @@ bson_oid_is_valid(3)
 NAME
 ----
 
-bson_oid_is_valid - TODO
+bson_oid_is_valid - check if an oid string is valid
 
 
 SYNOPSIS
@@ -24,27 +24,30 @@ bson_oid_is_valid (const char *str,
 DESCRIPTION
 -----------
 
-The _bson_oid_is_valid()_ function shall 
+The _bson_oid_is_valid()_ function shall return TRUE if _str_ is a valid hex-encoded OID string.
+
+_length_ should be 24 bytes, but is provided as convenience for language bindings.
 
 
 RETURN VALUE
 ------------
 
-TODO
+TRUE if str is a valid hex-encoded OID string. Otherwise FALSE.
 
 
 ERRORS
 ------
+
 No errors are defined.
 
 
 SEE ALSO
 --------
 
-TODO
+linkbson:bson_oid_init_from_string[3]
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.

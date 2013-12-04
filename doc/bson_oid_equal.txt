@@ -5,7 +5,7 @@ bson_oid_equal(3)
 NAME
 ----
 
-bson_oid_equal - TODO
+bson_oid_equal - check equality of two bson_oid_t
 
 
 SYNOPSIS
@@ -24,27 +24,16 @@ bson_oid_equal (const bson_oid_t *oid1,
 DESCRIPTION
 -----------
 
-The _bson_oid_equal()_ function shall 
+The _bson_oid_equal()_ function shall return TRUE if _oid1_ and _oid2_ contain equivalent contents.
 
 
 RETURN VALUE
 ------------
 
-TODO
-
-
-ERRORS
-------
-No errors are defined.
-
-
-SEE ALSO
---------
-
-TODO
+TRUE if _oid1_ and _oid2_ are equal. Otherwise FALSE.
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
