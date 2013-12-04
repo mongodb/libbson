@@ -5,7 +5,7 @@ bson_destroy(3)
 NAME
 ----
 
-bson_destroy - TODO
+bson_destroy - release resources of an allocated bson_t
 
 
 SYNOPSIS
@@ -23,27 +23,18 @@ bson_destroy (bson_t *bson);
 DESCRIPTION
 -----------
 
-The _bson_destroy()_ function shall 
+The _bson_destroy()_ function shall free an allocated _bson_t_ structure.
 
-
-RETURN VALUE
-------------
-
-TODO
+This function should always be called when you are done with a _bson_t_ unless otherwise specified.
 
 
 ERRORS
 ------
+
 No errors are defined.
-
-
-SEE ALSO
---------
-
-TODO
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
