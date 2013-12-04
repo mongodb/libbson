@@ -5,7 +5,7 @@ bson_iter_document(3)
 NAME
 ----
 
-bson_iter_document - TODO
+bson_iter_document - retrieve a sub-document from a bson document
 
 
 SYNOPSIS
@@ -14,6 +14,9 @@ SYNOPSIS
 [source, c]
 -----------------------
 #include <bson.h>
+
+#define BSON_ITER_HOLDS_DOCUMENT(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_DOCUMENT)
 
 void
 bson_iter_document (const bson_iter_t   *iter,
@@ -25,27 +28,26 @@ bson_iter_document (const bson_iter_t   *iter,
 DESCRIPTION
 -----------
 
-The _bson_iter_document()_ function shall 
-
-
-RETURN VALUE
-------------
-
-TODO
+The _bson_iter_document()_ function shall retrieve the raw buffer of a
+sub-document from _iter_.  _iter_ *MUST* be on an element that is of type
+BSON_TYPE_DOCUMENT.  This can be verified with _bson_iter_type()_ or the
+_BSON_ITER_HOLDS_DOCUMENT()_ macro.
 
 
 ERRORS
 ------
-No errors are defined.
+
+It is a programming error to call this function on an element that is not of BSON_TYPE_DOCUMENT.
 
 
 SEE ALSO
 --------
 
-TODO
+linkbson:bson_iter_t[3]
+linkbson:bson_iter_array[3]
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
