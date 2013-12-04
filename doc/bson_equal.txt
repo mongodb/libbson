@@ -5,7 +5,7 @@ bson_equal(3)
 NAME
 ----
 
-bson_equal - TODO
+bson_equal - check if two bson documents are equal
 
 
 SYNOPSIS
@@ -24,27 +24,22 @@ bson_equal (const bson_t *bson,
 DESCRIPTION
 -----------
 
-The _bson_equal()_ function shall 
+The _bson_equal()_ function shall return TRUE if both documents are equal.
 
 
 RETURN VALUE
 ------------
 
-TODO
+TRUE if both documents are equal, otherwise FALSE.
 
 
 ERRORS
 ------
+
 No errors are defined.
-
-
-SEE ALSO
---------
-
-TODO
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
