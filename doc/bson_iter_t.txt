@@ -5,7 +5,7 @@ bson_iter_t(3)
 NAME
 ----
 
-bson_iter_t - iterate through a bson document
+bson_iter_t, bson_iter_init, bson_iter_init_find, bson_iter_init_find_case - iterate through a bson document
 
 
 SYNOPSIS
