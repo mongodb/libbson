@@ -5,7 +5,7 @@ bson_has_field(3)
 NAME
 ----
 
-bson_has_field - TODO
+bson_has_field - check if a bson document contains a given field
 
 
 SYNOPSIS
@@ -24,27 +24,22 @@ bson_has_field (const bson_t *bson,
 DESCRIPTION
 -----------
 
-The _bson_has_field()_ function shall 
+The _bson_has_field()_ function shall return TRUE if _bson_ contains an element named _key_.
 
 
 RETURN VALUE
 ------------
 
-TODO
+TRUE if _key_ is found. Otherwise FALSE.
 
 
 ERRORS
 ------
+
 No errors are defined.
-
-
-SEE ALSO
---------
-
-TODO
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
