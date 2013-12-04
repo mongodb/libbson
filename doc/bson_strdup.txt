@@ -5,7 +5,7 @@ bson_strdup(3)
 NAME
 ----
 
-bson_strdup - TODO
+bson_strdup, bson_strdup_printf, bson_strdupv_printf - copy a string with formatting
 
 
 SYNOPSIS
@@ -17,33 +17,47 @@ SYNOPSIS
 
 char *
 bson_strdup (const char *str);
+
+char *
+bson_strdup_printf (const char *format,
+                    ...);
+
+char *
+bson_strdupv_printf (const char *format,
+                     va_list     args);
 -----------------------
 
 
 DESCRIPTION
 -----------
 
-The _bson_strdup()_ function shall 
+The _bson_strdup()_ function shall return a copy of _str_.
+
+The _bson_strdup_printf()_ function shall return a new string with identical formatting requirements as _printf()_.
+The result should be freed with bson_free().
+
+The _bson_strdupv_printf()_ function is just like _bson_strdup_printf()_ but takes a _va_list_.
 
 
 RETURN VALUE
 ------------
 
-TODO
+A newly allocated C string. This should be freed with bson_free().
 
 
 ERRORS
 ------
+
 No errors are defined.
 
 
 SEE ALSO
 --------
 
-TODO
+linkbson:bson_free[3]
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.

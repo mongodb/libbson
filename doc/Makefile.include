@@ -94,8 +94,8 @@ MAN3 = \
 	doc/bson_realloc.3 \
 	doc/bson_reinit.3 \
 	doc/bson_sized_new.3 \
-	doc/bson_strdup_printf.3 \
 	doc/bson_strdup.3 \
+	doc/bson_strdup_printf.3 \
 	doc/bson_strdupv_printf.3 \
 	doc/bson_string_append_c.3 \
 	doc/bson_string_append_printf.3 \
