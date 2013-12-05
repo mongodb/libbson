@@ -5,7 +5,7 @@ bson_iter_overwrite_bool(3)
 NAME
 ----
 
-bson_iter_overwrite_bool - TODO
+bson_iter_overwrite_bool - overwrite contents of a bool element in a bson document
 
 
 SYNOPSIS
@@ -24,27 +24,27 @@ bson_iter_overwrite_bool (bson_iter_t *iter,
 DESCRIPTION
 -----------
 
-The _bson_iter_overwrite_bool()_ function shall 
+The _bson_iter_overwrite_bool()_ function shall overwrite the contents of a BSON_TYPE_BOOL element in place.
 
+This may only be done when the underlying bson document allows mutation.
 
-RETURN VALUE
-------------
-
-TODO
+It is a programming error to call this function when _iter_ is not obvserving an element of type BSON_TYPE_BOOL.
 
 
 ERRORS
 ------
+
 No errors are defined.
 
 
 SEE ALSO
 --------
 
-TODO
+linkbson:bson_iter_bool[3]
+linkbson:bson_iter_t[3]
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.

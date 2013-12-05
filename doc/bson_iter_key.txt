@@ -5,7 +5,7 @@ bson_iter_key(3)
 NAME
 ----
 
-bson_iter_key - TODO
+bson_iter_key - retrieve the key of an element in a bson document
 
 
 SYNOPSIS
@@ -23,27 +23,24 @@ bson_iter_key (const bson_iter_t *iter);
 DESCRIPTION
 -----------
 
-The _bson_iter_key()_ function shall 
+The _bson_iter_key()_ function shall return the key of the currently observed bson document.
 
 
 RETURN VALUE
 ------------
 
-TODO
+The result is a C string, meaning it is NULL terminated.
 
-
-ERRORS
-------
-No errors are defined.
+The result should not be modified or freed.
 
 
 SEE ALSO
 --------
 
-TODO
+linkbson:bson_iter_t[3]
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.

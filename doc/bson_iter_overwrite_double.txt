@@ -5,7 +5,7 @@ bson_iter_overwrite_double(3)
 NAME
 ----
 
-bson_iter_overwrite_double - TODO
+bson_iter_overwrite_double - overwrite contents of a double element in a bson document
 
 
 SYNOPSIS
@@ -24,24 +24,24 @@ bson_iter_overwrite_double (bson_iter_t *iter,
 DESCRIPTION
 -----------
 
-The _bson_iter_overwrite_double()_ function shall 
+The _bson_iter_overwrite_double()_ function shall overwrite the contents of a BSON_TYPE_DOUBLE element in place.
 
+This may only be done when the underlying bson document allows mutation.
 
-RETURN VALUE
-------------
-
-TODO
+It is a programming error to call this function when _iter_ is not obvserving an element of type BSON_TYPE_DOUBLE.
 
 
 ERRORS
 ------
+
 No errors are defined.
 
 
 SEE ALSO
 --------
 
-TODO
+linkbson:bson_iter_double[3]
+linkbson:bson_iter_t[3]
 
 
 AUTHORS
