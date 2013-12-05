@@ -5,7 +5,7 @@ bson_iter_overwrite_int64(3)
 NAME
 ----
 
-bson_iter_overwrite_int64 - TODO
+bson_iter_overwrite_int64 - overwrite contents of an int64 element in a bson document
 
 
 SYNOPSIS
@@ -24,27 +24,27 @@ bson_iter_overwrite_int64 (bson_iter_t *iter,
 DESCRIPTION
 -----------
 
-The _bson_iter_overwrite_int64()_ function shall 
+The _bson_iter_overwrite_int64()_ function shall overwite the contents of a BSON_TYPE_INT64 element in place.
 
+This may only be done when the underlying bson document allows mutation.
 
-RETURN VALUE
-------------
-
-TODO
+It is a programming error to call this function when _iter_ is not obvserving an element of type BSON_TYPE_INT64.
 
 
 ERRORS
 ------
+
 No errors are defined.
 
 
 SEE ALSO
 --------
 
-TODO
+linkbson:bson_iter_int64[3]
+linkbson:bson_iter_t[3]
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
