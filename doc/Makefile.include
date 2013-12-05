@@ -162,4 +162,6 @@ EXAMPLE_DIR = $(abs_top_srcdir)/examples
 	xmlto man -o $(top_srcdir)/doc $<
 .xml.7:
 	xmlto man -o $(top_srcdir)/doc $<
+
+CLEANFILES += $(MAN3) $(MAN7)
 endif
