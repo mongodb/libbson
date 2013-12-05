@@ -110,6 +110,7 @@ MAN3 = \
 	doc/bson_utf8_next_char.3 \
 	doc/bson_utf8_validate.3 \
 	doc/bson_validate.3 \
+	doc/bson_visitor_t.3 \
 	doc/bson_writer_t.3 \
 	doc/bson_writer_begin.3 \
 	doc/bson_writer_destroy.3 \
