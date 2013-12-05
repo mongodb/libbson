@@ -5,7 +5,7 @@ bson_iter_dup_utf8(3)
 NAME
 ----
 
-bson_iter_dup_utf8 - TODO
+bson_iter_dup_utf8 - retrieve and copy a UTF-8 element from a bson_iter_t.
 
 
 SYNOPSIS
@@ -24,27 +24,23 @@ bson_iter_dup_utf8 (const bson_iter_t *iter,
 DESCRIPTION
 -----------
 
-The _bson_iter_dup_utf8()_ function shall 
+The _bson_iter_dup_utf8()_ function shall be functionally equivalent to calling bson_strdup() on the result of a call to _bson_iter_utf8()_.
 
 
 RETURN VALUE
 ------------
 
-TODO
-
-
-ERRORS
-------
-No errors are defined.
+A newly allocated string that should be freed with bson_free().
 
 
 SEE ALSO
 --------
 
-TODO
+linkbson:bson_iter_t[3]
+linkbson:bson_iter_utf8[3]
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.

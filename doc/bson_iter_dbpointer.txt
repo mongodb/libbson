@@ -5,7 +5,7 @@ bson_iter_dbpointer(3)
 NAME
 ----
 
-bson_iter_dbpointer - TODO
+bson_iter_dbpointer - retrieve a dbpointer element from a bson document
 
 
 SYNOPSIS
@@ -14,6 +14,9 @@ SYNOPSIS
 [source, c]
 -----------------------
 #include <bson.h>
+
+#define BSON_ITER_HOLDS_DBPOINTER(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_DBPOINTER)
 
 void
 bson_iter_dbpointer (const bson_iter_t *iter,
@@ -26,24 +29,17 @@ bson_iter_dbpointer (const bson_iter_t *iter,
 DESCRIPTION
 -----------
 
-The _bson_iter_dbpointer()_ function shall 
+BSON_TYPE_DBPOINTER is deprecated and should not be used in new code.
 
+The _bson_iter_dbpointer()_ function shall retrieve the contents of a BSON_TYPE_DBPOINTER element. The DBPOINTER type is deprecated in the bson spec and should not be used in new code.
 
-RETURN VALUE
-------------
-
-TODO
-
-
-ERRORS
-------
-No errors are defined.
+It is a programming error to call this function on elements that are not of type BSON_TYPE_DBPOINTER. This can be checked with _BSON_ITER_HOLDS_DBPOINTER()_.
 
 
 SEE ALSO
 --------
 
-TODO
+linkbson:bson_iter_t[3]
 
 
 AUTHORS
