@@ -5,7 +5,7 @@ bson_iter_symbol(3)
 NAME
 ----
 
-bson_iter_symbol - TODO
+bson_iter_symbol - retrieve a symbol element from a bson document
 
 
 SYNOPSIS
@@ -14,6 +14,9 @@ SYNOPSIS
 [source, c]
 -----------------------
 #include <bson.h>
+
+#define BSON_ITER_HOLDS_SYMBOL(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_SYMBOL)
 
 const char *
 bson_iter_symbol (const bson_iter_t *iter,
@@ -24,27 +27,33 @@ bson_iter_symbol (const bson_iter_t *iter,
 DESCRIPTION
 -----------
 
-The _bson_iter_symbol()_ function shall 
+The symbol element type is *deprecated* in the bson specification at http://bsonspec.org.
+
+The _bson_iter_symbol()_ function shall return the contents of a BSON_TYPE_SYMBOL element.
+
+if non-NULL, _length_ will be set to the length of the resulting string.
 
 
 RETURN VALUE
 ------------
 
-TODO
+The symbol and _length_ is set.
 
 
 ERRORS
 ------
+
 No errors are defined.
 
 
 SEE ALSO
 --------
 
-TODO
+linkbson:bson_iter_t[3]
+linkbson:bson_append_symbol[3]
 
 
 AUTHORS
 -------
-This page was written by MongoDB, Inc.
 
+This page was written by MongoDB, Inc.
