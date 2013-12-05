@@ -1,3 +1,17 @@
+Libbson 0.4.0
+=============
+
+This release includes a few bug fixes and copious documentation. Additionally,
+we improved our fuzz testing and found a couple issues in the process.  It is
+suggested that everyone upgrade their installations to 0.4.0.
+
+We have been busy adding a lot of documentation that we hope you will like.
+Many `man' pages have been added for various API endpoints and structures.  If
+you use vim, remember that you can jump to the documentation with <shift>k
+while on a symbol.
+
+Thanks and enjoy using libbson!
+
 Libbson 0.2.4
 =============
 
