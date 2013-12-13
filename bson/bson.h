@@ -105,7 +105,7 @@ bson_new (void);
 bson_bool_t
 bson_init_static (bson_t             *b,
                   const bson_uint8_t *data,
-                  bson_uint32_t       length);
+                  size_t              length);
 
 
 /**

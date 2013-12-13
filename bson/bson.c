@@ -1273,7 +1273,7 @@ bson_reinit (bson_t *bson)
 bson_bool_t
 bson_init_static (bson_t             *bson,
                   const bson_uint8_t *data,
-                  bson_uint32_t       length)
+                  size_t              length)
 {
    bson_impl_alloc_t *impl = (bson_impl_alloc_t *)bson;
    bson_uint32_t len_le;
@@ -1281,7 +1281,7 @@ bson_init_static (bson_t             *bson,
    bson_return_val_if_fail (bson, FALSE);
    bson_return_val_if_fail (data, FALSE);
 
-   if (length < 5) {
+   if ((length < 5) || (length > INT_MAX)) {
       return FALSE;
    }
 
