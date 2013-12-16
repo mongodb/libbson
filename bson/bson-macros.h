@@ -40,20 +40,28 @@
 
 
 #ifndef MIN
-#  define MIN(a, b) ({     \
-                        typeof (a)_a = (a); \
-                        typeof (b)_b = (b); \
-                        _a < _b ? _a : _b;   \
-                     })
+#  ifdef __cplusplus
+#    define MIN(a, b) std::min(a, b)
+#  else
+#    define MIN(a, b) ({     \
+                          typeof (a)_a = (a); \
+                          typeof (b)_b = (b); \
+                          _a < _b ? _a : _b;   \
+                       })
+#  endif
 #endif
 
 
 #ifndef MAX
-#  define MAX(a, b) ({     \
-                        typeof (a)_a = (a); \
-                        typeof (b)_b = (b); \
-                        _a > _b ? _a : _b;   \
-                     })
+#  ifdef __cplusplus
+#    define MAX(a, b) std::max(a, b)
+#  else
+#    define MAX(a, b) ({     \
+                          typeof (a)_a = (a); \
+                          typeof (b)_b = (b); \
+                          _a > _b ? _a : _b;   \
+                       })
+#  endif
 #endif
 
 
