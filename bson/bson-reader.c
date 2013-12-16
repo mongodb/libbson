@@ -222,7 +222,7 @@ _bson_reader_fd_read (bson_reader_fd_t *reader,
       if (!bson_init_static (&reader->inline_bson,
                              &reader->data[reader->offset],
                              blen)) {
-         return FALSE;
+         return NULL;
       }
 
       reader->offset += blen;
