@@ -27,6 +27,10 @@
 #include <assert.h>
 #include <stdio.h>
 
+#ifdef __cplusplus
+#  include <algorithm>
+#endif
+
 #include "bson-config.h"
 
 
