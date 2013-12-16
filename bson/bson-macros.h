@@ -33,16 +33,18 @@
 #ifdef __cplusplus
 #  define BSON_BEGIN_DECLS extern "C" {
 #  define BSON_END_DECLS   }
+#  define TYPEOF decltype
 #else
 #  define BSON_BEGIN_DECLS
 #  define BSON_END_DECLS
+#  define TYPEOF typeof
 #endif
 
 
 #ifndef MIN
 #  define MIN(a, b) ({     \
-                        typeof (a)_a = (a); \
-                        typeof (b)_b = (b); \
+                        TYPEOF (a)_a = (a); \
+                        TYPEOF (b)_b = (b); \
                         _a < _b ? _a : _b;   \
                      })
 #endif
@@ -50,8 +52,8 @@
 
 #ifndef MAX
 #  define MAX(a, b) ({     \
-                        typeof (a)_a = (a); \
-                        typeof (b)_b = (b); \
+                        TYPEOF (a)_a = (a); \
+                        TYPEOF (b)_b = (b); \
                         _a > _b ? _a : _b;   \
                      })
 #endif
