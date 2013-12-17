@@ -2229,6 +2229,10 @@ bson_concat (bson_t       *dst,
    BSON_ASSERT (dst);
    BSON_ASSERT (src);
 
-   return _bson_append (dst, 1, src->len - 5,
-                        src->len - 5, _bson_data (src) + 4);
+   if (!bson_empty (src)) {
+      return _bson_append (dst, 1, src->len - 5,
+                           src->len - 5, _bson_data (src) + 4);
+   }
+
+   return TRUE;
 }
