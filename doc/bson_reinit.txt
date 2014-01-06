@@ -24,6 +24,7 @@ DESCRIPTION
 -----------
 
 The _bson_reinit()_ function shall be equivalent to calling _bson_destroy()_ and _bson_init()_.
+However, if the _bson_t_ structure contains a malloc()'d buffer, it may be reused.
 
 
 ERRORS

@@ -129,8 +129,10 @@ bson_init (bson_t *b);
  * bson_reinit:
  * @b: (inout): A bson_t.
  *
- * Calls bson_destroy() on @b followed by bson_init(). This is useful as a
- * short helper to rebuild documents.
+ * This is equivalent to calling bson_destroy() and bson_init() on a #bson_t.
+ * However, it will try to persist the existing malloc'd buffer if one exists.
+ * This is useful in cases where you want to reduce malloc overhead while
+ * building many documents.
  */
 void
 bson_reinit (bson_t *b);
