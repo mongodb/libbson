@@ -1263,10 +1263,19 @@ bson_init (bson_t *bson)
 void
 bson_reinit (bson_t *bson)
 {
+   bson_uint8_t *data;
+
    bson_return_if_fail (bson);
 
-   bson_destroy (bson);
-   bson_init (bson);
+   data = _bson_data (bson);
+
+   bson->len = 5;
+
+   data [0] = 5;
+   data [1] = 0;
+   data [2] = 0;
+   data [3] = 0;
+   data [4] = 0;
 }
 
 

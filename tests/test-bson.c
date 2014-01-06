@@ -1158,6 +1158,26 @@ test_bson_concat (void)
 
 
 static void
+test_bson_reinit (void)
+{
+   bson_t b = BSON_INITIALIZER;
+   int i;
+
+   for (i = 0; i < 1000; i++) {
+      bson_append_int32 (&b, "", 0, i);
+   }
+
+   bson_reinit (&b);
+
+   for (i = 0; i < 1000; i++) {
+      bson_append_int32 (&b, "", 0, i);
+   }
+
+   bson_destroy (&b);
+}
+
+
+static void
 init_rand (void)
 {
    unsigned seed;
@@ -1225,6 +1245,7 @@ main (int   argc,
    run_test("/bson/copy_to_excluding", test_bson_copy_to_excluding);
    run_test("/bson/initializer", test_bson_initializer);
    run_test("/bson/concat", test_bson_concat);
+   run_test("/bson/reinit", test_bson_reinit);
 
    return 0;
 }
