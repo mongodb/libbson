@@ -18,6 +18,9 @@
 #include "bson-iter.h"
 
 
+#define ITER_TYPE(i) ((bson_type_t) *((i)->raw + (i)->type))
+
+
 /**
  * bson_iter_init:
  * @iter: (out): A #bson_iter_t.
@@ -48,11 +51,17 @@ bson_iter_init (bson_iter_t  *iter,
       return FALSE;
    }
 
-   memset (iter, 0, sizeof *iter);
-
-   iter->bson = bson;
-   iter->offset = 0;
-   iter->next_offset = 4;
+   iter->raw = bson_get_data (bson);
+   iter->len = bson->len;
+   iter->off = 0;
+   iter->type = 0;
+   iter->key = 0;
+   iter->d1 = 0;
+   iter->d2 = 0;
+   iter->d3 = 0;
+   iter->d4 = 0;
+   iter->next_off = 4;
+   iter->err_off = 0;
 
    return TRUE;
 }
@@ -74,33 +83,29 @@ bson_iter_recurse (const bson_iter_t *iter,
 {
    const bson_uint8_t *data = NULL;
    bson_uint32_t len = 0;
-   bson_t b;
 
    bson_return_val_if_fail (iter, FALSE);
    bson_return_val_if_fail (child, FALSE);
 
-   memset (child, 0, sizeof *child);
-
-   if (*iter->type == BSON_TYPE_DOCUMENT) {
+   if (ITER_TYPE (iter) == BSON_TYPE_DOCUMENT) {
       bson_iter_document (iter, &len, &data);
-   } else if (*iter->type == BSON_TYPE_ARRAY) {
+   } else if (ITER_TYPE (iter) == BSON_TYPE_ARRAY) {
       bson_iter_array (iter, &len, &data);
    } else {
       return FALSE;
    }
 
-   /*
-    * Load the BSON into an inline document inside the iter. Sadly, we have
-    * to do this twice for the time being. We can get rid of that by not
-    * using memset() in bson_iter_init().
-    */
-   if (!bson_init_static (&b, data, len) ||
-       !bson_iter_init (child, &b) ||
-       !bson_init_static (&child->inl_bson, data, len)) {
-      return FALSE;
-   }
-
-   child->bson = &child->inl_bson;
+   child->raw = data;
+   child->len = len;
+   child->off = 0;
+   child->type = 0;
+   child->key = 0;
+   child->d1 = 0;
+   child->d2 = 0;
+   child->d3 = 0;
+   child->d4 = 0;
+   child->next_off = 4;
+   child->err_off = 0;
 
    return TRUE;
 }
@@ -303,8 +308,8 @@ bson_type_t
 bson_iter_type (const bson_iter_t *iter)
 {
    bson_return_val_if_fail (iter, BSON_TYPE_EOD);
-   bson_return_val_if_fail (iter->bson, BSON_TYPE_EOD);
-   bson_return_val_if_fail (iter->type, BSON_TYPE_EOD);
+   bson_return_val_if_fail (iter->raw, BSON_TYPE_EOD);
+   bson_return_val_if_fail (iter->len, BSON_TYPE_EOD);
 
    return bson_iter_type_unsafe (iter);
 }
@@ -327,28 +332,28 @@ bson_iter_next (bson_iter_t *iter)
 {
    const bson_uint8_t *data;
    bson_uint32_t o;
-   const bson_t *b;
+   int len;
 
    bson_return_val_if_fail (iter, FALSE);
 
-   if (!iter->bson) {
+   if (!iter->raw) {
       return FALSE;
    }
 
-   b = iter->bson;
-   data = bson_get_data (b);
+   data = iter->raw;
+   len = iter->len;
 
-   iter->offset = iter->next_offset;
-   iter->type = &data[iter->offset];
-   iter->key = &data[iter->offset + 1];
-   iter->data1 = NULL;
-   iter->data2 = NULL;
-   iter->data3 = NULL;
-   iter->data4 = NULL;
+   iter->off = iter->next_off;
+   iter->type = iter->off;
+   iter->key = iter->off + 1;
+   iter->d1 = 0;
+   iter->d2 = 0;
+   iter->d3 = 0;
+   iter->d4 = 0;
 
-   for (o = iter->offset + 1; o < b->len; o++) {
-      if (!data[o]) {
-         iter->data1 = &data[++o];
+   for (o = iter->off + 1; o < len; o++) {
+      if (!data [o]) {
+         iter->d1 = ++o;
          goto fill_data_fields;
       }
    }
@@ -357,12 +362,12 @@ bson_iter_next (bson_iter_t *iter)
 
 fill_data_fields:
 
-   switch (*iter->type) {
+   switch (ITER_TYPE (iter)) {
    case BSON_TYPE_DATE_TIME:
    case BSON_TYPE_DOUBLE:
    case BSON_TYPE_INT64:
    case BSON_TYPE_TIMESTAMP:
-      iter->next_offset = o + 8;
+      iter->next_off = o + 8;
       break;
    case BSON_TYPE_CODE:
    case BSON_TYPE_SYMBOL:
@@ -370,36 +375,35 @@ fill_data_fields:
       {
          bson_uint32_t l;
 
-         if ((o + 4) >= b->len) {
-            iter->err_offset = o;
+         if ((o + 4) >= len) {
+            iter->err_off = o;
             goto mark_invalid;
          }
 
-         iter->data2 = &data[o + 4];
-         memcpy (&l, iter->data1, 4);
+         iter->d2 = o + 4;
+         memcpy (&l, iter->raw + iter->d1, 4);
          l = BSON_UINT32_FROM_LE (l);
 
-         if (l > (b->len - (o + 4))) {
-            iter->err_offset = o;
+         if (l > (len - (o + 4))) {
+            iter->err_off = o;
             goto mark_invalid;
          }
 
-         iter->next_offset = o + 4 + l;
+         iter->next_off = o + 4 + l;
 
          /*
           * Make sure the string length includes the NUL byte.
           */
-         if (BSON_UNLIKELY ((l == 0) ||
-                            (iter->next_offset >= iter->bson->len))) {
-            iter->err_offset = o;
+         if (BSON_UNLIKELY ((l == 0) || (iter->next_off >= len))) {
+            iter->err_off = o;
             goto mark_invalid;
          }
 
          /*
           * Make sure the last byte is a NUL byte.
           */
-         if (BSON_UNLIKELY (iter->data2[l - 1] != '\0')) {
-            iter->err_offset = o + 4 + l - 1;
+         if (BSON_UNLIKELY ((iter->raw + iter->d2)[l - 1] != '\0')) {
+            iter->err_off = o + 4 + l - 1;
             goto mark_invalid;
          }
       }
@@ -409,32 +413,32 @@ fill_data_fields:
          bson_subtype_t subtype;
          bson_uint32_t l;
 
-         if (o >= (b->len - 4)) {
-            iter->err_offset = o;
+         if (o >= (len - 4)) {
+            iter->err_off = o;
             goto mark_invalid;
          }
 
-         iter->data2 = &data[o + 4];
-         iter->data3 = &data[o + 5];
+         iter->d2 = o + 4;
+         iter->d3 = o + 5;
 
-         memcpy (&l, iter->data1, 4);
+         memcpy (&l, iter->raw + iter->d1, 4);
          l = BSON_UINT32_FROM_LE (l);
 
-         if (l >= (b->len - o)) {
-            iter->err_offset = o;
+         if (l >= (len - o)) {
+            iter->err_off = o;
             goto mark_invalid;
          }
 
-         subtype = *iter->data2;
+         subtype = *(iter->raw + iter->d2);
 
          if (subtype == BSON_SUBTYPE_BINARY_DEPRECATED) {
             if (l < 4) {
-               iter->err_offset = o;
+               iter->err_off = o;
                goto mark_invalid;
             }
          }
 
-         iter->next_offset = o + 5 + l;
+         iter->next_off = o + 5 + l;
       }
       break;
    case BSON_TYPE_ARRAY:
@@ -442,81 +446,81 @@ fill_data_fields:
       {
          bson_uint32_t l;
 
-         if (o >= (b->len - 4)) {
-            iter->err_offset = o;
+         if (o >= (len - 4)) {
+            iter->err_off = o;
             goto mark_invalid;
          }
 
-         memcpy (&l, iter->data1, 4);
+         memcpy (&l, iter->raw + iter->d1, 4);
          l = BSON_UINT32_FROM_LE (l);
 
-         if ((l > b->len) || (l > (b->len - o))) {
-            iter->err_offset = o;
+         if ((l > len) || (l > (len - o))) {
+            iter->err_off = o;
             goto mark_invalid;
          }
 
-         iter->next_offset = o + l;
+         iter->next_off = o + l;
       }
       break;
    case BSON_TYPE_OID:
-      iter->next_offset = o + 12;
+      iter->next_off = o + 12;
       break;
    case BSON_TYPE_BOOL:
-      iter->next_offset = o + 1;
+      iter->next_off = o + 1;
       break;
    case BSON_TYPE_REGEX:
       {
          bson_bool_t eor = FALSE;
          bson_bool_t eoo = FALSE;
 
-         for (; o < b->len; o++) {
-            if (!data[o]) {
-               iter->data2 = &data[++o];
+         for (; o < len; o++) {
+            if (!data [o]) {
+               iter->d2 = ++o;
                eor = TRUE;
                break;
             }
          }
 
          if (!eor) {
-            iter->err_offset = iter->next_offset;
+            iter->err_off = iter->next_off;
             goto mark_invalid;
          }
 
-         for (; o < b->len; o++) {
-            if (!data[o]) {
+         for (; o < len; o++) {
+            if (!data [o]) {
                eoo = TRUE;
                break;
             }
          }
 
          if (!eoo) {
-            iter->err_offset = iter->next_offset;
+            iter->err_off = iter->next_off;
             goto mark_invalid;
          }
 
-         iter->next_offset = o + 1;
+         iter->next_off = o + 1;
       }
       break;
    case BSON_TYPE_DBPOINTER:
       {
          bson_uint32_t l;
 
-         if (o >= (b->len - 4)) {
-            iter->err_offset = o;
+         if (o >= (len - 4)) {
+            iter->err_off = o;
             goto mark_invalid;
          }
 
-         iter->data2 = &data[o + 4];
-         memcpy (&l, iter->data1, 4);
+         iter->d2 = o + 4;
+         memcpy (&l, iter->raw + iter->d1, 4);
          l = BSON_UINT32_FROM_LE (l);
 
-         if ((l > b->len) || (l > (b->len - o))) {
-            iter->err_offset = o;
+         if ((l > len) || (l > (len - o))) {
+            iter->err_off = o;
             goto mark_invalid;
          }
 
-         iter->data3 = &data[o + 4 + l];
-         iter->next_offset = o + 4 + l + 12;
+         iter->d3 = o + 4 + l;
+         iter->next_off = o + 4 + l + 12;
       }
       break;
    case BSON_TYPE_CODEWSCOPE:
@@ -524,65 +528,65 @@ fill_data_fields:
          bson_uint32_t l;
          bson_uint32_t doclen;
 
-         if ((b->len < 19) || (o >= (b->len - 14))) {
-            iter->err_offset = o;
+         if ((len < 19) || (o >= (len - 14))) {
+            iter->err_off = o;
             goto mark_invalid;
          }
 
-         iter->data2 = &data[o + 4];
-         iter->data3 = &data[o + 8];
+         iter->d2 = o + 4;
+         iter->d3 = o + 8;
 
-         memcpy (&l, iter->data1, 4);
+         memcpy (&l, iter->raw + iter->d1, 4);
          l = BSON_UINT32_FROM_LE (l);
 
-         if ((l < 14) || (l >= (b->len - o))) {
-            iter->err_offset = o;
+         if ((l < 14) || (l >= (len - o))) {
+            iter->err_off = o;
             goto mark_invalid;
          }
 
-         iter->next_offset = o + l;
+         iter->next_off = o + l;
 
-         if (iter->next_offset >= iter->bson->len) {
-            iter->err_offset = o;
+         if (iter->next_off >= len) {
+            iter->err_off = o;
             goto mark_invalid;
          }
 
-         memcpy (&l, iter->data2, 4);
+         memcpy (&l, iter->raw + iter->d2, 4);
          l = BSON_UINT32_FROM_LE (l);
 
-         if (l >= (b->len - o - 4 - 4)) {
-            iter->err_offset = o;
+         if (l >= (len - o - 4 - 4)) {
+            iter->err_off = o;
             goto mark_invalid;
          }
 
-         if ((o + 4 + 4 + l + 4) >= iter->next_offset) {
-            iter->err_offset = o + 4;
+         if ((o + 4 + 4 + l + 4) >= iter->next_off) {
+            iter->err_off = o + 4;
             goto mark_invalid;
          }
 
-         iter->data4 = &data[o + 4 + 4 + l];
-         memcpy (&doclen, iter->data4, 4);
+         iter->d4 = o + 4 + 4 + l;
+         memcpy (&doclen, iter->raw + iter->d4, 4);
          doclen = BSON_UINT32_FROM_LE (doclen);
 
-         if ((o + 4 + 4 + l + doclen) != iter->next_offset) {
-            iter->err_offset = o + 4 + 4 + l;
+         if ((o + 4 + 4 + l + doclen) != iter->next_off) {
+            iter->err_off = o + 4 + 4 + l;
             goto mark_invalid;
          }
       }
       break;
    case BSON_TYPE_INT32:
-      iter->next_offset = o + 4;
+      iter->next_off = o + 4;
       break;
    case BSON_TYPE_MAXKEY:
    case BSON_TYPE_MINKEY:
    case BSON_TYPE_NULL:
    case BSON_TYPE_UNDEFINED:
-      iter->data1 = NULL;
-      iter->next_offset = o;
+      iter->d1 = -1;
+      iter->next_off = o;
       break;
    case BSON_TYPE_EOD:
    default:
-      iter->err_offset = o;
+      iter->err_off = o;
       goto mark_invalid;
    }
 
@@ -591,16 +595,20 @@ fill_data_fields:
     * current BSON buffer. If so, set the error location to the offset
     * of where the field starts.
     */
-   if (iter->next_offset >= b->len) {
-      iter->err_offset = o;
+   if (iter->next_off >= len) {
+      iter->err_off = o;
       goto mark_invalid;
    }
 
-   iter->err_offset = 0;
+   iter->err_off = 0;
+
    return TRUE;
 
 mark_invalid:
-   iter->bson = NULL;
+   iter->raw = NULL;
+   iter->len = 0;
+   iter->next_off = 0;
+
    return FALSE;
 }
 
@@ -629,17 +637,17 @@ bson_iter_binary (const bson_iter_t   *iter,
    bson_return_if_fail (iter);
    bson_return_if_fail (!binary || binary_len);
 
-   if (*iter->type == BSON_TYPE_BINARY) {
+   if (ITER_TYPE (iter) == BSON_TYPE_BINARY) {
       if (!subtype) {
          subtype = &backup;
       }
 
-      *subtype = (bson_subtype_t)*iter->data2;
+      *subtype = (bson_subtype_t) *(iter->raw + iter->d2);
 
       if (binary) {
-         memcpy (binary_len, iter->data1, 4);
+         memcpy (binary_len, (iter->raw + iter->d1), 4);
          *binary_len = BSON_UINT32_FROM_LE (*binary_len);
-         *binary = iter->data3;
+         *binary = iter->raw + iter->d3;
 
          if (*subtype == BSON_SUBTYPE_BINARY_DEPRECATED) {
             *binary_len -= sizeof (bson_int32_t);
@@ -677,7 +685,7 @@ bson_iter_bool (const bson_iter_t *iter)
 {
    bson_return_val_if_fail (iter, 0);
 
-   if (*iter->type == BSON_TYPE_BOOL) {
+   if (ITER_TYPE (iter) == BSON_TYPE_BOOL) {
       return bson_iter_bool_unsafe (iter);
    }
 
@@ -702,7 +710,7 @@ bson_iter_as_bool (const bson_iter_t *iter)
 {
    bson_return_val_if_fail (iter, 0);
 
-   switch (*iter->type) {
+   switch ((int)ITER_TYPE (iter)) {
    case BSON_TYPE_BOOL:
       return bson_iter_bool (iter);
 
@@ -741,7 +749,7 @@ bson_iter_double (const bson_iter_t *iter)
 {
    bson_return_val_if_fail (iter, 0);
 
-   if (*iter->type == BSON_TYPE_DOUBLE) {
+   if (ITER_TYPE (iter) == BSON_TYPE_DOUBLE) {
       return bson_iter_double_unsafe (iter);
    }
 
@@ -762,7 +770,7 @@ bson_iter_int32 (const bson_iter_t *iter)
 {
    bson_return_val_if_fail (iter, 0);
 
-   if (*iter->type == BSON_TYPE_INT32) {
+   if (ITER_TYPE (iter) == BSON_TYPE_INT32) {
       return bson_iter_int32_unsafe (iter);
    }
 
@@ -783,7 +791,7 @@ bson_iter_int64 (const bson_iter_t *iter)
 {
    bson_return_val_if_fail (iter, 0);
 
-   if (*iter->type == BSON_TYPE_INT64) {
+   if (ITER_TYPE (iter) == BSON_TYPE_INT64) {
       return bson_iter_int64_unsafe (iter);
    }
 
@@ -805,7 +813,7 @@ bson_iter_as_int64 (const bson_iter_t *iter)
 {
    bson_return_val_if_fail (iter, 0);
 
-   switch (*iter->type) {
+   switch ((int)ITER_TYPE (iter)) {
    case BSON_TYPE_BOOL:
       return bson_iter_bool (iter);
 
@@ -838,7 +846,7 @@ bson_iter_oid (const bson_iter_t *iter)
 {
    bson_return_val_if_fail (iter, NULL);
 
-   if (*iter->type == BSON_TYPE_OID) {
+   if (ITER_TYPE (iter) == BSON_TYPE_OID) {
       return bson_iter_oid_unsafe (iter);
    }
 
@@ -865,9 +873,9 @@ bson_iter_regex (const bson_iter_t *iter,
 
    bson_return_val_if_fail (iter, NULL);
 
-   if (*iter->type == BSON_TYPE_REGEX) {
-      ret = (const char *)iter->data1;
-      ret_options = (const char *)iter->data2;
+   if (ITER_TYPE (iter) == BSON_TYPE_REGEX) {
+      ret = (const char *)(iter->raw + iter->d1);
+      ret_options = (const char *)(iter->raw + iter->d2);
    }
 
    if (options) {
@@ -894,12 +902,12 @@ bson_iter_utf8 (const bson_iter_t *iter,
 {
    bson_return_val_if_fail (iter, NULL);
 
-   if (*iter->type == BSON_TYPE_UTF8) {
+   if (ITER_TYPE (iter) == BSON_TYPE_UTF8) {
       if (length) {
          *length = bson_iter_utf8_len_unsafe (iter);
       }
 
-      return (const char *)iter->data2;
+      return (const char *)(iter->raw + iter->d2);
    }
 
    if (length) {
@@ -960,12 +968,12 @@ bson_iter_code (const bson_iter_t *iter,
 {
    bson_return_val_if_fail (iter, NULL);
 
-   if (*iter->type == BSON_TYPE_CODE) {
+   if (ITER_TYPE (iter) == BSON_TYPE_CODE) {
       if (length) {
          *length = bson_iter_utf8_len_unsafe (iter);
       }
 
-      return (const char *)iter->data2;
+      return (const char *)(iter->raw + iter->d2);
    }
 
    if (length) {
@@ -999,16 +1007,16 @@ bson_iter_codewscope (const bson_iter_t   *iter,
 
    bson_return_val_if_fail (iter, NULL);
 
-   if (*iter->type == BSON_TYPE_CODEWSCOPE) {
+   if (ITER_TYPE (iter) == BSON_TYPE_CODEWSCOPE) {
       if (length) {
-         memcpy (&len, iter->data2, 4);
+         memcpy (&len, iter->raw + iter->d2, 4);
          *length = BSON_UINT32_FROM_LE (len) - 1;
       }
 
-      memcpy (&len, iter->data4, 4);
+      memcpy (&len, iter->raw + iter->d4, 4);
       *scope_len = BSON_UINT32_FROM_LE (len);
-      *scope = iter->data4;
-      return (const char *)iter->data3;
+      *scope = iter->raw + iter->d4;
+      return (const char *)(iter->raw + iter->d3);
    }
 
    return NULL;
@@ -1044,9 +1052,9 @@ bson_iter_dbpointer (const bson_iter_t *iter,
       *oid = NULL;
    }
 
-   if (*iter->type == BSON_TYPE_DBPOINTER) {
+   if (ITER_TYPE (iter) == BSON_TYPE_DBPOINTER) {
       if (collection_len) {
-         memcpy (collection_len, iter->data1, 4);
+         memcpy (collection_len, (iter->raw + iter->d1), 4);
          *collection_len = BSON_UINT32_FROM_LE (*collection_len);
 
          if ((*collection_len) > 0) {
@@ -1055,11 +1063,11 @@ bson_iter_dbpointer (const bson_iter_t *iter,
       }
 
       if (collection) {
-         *collection = (const char *)iter->data2;
+         *collection = (const char *)(iter->raw + iter->d2);
       }
 
       if (oid) {
-         *oid = (const bson_oid_t *)iter->data3;
+         *oid = (const bson_oid_t *)(iter->raw + iter->d3);
       }
    }
 }
@@ -1084,8 +1092,8 @@ bson_iter_symbol (const bson_iter_t *iter,
 
    bson_return_val_if_fail (iter, NULL);
 
-   if (*iter->type == BSON_TYPE_SYMBOL) {
-      ret = (const char *)iter->data2;
+   if (ITER_TYPE (iter) == BSON_TYPE_SYMBOL) {
+      ret = (const char *)(iter->raw + iter->d2);
       ret_length = bson_iter_utf8_len_unsafe (iter);
    }
 
@@ -1111,7 +1119,7 @@ bson_iter_date_time (const bson_iter_t *iter)
 {
    bson_return_val_if_fail (iter, 0);
 
-   if (*iter->type == BSON_TYPE_DATE_TIME) {
+   if (ITER_TYPE (iter) == BSON_TYPE_DATE_TIME) {
       return bson_iter_int64_unsafe (iter);
    }
 
@@ -1132,7 +1140,7 @@ bson_iter_time_t (const bson_iter_t *iter)
 {
    bson_return_val_if_fail (iter, 0);
 
-   if (*iter->type == BSON_TYPE_DATE_TIME) {
+   if (ITER_TYPE (iter) == BSON_TYPE_DATE_TIME) {
       return bson_iter_time_t_unsafe (iter);
    }
 
@@ -1159,8 +1167,8 @@ bson_iter_timestamp (const bson_iter_t *iter,
 
    bson_return_if_fail (iter);
 
-   if (*iter->type == BSON_TYPE_TIMESTAMP) {
-      memcpy (&encoded, iter->data1, 8);
+   if (ITER_TYPE (iter) == BSON_TYPE_TIMESTAMP) {
+      memcpy (&encoded, iter->raw + iter->d1, 8);
       encoded = BSON_UINT64_FROM_LE (encoded);
       ret_timestamp = (encoded >> 32) & 0xFFFFFFFF;
       ret_increment = encoded & 0xFFFFFFFF;
@@ -1194,7 +1202,7 @@ bson_iter_timeval (const bson_iter_t *iter,
 {
    bson_return_if_fail (iter);
 
-   if (*iter->type == BSON_TYPE_DATE_TIME) {
+   if (ITER_TYPE (iter) == BSON_TYPE_DATE_TIME) {
       bson_iter_timeval_unsafe (iter, tv);
       return;
    }
@@ -1234,10 +1242,10 @@ bson_iter_document (const bson_iter_t   *iter,
    *document = NULL;
    *document_len = 0;
 
-   if (*iter->type == BSON_TYPE_DOCUMENT) {
-      memcpy (document_len, iter->data1, 4);
+   if (ITER_TYPE (iter) == BSON_TYPE_DOCUMENT) {
+      memcpy (document_len, (iter->raw + iter->d1), 4);
       *document_len = BSON_UINT32_FROM_LE (*document_len);
-      *document = iter->data1;
+      *document = (iter->raw + iter->d1);
    }
 }
 
@@ -1275,10 +1283,10 @@ bson_iter_array (const bson_iter_t   *iter,
    *array = NULL;
    *array_len = 0;
 
-   if (*iter->type == BSON_TYPE_ARRAY) {
-      memcpy (array_len, iter->data1, 4);
+   if (ITER_TYPE (iter) == BSON_TYPE_ARRAY) {
+      memcpy (array_len, (iter->raw + iter->d1), 4);
       *array_len = BSON_UINT32_FROM_LE (*array_len);
-      *array = iter->data1;
+      *array = (iter->raw + iter->d1);
    }
 }
 
@@ -1343,7 +1351,7 @@ bson_iter_visit_all (bson_iter_t          *iter,
       key = bson_iter_key_unsafe (iter);
 
       if (*key && !bson_utf8_validate (key, strlen (key), FALSE)) {
-         iter->err_offset = iter->offset;
+         iter->err_off = iter->off;
          return TRUE;
       }
 
@@ -1367,7 +1375,7 @@ bson_iter_visit_all (bson_iter_t          *iter,
             utf8 = bson_iter_utf8 (iter, &utf8_len);
 
             if (!bson_utf8_validate (utf8, utf8_len, TRUE)) {
-               iter->err_offset = iter->offset;
+               iter->err_off = iter->off;
                return TRUE;
             }
 
@@ -1566,7 +1574,7 @@ bson_iter_visit_all (bson_iter_t          *iter,
       }
    }
 
-   if (iter->err_offset) {
+   if (iter->err_off) {
       VISIT_CORRUPT (iter, data);
    }
 
@@ -1594,8 +1602,8 @@ bson_iter_overwrite_bool (bson_iter_t *iter,
    bson_return_if_fail (iter);
    bson_return_if_fail (value == 1 || value == 0);
 
-   if (*iter->type == BSON_TYPE_BOOL) {
-      memcpy ((void *)iter->data1, &value, 1);
+   if (ITER_TYPE (iter) == BSON_TYPE_BOOL) {
+      memcpy ((void *)(iter->raw + iter->d1), &value, 1);
    }
 }
 
@@ -1614,11 +1622,11 @@ bson_iter_overwrite_int32 (bson_iter_t *iter,
 {
    bson_return_if_fail (iter);
 
-   if (*iter->type == BSON_TYPE_INT32) {
+   if (ITER_TYPE (iter) == BSON_TYPE_INT32) {
 #if BSON_BYTE_ORDER != BSON_LITTLE_ENDIAN
       value = BSON_UINT32_TO_LE (value);
 #endif
-      memcpy ((void *)iter->data1, &value, 4);
+      memcpy ((void *)(iter->raw + iter->d1), &value, 4);
    }
 }
 
@@ -1637,11 +1645,11 @@ bson_iter_overwrite_int64 (bson_iter_t *iter,
 {
    bson_return_if_fail (iter);
 
-   if (*iter->type == BSON_TYPE_INT64) {
+   if (ITER_TYPE (iter) == BSON_TYPE_INT64) {
 #if BSON_BYTE_ORDER != BSON_LITTLE_ENDIAN
       value = BSON_UINT64_TO_LE (value);
 #endif
-      memcpy ((void *)iter->data1, &value, 8);
+      memcpy ((void *)(iter->raw + iter->d1), &value, 8);
    }
 }
 
@@ -1660,8 +1668,8 @@ bson_iter_overwrite_double (bson_iter_t *iter,
 {
    bson_return_if_fail (iter);
 
-   if (*iter->type == BSON_TYPE_DOUBLE) {
+   if (ITER_TYPE (iter) == BSON_TYPE_DOUBLE) {
       value = BSON_DOUBLE_TO_LE (value);
-      memcpy ((void *)iter->data1, &value, 8);
+      memcpy ((void *)(iter->raw + iter->d1), &value, 8);
    }
 }

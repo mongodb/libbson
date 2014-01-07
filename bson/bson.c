@@ -764,7 +764,9 @@ bson_append_iter (bson_t            *bson,
       key_length = -1;
    }
 
-   switch (*iter->type) {
+   switch (bson_iter_type_unsafe (iter)) {
+   case BSON_TYPE_EOD:
+      return FALSE;
    case BSON_TYPE_DOUBLE:
       ret = bson_append_double (bson, key, key_length, bson_iter_double (iter));
       break;
@@ -2073,7 +2075,7 @@ bson_as_json (const bson_t *bson,
    state.depth = 0;
    bson_iter_visit_all (&iter, &bson_as_json_visitors, &state);
 
-   if (iter.err_offset) {
+   if (iter.err_off) {
       bson_string_free (state.str, TRUE);
       if (length) {
          *length = 0;
@@ -2105,7 +2107,7 @@ _bson_iter_validate_utf8 (const bson_iter_t *iter,
       allow_null = !!(state->flags & BSON_VALIDATE_UTF8_ALLOW_NULL);
 
       if (!bson_utf8_validate (v_utf8, v_utf8_len, allow_null)) {
-         state->err_offset = iter->offset;
+         state->err_offset = iter->off;
          return TRUE;
       }
    }
@@ -2120,7 +2122,7 @@ _bson_iter_validate_corrupt (const bson_iter_t *iter,
 {
    bson_validate_state_t *state = data;
 
-   state->err_offset = iter->err_offset;
+   state->err_offset = iter->err_off;
 }
 
 
@@ -2133,14 +2135,14 @@ _bson_iter_validate_before (const bson_iter_t *iter,
 
    if ((state->flags & BSON_VALIDATE_DOLLAR_KEYS)) {
       if (key[0] == '$') {
-         state->err_offset = iter->offset;
+         state->err_offset = iter->off;
          return TRUE;
       }
    }
 
    if ((state->flags & BSON_VALIDATE_DOT_KEYS)) {
       if (strstr (key, ".")) {
-         state->err_offset = iter->offset;
+         state->err_offset = iter->off;
          return TRUE;
       }
    }
@@ -2161,7 +2163,7 @@ _bson_iter_validate_codewscope (const bson_iter_t *iter,
    size_t offset;
 
    if (!bson_validate (v_scope, state->flags, &offset)) {
-      state->err_offset = iter->offset + offset;
+      state->err_offset = iter->off + offset;
       return FALSE;
    }
 
@@ -2196,7 +2198,7 @@ _bson_iter_validate_document (const bson_iter_t *iter,
    bson_iter_t child;
 
    if (!bson_iter_init (&child, v_document)) {
-      state->err_offset = iter->offset;
+      state->err_offset = iter->off;
       return TRUE;
    }
 

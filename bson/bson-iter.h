@@ -107,7 +107,7 @@ bson_iter_utf8_len_unsafe (const bson_iter_t *iter)
 {
    bson_int32_t val;
 
-   memcpy (&val, iter->data1, 4);
+   memcpy (&val, iter->raw + iter->d1, 4);
    val = BSON_UINT32_FROM_LE (val);
    return MAX (0, val - 1);
 }
@@ -145,7 +145,7 @@ bson_iter_code_unsafe (const bson_iter_t *iter,
                        bson_uint32_t     *length)
 {
    *length = bson_iter_utf8_len_unsafe (iter);
-   return (const char *)iter->data2;
+   return (const char *)(iter->raw + iter->d2);
 }
 
 
@@ -186,7 +186,7 @@ bson_iter_double_unsafe (const bson_iter_t *iter)
 {
    double val;
 
-   memcpy (&val, iter->data1, 8);
+   memcpy (&val, iter->raw + iter->d1, 8);
    return BSON_DOUBLE_FROM_LE (val);
 }
 
@@ -225,7 +225,7 @@ bson_iter_int32_unsafe (const bson_iter_t *iter)
 {
    bson_int32_t val;
 
-   memcpy (&val, iter->data1, 4);
+   memcpy (&val, iter->raw + iter->d1, 4);
    return BSON_UINT32_FROM_LE (val);
 }
 
@@ -251,7 +251,7 @@ bson_iter_int64_unsafe (const bson_iter_t *iter)
 {
    bson_int64_t val;
 
-   memcpy (&val, iter->data1, 8);
+   memcpy (&val, iter->raw + iter->d1, 8);
    return BSON_UINT64_FROM_LE (val);
 }
 
@@ -291,7 +291,7 @@ bson_iter_oid (const bson_iter_t *iter);
 static BSON_INLINE const bson_oid_t *
 bson_iter_oid_unsafe (const bson_iter_t *iter)
 {
-   return (const bson_oid_t *)iter->data1;
+   return (const bson_oid_t *)(iter->raw + iter->d1);
 }
 
 
@@ -310,7 +310,7 @@ bson_iter_key (const bson_iter_t *iter);
 static BSON_INLINE const char *
 bson_iter_key_unsafe (const bson_iter_t *iter)
 {
-   return (const char *)iter->key;
+   return (const char *)(iter->raw + iter->key);
 }
 
 
@@ -331,7 +331,7 @@ bson_iter_utf8_unsafe (const bson_iter_t *iter,
                        bson_uint32_t     *length)
 {
    *length = bson_iter_utf8_len_unsafe (iter);
-   return (const char *)iter->data2;
+   return (const char *)(iter->raw + iter->d2);
 }
 
 
@@ -408,7 +408,7 @@ bson_iter_bool_unsafe (const bson_iter_t *iter)
 {
    char val;
 
-   memcpy (&val, iter->data1, 1);
+   memcpy (&val, iter->raw + iter->d1, 1);
    return !!val;
 }
 
@@ -442,7 +442,7 @@ bson_iter_type (const bson_iter_t *iter);
 static BSON_INLINE bson_type_t
 bson_iter_type_unsafe (const bson_iter_t *iter)
 {
-   return (bson_type_t) iter->type[0];
+   return (bson_type_t) (iter->raw + iter->type) [0];
 }
 
 

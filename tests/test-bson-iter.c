@@ -211,7 +211,7 @@ test_bson_iter_fuzz (void)
 
       assert(bson_iter_init(&iter, b));
       while (bson_iter_next(&iter)) {
-         assert(iter.next_offset < len);
+         assert(iter.next_off < len);
          switch (bson_iter_type(&iter)) {
          case BSON_TYPE_ARRAY:
          case BSON_TYPE_DOCUMENT:
@@ -222,7 +222,7 @@ test_bson_iter_fuzz (void)
                bson_iter_document(&iter, &child_len, &child);
                assert(child);
                assert(child_len >= 5);
-               assert((iter.offset + child_len) < b->len);
+               assert((iter.off + child_len) < b->len);
                assert(child_len < (bson_uint32_t)-1);
                memcpy(&child_len, child, 4);
                child_len = BSON_UINT32_FROM_LE(child_len);
@@ -235,7 +235,7 @@ test_bson_iter_fuzz (void)
          case BSON_TYPE_UNDEFINED:
             break;
          case BSON_TYPE_OID:
-            assert(iter.offset + 12 < iter.bson->len);
+            assert(iter.off + 12 < iter.len);
             break;
          case BSON_TYPE_BOOL:
          case BSON_TYPE_DATE_TIME:

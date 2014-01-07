@@ -256,18 +256,18 @@ typedef enum
  */
 typedef struct
 {
-   const bson_t       *bson;        /* The bson_t being iterated. */
-   size_t              offset;      /* The current offset in the bson_t. */
-   const bson_uint8_t *type;        /* Pointer to current type field. */
-   const bson_uint8_t *key;         /* Pointer to current key field. */
-   const bson_uint8_t *data1;       /* Pointer to first chunk of element. */
-   const bson_uint8_t *data2;       /* Pointer to second chunk of element. */
-   const bson_uint8_t *data3;       /* Pointer to third chunk of element. */
-   const bson_uint8_t *data4;       /* Pointer to fourth chunk of element. */
-   size_t              next_offset; /* Offset of next element. */
-   size_t              err_offset;  /* Location of decoding error. */
-   bson_t              inl_bson;    /* Used for recursing into children. */
-   void               *padding[6];  /* For future use. */
+   const bson_uint8_t *raw;      /* The raw buffer being iterated. */
+   int                 len;      /* The length of raw. */
+   int                 off;      /* The offset within the buffer. */
+   int                 type;     /* The offset of the type byte. */
+   int                 key;      /* The offset of the key byte. */
+   int                 d1;       /* The offset of the first data byte. */
+   int                 d2;       /* The offset of the second data byte. */
+   int                 d3;       /* The offset of the third data byte. */
+   int                 d4;       /* The offset of the fourth data byte. */
+   int                 next_off; /* The offset of the next field. */
+   int                 err_off;  /* The offset of the error. */
+   char                padding[16];
 } bson_iter_t;
 
 
