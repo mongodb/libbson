@@ -19,7 +19,8 @@
 #define BSON_TESTS_H
 
 
-#include <bson/bson.h>
+#include <bson.h>
+#include <bcon.h>
 #include <stdio.h>
 #include <time.h>
 
@@ -47,7 +48,7 @@ BSON_BEGIN_DECLS
    } while (0)
 
 
-static void
+void
 run_test (const char *name,
           void (*func) (void))
 {

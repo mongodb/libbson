@@ -40,7 +40,8 @@ INST_H_FILES = \
 	bson/bson-types.h \
 	bson/bson-utf8.h \
 	bson/bson-version.h \
-	bson/bson-writer.h
+	bson/bson-writer.h \
+	bson/bcon.h
 
 
 NOINST_H_FILES = \
@@ -64,12 +65,14 @@ libbson_1_0_la_SOURCES = \
 	bson/bson-reader.c \
 	bson/bson-string.c \
 	bson/bson-utf8.c \
-	bson/bson-writer.c
+	bson/bson-writer.c \
+	bson/bcon.c
 
 
 libbson_1_0_la_CPPFLAGS = \
 	-DBSON_COMPILATION \
 	$(BSON_DEBUG_CFLAGS) \
+	-I$(top_srcdir)/bson \
 	$(MAINTAINER_CFLAGS)
 
 
@@ -81,7 +84,7 @@ libbson_1_0_la_LIBADD = \
 libbson_1_0_la_LDFLAGS = \
 	$(BSON_LT_LDFLAGS) \
 	-no-undefined \
-	-export-symbols-regex "^bson_" \
+	-export-symbols-regex "^(bson_|bcon_|BCON_MAGIC)" \
 	-rpath $(libdir)
 
 
