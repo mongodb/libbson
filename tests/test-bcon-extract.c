@@ -473,6 +473,7 @@ static void
 test_iter (void)
 {
    bson_iter_t iter;
+   bson_t *other;
 
    bson_t *bcon = BCON_NEW ("foo", BCON_INT32 (10));
 
@@ -481,7 +482,12 @@ test_iter (void)
    assert (bson_iter_type (&iter) == BSON_TYPE_INT32);
    assert (bson_iter_int32 (&iter) == 10);
 
+   other = BCON_NEW ("foo", BCON_ITER (&iter));
+
+   bson_eq_bson (other, bcon);
+
    bson_destroy (bcon);
+   bson_destroy (other);
 }
 
 

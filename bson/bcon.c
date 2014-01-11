@@ -133,7 +133,8 @@ typedef union bcon_append {
       bson_uint32_t increment;
    } TIMESTAMP;
 
-   bson_int64_t INT64;
+   bson_int64_t       INT64;
+   const bson_iter_t *ITER;
 } bcon_append_t;
 
 /* same as bcon_append_t.  Some extra symbols and varying types that handle the
@@ -278,6 +279,9 @@ _bcon_append_single (bson_t        *bson,
          bson_append_document (bson, key, -1, val->DOCUMENT);
          break;
       }
+   case BCON_TYPE_ITER:
+      bson_append_iter (bson, key, -1, val->ITER);
+      break;
    default:
       assert (0);
       break;
@@ -519,6 +523,9 @@ _bcon_append_tokenize (va_list       *ap,
          break;
       case BCON_TYPE_BCON:
          u->BCON = va_arg (*ap, bson_t *);
+         break;
+      case BCON_TYPE_ITER:
+         u->ITER = va_arg (*ap, const bson_iter_t *);
          break;
       default:
          assert (0);

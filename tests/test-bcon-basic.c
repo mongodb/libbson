@@ -528,6 +528,27 @@ test_concat (void)
 
 
 static void
+test_iter (void)
+{
+   bson_t bcon, expected;
+   bson_iter_t iter;
+
+   bson_init (&bcon);
+   bson_init (&expected);
+
+   bson_append_int32 (&expected, "foo", -1, 100);
+   bson_iter_init_find (&iter, &expected, "foo");
+
+   BCON_APPEND (&bcon, "foo", BCON_ITER(&iter));
+
+   bson_eq_bson (&bcon, &expected);
+
+   bson_destroy (&bcon);
+   bson_destroy (&expected);
+}
+
+
+static void
 test_bcon_new (void)
 {
    bson_t expected;
@@ -615,6 +636,7 @@ main (int   argc,
    run_test("/bson/bcon/test_inline_doc", test_inline_doc);
    run_test("/bson/bcon/test_inline_nested", test_inline_nested);
    run_test("/bson/bcon/test_concat", test_concat);
+   run_test("/bson/bcon/test_iter", test_iter);
    run_test("/bson/bcon/test_bcon_new", test_bcon_new);
    run_test("/bson/bcon/test_append_ctx", test_append_ctx);
 

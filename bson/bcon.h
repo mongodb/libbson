@@ -50,6 +50,7 @@ BCON_ENSURE_DECLARE (int64, bson_int64_t)
 BCON_ENSURE_DECLARE (bool, bson_bool_t)
 BCON_ENSURE_DECLARE (bson_type, bson_type_t)
 BCON_ENSURE_DECLARE (bson_iter, bson_iter_t)
+BCON_ENSURE_DECLARE (const_bson_iter_ptr, const bson_iter_t *)
 
 #define BCON_UTF8(_val) \
    BCON_MAGIC, BCON_TYPE_UTF8, BCON_ENSURE (const_char_ptr, (_val))
@@ -100,6 +101,8 @@ BCON_ENSURE_DECLARE (bson_iter, bson_iter_t)
 #define BCON_MINKEY BCON_MAGIC, BCON_TYPE_MINKEY
 #define BCON(_val) \
    BCON_MAGIC, BCON_TYPE_BCON, BCON_ENSURE (const_bson_ptr, (_val))
+#define BCON_ITER(_val) \
+   BCON_MAGIC, BCON_TYPE_ITER, BCON_ENSURE (const_bson_iter_ptr, (_val))
 
 #define BCONE_UTF8(_val) BCONE_MAGIC, BCON_TYPE_UTF8, \
    BCON_ENSURE_STORAGE (const_char_ptr, (_val))
