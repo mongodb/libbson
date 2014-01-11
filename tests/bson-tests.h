@@ -20,7 +20,6 @@
 
 
 #include <bson.h>
-#include <bcon.h>
 #include <stdio.h>
 #include <time.h>
 
@@ -46,6 +45,27 @@ BSON_BEGIN_DECLS
          abort();                                                       \
       }                                                                 \
    } while (0)
+
+void
+bson_eq_bson (bson_t *bson,
+              bson_t *expected)
+{
+   char *bson_json, *expected_json;
+   int unequal;
+
+   unequal = (expected->len != bson->len)
+             || memcmp (bson_get_data (expected), bson_get_data (
+                           bson), expected->len);
+
+   if (unequal) {
+      bson_json = bson_as_json (bson, NULL);
+      expected_json = bson_as_json (expected, NULL);
+
+      fprintf (stderr, "bson objects unequal: (%s) != (%s)", bson_json,
+               expected_json);
+      assert (0);
+   }
+}
 
 
 void

@@ -10,7 +10,8 @@ noinst_PROGRAMS = \
 	test-bson-string \
 	test-bson-utf8 \
 	test-bson-writer \
-	test-bcon-basic
+	test-bcon-basic \
+	test-bcon-extract
 
 
 TEST_PROGS = \
@@ -25,7 +26,8 @@ TEST_PROGS = \
 	test-bson-string \
 	test-bson-utf8 \
 	test-bson-writer \
-	test-bcon-basic
+	test-bcon-basic \
+	test-bcon-extract
 
 
 if OS_LINUX
@@ -165,6 +167,11 @@ test_bson_writer_LDADD = libbson-1.0.la
 test_bcon_basic_SOURCES = tests/test-bcon-basic.c
 test_bcon_basic_CPPFLAGS = -I$(top_srcdir)/bson -DBSON_COMPILATION
 test_bcon_basic_LDADD = libbson-1.0.la
+
+
+test_bcon_extract_SOURCES = tests/test-bcon-extract.c
+test_bcon_extract_CPPFLAGS = -I$(top_srcdir)/bson -DBSON_COMPILATION
+test_bcon_extract_LDADD = libbson-1.0.la
 
 
 if HAVE_PYTHON

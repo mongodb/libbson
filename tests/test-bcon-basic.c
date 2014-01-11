@@ -2,27 +2,6 @@
 #include <bcon.h>
 
 static void
-bson_eq_bson (bson_t *bson,
-              bson_t *expected)
-{
-   char *bson_json, *expected_json;
-   int unequal;
-
-   unequal = (expected->len != bson->len)
-             || memcmp (bson_get_data (expected), bson_get_data (
-                           bson), expected->len);
-
-   if (unequal) {
-      bson_json = bson_as_json (bson, NULL);
-      expected_json = bson_as_json (expected, NULL);
-
-      fprintf (stderr, "bson objects unequal: (%s) != (%s)", bson_json,
-               expected_json);
-      assert (0);
-   }
-}
-
-static void
 test_utf8 (void)
 {
    bson_t bcon, expected;
@@ -70,7 +49,7 @@ test_binary (void)
    BCON_APPEND (&bcon,
       "foo", BCON_BIN (
          BSON_SUBTYPE_BINARY,
-         (bson_uint8_t *)"deadbeef",
+         (const bson_uint8_t *)"deadbeef",
          8
       ),
    NULL);

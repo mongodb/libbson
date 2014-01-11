@@ -84,7 +84,7 @@ libbson_1_0_la_LIBADD = \
 libbson_1_0_la_LDFLAGS = \
 	$(BSON_LT_LDFLAGS) \
 	-no-undefined \
-	-export-symbols-regex "^(bson_|bcon_|BCON_MAGIC)" \
+	-export-symbols-regex "^(bson_|bcon_|BCON_MAGIC|BCONE_MAGIC)" \
 	-rpath $(libdir)
 
 
