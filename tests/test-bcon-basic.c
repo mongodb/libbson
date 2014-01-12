@@ -137,11 +137,9 @@ test_date_time (void)
    bson_init (&bcon);
    bson_init (&expected);
 
-   struct timeval tv = { .tv_sec = 1231111, .tv_usec = 12311 };
+   bson_append_date_time (&expected, "foo", -1, 10000);
 
-   bson_append_timeval (&expected, "foo", -1, &tv);
-
-   BCON_APPEND (&bcon, "foo", BCON_DATE_TIME (tv));
+   BCON_APPEND (&bcon, "foo", BCON_DATE_TIME (10000));
 
    bson_eq_bson (&bcon, &expected);
 

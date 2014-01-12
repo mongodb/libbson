@@ -75,14 +75,14 @@ run_test (const char *name,
    struct timeval begin;
    struct timeval end;
    struct timeval diff;
-   bson_int64_t usec;
+   long usec;
    double format;
 
    fprintf(stdout, "%-42s : ", name);
    fflush(stdout);
-   gettimeofday(&begin, NULL);
+   bson_gettimeofday(&begin, NULL);
    func();
-   gettimeofday(&end, NULL);
+   bson_gettimeofday(&end, NULL);
    fprintf(stdout, "PASS");
 
    diff.tv_sec = end.tv_sec - begin.tv_sec;
@@ -95,7 +95,6 @@ run_test (const char *name,
    format = diff.tv_sec + (diff.tv_usec / 1000000.0);
    fprintf(stdout, " : %lf\n", format);
 }
-
 
 BSON_END_DECLS
 

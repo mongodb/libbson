@@ -40,13 +40,9 @@
  * IF IBM IS APPRISED OF THE POSSIBILITY OF SUCH DAMAGES.
  */
 
-#include <sys/types.h>
-#include <sys/param.h>
-
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "bson-compat.h"
+#include "bson-macros.h"
+#include "bson-types.h"
 
 #define Assert(Cond) if (!(Cond)) abort ()
 
@@ -118,14 +114,14 @@ static const char Pad64 = '=';
 
 int
 b64_ntop (uint8_t const *src,
-          size_t         srclength,
+          bson_size_t         srclength,
           char          *target,
-          size_t         targsize)
+          bson_size_t         targsize)
 {
-   size_t datalength = 0;
+   bson_size_t datalength = 0;
    uint8_t input[3];
    uint8_t output[4];
-   size_t i;
+   bson_size_t i;
 
    while (2 < srclength) {
       input[0] = *src++;
@@ -184,5 +180,5 @@ b64_ntop (uint8_t const *src,
       return -1;
    }
    target[datalength] = '\0'; /* Returned value doesn't count \0. */
-   return datalength;
+   return (int)datalength;
 }

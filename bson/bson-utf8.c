@@ -83,7 +83,7 @@ _bson_utf8_get_sequence (const char   *utf8,
  */
 bson_bool_t
 bson_utf8_validate (const char *utf8,
-                    size_t      utf8_len,
+                    bson_size_t      utf8_len,
                     bson_bool_t allow_null)
 {
    bson_uint8_t first_mask;
@@ -135,7 +135,7 @@ bson_utf8_validate (const char *utf8,
  */
 char *
 bson_utf8_escape_for_json (const char *utf8,
-                           ssize_t     utf8_len)
+                           bson_ssize_t     utf8_len)
 {
    unsigned int i = 0;
    unsigned int o = 0;
@@ -240,7 +240,7 @@ bson_utf8_next_char (const char *utf8)
  */
 void
 bson_utf8_from_unichar (bson_unichar_t unichar,
-                        char           utf8[static 6],
+                        char           utf8[BSON_ENSURE_ARRAY_PARAM_SIZE(6)],
                         bson_uint32_t *len)
 {
    bson_return_if_fail (len);

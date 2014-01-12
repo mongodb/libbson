@@ -29,7 +29,6 @@ TEST_PROGS = \
 	test-bcon-basic \
 	test-bcon-extract
 
-
 if OS_LINUX
 TEST_PROGS += $(top_srcdir)/tests/abicheck.sh
 endif

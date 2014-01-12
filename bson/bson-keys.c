@@ -145,13 +145,23 @@ void
 bson_uint32_to_string (bson_uint32_t value,
                        const char  **strptr,
                        char         *str,
-                       size_t        size)
+                       bson_size_t   size)
 {
+   bson_size_t i;
+
    if (value <= 1000) {
       *strptr = gUint32Strs[value];
       return;
    } else {
-      snprintf (str, size, "%u", value);
-      *strptr = str;
+      i = size;
+      str[i] = '\0';
+
+      while (value) {
+         i--;
+         str[i] = (value % 10) + '0';
+         value /= 10;
+      }
+
+      *strptr = str + i;
    }
 }

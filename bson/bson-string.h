@@ -91,7 +91,7 @@ bson_strdupv_printf (const char *format,
 
 char *
 bson_strndup (const char *str,
-              size_t      n_bytes);
+              bson_size_t      n_bytes);
 
 
 BSON_END_DECLS

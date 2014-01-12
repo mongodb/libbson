@@ -19,27 +19,20 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/time.h>
 #include <time.h>
-#include <unistd.h>
+
+#include "bson-compat.h"
 
 #if defined(__linux__)
 #include <sys/syscall.h>
 #endif
 
-#include "config.h"
-
+#include "bson-clock.h"
 #include "bson-context.h"
 #include "bson-context-private.h"
 #include "bson-md5.h"
 #include "bson-memory.h"
 #include "bson-thread.h"
-
-#ifdef BSON_OS_WIN32
-#include <windows.h>
-#include <winsock2.h>
-#endif
-
 
 #ifndef HOST_NAME_MAX
 #define HOST_NAME_MAX 256
@@ -71,7 +64,7 @@ _bson_context_get_oid_host (bson_context_t *context,
    hostname[HOST_NAME_MAX - 1] = '\0';
 
    bson_md5_init (&md5);
-   bson_md5_append (&md5, (const bson_uint8_t *)hostname, strlen (hostname));
+   bson_md5_append (&md5, (const bson_uint8_t *)hostname, (bson_uint32_t)strlen (hostname));
    bson_md5_finish (&md5, &digest[0]);
 
    bytes[4] = digest[0];
@@ -150,6 +143,8 @@ _bson_context_get_oid_seq32_threadsafe (bson_context_t *context,
    bson_mutex_lock (&context->_m32);
    seq = context->seq32++;
    bson_mutex_unlock (&context->_m32);
+#elif defined BSON_OS_WIN32
+   bson_uint32_t seq = InterlockedIncrement ((long int *)&context->seq32);
 #else
    bson_uint32_t seq = __sync_fetch_and_add_4 (&context->seq32, 1);
 #endif
@@ -179,6 +174,8 @@ _bson_context_get_oid_seq64_threadsafe (bson_context_t *context,
    bson_mutex_lock (&context->_m64);
    seq = context->seq64++;
    bson_mutex_unlock (&context->_m64);
+#elif defined BSON_OS_WIN32
+   bson_uint64_t seq = InterlockedIncrement64 (&context->seq64);
 #else
    bson_uint64_t seq = __sync_fetch_and_add_8 (&context->seq64, 1);
 #endif
@@ -239,12 +236,19 @@ bson_context_new (bson_context_flags_t flags)
     * The seed itself is made up of the current time in seconds, milliseconds,
     * and pid xored together. I welcome better solutions if at all necessary.
     */
-   gettimeofday (&tv, NULL);
+   bson_gettimeofday (&tv, NULL);
    seed[0] = tv.tv_sec;
    seed[1] = tv.tv_usec;
-   seed[2] = getpid ();
+   seed[2] = _bson_getpid ();
    real_seed = seed[0] ^ seed[1] ^ seed[2];
+
+#ifdef BSON_OS_WIN32
+   /* ms's runtime is multithreaded by default, so no rand_r */
+   srand(real_seed);
+   context->seq32 = rand() & 0x007FFFF0;
+#else
    context->seq32 = rand_r (&real_seed) & 0x007FFFF0;
+#endif
 
    if ((flags & BSON_CONTEXT_DISABLE_HOST_CACHE)) {
       context->oid_get_host = _bson_context_get_oid_host;
@@ -311,11 +315,11 @@ bson_context_destroy (bson_context_t *context)
 }
 
 
-static void
-_bson_context_init_default (void)
+static BSON_ONCE_FUN(_bson_context_init_default)
 {
    gContextDefault = bson_context_new ((BSON_CONTEXT_THREAD_SAFE |
                                         BSON_CONTEXT_DISABLE_PID_CACHE));
+   BSON_ONCE_RETURN;
 }
 
 
@@ -332,17 +336,9 @@ _bson_context_init_default (void)
 bson_context_t *
 bson_context_get_default (void)
 {
-   /*
-    * TODO: Our thread abstraction should have pthread_once_t abstraction.
-    */
+   static bson_once_t once = BSON_ONCE_INIT;
 
-#ifdef _PTHREAD_ONCE_INIT_NEEDS_BRACES
-   static pthread_once_t once = { PTHREAD_ONCE_INIT };
-#else
-   static pthread_once_t once = PTHREAD_ONCE_INIT;
-#endif
-
-   pthread_once (&once, _bson_context_init_default);
+   bson_once (&once, _bson_context_init_default);
 
    return gContextDefault;
 }

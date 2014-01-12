@@ -24,6 +24,7 @@
 #define BSON_THREAD_H
 
 
+#include "bson-compat.h"
 #include "bson-config.h"
 #include "bson-macros.h"
 
@@ -37,7 +38,19 @@ BSON_BEGIN_DECLS
  */
 
 
-#if defined(BSON_OS_UNIX)
+#if defined(BSON_OS_WIN32)
+#  define bson_mutex_t                 HANDLE
+#  define bson_mutex_init(m, x)         CreateMutex (NULL, FALSE, NULL)
+#  define bson_mutex_lock(m)           WaitforSingleObject ((m))
+#  define bson_mutex_unlock(m)         ReleaseMutex ((m))
+#  define bson_mutex_destroy(m)        CloseHandle ((m))
+#  define bson_thread_t                HANDLE
+#  define bson_thread_create(t, a, f, d)  (*(t) = \
+                                              CreateThread (NULL, 0, (void *)f, \
+                                                            d, 0, NULL))
+#  define bson_thread_join(t, v)        WaitForSingleObject (t, 0)
+#elif _MSC_VER
+#else
 #  include <pthread.h>
 #  define BSON_MUTEX_INITIALIZER PTHREAD_MUTEX_INITIALIZER
 #  define bson_cond_t            pthread_cond_t
@@ -53,24 +66,57 @@ BSON_BEGIN_DECLS
 #  define bson_thread_t          pthread_t
 #  define bson_thread_create     pthread_create
 #  define bson_thread_join       pthread_join
-#elif defined(BSON_OS_WIN32)
-#  ifndef WIN32_LEAN_AND_MEAN
-#    define WIN32_LEAN_AND_MEAN
-#    include <windows.h>
-#    undef  WIN32_LEAN_AND_MEAN
+#endif
+
+#if defined(BSON_OS_WIN32)
+#  if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+#    define bson_once_t                   INIT_ONCE
+#    define BSON_ONCE_INIT                INIT_ONCE_STATIC_INIT
+#    define bson_once(o, c)               InitOnceExecuteOnce(o, c, NULL, NULL)
+#    define BSON_ONCE_FUN(n)              BOOL CALLBACK n(PINIT_ONCE _ignored_a, PVOID _ignored_b, PVOID *_ignored_c)
+#    define BSON_ONCE_RETURN              return TRUE
 #  else
-#    include <windows.h>
+     typedef struct bson_once
+     {
+        volatile long init;
+        volatile long complete;
+     } bson_once_t;
+
+#    define BSON_ONCE_INIT       { 0, 0 }
+
+     static BSON_INLINE int
+     bson_once(bson_once_t * once, void (*cb)(void))
+     {
+        if (!once->complete) {
+           if (InterlockedIncrement(&once->init) == 1) {
+              cb();
+              once->complete = 1;
+           } else {
+              InterlockedDecrement(&once->init);
+              while (!once->complete) {
+                 Sleep(0);
+              }
+           }
+        }
+
+        return 0;
+     }
+
+#    define BSON_ONCE_FUN(n)     void n(void)
+#    define BSON_ONCE_RETURN     return
 #  endif
-#  define bson_mutex_t                 HANDLE
-#  define bson_mutex_init(m, x)         CreateMutex (NULL, FALSE, NULL)
-#  define bson_mutex_lock(m)           WaitforSingleObject ((m))
-#  define bson_mutex_unlock(m)         ReleaseMutex ((m))
-#  define bson_mutex_destroy(m)        CloseHandle ((m))
-#  define bson_thread_t                HANDLE
-#  define bson_thread_create(t, a, f, d)  (*(t) = \
-                                              CreateThread (NULL, 0, (void *)f, \
-                                                            d, 0, NULL))
-#  define bson_thread_join(t, v)        WaitForSingleObject (t, 0)
+#else
+#  define bson_once_t            pthread_once_t
+#  define bson_once              pthread_once
+#  define BSON_ONCE_FUN(n)       void n(void)
+#  define BSON_ONCE_RETURN       return
+
+#  ifdef _PTHREAD_ONCE_INIT_NEEDS_BRACES
+#    define BSON_ONCE_INIT       { PTHREAD_ONCE_INIT }
+#  else
+#    define BSON_ONCE_INIT       PTHREAD_ONCE_INIT
+#  endif
+
 #endif
 
 

@@ -29,7 +29,7 @@ bson_string_new (const char *str)
    bson_string_t *ret;
 
    ret = bson_malloc0 (sizeof *ret);
-   ret->len = str ? strlen (str) + 1 : 1;
+   ret->len = str ? ((int)strlen (str) + 1) : 1;
    ret->str = bson_malloc0 (ret->len);
 
    if (str) {
@@ -69,7 +69,7 @@ bson_string_append (bson_string_t *string,
    bson_return_if_fail (string);
    bson_return_if_fail (str);
 
-   len = strlen (str);
+   len = (bson_uint32_t)strlen (str);
    string->str = bson_realloc (string->str, string->len + len);
    memcpy (&string->str[string->len - 1], str, len);
    string->len += len;
@@ -145,11 +145,24 @@ bson_string_truncate (bson_string_t *string,
 char *
 bson_strdup (const char *str)
 {
+   long len;
+   char * out;
+
    if (!str) {
       return NULL;
    }
 
-   return strdup (str);
+   len = (long)strlen(str);
+
+   out = malloc(len + 1);
+
+   if (! out) {
+       return NULL;
+   }
+
+   memcpy(out, str, len + 1);
+
+   return out;
 }
 
 
@@ -168,7 +181,7 @@ bson_strdupv_printf (const char *format,
 
    while (TRUE) {
       va_copy (my_args, args);
-      n = vsnprintf (buf, len, format, my_args);
+      n = bson_vsnprintf (buf, len, format, my_args);
       va_end (my_args);
 
       if (n > -1 && n < len) {
@@ -203,7 +216,7 @@ bson_strdup_printf (const char *format,
 
 char *
 bson_strndup (const char *str,
-              size_t      n_bytes)
+              bson_size_t      n_bytes)
 {
    char *ret;
 

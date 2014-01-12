@@ -41,8 +41,8 @@ typedef struct _bson_writer_t bson_writer_t;
 
 bson_writer_t *
 bson_writer_new (bson_uint8_t    **buf,
-                 size_t           *buflen,
-                 size_t            offset,
+                 bson_size_t           *buflen,
+                 bson_size_t            offset,
                  bson_realloc_func realloc_func);
 
 
@@ -50,7 +50,7 @@ void
 bson_writer_destroy (bson_writer_t *writer);
 
 
-size_t
+bson_size_t
 bson_writer_get_length (bson_writer_t *writer);
 
 

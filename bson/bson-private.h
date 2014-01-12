@@ -20,6 +20,7 @@
 
 
 #include "bson-macros.h"
+#include "bson-memory.h"
 #include "bson-types.h"
 
 
@@ -59,10 +60,10 @@ typedef struct
    bson_t *parent;               /* parent bson if a child */
    bson_uint32_t depth;          /* Subdocument depth. */
    bson_uint8_t **buf;           /* pointer to buffer pointer */
-   size_t *buflen;               /* pointer to buffer length */
-   size_t offset;                /* our offset inside *buf  */
+   bson_size_t *buflen;               /* pointer to buffer length */
+   bson_size_t offset;                /* our offset inside *buf  */
    bson_uint8_t *alloc;          /* buffer that we own. */
-   size_t alloclen;              /* length of buffer that we own. */
+   bson_size_t alloclen;              /* length of buffer that we own. */
    bson_realloc_func realloc;    /* our realloc implementation */
 } bson_impl_alloc_t
 BSON_ALIGNED_END (128);

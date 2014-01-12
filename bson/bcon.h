@@ -26,30 +26,36 @@
 #define BCON_STACK_MAX 100
 
 #define BCON_ENSURE_DECLARE(fun, type) \
-   static BSON_INLINE bson_bool_t bcon_ensure_##fun (type _t) { return FALSE; }
+   static BSON_INLINE type bcon_ensure_##fun (type _t) { return _t; }
 
 #define BCON_ENSURE(fun, val) \
-   ((FALSE) ? bcon_ensure_##fun (val) ? (val) : (val) : (val))
+   bcon_ensure_##fun (val)
 
 #define BCON_ENSURE_STORAGE(fun, val) \
-   ((FALSE) ? bcon_ensure_##fun (val) ? &(val) : &(val) : &(val))
+   bcon_ensure_##fun (&(val))
 
 BCON_ENSURE_DECLARE (const_char_ptr, const char *)
+BCON_ENSURE_DECLARE (const_char_ptr_ptr, const char **)
 BCON_ENSURE_DECLARE (double, double)
+BCON_ENSURE_DECLARE (double_ptr, double *)
 BCON_ENSURE_DECLARE (const_bson_ptr, const bson_t *)
 BCON_ENSURE_DECLARE (bson_ptr, bson_t *)
-BCON_ENSURE_DECLARE (bson, bson_t)
 BCON_ENSURE_DECLARE (subtype, bson_subtype_t)
+BCON_ENSURE_DECLARE (subtype_ptr, bson_subtype_t *)
 BCON_ENSURE_DECLARE (const_uint8_ptr, const bson_uint8_t *)
+BCON_ENSURE_DECLARE (const_uint8_ptr_ptr, const bson_uint8_t **)
 BCON_ENSURE_DECLARE (uint32, bson_uint32_t)
-BCON_ENSURE_DECLARE (timeval, struct timeval)
+BCON_ENSURE_DECLARE (uint32_ptr, bson_uint32_t *)
 BCON_ENSURE_DECLARE (const_oid_ptr, const bson_oid_t *)
-BCON_ENSURE_DECLARE (oid_ptr, bson_oid_t *)
+BCON_ENSURE_DECLARE (const_oid_ptr_ptr, const bson_oid_t **)
 BCON_ENSURE_DECLARE (int32, bson_int32_t)
+BCON_ENSURE_DECLARE (int32_ptr, bson_int32_t *)
 BCON_ENSURE_DECLARE (int64, bson_int64_t)
+BCON_ENSURE_DECLARE (int64_ptr, bson_int64_t *)
 BCON_ENSURE_DECLARE (bool, bson_bool_t)
+BCON_ENSURE_DECLARE (bool_ptr, bson_bool_t *)
 BCON_ENSURE_DECLARE (bson_type, bson_type_t)
-BCON_ENSURE_DECLARE (bson_iter, bson_iter_t)
+BCON_ENSURE_DECLARE (bson_iter_ptr, bson_iter_t *)
 BCON_ENSURE_DECLARE (const_bson_iter_ptr, const bson_iter_t *)
 
 #define BCON_UTF8(_val) \
@@ -71,7 +77,7 @@ BCON_ENSURE_DECLARE (const_bson_iter_ptr, const bson_iter_t *)
 #define BCON_BOOL(_val) \
    BCON_MAGIC, BCON_TYPE_BOOL, BCON_ENSURE (bool, (_val))
 #define BCON_DATE_TIME(_val) \
-   BCON_MAGIC, BCON_TYPE_DATE_TIME, BCON_ENSURE (timeval, (_val))
+   BCON_MAGIC, BCON_TYPE_DATE_TIME, BCON_ENSURE (int64, (_val))
 #define BCON_NULL BCON_MAGIC, BCON_TYPE_NULL
 #define BCON_REGEX(_regex, _flags) \
    BCON_MAGIC, BCON_TYPE_REGEX, \
@@ -105,56 +111,56 @@ BCON_ENSURE_DECLARE (const_bson_iter_ptr, const bson_iter_t *)
    BCON_MAGIC, BCON_TYPE_ITER, BCON_ENSURE (const_bson_iter_ptr, (_val))
 
 #define BCONE_UTF8(_val) BCONE_MAGIC, BCON_TYPE_UTF8, \
-   BCON_ENSURE_STORAGE (const_char_ptr, (_val))
+   BCON_ENSURE_STORAGE (const_char_ptr_ptr, (_val))
 #define BCONE_DOUBLE(_val) BCONE_MAGIC, BCON_TYPE_DOUBLE, \
-   BCON_ENSURE_STORAGE (double, (_val))
+   BCON_ENSURE_STORAGE (double_ptr, (_val))
 #define BCONE_DOCUMENT(_val) BCONE_MAGIC, BCON_TYPE_DOCUMENT, \
-   BCON_ENSURE_STORAGE (bson, (_val))
+   BCON_ENSURE_STORAGE (bson_ptr, (_val))
 #define BCONE_ARRAY(_val) BCONE_MAGIC, BCON_TYPE_ARRAY, \
-   BCON_ENSURE_STORAGE (bson, (_val))
+   BCON_ENSURE_STORAGE (bson_ptr, (_val))
 #define BCONE_BIN(subtype, binary, length) \
    BCONE_MAGIC, BCON_TYPE_BIN, \
-   BCON_ENSURE_STORAGE (subtype, (subtype)), \
-   BCON_ENSURE_STORAGE (const_uint8_ptr, (binary)), \
-   BCON_ENSURE_STORAGE (uint32, (length))
+   BCON_ENSURE_STORAGE (subtype_ptr, (subtype)), \
+   BCON_ENSURE_STORAGE (const_uint8_ptr_ptr, (binary)), \
+   BCON_ENSURE_STORAGE (uint32_ptr, (length))
 #define BCONE_UNDEFINED BCONE_MAGIC, BCON_TYPE_UNDEFINED
 #define BCONE_OID(_val) BCONE_MAGIC, BCON_TYPE_OID, \
-   BCON_ENSURE_STORAGE (const_oid_ptr, (_val))
+   BCON_ENSURE_STORAGE (const_oid_ptr_ptr, (_val))
 #define BCONE_BOOL(_val) BCONE_MAGIC, BCON_TYPE_BOOL, \
-   BCON_ENSURE_STORAGE (bool, (_val))
+   BCON_ENSURE_STORAGE (bool_ptr, (_val))
 #define BCONE_DATE_TIME(_val) BCONE_MAGIC, BCON_TYPE_DATE_TIME, \
-   BCON_ENSURE_STORAGE (timeval, (_val))
+   BCON_ENSURE_STORAGE (int64_ptr, (_val))
 #define BCONE_NULL BCONE_MAGIC, BCON_TYPE_NULL
 #define BCONE_REGEX(_regex, _flags) \
    BCONE_MAGIC, BCON_TYPE_REGEX, \
-   BCON_ENSURE_STORAGE (const_char_ptr, (_regex)), \
-   BCON_ENSURE_STORAGE (const_char_ptr, (_flags))
+   BCON_ENSURE_STORAGE (const_char_ptr_ptr, (_regex)), \
+   BCON_ENSURE_STORAGE (const_char_ptr_ptr, (_flags))
 #define BCONE_DBPOINTER(_collection, _oid) \
    BCONE_MAGIC, BCON_TYPE_DBPOINTER, \
-   BCON_ENSURE_STORAGE (const_char_ptr, (_collection)), \
-   BCON_ENSURE_STORAGE (const_oid_ptr, (_oid))
+   BCON_ENSURE_STORAGE (const_char_ptr_ptr, (_collection)), \
+   BCON_ENSURE_STORAGE (const_oid_ptr_ptr, (_oid))
 #define BCONE_CODE(_val) BCONE_MAGIC, BCON_TYPE_CODE, \
-   BCON_ENSURE_STORAGE (const_char_ptr, (_val))
+   BCON_ENSURE_STORAGE (const_char_ptr_ptr, (_val))
 #define BCONE_SYMBOL(_val) BCONE_MAGIC, BCON_TYPE_SYMBOL, \
-   BCON_ENSURE_STORAGE (const_char_ptr, (_val))
+   BCON_ENSURE_STORAGE (const_char_ptr_ptr, (_val))
 #define BCONE_CODEWSCOPE(_js, _scope) \
    BCONE_MAGIC, BCON_TYPE_CODEWSCOPE, \
-   BCON_ENSURE_STORAGE (const_char_ptr, (_js)), \
-   BCON_ENSURE_STORAGE (bson, (_scope))
+   BCON_ENSURE_STORAGE (const_char_ptr_ptr, (_js)), \
+   BCON_ENSURE_STORAGE (bson_ptr, (_scope))
 #define BCONE_INT32(_val) BCONE_MAGIC, BCON_TYPE_INT32, \
-   BCON_ENSURE_STORAGE (int32, (_val))
+   BCON_ENSURE_STORAGE (int32_ptr, (_val))
 #define BCONE_TIMESTAMP(_timestamp, _increment) \
    BCONE_MAGIC, BCON_TYPE_TIMESTAMP, \
-   BCON_ENSURE_STORAGE (int32, (_timestamp)), \
-   BCON_ENSURE_STORAGE (int32, (_increment))
+   BCON_ENSURE_STORAGE (int32_ptr, (_timestamp)), \
+   BCON_ENSURE_STORAGE (int32_ptr, (_increment))
 #define BCONE_INT64(_val) BCONE_MAGIC, BCON_TYPE_INT64, \
-   BCON_ENSURE_STORAGE (int64, (_val))
+   BCON_ENSURE_STORAGE (int64_ptr, (_val))
 #define BCONE_MAXKEY BCONE_MAGIC, BCON_TYPE_MAXKEY
 #define BCONE_MINKEY BCONE_MAGIC, BCON_TYPE_MINKEY
 #define BCONE_SKIP(_val) BCONE_MAGIC, BCON_TYPE_SKIP, \
    BCON_ENSURE (bson_type, (_val))
 #define BCONE_ITER(_val) BCONE_MAGIC, BCON_TYPE_ITER, \
-   BCON_ENSURE_STORAGE (bson_iter, (_val))
+   BCON_ENSURE_STORAGE (bson_iter_ptr, (_val))
 
 extern char *BCON_MAGIC;
 extern char *BCONE_MAGIC;

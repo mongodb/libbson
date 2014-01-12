@@ -52,6 +52,7 @@ bson_equal
 bson_free
 bson_get_data
 bson_get_monotonic_time
+bson_gettimeofday
 bson_has_field
 bson_init
 bson_init_static

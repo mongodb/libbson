@@ -16,7 +16,6 @@
 
 
 #include <string.h>
-#include <unistd.h>
 
 #include "bson.h"
 #include "bson-reader.h"
@@ -37,9 +36,9 @@ typedef struct
    bson_bool_t        close_fd : 1;
    bson_bool_t        done     : 1;
    bson_bool_t        failed   : 1;
-   size_t             end;
-   size_t             len;
-   size_t             offset;
+   bson_size_t             end;
+   bson_size_t             len;
+   bson_size_t             offset;
    bson_t             inline_bson;
    bson_uint8_t      *data;
    bson_read_func_t   read_func;
@@ -50,8 +49,8 @@ typedef struct
 {
    bson_reader_type_t  type;
    const bson_uint8_t *data;
-   size_t              length;
-   size_t              offset;
+   bson_size_t              length;
+   bson_size_t              offset;
    bson_t              inline_bson;
 } bson_reader_data_t;
 
@@ -59,7 +58,7 @@ typedef struct
 static void
 _bson_reader_fd_fill_buffer (bson_reader_fd_t *reader)
 {
-   ssize_t ret;
+   bson_ssize_t ret;
 
    bson_return_if_fail (reader);
    bson_return_if_fail (reader->fd >= 0);
@@ -106,7 +105,6 @@ _bson_reader_fd_fill_buffer (bson_reader_fd_t *reader)
    bson_return_if_fail (reader->end <= reader->len);
 }
 
-
 /**
  * bson_reader_new_from_fd:
  * @fd: A file-descriptor to read from.
@@ -134,7 +132,8 @@ bson_reader_new_from_fd (int         fd,
    real->len = 1024;
    real->offset = 0;
 
-   bson_reader_set_read_func ((bson_reader_t *)real, read);
+   bson_reader_set_read_func ((bson_reader_t *)real, bson_read);
+
    _bson_reader_fd_fill_buffer (real);
 
    return (bson_reader_t *)real;
@@ -168,7 +167,7 @@ bson_reader_set_read_func (bson_reader_t   *reader,
 static void
 _bson_reader_fd_grow_buffer (bson_reader_fd_t *reader)
 {
-   size_t size;
+   bson_size_t size;
 
    bson_return_if_fail (reader);
 
@@ -178,14 +177,14 @@ _bson_reader_fd_grow_buffer (bson_reader_fd_t *reader)
 }
 
 
-static off_t
+static bson_off_t
 _bson_reader_fd_tell (bson_reader_fd_t *reader)
 {
-   off_t off;
+   bson_off_t off;
 
    bson_return_val_if_fail (reader, -1);
 
-   off = lseek (reader->fd, 0, SEEK_CUR);
+   off = bson_lseek (reader->fd, 0, SEEK_CUR);
    off -= reader->end;
    off += reader->offset;
 
@@ -251,7 +250,7 @@ _bson_reader_fd_read (bson_reader_fd_t *reader,
  */
 bson_reader_t *
 bson_reader_new_from_data (const bson_uint8_t *data,
-                           size_t              length)
+                           bson_size_t              length)
 {
    bson_reader_data_t *real;
 
@@ -310,7 +309,7 @@ _bson_reader_data_read (bson_reader_data_t *reader,
 }
 
 
-static off_t
+static bson_off_t
 _bson_reader_data_tell (bson_reader_data_t *reader)
 {
    bson_return_val_if_fail (reader, -1);
@@ -339,7 +338,7 @@ bson_reader_destroy (bson_reader_t *reader)
          bson_reader_fd_t *fd = (bson_reader_fd_t *)reader;
 
          if (fd->close_fd) {
-            close (fd->fd);
+            bson_close (fd->fd);
          }
 
          bson_free (fd->data);
@@ -406,7 +405,7 @@ bson_reader_read (bson_reader_t *reader,
  * Return the current position in the underlying file. This will always
  * be at the beginning of a bson document or end of file.
  */
-off_t
+bson_off_t
 bson_reader_tell (bson_reader_t *reader)
 {
    bson_return_val_if_fail (reader, -1);

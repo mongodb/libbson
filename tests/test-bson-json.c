@@ -1,12 +1,10 @@
 #include <assert.h>
-#include <bson/bson.h>
-#include <bson/bson-string.h>
+#include <bson.h>
+#include <bson-string.h>
 #include <fcntl.h>
 #include <stdio.h>
-#include <unistd.h>
 
 #include "bson-tests.h"
-
 
 static void
 test_bson_as_json (void)
@@ -31,7 +29,7 @@ test_bson_as_json (void)
    assert(bson_append_bool(b, "true", -1, TRUE));
    assert(bson_append_bool(b, "false", -1, FALSE));
    assert(bson_append_time_t(b, "date", -1, time(NULL)));
-   assert(bson_append_timestamp(b, "timestamp", -1, time(NULL), 1234));
+   assert(bson_append_timestamp(b, "timestamp", -1, (bson_uint32_t)time(NULL), 1234));
    assert(bson_append_regex(b, "regex", -1, "^abcd", "xi"));
    assert(bson_append_dbpointer(b, "dbpointer", -1, "mycollection", &oid));
    assert(bson_append_minkey(b, "minkey", -1));
@@ -152,14 +150,14 @@ test_bson_as_json_stack_overflow (void)
    size_t buflen = 1024 * 1024 * 17;
    char *str;
    int fd;
-   int r;
+   bson_ssize_t r;
 
    buf = bson_malloc0(buflen);
 
-   fd = open("tests/binary/stackoverflow.bson", O_RDONLY);
+   fd = bson_open("tests/binary/stackoverflow.bson", BSON_O_RDONLY);
    BSON_ASSERT(fd != -1);
 
-   r = read(fd, buf, buflen);
+   r = bson_read(fd, buf, buflen);
    BSON_ASSERT(r == 16777220);
 
    r = bson_init_static(&b, buf, 16777220);
@@ -185,17 +183,17 @@ test_bson_corrupt (void)
    size_t buflen = 1024;
    char *str;
    int fd;
-   int r;
+   bson_ssize_t r;
 
    buf = bson_malloc0(buflen);
 
-   fd = open("tests/binary/test55.bson", O_RDONLY);
+   fd = bson_open("tests/binary/test55.bson", BSON_O_RDONLY);
    BSON_ASSERT(fd != -1);
 
-   r = read(fd, buf, buflen);
+   r = bson_read(fd, buf, buflen);
    BSON_ASSERT(r == 24);
 
-   r = bson_init_static(&b, buf, r);
+   r = bson_init_static(&b, buf, (bson_uint32_t)r);
    BSON_ASSERT(r);
 
    str = bson_as_json(&b, NULL);
@@ -213,17 +211,17 @@ test_bson_corrupt_utf8 (void)
    size_t buflen = 1024;
    char *str;
    int fd;
-   int r;
+   bson_ssize_t r;
 
    buf = bson_malloc0(buflen);
 
-   fd = open("tests/binary/test56.bson", O_RDONLY);
+   fd = bson_open("tests/binary/test56.bson", BSON_O_RDONLY);
    BSON_ASSERT(fd != -1);
 
-   r = read(fd, buf, buflen);
+   r = bson_read(fd, buf, buflen);
    BSON_ASSERT(r == 42);
 
-   r = bson_init_static(&b, buf, r);
+   r = bson_init_static(&b, buf, (bson_uint32_t)r);
    BSON_ASSERT(r);
 
    str = bson_as_json(&b, NULL);
@@ -242,17 +240,17 @@ test_bson_corrupt_binary (void)
    size_t buflen = 1024;
    char *str;
    int fd;
-   int r;
+   bson_ssize_t r;
 
    buf = bson_malloc0(buflen);
 
-   fd = open("tests/binary/test57.bson", O_RDONLY);
+   fd = bson_open("tests/binary/test57.bson", BSON_O_RDONLY);
    BSON_ASSERT(fd != -1);
 
-   r = read(fd, buf, buflen);
+   r = bson_read(fd, buf, buflen);
    BSON_ASSERT(r == 26);
 
-   r = bson_init_static(&b, buf, r);
+   r = bson_init_static(&b, buf, (bson_uint32_t)r);
    BSON_ASSERT(r);
 
    str = bson_as_json(&b, NULL);

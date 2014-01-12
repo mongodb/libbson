@@ -51,7 +51,7 @@ bson_oid_equal (const bson_oid_t *oid1,
 
 bson_bool_t
 bson_oid_is_valid (const char *str,
-                   size_t      length);
+                   bson_size_t      length);
 
 
 time_t

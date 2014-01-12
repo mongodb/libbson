@@ -71,14 +71,14 @@ BSON_OS=1
 AC_CANONICAL_HOST
 AC_MSG_CHECKING([if building for some Win32 platform])
 AS_CASE([$host],
-	[*-*-mingw*|*-*-cygwin*],
+	[*-*-mingw*],
 	[
-		BSON_LT_LDFLAGS="$BSON_LT_LDFLAGS -no-undefined"
+		BSON_LT_LDFLAGS="$BSON_LT_LDFLAGS -no-undefined -lws2_32"
 		platform_win32=yes
 		BSON_OS=2
 	],
 
-	[*-*-linux*],
+	[*-*-linux*|*-*-cygwin*],
 	[
 		platform_linux=yes
 	],

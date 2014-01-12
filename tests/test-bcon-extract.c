@@ -99,19 +99,13 @@ test_bool (void)
 static void
 test_date_time (void)
 {
-   struct timeval out_tv;
-   struct timeval tv = { .tv_sec = 1231111, .tv_usec = 12311 };
-   bson_iter_t iter;
+   bson_int64_t out;
 
-   bson_t *bcon = BCON_NEW ("foo", BCON_DATE_TIME (tv));
+   bson_t *bcon = BCON_NEW ("foo", BCON_DATE_TIME (10000));
 
-   assert (BCON_EXTRACT (bcon, "foo", BCONE_DATE_TIME (out_tv)));
+   assert (BCON_EXTRACT (bcon, "foo", BCONE_DATE_TIME (out)));
 
-   assert (bson_iter_init_find (&iter, bcon, "foo"));
-   bson_iter_timeval (&iter, &tv);
-
-   assert (tv.tv_sec == out_tv.tv_sec);
-   assert (tv.tv_usec == out_tv.tv_usec);
+   assert (out == 10000);
 
    bson_destroy (bcon);
 }

@@ -19,7 +19,6 @@
  */
 
 #include "bcon.h"
-#include <error.h>
 
 /* These stack manipulation macros are used to manage append recursion in
  * bcon_append_ctx_va().  They take care of some awkward dereference rules (the
@@ -101,7 +100,7 @@ typedef union bcon_append {
 
    bson_oid_t    *OID;
    bson_bool_t    BOOL;
-   struct timeval DATE_TIME;
+   bson_int64_t   DATE_TIME;
 
    struct
    {
@@ -157,7 +156,7 @@ typedef union bcon_extract {
 
    const bson_oid_t **OID;
    bson_bool_t       *BOOL;
-   struct timeval    *DATE_TIME;
+   bson_int64_t      *DATE_TIME;
 
    struct
    {
@@ -230,7 +229,7 @@ _bcon_append_single (bson_t        *bson,
       bson_append_bool (bson, key, -1, val->BOOL);
       break;
    case BCON_TYPE_DATE_TIME:
-      bson_append_timeval (bson, key, -1, &val->DATE_TIME);
+      bson_append_date_time (bson, key, -1, val->DATE_TIME);
       break;
    case BCON_TYPE_NULL:
       bson_append_null (bson, key, -1);
@@ -338,7 +337,7 @@ _bcon_extract_single (const bson_iter_t *iter,
       break;
    case BCON_TYPE_DATE_TIME:
       CHECK_TYPE (BSON_TYPE_DATE_TIME);
-      bson_iter_timeval (iter, val->DATE_TIME);
+      *val->DATE_TIME = bson_iter_date_time (iter);
       break;
    case BCON_TYPE_NULL:
       CHECK_TYPE (BSON_TYPE_NULL);
@@ -485,7 +484,7 @@ _bcon_append_tokenize (va_list       *ap,
          u->BOOL = va_arg (*ap, bson_bool_t);
          break;
       case BCON_TYPE_DATE_TIME:
-         u->DATE_TIME = va_arg (*ap, struct timeval);
+         u->DATE_TIME = va_arg (*ap, bson_int64_t);
          break;
       case BCON_TYPE_NULL:
          break;
@@ -615,7 +614,7 @@ _bcon_extract_tokenize (va_list        *ap,
          u->BOOL = va_arg (*ap, bson_bool_t *);
          break;
       case BCON_TYPE_DATE_TIME:
-         u->DATE_TIME = va_arg (*ap, struct timeval *);
+         u->DATE_TIME = va_arg (*ap, bson_int64_t *);
          break;
       case BCON_TYPE_NULL:
          break;

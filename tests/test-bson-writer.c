@@ -17,7 +17,6 @@
 
 #include <assert.h>
 #include <time.h>
-#include <unistd.h>
 
 #include "bson-tests.h"
 

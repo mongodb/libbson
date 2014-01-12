@@ -21,9 +21,8 @@
 #endif
 
 #include <time.h>
-
+#include "bson.h"
 #include "bson-clock.h"
-
 
 /**
  * bson_get_monotonic_time:
@@ -59,8 +58,55 @@ bson_get_monotonic_time (void)
    {
       struct timeval tv;
 
-      gettimeofday (&tv, NULL);
+      bson_gettimeofday (&tv, NULL);
       return (tv.tv_sec * 1000000UL) + tv.tv_usec;
    }
 #endif
 }
+
+
+/* The const value is shamelessy stolen from
+ * http://www.boost.org/doc/libs/1_55_0/boost/chrono/detail/inlined/win/chrono.hpp
+ *
+ * File times are the number of 100 nanosecond intervals elapsed since 12:00 am
+ * Jan 1, 1601 UTC.  I haven't check the math particularly hard
+ *
+ * ...  good luck
+ */
+int
+bson_gettimeofday(struct timeval *tv, struct timezone *tz)
+{
+#ifdef BSON_OS_WIN32
+#define DELTA_EPOCH_IN_MICROSEC 11644473600000000LL
+
+  FILETIME ft;
+  bson_uint64_t tmp = 0;
+ 
+  if (NULL != tv)
+  {
+    GetSystemTimeAsFileTime(&ft);
+
+    /* pull out of the filetime into a 64 bit uint */
+    tmp = ft.dwHighDateTime;
+    tmp <<= 32;
+    tmp |= ft.dwLowDateTime;
+
+    /* adjust to unix epoch */
+    tmp -= DELTA_EPOCH_IN_MICROSEC;
+
+    /* convert from 100's of nanosecs to microsecs */
+    tmp /= 10; 
+ 
+    tv->tv_sec = (long)(tmp / 1000000UL);
+    tv->tv_usec = (long)(tmp % 1000000UL);
+  }
+ 
+  assert (NULL == tz);
+ 
+  return 0;
+#else
+   return gettimeofday(tv, tz);
+#endif
+}
+
+

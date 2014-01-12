@@ -22,6 +22,7 @@ endif
 
 INST_H_FILES = \
 	bson/bson.h \
+	bson/bson-compat.h \
 	bson/bson-config.h \
 	bson/bson-context.h \
 	bson/bson-clock.h \
@@ -54,6 +55,7 @@ libbson_1_0_la_SOURCES = \
 	$(INST_H_FILES) \
 	$(NOINST_H_FILES) \
 	bson/bson.c \
+	bson/bson-compat.c \
 	bson/bson-context.c \
 	bson/bson-clock.c \
 	bson/bson-error.c \
