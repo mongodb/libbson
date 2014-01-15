@@ -25,6 +25,7 @@
 
 
 #include <stdlib.h>
+#include <sys/types.h>
 
 #include "bson-macros.h"
 #include "bson-memory.h"
