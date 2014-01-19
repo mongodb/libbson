@@ -40,7 +40,7 @@ test_bson_writer_shared_buffer (void)
    writer = bson_writer_new(&buf, &buflen, 0, bson_realloc);
 
    for (i = 0; i < n_docs; i++) {
-      bson_writer_begin(writer, &b);
+      assert(bson_writer_begin(writer, &b));
 
       for (j = 0; j < 1000; j++) {
          bson_uint32_to_string(j, &key, keystr, sizeof keystr);
@@ -81,10 +81,37 @@ test_bson_writer_empty_sequence (void)
 
    writer = bson_writer_new(&buf, &len, 0, bson_realloc);
    for (i = 0; i < 5; i++) {
-      bson_writer_begin(writer, &b);
+      assert(bson_writer_begin(writer, &b));
       bson_writer_end(writer);
    }
    r = memcmp(buf, testdata, 25);
+   assert(r == 0);
+   bson_writer_destroy(writer);
+}
+
+
+static void
+test_bson_writer_null_realloc (void)
+{
+   const bson_uint8_t testdata[] = { 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0 };
+   bson_writer_t *writer;
+   bson_uint8_t *buf = bson_malloc0(32);
+   bson_bool_t rolled_back = FALSE;
+   size_t buflen = 32;
+   size_t n_bytes;
+   bson_t *b;
+   int r;
+   int i;
+
+   writer = bson_writer_new(&buf, &buflen, 0, NULL);
+   for (i=0; i<6; i++) {
+      assert(bson_writer_begin(writer, &b));
+      bson_writer_end(writer);
+   }
+
+   assert(!bson_writer_begin(writer, &b));
+
+   r = memcmp(buf, testdata, 32);
    assert(r == 0);
    bson_writer_destroy(writer);
 }
@@ -96,6 +123,7 @@ main (int   argc,
 {
    run_test("/bson/writer/shared_buffer", test_bson_writer_shared_buffer);
    run_test("/bson/writer/empty_sequence", test_bson_writer_empty_sequence);
+   run_test("/bson/writer/null_realloc", test_bson_writer_null_realloc);
 
    return 0;
 }

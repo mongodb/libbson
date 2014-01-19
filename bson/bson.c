@@ -120,7 +120,7 @@ _bson_impl_alloc_grow (bson_impl_alloc_t *impl,
 
    req = bson_next_power_of_two (req);
 
-   if (req <= INT32_MAX) {
+   if (req <= INT32_MAX && impl->realloc) {
       *impl->buf = impl->realloc (*impl->buf, req);
       *impl->buflen = req;
       return TRUE;

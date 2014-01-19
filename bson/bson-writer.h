@@ -54,7 +54,7 @@ size_t
 bson_writer_get_length (bson_writer_t *writer);
 
 
-void
+bson_bool_t
 bson_writer_begin (bson_writer_t *writer,
                    bson_t       **bson);
 
