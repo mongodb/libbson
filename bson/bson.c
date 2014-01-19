@@ -200,7 +200,7 @@ _bson_append_va (bson_t             *bson,
    BSON_ASSERT (first_len);
    BSON_ASSERT (first_data);
 
-   if (!_bson_grow (bson, n_bytes)) {
+   if (BSON_UNLIKELY (!_bson_grow (bson, n_bytes))) {
       return FALSE;
    }
 
