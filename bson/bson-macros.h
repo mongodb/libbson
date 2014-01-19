@@ -48,8 +48,8 @@
 #    define MIN(a, b) std::min(a, b)
 #  else
 #    define MIN(a, b) ({     \
-                          typeof (a)_a = (a); \
-                          typeof (b)_b = (b); \
+                          __typeof__ (a)_a = (a); \
+                          __typeof__ (b)_b = (b); \
                           _a < _b ? _a : _b;   \
                        })
 #  endif
@@ -61,8 +61,8 @@
 #    define MAX(a, b) std::max(a, b)
 #  else
 #    define MAX(a, b) ({     \
-                          typeof (a)_a = (a); \
-                          typeof (b)_b = (b); \
+                          __typeof__ (a)_a = (a); \
+                          __typeof__ (b)_b = (b); \
                           _a > _b ? _a : _b;   \
                        })
 #  endif
