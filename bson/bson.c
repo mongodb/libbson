@@ -181,7 +181,7 @@ _bson_encode_length (bson_t *bson)
  * Appends the length,buffer pairs to the bson_t. @n_bytes is an optimization
  * to perform one array growth rather than many small growths.
  */
-static BSON_INLINE void
+static BSON_INLINE bson_bool_t
 _bson_append_va (bson_t             *bson,
                  bson_uint32_t       n_bytes,
                  bson_uint32_t       n_pairs,
@@ -200,7 +200,9 @@ _bson_append_va (bson_t             *bson,
    BSON_ASSERT (first_len);
    BSON_ASSERT (first_data);
 
-   _bson_grow (bson, n_bytes);
+   if (!_bson_grow (bson, n_bytes)) {
+      return FALSE;
+   }
 
    data = first_data;
    data_len = first_len;
@@ -222,6 +224,8 @@ _bson_append_va (bson_t             *bson,
    _bson_encode_length (bson);
 
    *buf = '\0';
+
+   return TRUE;
 }
 
 
@@ -248,6 +252,7 @@ _bson_append (bson_t             *bson,
               ...)
 {
    va_list args;
+   bson_bool_t ok;
 
    BSON_ASSERT (bson);
    BSON_ASSERT (n_pairs);
@@ -264,10 +269,10 @@ _bson_append (bson_t             *bson,
    }
 
    va_start (args, first_data);
-   _bson_append_va (bson, n_bytes, n_pairs, first_len, first_data, args);
+   ok = _bson_append_va (bson, n_bytes, n_pairs, first_len, first_data, args);
    va_end (args);
 
-   return TRUE;
+   return ok;
 }
 
 
