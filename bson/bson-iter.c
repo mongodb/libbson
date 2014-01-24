@@ -167,7 +167,7 @@ _bson_iter_find_with_len (bson_iter_t *iter,
    bson_return_val_if_fail (key, FALSE);
 
    if (keylen < 0) {
-      keylen = strlen (key);
+      keylen = (int)strlen (key);
    }
 
    while (bson_iter_next (iter)) {
@@ -220,7 +220,7 @@ bson_iter_find_case (bson_iter_t *iter,
    bson_return_val_if_fail (key, FALSE);
 
    while (bson_iter_next (iter)) {
-      if (!strcasecmp (key, bson_iter_key (iter))) {
+      if (!bson_strcasecmp (key, bson_iter_key (iter))) {
          return TRUE;
       }
    }
@@ -248,7 +248,7 @@ bson_iter_find_descendant (bson_iter_t *iter,
 {
    bson_iter_t tmp;
    const char *dot;
-   size_t sublen;
+   bson_size_t sublen;
 
    bson_return_val_if_fail (iter, FALSE);
    bson_return_val_if_fail (dotkey, FALSE);
@@ -260,7 +260,7 @@ bson_iter_find_descendant (bson_iter_t *iter,
       sublen = strlen (dotkey);
    }
 
-   if (_bson_iter_find_with_len (iter, dotkey, sublen)) {
+   if (_bson_iter_find_with_len (iter, dotkey, (int)sublen)) {
       if (!dot) {
          *descendant = *iter;
          return TRUE;
@@ -332,7 +332,7 @@ bson_iter_next (bson_iter_t *iter)
 {
    const bson_uint8_t *data;
    bson_uint32_t o;
-   int len;
+   unsigned int len;
 
    bson_return_val_if_fail (iter, FALSE);
 
@@ -818,7 +818,7 @@ bson_iter_as_int64 (const bson_iter_t *iter)
       return bson_iter_bool (iter);
 
    case BSON_TYPE_DOUBLE:
-      return bson_iter_double (iter);
+      return (bson_int64_t)bson_iter_double (iter);
 
    case BSON_TYPE_INT64:
       return bson_iter_int64 (iter);

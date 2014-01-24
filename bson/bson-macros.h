@@ -46,6 +46,8 @@
 #ifndef MIN
 #  ifdef __cplusplus
 #    define MIN(a, b) std::min(a, b)
+#  elif (_MSC_VER)
+#    define MIN(a, b) ((a) < (b) ? (a) : (b))
 #  else
 #    define MIN(a, b) ({     \
                           typeof (a)_a = (a); \
@@ -59,6 +61,8 @@
 #ifndef MAX
 #  ifdef __cplusplus
 #    define MAX(a, b) std::max(a, b)
+#  elif(_MSC_VER)
+#    define MAX(a, b) ((a) > (b) ? (a) : (b))
 #  else
 #    define MAX(a, b) ({     \
                           typeof (a)_a = (a); \
@@ -195,27 +199,10 @@
 #endif
 
 
-#if BSON_OS == 1
-#  define BSON_OS_UNIX
-#elif BSON_OS == 2
-#  define BSON_OS_WIN32
+#ifdef _MSC_VER
+#define BSON_ENSURE_ARRAY_PARAM_SIZE(_n)
 #else
-#  error Unknown operating system.
+#define BSON_ENSURE_ARRAY_PARAM_SIZE(_n) static (_n)
 #endif
-
-
-#if defined(__GNUC__)
-# if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
-#  define bson_sync_synchronize() __sync_synchronize()
-# elif defined(__i386__ ) || defined( __i486__ ) || defined( __i586__ ) || \
-       defined( __i686__ ) || defined( __x86_64__ )
-#  define bson_sync_synchronize() asm volatile("mfence":::"memory")
-# else
-#  define bson_sync_synchronize() asm volatile("sync":::"memory")
-# endif
-#elif defined(_MSC_VER)
-# define bson_sync_synchronize() MemoryBarrier()
-#endif
-
 
 #endif /* BSON_MACROS_H */

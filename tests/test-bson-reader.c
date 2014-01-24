@@ -108,7 +108,7 @@ test_reader_from_fd (void)
    bson_bool_t eof;
    int fd;
 
-   fd  = open("tests/binary/stream.bson", O_RDONLY);
+   fd  = bson_open("tests/binary/stream.bson", BSON_O_RDONLY);
    assert(fd >= 0);
 
    reader = bson_reader_new_from_fd(fd, TRUE);
@@ -139,7 +139,7 @@ test_reader_tell (void)
    bson_bool_t eof;
    int fd;
 
-   fd  = open("tests/binary/stream.bson", O_RDONLY);
+   fd  = bson_open("tests/binary/stream.bson", BSON_O_RDONLY);
    assert(fd >= 0);
 
    reader = bson_reader_new_from_fd(fd, TRUE);
@@ -176,7 +176,7 @@ test_reader_from_fd_corrupt (void)
    bson_bool_t eof;
    int fd;
 
-   fd  = open("tests/binary/stream_corrupt.bson", O_RDONLY);
+   fd  = bson_open("tests/binary/stream_corrupt.bson", BSON_O_RDONLY);
    assert(fd >= 0);
 
    reader = bson_reader_new_from_fd(fd, TRUE);
@@ -202,7 +202,7 @@ test_reader_grow_buffer (void)
    bson_bool_t eof = FALSE;
    int fd;
 
-   fd  = open("tests/binary/readergrow.bson", O_RDONLY);
+   fd  = bson_open("tests/binary/readergrow.bson", BSON_O_RDONLY);
    assert(fd >= 0);
 
    reader = bson_reader_new_from_fd(fd, TRUE);

@@ -19,7 +19,6 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #include "bson-context-private.h"
 #include "bson-md5.h"
@@ -108,7 +107,7 @@ void
 bson_oid_init_sequence (bson_oid_t     *oid,
                         bson_context_t *context)
 {
-   bson_uint32_t now = time (NULL);
+   bson_uint32_t now = (bson_uint32_t)(time (NULL));
 
    if (!context) {
       context = bson_context_get_default ();
@@ -133,7 +132,7 @@ void
 bson_oid_init (bson_oid_t     *oid,
                bson_context_t *context)
 {
-   bson_uint32_t now = time (NULL);
+   bson_uint32_t now = (bson_uint32_t)(time (NULL));
 
    bson_return_if_fail (oid);
 
@@ -215,7 +214,7 @@ bson_oid_get_time_t (const bson_oid_t *oid)
  */
 void
 bson_oid_to_string (const bson_oid_t *oid,
-                    char              str[static 25])
+                    char              str[BSON_ENSURE_ARRAY_PARAM_SIZE(25)])
 {
    bson_uint16_t *dst;
    bson_uint8_t *id = (bson_uint8_t *)oid;
@@ -331,9 +330,9 @@ bson_oid_copy (const bson_oid_t *src,
  */
 bson_bool_t
 bson_oid_is_valid (const char *str,
-                   size_t      length)
+                   bson_size_t      length)
 {
-   size_t i;
+   bson_size_t i;
 
    bson_return_val_if_fail (str, FALSE);
 

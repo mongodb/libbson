@@ -28,23 +28,10 @@
 #include <sys/types.h>
 
 #include "bson-macros.h"
-#include "bson-memory.h"
-#include "bson-stdint.h"
+#include "bson-compat.h"
 
 
 BSON_BEGIN_DECLS
-
-
-typedef uint32_t bson_bool_t;
-typedef int8_t bson_int8_t;
-typedef int16_t bson_int16_t;
-typedef int32_t bson_int32_t;
-typedef int64_t bson_int64_t;
-typedef uint8_t bson_uint8_t;
-typedef uint16_t bson_uint16_t;
-typedef uint32_t bson_uint32_t;
-typedef uint64_t bson_uint64_t;
-typedef uint32_t bson_unichar_t;
 
 
 /**
@@ -59,9 +46,9 @@ typedef uint32_t bson_unichar_t;
  * Returns: -1 on failure and errno is set, otherwise the number of bytes read.
  *    0 may be returned on end of stream.
  */
-typedef ssize_t (*bson_read_func_t) (int    fd,
-                                     void  *buf,
-                                     size_t count);
+typedef bson_ssize_t (*bson_read_func_t) (int         fd,
+                                          void       *buf,
+                                          bson_size_t count);
 
 /**
  * bson_context_flags_t:
@@ -258,16 +245,16 @@ typedef enum
 typedef struct
 {
    const bson_uint8_t *raw;      /* The raw buffer being iterated. */
-   int                 len;      /* The length of raw. */
-   int                 off;      /* The offset within the buffer. */
-   int                 type;     /* The offset of the type byte. */
-   int                 key;      /* The offset of the key byte. */
-   int                 d1;       /* The offset of the first data byte. */
-   int                 d2;       /* The offset of the second data byte. */
-   int                 d3;       /* The offset of the third data byte. */
-   int                 d4;       /* The offset of the fourth data byte. */
-   int                 next_off; /* The offset of the next field. */
-   int                 err_off;  /* The offset of the error. */
+   bson_uint32_t       len;      /* The length of raw. */
+   bson_uint32_t       off;      /* The offset within the buffer. */
+   bson_uint32_t       type;     /* The offset of the type byte. */
+   bson_uint32_t       key;      /* The offset of the key byte. */
+   bson_uint32_t       d1;       /* The offset of the first data byte. */
+   bson_uint32_t       d2;       /* The offset of the second data byte. */
+   bson_uint32_t       d3;       /* The offset of the third data byte. */
+   bson_uint32_t       d4;       /* The offset of the fourth data byte. */
+   bson_uint32_t       next_off; /* The offset of the next field. */
+   bson_uint32_t       err_off;  /* The offset of the error. */
    char                padding[16];
 } bson_iter_t;
 
@@ -320,7 +307,7 @@ typedef struct
                                void              *data);
    bson_bool_t (*visit_utf8)(const bson_iter_t *iter,
                              const char        *key,
-                             size_t             v_utf8_len,
+                             bson_size_t             v_utf8_len,
                              const char        *v_utf8,
                              void              *data);
    bson_bool_t (*visit_document)(const bson_iter_t *iter,
@@ -334,7 +321,7 @@ typedef struct
    bson_bool_t (*visit_binary)(const bson_iter_t  *iter,
                                const char         *key,
                                bson_subtype_t      v_subtype,
-                               size_t              v_binary_len,
+                               bson_size_t              v_binary_len,
                                const bson_uint8_t *v_binary,
                                void               *data);
    bson_bool_t (*visit_undefined)(const bson_iter_t *iter,
@@ -362,23 +349,23 @@ typedef struct
                               void              *data);
    bson_bool_t (*visit_dbpointer)(const bson_iter_t *iter,
                                   const char        *key,
-                                  size_t             v_collection_len,
+                                  bson_size_t             v_collection_len,
                                   const char        *v_collection,
                                   const bson_oid_t  *v_oid,
                                   void              *data);
    bson_bool_t (*visit_code)(const bson_iter_t *iter,
                              const char        *key,
-                             size_t             v_code_len,
+                             bson_size_t             v_code_len,
                              const char        *v_code,
                              void              *data);
    bson_bool_t (*visit_symbol)(const bson_iter_t *iter,
                                const char        *key,
-                               size_t             v_symbol_len,
+                               bson_size_t             v_symbol_len,
                                const char        *v_symbol,
                                void              *data);
    bson_bool_t (*visit_codewscope)(const bson_iter_t *iter,
                                    const char        *key,
-                                   size_t             v_code_len,
+                                   bson_size_t             v_code_len,
                                    const char        *v_code,
                                    const bson_t      *v_scope,
                                    void              *data);

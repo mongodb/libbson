@@ -16,10 +16,9 @@
 
 
 #include <assert.h>
-#include <bson/bson.h>
+#include <bson.h>
 #include <fcntl.h>
 #include <time.h>
-#include <unistd.h>
 
 #include "bson-tests.h"
 
@@ -32,19 +31,20 @@ get_bson (const char *filename)
 {
    bson_uint8_t buf[4096];
    bson_t *b;
-   int len;
+   bson_ssize_t len;
    int fd;
 
-   if (-1 == (fd = open(filename, O_RDONLY))) {
+   if (-1 == (fd = bson_open(filename, BSON_O_RDONLY))) {
       fprintf(stderr, "Failed to open: %s\n", filename);
       abort();
    }
-   if ((len = read(fd, buf, sizeof buf)) < 0) {
+   if ((len = bson_read(fd, buf, sizeof buf)) < 0) {
       fprintf(stderr, "Failed to read: %s\n", filename);
       abort();
    }
-   b = bson_new_from_data(buf, len);
-   close(fd);
+   assert(len > 0);
+   b = bson_new_from_data(buf, (bson_uint32_t)len);
+   bson_close(fd);
 
    return b;
 }
@@ -181,7 +181,7 @@ test_bson_iter_fuzz (void)
    bson_uint32_t r;
    bson_iter_t iter;
    bson_t *b;
-   int i;
+   bson_uint32_t i;
    int pass;
 
    len_le = BSON_UINT32_TO_LE(len);
@@ -483,18 +483,7 @@ test_bson_iter_as_bool (void)
 static void
 init_rand (void)
 {
-   unsigned seed;
-   int fd;
-
-   fd = open("/dev/urandom", O_RDONLY);
-   if (sizeof seed != read(fd, &seed, sizeof seed)) {
-      fprintf(stderr, "Failed to read from /dev/urandom.\n");
-      abort();
-   }
-   close(fd);
-
-   fprintf(stderr, "srand(%u)\n", seed);
-   srand(seed);
+   srand((unsigned)time( NULL ));
 }
 
 

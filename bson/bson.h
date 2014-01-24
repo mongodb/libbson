@@ -18,21 +18,20 @@
 #ifndef BSON_H
 #define BSON_H
 
-
 #include <string.h>
-#include <sys/time.h>
 #include <time.h>
-
 
 #define BSON_INSIDE
 
+#include "bson-compat.h"
+
+#include "bson-macros.h"
 #include "bson-config.h"
 #include "bson-context.h"
 #include "bson-clock.h"
 #include "bson-error.h"
 #include "bson-iter.h"
 #include "bson-keys.h"
-#include "bson-macros.h"
 #include "bson-md5.h"
 #include "bson-memory.h"
 #include "bson-oid.h"
@@ -74,71 +73,71 @@ BSON_BEGIN_DECLS
  *
  * The maximum size in bytes of a BSON document.
  */
-#define BSON_MAX_SIZE ((size_t)((1U << 31) - 1))
+#define BSON_MAX_SIZE ((bson_size_t)((1U << 31) - 1))
 
 
 #define BSON_APPEND_ARRAY(b,key,val) \
-      bson_append_array (b, key, strlen (key), val)
+      bson_append_array (b, key, (int)strlen (key), val)
 
 #define BSON_APPEND_BINARY(b,key,subtype,val,len) \
-      bson_append_binary (b, key, strlen (key), subtype, val, len)
+      bson_append_binary (b, key, (int) strlen (key), subtype, val, len)
 
 #define BSON_APPEND_BOOL(b,key,val) \
-      bson_append_bool (b, key, strlen (key), val)
+      bson_append_bool (b, key, (int) strlen (key), val)
 
 #define BSON_APPEND_CODE(b,key,val) \
-      bson_append_code (b, key, strlen (key), val)
+      bson_append_code (b, key, (int) strlen (key), val)
 
 #define BSON_APPEND_CODE_WITH_SCOPE(b,key,val,scope) \
-      bson_append_code_with_scope (b, key, strlen (key), val, scope)
+      bson_append_code_with_scope (b, key, (int) strlen (key), val, scope)
 
 #define BSON_APPEND_DOUBLE(b,key,val) \
-      bson_append_double (b, key, strlen (key), val)
+      bson_append_double (b, key, (int) strlen (key), val)
 
 #define BSON_APPEND_DOCUMENT(b,key,val) \
-      bson_append_document (b, key, strlen (key), val)
+      bson_append_document (b, key, (int) strlen (key), val)
 
 #define BSON_APPEND_INT32(b,key,val) \
-      bson_append_int32 (b, key, strlen (key), val)
+      bson_append_int32 (b, key, (int) strlen (key), val)
 
 #define BSON_APPEND_INT64(b,key,val) \
-      bson_append_int64 (b, key, strlen (key), val)
+      bson_append_int64 (b, key, (int) strlen (key), val)
 
 #define BSON_APPEND_MINKEY(b,key) \
-      bson_append_minkey (b, key, strlen (key))
+      bson_append_minkey (b, key, (int) strlen (key))
 
 #define BSON_APPEND_MAXKEY(b,key) \
-      bson_append_maxkey (b, key, strlen (key))
+      bson_append_maxkey (b, key, (int) strlen (key))
 
 #define BSON_APPEND_NULL(b,key) \
-      bson_append_null (b, key, strlen (key))
+      bson_append_null (b, key, (int) strlen (key))
 
 #define BSON_APPEND_OID(b,key,val) \
-      bson_append_oid (b, key, strlen (key), val)
+      bson_append_oid (b, key, (int) strlen (key), val)
 
 #define BSON_APPEND_REGEX(b,key,val,opt) \
-      bson_append_regex (b, key, strlen (key), val, opt)
+      bson_append_regex (b, key, (int) strlen (key), val, opt)
 
 #define BSON_APPEND_UTF8(b,key,val) \
-      bson_append_utf8 (b, key, strlen (key), val, strlen (val))
+      bson_append_utf8 (b, key, (int) strlen (key), val, (int) strlen (val))
 
 #define BSON_APPEND_SYMBOL(b,key,val) \
-      bson_append_symbol (b, key, strlen (key), val, strlen (val))
+      bson_append_symbol (b, key, (int) strlen (key), val, (int) strlen (val))
 
 #define BSON_APPEND_TIME_T(b,key,val) \
-      bson_append_time_t (b, key, strlen (key), val)
+      bson_append_time_t (b, key, (int) strlen (key), val)
 
 #define BSON_APPEND_TIMEVAL(b,key,val) \
-      bson_append_timeval (b, key, strlen (key), val)
+      bson_append_timeval (b, key, (int) strlen (key), val)
 
 #define BSON_APPEND_DATE_TIME(b,key,val) \
-      bson_append_date_time (b, key, strlen (key), val)
+      bson_append_date_time (b, key, (int) strlen (key), val)
 
 #define BSON_APPEND_TIMESTAMP(b,key,val,inc) \
-      bson_append_timestamp (b, key, strlen (key), val, inc)
+      bson_append_timestamp (b, key, (int) strlen (key), val, inc)
 
 #define BSON_APPEND_UNDEFINED(b,key) \
-      bson_append_undefined (b, key, strlen (key))
+      bson_append_undefined (b, key, (int) strlen (key))
 
 
 /**
@@ -169,7 +168,7 @@ bson_new (void);
 bson_bool_t
 bson_init_static (bson_t             *b,
                   const bson_uint8_t *data,
-                  size_t              length);
+                  bson_uint32_t       length);
 
 
 /**
@@ -216,12 +215,12 @@ bson_reinit (bson_t *b);
  */
 bson_t *
 bson_new_from_data (const bson_uint8_t *data,
-                    size_t              length);
+                    bson_uint32_t       length);
 
 
 /**
  * bson_sized_new:
- * @size: A size_t containing the number of bytes to allocate.
+ * @size: A bson_size_t containing the number of bytes to allocate.
  *
  * This will allocate a new bson_t with enough bytes to hold a buffer
  * sized @size. @size must be smaller than INT_MAX bytes.
@@ -229,7 +228,7 @@ bson_new_from_data (const bson_uint8_t *data,
  * Returns: A newly allocated bson_t that should be freed with bson_destroy().
  */
 bson_t *
-bson_sized_new (size_t size);
+bson_sized_new (bson_size_t size);
 
 
 /**
@@ -363,7 +362,7 @@ bson_equal (const bson_t *bson,
 bson_bool_t
 bson_validate (const bson_t         *bson,
                bson_validate_flags_t flags,
-               size_t               *offset);
+               bson_size_t               *offset);
 
 
 /**
@@ -382,7 +381,7 @@ bson_validate (const bson_t         *bson,
  */
 char *
 bson_as_json (const bson_t *bson,
-              size_t       *length);
+              bson_size_t       *length);
 
 
 /**

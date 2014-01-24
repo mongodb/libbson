@@ -8,3 +8,15 @@ noinst_PROGRAMS += bson-validate
 bson_validate_SOURCES = $(top_srcdir)/examples/bson-validate.c
 bson_validate_CPPFLAGS = -I$(top_srcdir)/bson
 bson_validate_LDADD = libbson-1.0.la
+
+
+noinst_PROGRAMS += bcon-speed
+bcon_speed_SOURCES = $(top_srcdir)/examples/bcon-speed.c
+bcon_speed_CPPFLAGS = -I$(top_srcdir)/bson
+bcon_speed_LDADD = libbson-1.0.la
+
+
+noinst_PROGRAMS += bcon-col-view
+bcon_col_view_SOURCES = $(top_srcdir)/examples/bcon-col-view.c
+bcon_col_view_CPPFLAGS = -I$(top_srcdir)/bson
+bcon_col_view_LDADD = libbson-1.0.la

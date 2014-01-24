@@ -34,6 +34,8 @@ BSON_BEGIN_DECLS
 bson_int64_t
 bson_get_monotonic_time (void);
 
+int
+bson_gettimeofday(struct timeval *tv, struct timezone *tz);
 
 BSON_END_DECLS
 #endif /* BSON_CLOCK_H */

@@ -33,13 +33,13 @@ BSON_BEGIN_DECLS
 
 bson_bool_t
 bson_utf8_validate (const char *utf8,
-                    size_t      utf8_len,
+                    bson_size_t      utf8_len,
                     bson_bool_t allow_null);
 
 
 char *
 bson_utf8_escape_for_json (const char *utf8,
-                           ssize_t     utf8_len);
+                           bson_ssize_t     utf8_len);
 
 
 bson_unichar_t

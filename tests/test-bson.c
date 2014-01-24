@@ -16,10 +16,9 @@
 
 
 #include <assert.h>
-#include <bson/bson-private.h>
+#include <bson-private.h>
 #include <fcntl.h>
 #include <time.h>
-#include <unistd.h>
 
 #include "bson-tests.h"
 
@@ -27,23 +26,23 @@
 static bson_t *
 get_bson (const char *filename)
 {
-   bson_uint32_t len;
+   bson_ssize_t len;
    bson_uint8_t buf[4096];
    bson_t *b;
    char real_filename[256];
    int fd;
 
-   snprintf(real_filename, sizeof real_filename,
-            "tests/binary/%s", filename);
+   bson_snprintf(real_filename, sizeof real_filename, "tests/binary/%s", filename);
    real_filename[sizeof real_filename - 1] = '\0';
 
-   if (-1 == (fd = open(real_filename, O_RDONLY))) {
-      fprintf(stderr, "Failed to open: %s\n", real_filename);
+   if (-1 == (fd = bson_open(real_filename, BSON_O_RDONLY))) {
+      fprintf(stderr, "Failed to bson_open: %s\n", real_filename);
       abort();
    }
-   len = read(fd, buf, sizeof buf);
-   b = bson_new_from_data(buf, len);
-   close(fd);
+   len = bson_read(fd, buf, sizeof buf);
+   assert(len > 0);
+   b = bson_new_from_data(buf, (bson_uint32_t)len);
+   bson_close(fd);
 
    return b;
 }
@@ -732,7 +731,7 @@ test_bson_validate (void)
    int i;
 
    for (i = 1; i <= 38; i++) {
-      snprintf(filename, sizeof filename, "test%u.bson", i);
+      bson_snprintf(filename, sizeof filename, "test%u.bson", i);
       b = get_bson(filename);
       assert(bson_validate(b, BSON_VALIDATE_NONE, &offset));
       bson_destroy(b);
@@ -806,7 +805,7 @@ test_bson_init (void)
    assert((b.flags & BSON_FLAG_STATIC));
    assert(!(b.flags & BSON_FLAG_RDONLY));
    for (i = 0; i < 100; i++) {
-      snprintf(key, sizeof key, "%d", i);
+      bson_snprintf(key, sizeof key, "%d", i);
       assert(bson_append_utf8(&b, key, -1, "bar", -1));
    }
    assert(!(b.flags & BSON_FLAG_INLINE));
@@ -1108,7 +1107,7 @@ static void
 test_bson_append_overflow (void)
 {
    const char *key = "a";
-   size_t len;
+   bson_uint32_t len;
    bson_t b;
 
    len = BSON_MAX_SIZE;
@@ -1188,7 +1187,11 @@ test_bson_macros (void)
    time_t t;
 
    t = time (NULL);
+#ifdef BSON_OS_WIN32
+   tv.tv_sec = (long)t;
+#else
    tv.tv_sec = t;
+#endif
    tv.tv_usec = 0;
 
    bson_oid_init (&oid, NULL);
@@ -1223,18 +1226,7 @@ test_bson_macros (void)
 static void
 init_rand (void)
 {
-   unsigned seed;
-   int fd;
-
-   fd = open("/dev/urandom", O_RDONLY);
-   if (sizeof seed != read(fd, &seed, sizeof seed)) {
-      fprintf(stderr, "Failed to read from /dev/urandom.\n");
-      abort();
-   }
-   close(fd);
-
-   fprintf(stderr, "srand(%u)\n", seed);
-   srand(seed);
+   srand((unsigned)time( NULL ));
 }
 
 

@@ -15,7 +15,7 @@
  */
 
 
-#include "bson/bson-endian.h"
+#include "bson-endian.h"
 
 #include "bson-tests.h"
 

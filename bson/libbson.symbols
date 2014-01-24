@@ -1,3 +1,14 @@
+BCON_MAGIC
+BCONE_MAGIC
+bcon_append
+bcon_append_ctx
+bcon_append_ctx_init
+bcon_append_ctx_va
+bcon_new
+bcon_extract
+bcon_extract_ctx
+bcon_extract_ctx_init
+bcon_extract_ctx_va
 bson_append_array
 bson_append_array_begin
 bson_append_array_end
@@ -41,6 +52,7 @@ bson_equal
 bson_free
 bson_get_data
 bson_get_monotonic_time
+bson_gettimeofday
 bson_has_field
 bson_init
 bson_init_static

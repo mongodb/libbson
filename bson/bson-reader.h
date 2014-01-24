@@ -38,7 +38,7 @@ bson_reader_new_from_fd (int         fd,
 
 bson_reader_t *
 bson_reader_new_from_data (const bson_uint8_t *data,
-                           size_t              length);
+                           bson_size_t              length);
 
 
 void
@@ -55,7 +55,7 @@ bson_reader_read (bson_reader_t *reader,
                   bson_bool_t   *reached_eof);
 
 
-off_t
+bson_off_t
 bson_reader_tell (bson_reader_t *reader);
 
 

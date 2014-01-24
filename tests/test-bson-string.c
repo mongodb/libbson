@@ -16,10 +16,9 @@
 
 
 #include <assert.h>
-#include <bson/bson-string.h>
+#include <bson-string.h>
 #include <fcntl.h>
 #include <time.h>
-#include <unistd.h>
 
 #include "bson-tests.h"
 

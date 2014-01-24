@@ -19,7 +19,7 @@
 #define BSON_TESTS_H
 
 
-#include <bson/bson.h>
+#include <bson.h>
 #include <stdio.h>
 #include <time.h>
 
@@ -46,22 +46,43 @@ BSON_BEGIN_DECLS
       }                                                                 \
    } while (0)
 
+void
+bson_eq_bson (bson_t *bson,
+              bson_t *expected)
+{
+   char *bson_json, *expected_json;
+   int unequal;
 
-static void
+   unequal = (expected->len != bson->len)
+             || memcmp (bson_get_data (expected), bson_get_data (
+                           bson), expected->len);
+
+   if (unequal) {
+      bson_json = bson_as_json (bson, NULL);
+      expected_json = bson_as_json (expected, NULL);
+
+      fprintf (stderr, "bson objects unequal: (%s) != (%s)", bson_json,
+               expected_json);
+      assert (0);
+   }
+}
+
+
+void
 run_test (const char *name,
           void (*func) (void))
 {
    struct timeval begin;
    struct timeval end;
    struct timeval diff;
-   bson_int64_t usec;
+   long usec;
    double format;
 
    fprintf(stdout, "%-42s : ", name);
    fflush(stdout);
-   gettimeofday(&begin, NULL);
+   bson_gettimeofday(&begin, NULL);
    func();
-   gettimeofday(&end, NULL);
+   bson_gettimeofday(&end, NULL);
    fprintf(stdout, "PASS");
 
    diff.tv_sec = end.tv_sec - begin.tv_sec;
@@ -74,7 +95,6 @@ run_test (const char *name,
    format = diff.tv_sec + (diff.tv_usec / 1000000.0);
    fprintf(stdout, " : %lf\n", format);
 }
-
 
 BSON_END_DECLS
 

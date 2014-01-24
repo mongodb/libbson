@@ -2,6 +2,8 @@
 *.a
 aclocal.m4
 autom4te.cache
+bcon-speed
+bcon-col-view
 bson-to-json
 bson-validate
 compile
@@ -34,3 +36,5 @@ test-bson-reader
 test-bson-string
 test-bson-utf8
 test-bson-writer
+test-bcon-basic
+test-bcon-extract
