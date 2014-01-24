@@ -302,8 +302,6 @@ bson_context_new (bson_context_flags_t flags)
 void
 bson_context_destroy (bson_context_t *context)
 {
-   bson_return_if_fail (context != gContextDefault);
-
 #if defined WITH_OID32_PT
    bson_mutex_destroy (&context->_m32);
 #endif
@@ -315,10 +313,22 @@ bson_context_destroy (bson_context_t *context)
 }
 
 
-static BSON_ONCE_FUN(_bson_context_init_default)
+static void
+_bson_context_destroy_default (void)
+{
+   if (gContextDefault) {
+      bson_context_destroy (gContextDefault);
+      gContextDefault = NULL;
+   }
+}
+
+
+static
+BSON_ONCE_FUN(_bson_context_init_default)
 {
    gContextDefault = bson_context_new ((BSON_CONTEXT_THREAD_SAFE |
                                         BSON_CONTEXT_DISABLE_PID_CACHE));
+   atexit (_bson_context_destroy_default);
    BSON_ONCE_RETURN;
 }
 
