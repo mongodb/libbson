@@ -199,6 +199,7 @@ test_bson_iter_fuzz (void)
          /*
           * It could fail on buffer length or missing trailing null byte.
           */
+         bson_free (data);
          continue;
       }
 
