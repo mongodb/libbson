@@ -86,6 +86,7 @@ test_bson_writer_empty_sequence (void)
    r = memcmp(buf, testdata, 25);
    assert(r == 0);
    bson_writer_destroy(writer);
+   bson_free (buf);
 }
 
 
