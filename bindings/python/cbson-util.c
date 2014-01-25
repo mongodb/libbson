@@ -32,7 +32,7 @@ typedef struct
 } cbson_fixed_offset_t;
 
 
-static bson_bool_t gUseFixedOffset;
+static bool gUseFixedOffset;
 static PyTypeObject cbson_fixed_offset_type = {
    PyObject_HEAD_INIT(NULL)
    0,                         /*ob_size*/
@@ -171,7 +171,7 @@ static PyMethodDef cbson_fixed_offset_tp_methods[] = {
 PyTypeObject *
 cbson_fixed_offset_get_type (void)
 {
-   static bson_bool_t initialized;
+   static bool initialized;
 
    if (!initialized) {
 #define SET(n, v) cbson_fixed_offset_type.n = v
@@ -183,11 +183,11 @@ cbson_fixed_offset_get_type (void)
       SET(tp_compare, cbson_fixed_offset_tp_compare);
 
       if (PyType_Ready(&cbson_fixed_offset_type) < 0) {
-         assert(FALSE);
+         assert(false);
          return NULL;
       }
 
-      initialized = TRUE;
+      initialized = true;
 
 #undef SET
    }
@@ -196,23 +196,23 @@ cbson_fixed_offset_get_type (void)
 }
 
 
-bson_bool_t
+bool
 cbson_util_init (PyObject *module)
 {
    PyDateTime_IMPORT;
 
    if (!PyDateTimeAPI) {
-      return FALSE;
+      return false;
    }
 
    PyModule_AddObject(module, "FixedOffset",
                       (PyObject *)cbson_fixed_offset_get_type());
 
-   return TRUE;
+   return true;
 }
 
 
-bson_bool_t
+bool
 cbson_date_time_check (PyObject *object)
 {
    return PyDateTime_Check(object);
@@ -220,10 +220,10 @@ cbson_date_time_check (PyObject *object)
 
 
 PyObject *
-cbson_date_time_from_msec (bson_int64_t msec_since_epoch)
+cbson_date_time_from_msec (int64_t msec_since_epoch)
 {
-   bson_int32_t diff;
-   bson_int32_t microseconds;
+   int32_t diff;
+   int32_t microseconds;
    struct TM timeinfo;
    Time64_T seconds;
    PyObject *ret;
@@ -295,10 +295,10 @@ cbson_date_time_from_msec (bson_int64_t msec_since_epoch)
 }
 
 
-bson_int32_t
+int32_t
 cbson_date_time_seconds (PyObject *date_time)
 {
-   bson_int32_t val = -1;
+   int32_t val = -1;
    PyObject *calendar;
    PyObject *ret;
    PyObject *timegm_;
@@ -378,7 +378,7 @@ cbson_fixed_offset_utc_ref (void)
 
 
 void
-cbson_set_use_fixed_offset (bson_bool_t use_fixed_offset)
+cbson_set_use_fixed_offset (bool use_fixed_offset)
 {
    gUseFixedOffset = use_fixed_offset;
 }

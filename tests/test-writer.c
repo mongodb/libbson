@@ -26,8 +26,8 @@ static void
 test_bson_writer_shared_buffer (void)
 {
    bson_writer_t *writer;
-   bson_uint8_t *buf = bson_malloc0(32);
-   bson_bool_t rolled_back = FALSE;
+   uint8_t *buf = bson_malloc0(32);
+   bool rolled_back = false;
    size_t buflen = 32;
    size_t n_bytes;
    bson_t *b;
@@ -48,7 +48,7 @@ test_bson_writer_shared_buffer (void)
       }
 
       if (bson_writer_get_length(writer) > (48 * 1024 * 1024)) {
-         rolled_back = TRUE;
+         rolled_back = true;
          bson_writer_rollback(writer);
          break;
       } else {
@@ -61,7 +61,7 @@ test_bson_writer_shared_buffer (void)
    bson_writer_destroy(writer);
 
    assert_cmpint(n_bytes, <, (48 * 1024 * 1024));
-   assert_cmpint(rolled_back, ==, TRUE);
+   assert_cmpint(rolled_back, ==, true);
    assert(rolled_back);
 
    bson_free(buf);
@@ -71,9 +71,9 @@ test_bson_writer_shared_buffer (void)
 static void
 test_bson_writer_empty_sequence (void)
 {
-   const bson_uint8_t testdata[] = { 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0 };
+   const uint8_t testdata[] = { 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0 };
    bson_writer_t *writer;
-   bson_uint8_t *buf = NULL;
+   uint8_t *buf = NULL;
    bson_t *b;
    size_t len = 0;
    int r;
@@ -94,12 +94,10 @@ test_bson_writer_empty_sequence (void)
 static void
 test_bson_writer_null_realloc (void)
 {
-   const bson_uint8_t testdata[] = { 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0 };
+   const uint8_t testdata[] = { 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0 };
    bson_writer_t *writer;
-   bson_uint8_t *buf = bson_malloc0(32);
-   bson_bool_t rolled_back = FALSE;
+   uint8_t *buf = bson_malloc0(32);
    size_t buflen = 32;
-   size_t n_bytes;
    bson_t *b;
    int r;
    int i;
@@ -122,12 +120,10 @@ test_bson_writer_null_realloc (void)
 static void
 test_bson_writer_null_realloc_2 (void)
 {
-   const bson_uint8_t testdata[] = { 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0 };
+   const uint8_t testdata[] = { 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0 };
    bson_writer_t *writer;
-   bson_uint8_t *buf = bson_malloc0(32);
-   bson_bool_t rolled_back = FALSE;
+   uint8_t *buf = bson_malloc0(32);
    size_t buflen = 32;
-   size_t n_bytes;
    bson_t *b;
    int r;
    int i;

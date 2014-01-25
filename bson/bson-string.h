@@ -36,8 +36,8 @@ BSON_BEGIN_DECLS
 typedef struct
 {
    char          *str;
-   bson_uint32_t  len;
-   bson_uint32_t  alloc;
+   uint32_t  len;
+   uint32_t  alloc;
 } bson_string_t;
 
 
@@ -47,7 +47,7 @@ bson_string_new (const char *str);
 
 char *
 bson_string_free (bson_string_t *string,
-                  bson_bool_t    free_segment);
+                  bool    free_segment);
 
 
 void
@@ -73,7 +73,7 @@ bson_string_append_printf (bson_string_t *string,
 
 void
 bson_string_truncate (bson_string_t *string,
-                      bson_uint32_t  len);
+                      uint32_t  len);
 
 
 char *
@@ -92,8 +92,24 @@ bson_strdupv_printf (const char *format,
 
 char *
 bson_strndup (const char *str,
-              bson_size_t      n_bytes);
+              size_t      n_bytes);
 
+void
+bson_strcpy_w_null (char       *dst,
+                    const char *src,
+                    size_t size);
+
+int
+bson_vsnprintf (char       *str,
+                size_t size,
+                const char *format,
+                va_list     ap);
+
+int
+bson_snprintf (char       *str,
+               size_t size,
+               const char *format,
+               ...);
 
 void bson_strfreev (char **strv);
 

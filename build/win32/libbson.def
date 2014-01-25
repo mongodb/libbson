@@ -1,5 +1,6 @@
-BCON_MAGIC
-BCONE_MAGIC
+EXPORTS
+BCONE_MAGIC DATA
+BCON_MAGIC DATA
 bcon_append
 bcon_append_ctx
 bcon_append_ctx_init

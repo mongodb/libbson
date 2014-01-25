@@ -24,12 +24,12 @@
 
 static BSON_INLINE void
 _bson_utf8_get_sequence (const char   *utf8,
-                         bson_uint8_t *seq_length,
-                         bson_uint8_t *first_mask)
+                         uint8_t *seq_length,
+                         uint8_t *first_mask)
 {
    unsigned char c = *(const unsigned char *)utf8;
-   bson_uint8_t m;
-   bson_uint8_t n;
+   uint8_t m;
+   uint8_t n;
 
    /*
     * See the following[1] for a description of what the given multi-byte
@@ -75,48 +75,48 @@ _bson_utf8_get_sequence (const char   *utf8,
  *
  * Validates that @utf8 is a valid UTF-8 string.
  *
- * If @allow_null is TRUE, then \0 is allowed within @utf8_len bytes of @utf8.
+ * If @allow_null is true, then \0 is allowed within @utf8_len bytes of @utf8.
  * Generally, this is bad practice since the main point of UTF-8 strings is
  * that they can be used with strlen() and friends. However, some languages
  * such as Python can send UTF-8 encoded strings with NUL's in them.
  *
- * Returns: TRUE if @utf8 is valid UTF-8.
+ * Returns: true if @utf8 is valid UTF-8.
  */
-bson_bool_t
+bool
 bson_utf8_validate (const char *utf8,
-                    bson_size_t      utf8_len,
-                    bson_bool_t allow_null)
+                    size_t      utf8_len,
+                    bool allow_null)
 {
-   bson_uint8_t first_mask;
-   bson_uint8_t seq_length;
+   uint8_t first_mask;
+   uint8_t seq_length;
    int i;
    int j;
 
-   bson_return_val_if_fail (utf8, FALSE);
+   bson_return_val_if_fail (utf8, false);
 
    for (i = 0; i < utf8_len; i += seq_length) {
       _bson_utf8_get_sequence (&utf8[i], &seq_length, &first_mask);
 
       if (!seq_length) {
-         return FALSE;
+         return false;
       }
 
       for (j = i + 1; j < (i + seq_length); j++) {
          if ((utf8[j] & 0xC0) != 0x80) {
-            return FALSE;
+            return false;
          }
       }
 
       if (!allow_null) {
          for (j = 0; j < seq_length; j++) {
             if (((i + j) > utf8_len) || !utf8[i + j]) {
-               return FALSE;
+               return false;
             }
          }
       }
    }
 
-   return TRUE;
+   return true;
 }
 
 
@@ -136,7 +136,7 @@ bson_utf8_validate (const char *utf8,
  */
 char *
 bson_utf8_escape_for_json (const char   *utf8,
-                           bson_ssize_t  utf8_len)
+                           ssize_t       utf8_len)
 {
    bson_unichar_t c;
    bson_string_t *str;
@@ -187,7 +187,7 @@ bson_utf8_escape_for_json (const char   *utf8,
       }
    }
 
-   return bson_string_free (str, FALSE);
+   return bson_string_free (str, false);
 }
 
 
@@ -203,8 +203,8 @@ bson_unichar_t
 bson_utf8_get_char (const char *utf8)
 {
    bson_unichar_t c;
-   bson_uint8_t mask;
-   bson_uint8_t num;
+   uint8_t mask;
+   uint8_t num;
    int i;
 
    bson_return_val_if_fail (utf8, -1);
@@ -232,8 +232,8 @@ bson_utf8_get_char (const char *utf8)
 const char *
 bson_utf8_next_char (const char *utf8)
 {
-   bson_uint8_t mask;
-   bson_uint8_t num;
+   uint8_t mask;
+   uint8_t num;
 
    bson_return_val_if_fail (utf8, NULL);
 
@@ -255,7 +255,7 @@ bson_utf8_next_char (const char *utf8)
 void
 bson_utf8_from_unichar (bson_unichar_t unichar,
                         char           utf8[BSON_ENSURE_ARRAY_PARAM_SIZE(6)],
-                        bson_uint32_t *len)
+                        uint32_t *len)
 {
    bson_return_if_fail (len);
 

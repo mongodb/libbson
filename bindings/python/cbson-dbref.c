@@ -229,7 +229,7 @@ cbson_dbref_new (const char       *collection,
 PyTypeObject *
 cbson_dbref_get_type (void)
 {
-   static bson_bool_t initialized;
+   static bool initialized;
 
    if (!initialized) {
       cbson_dbref_type.tp_new = cbson_dbref_tp_new;
@@ -238,7 +238,7 @@ cbson_dbref_get_type (void)
       if (PyType_Ready(&cbson_dbref_type) < 0) {
          return NULL;
       }
-      initialized = TRUE;
+      initialized = true;
    }
 
    return &cbson_dbref_type;

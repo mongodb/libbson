@@ -111,7 +111,7 @@ cbson_oid_from_datetime (PyObject *obj,
                          PyObject *args)
 {
    cbson_oid_t *ret;
-   bson_int32_t t;
+   int32_t t;
    PyObject *dt;
 
    if (!PyArg_ParseTuple(args, "O", &dt)) {
@@ -234,7 +234,7 @@ cbson_oid_get_generation_time (PyObject *obj,
                                void     *data)
 {
    cbson_oid_t *oid = (cbson_oid_t *)obj;
-   bson_int64_t gentime;
+   int64_t gentime;
    PyObject *ret;
 
    gentime = bson_oid_get_time_t(&oid->oid);
@@ -280,7 +280,7 @@ cbson_oid_tp_new (PyTypeObject *self,
 
       switch (len) {
       case 12:
-         bson_oid_init_from_data(&oid, (const bson_uint8_t *)str);
+         bson_oid_init_from_data(&oid, (const uint8_t *)str);
          break;
       case 24:
          if (!bson_oid_is_valid(str, len)) {
@@ -328,7 +328,7 @@ cbson_oid_new (const bson_oid_t *oid)
 PyTypeObject *
 cbson_oid_get_type (bson_context_t *context)
 {
-   static bson_bool_t initialized;
+   static bool initialized;
 
    if (!initialized) {
       gContext = context;
@@ -338,7 +338,7 @@ cbson_oid_get_type (bson_context_t *context)
       if (PyType_Ready(&cbson_oid_type) < 0) {
          return NULL;
       }
-      initialized = TRUE;
+      initialized = true;
    }
 
    return &cbson_oid_type;

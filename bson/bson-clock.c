@@ -20,9 +20,8 @@
 #include <mach/mach.h>
 #endif
 
-#include <time.h>
 #include "bson.h"
-#include "bson-clock.h"
+#include <time.h>
 
 /**
  * bson_get_monotonic_time:
@@ -33,10 +32,10 @@
  *
  * Returns: A monotonic clock in microseconds.
  */
-bson_int64_t
+int64_t
 bson_get_monotonic_time (void)
 {
-#ifdef CLOCK_MONOTONIC
+#if defined(CLOCK_MONOTONIC) && ! defined(BSON_OS_WIN32)
    {
       struct timespec ts;
 
@@ -77,26 +76,30 @@ int
 bson_gettimeofday(struct timeval *tv, struct timezone *tz)
 {
 #ifdef BSON_OS_WIN32
-#define DELTA_EPOCH_IN_MICROSEC 11644473600000000LL
+#ifdef _MSC_VER
+#define DELTA_EPOCH_IN_MICROSEC 11644473600000000Ui64
+#else
+#define DELTA_EPOCH_IN_MICROSEC 11644473600000000ULL
+#endif
 
   FILETIME ft;
-  bson_uint64_t tmp = 0;
+  uint64_t tmp = 0;
  
   if (NULL != tv)
   {
     GetSystemTimeAsFileTime(&ft);
 
     /* pull out of the filetime into a 64 bit uint */
-    tmp = ft.dwHighDateTime;
+    tmp |= ft.dwHighDateTime;
     tmp <<= 32;
     tmp |= ft.dwLowDateTime;
-
-    /* adjust to unix epoch */
-    tmp -= DELTA_EPOCH_IN_MICROSEC;
 
     /* convert from 100's of nanosecs to microsecs */
     tmp /= 10; 
  
+    /* adjust to unix epoch */
+    tmp -= DELTA_EPOCH_IN_MICROSEC;
+
     tv->tv_sec = (long)(tmp / 1000000UL);
     tv->tv_usec = (long)(tmp % 1000000UL);
   }

@@ -30,11 +30,11 @@
 BSON_BEGIN_DECLS
 
 
-void          cbson_set_use_fixed_offset (bson_bool_t   use_fixed_offset);
-PyObject     *cbson_date_time_from_msec  (bson_int64_t  msec_since_epoch);
-bson_int32_t  cbson_date_time_seconds    (PyObject     *date_time);
-bson_bool_t   cbson_util_init            (PyObject     *module);
-bson_bool_t   cbson_date_time_check      (PyObject     *object);
+void          cbson_set_use_fixed_offset (bool   use_fixed_offset);
+PyObject     *cbson_date_time_from_msec  (int64_t  msec_since_epoch);
+int32_t  cbson_date_time_seconds    (PyObject     *date_time);
+bool   cbson_util_init            (PyObject     *module);
+bool   cbson_date_time_check      (PyObject     *object);
 PyObject     *cbson_fixed_offset_utc_ref (void);
 
 

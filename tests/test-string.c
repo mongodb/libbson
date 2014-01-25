@@ -16,7 +16,7 @@
 
 
 #include <assert.h>
-#include <bson-string.h>
+#include <bson.h>
 #include <fcntl.h>
 #include <time.h>
 
@@ -31,26 +31,26 @@ test_bson_string_new (void)
    char *s;
 
    str = bson_string_new(NULL);
-   s = bson_string_free(str, FALSE);
+   s = bson_string_free(str, false);
    assert(s);
    assert(!strcmp(s, ""));
    bson_free(s);
 
    str = bson_string_new("");
-   s = bson_string_free(str, FALSE);
+   s = bson_string_free(str, false);
    assert(s);
    assert(!*s);
    assert(0 == strcmp(s, ""));
    bson_free(s);
 
    str = bson_string_new("abcdef");
-   s = bson_string_free(str, FALSE);
+   s = bson_string_free(str, false);
    assert(s);
    assert(!strcmp(s, "abcdef"));
    bson_free(s);
 
    str = bson_string_new("");
-   s = bson_string_free(str, TRUE);
+   s = bson_string_free(str, true);
    assert(!s);
 }
 
@@ -64,7 +64,7 @@ test_bson_string_append (void)
    str = bson_string_new(NULL);
    bson_string_append(str, "christian was here");
    bson_string_append(str, "\n");
-   s = bson_string_free(str, FALSE);
+   s = bson_string_free(str, false);
    assert(s);
    assert(!strcmp(s, "christian was here\n"));
    bson_free(s);
@@ -72,7 +72,7 @@ test_bson_string_append (void)
    str = bson_string_new(">>>");
    bson_string_append(str, "^^^");
    bson_string_append(str, "<<<");
-   s = bson_string_free(str, FALSE);
+   s = bson_string_free(str, false);
    assert(s);
    assert(!strcmp(s, ">>>^^^<<<"));
    bson_free(s);
@@ -91,7 +91,7 @@ test_bson_string_append_c (void)
    bson_string_append_c(str, 'r');
    bson_string_append_c(str, 'i');
    bson_string_append_c(str, 's');
-   s = bson_string_free(str, FALSE);
+   s = bson_string_free(str, false);
    assert(s);
    assert(!strcmp(s, "chris"));
    bson_free(s);
@@ -108,7 +108,7 @@ test_bson_string_append_printf (void)
    BSON_ASSERT(!strcmp(str->str, "abcd 1 2 3"));
    bson_string_truncate(str, 2);
    BSON_ASSERT(!strcmp(str->str, "ab"));
-   bson_string_free(str, TRUE);
+   bson_string_free(str, true);
 }
 
 
@@ -121,7 +121,7 @@ test_bson_string_append_unichar (void)
 
    str = bson_string_new(NULL);
    bson_string_append_unichar(str, 0x20AC);
-   s = bson_string_free(str, FALSE);
+   s = bson_string_free(str, false);
    assert(s);
    assert(!strcmp(s, test1));
    bson_free(s);

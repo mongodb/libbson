@@ -48,6 +48,7 @@ bson_string_new (const char *str)
    if (str) {
       memcpy (ret->str, str, ret->len);
    }
+   ret->str [ret->len] = '\0';
 
    ret->str [ret->len] = '\0';
 
@@ -57,7 +58,7 @@ bson_string_new (const char *str)
 
 char *
 bson_string_free (bson_string_t *string,
-                  bson_bool_t    free_segment)
+                  bool    free_segment)
 {
    char *ret = NULL;
 
@@ -79,12 +80,12 @@ void
 bson_string_append (bson_string_t *string,
                     const char    *str)
 {
-   bson_uint32_t len;
+   uint32_t len;
 
    bson_return_if_fail (string);
    bson_return_if_fail (str);
 
-   len = (bson_uint32_t)strlen (str);
+   len = (uint32_t)strlen (str);
 
    if ((string->alloc - string->len - 1) < len) {
       string->alloc += len;
@@ -124,7 +125,7 @@ void
 bson_string_append_unichar (bson_string_t *string,
                             bson_unichar_t unichar)
 {
-   bson_uint32_t len;
+   uint32_t len;
    char str [8];
 
    BSON_ASSERT (string);
@@ -160,9 +161,9 @@ bson_string_append_printf (bson_string_t *string,
 
 void
 bson_string_truncate (bson_string_t *string,
-                      bson_uint32_t  len)
+                      uint32_t  len)
 {
-   bson_uint32_t alloc;
+   uint32_t alloc;
 
    bson_return_if_fail (string);
    bson_return_if_fail (len < INT_MAX);
@@ -222,7 +223,7 @@ bson_strdupv_printf (const char *format,
 
    buf = bson_malloc0 (len);
 
-   while (TRUE) {
+   while (true) {
       va_copy (my_args, args);
       n = bson_vsnprintf (buf, len, format, my_args);
       va_end (my_args);
@@ -259,7 +260,7 @@ bson_strdup_printf (const char *format,
 
 char *
 bson_strndup (const char *str,
-              bson_size_t      n_bytes)
+              size_t      n_bytes)
 {
    char *ret;
 
@@ -269,7 +270,6 @@ bson_strndup (const char *str,
 
    return ret;
 }
-
 
 void
 bson_strfreev (char **str)
@@ -301,4 +301,50 @@ bson_strnlen (const char *s,
 
    return maxlen;
 #endif
+}
+
+void
+bson_strcpy_w_null (char       *dst,
+                    const char *src,
+                    size_t size)
+{
+#ifdef _MSC_VER
+   strcpy_s (dst, size, src);
+#else
+   strncpy (dst, src, size);
+   dst[size - 1] = '\0';
+#endif
+}
+
+int
+bson_vsnprintf (char * str, size_t size, const char * format, va_list ap)
+{
+#ifdef BSON_OS_WIN32
+    int r = -1;
+
+    if (size != 0) {
+        r = _vsnprintf_s(str, size, _TRUNCATE, format, ap);
+    }
+
+    if (r == -1) {
+        r = _vscprintf(format, ap);
+    }
+
+    return r;
+#else
+    return vsnprintf(str, size, format, ap);
+#endif
+}
+
+int
+bson_snprintf (char * str, size_t size, const char * format, ...)
+{
+    int r;
+    va_list ap;
+
+    va_start(ap, format);
+    r = bson_vsnprintf(str, size, format, ap);
+    va_end(ap);
+
+    return r;
 }

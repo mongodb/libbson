@@ -39,7 +39,7 @@
  *   and this function will never return.
  */
 void *
-bson_malloc (bson_size_t num_bytes)
+bson_malloc (size_t num_bytes)
 {
    void *mem;
 
@@ -63,7 +63,7 @@ bson_malloc (bson_size_t num_bytes)
  *   and this function will never return.
  */
 void *
-bson_malloc0 (bson_size_t num_bytes)
+bson_malloc0 (size_t num_bytes)
 {
    void *mem;
 
@@ -87,8 +87,8 @@ bson_malloc0 (bson_size_t num_bytes)
  *   and this function will never return.
  */
 void *
-bson_memalign0 (bson_size_t alignment,
-                bson_size_t size)
+bson_memalign0 (size_t alignment,
+                size_t size)
 {
    void *mem;
 
@@ -130,7 +130,7 @@ bson_memalign0 (bson_size_t alignment,
  */
 void *
 bson_realloc (void  *mem,
-              bson_size_t num_bytes)
+              size_t num_bytes)
 {
    if (!(mem = realloc (mem, num_bytes))) {
       if (!num_bytes) {
@@ -170,7 +170,7 @@ bson_free (void *mem)
  */
 void
 bson_zero_free (void  *mem,
-                bson_size_t size)
+                size_t size)
 {
    if (mem) {
       memset (mem, 0, size);

@@ -31,15 +31,15 @@
 BSON_BEGIN_DECLS
 
 
-bson_bool_t
+bool
 bson_utf8_validate (const char *utf8,
-                    bson_size_t      utf8_len,
-                    bson_bool_t allow_null);
+                    size_t      utf8_len,
+                    bool allow_null);
 
 
 char *
 bson_utf8_escape_for_json (const char *utf8,
-                           bson_ssize_t     utf8_len);
+                           ssize_t     utf8_len);
 
 
 bson_unichar_t
@@ -53,7 +53,7 @@ bson_utf8_next_char (const char *utf8);
 void
 bson_utf8_from_unichar (bson_unichar_t unichar,
                         char           utf8[6],
-                        bson_uint32_t *len);
+                        uint32_t *len);
 
 
 BSON_END_DECLS

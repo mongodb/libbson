@@ -15,8 +15,11 @@
  */
 
 
+#include <bson.h>
 #include <assert.h>
+#define BSON_INSIDE
 #include <bson-private.h>
+#undef BSON_INSIDE
 #include <fcntl.h>
 #include <time.h>
 
@@ -27,8 +30,8 @@
 static bson_t *
 get_bson (const char *filename)
 {
-   bson_ssize_t len;
-   bson_uint8_t buf[4096];
+   ssize_t len;
+   uint8_t buf[4096];
    bson_t *b;
    char real_filename[256];
    int fd;
@@ -36,13 +39,13 @@ get_bson (const char *filename)
    bson_snprintf(real_filename, sizeof real_filename, "tests/binary/%s", filename);
    real_filename[sizeof real_filename - 1] = '\0';
 
-   if (-1 == (fd = bson_open(real_filename, BSON_O_RDONLY))) {
+   if (-1 == (fd = bson_open(real_filename, O_RDONLY))) {
       fprintf(stderr, "Failed to bson_open: %s\n", real_filename);
       abort();
    }
    len = bson_read(fd, buf, sizeof buf);
    assert(len > 0);
-   b = bson_new_from_data(buf, (bson_uint32_t)len);
+   b = bson_new_from_data(buf, (uint32_t)len);
    bson_close(fd);
 
    return b;
@@ -67,7 +70,7 @@ test_bson_new (void)
 static void
 test_bson_alloc (void)
 {
-   static const bson_uint8_t empty_bson[] = { 5, 0, 0, 0, 0 };
+   static const uint8_t empty_bson[] = { 5, 0, 0, 0, 0 };
    bson_t *b;
 
    b = bson_new();
@@ -114,9 +117,9 @@ static void
 assert_bson_equal (const bson_t *a,
                    const bson_t *b)
 {
-   const bson_uint8_t *data1 = bson_get_data(a);
-   const bson_uint8_t *data2 = bson_get_data(b);
-   bson_uint32_t i;
+   const uint8_t *data1 = bson_get_data(a);
+   const uint8_t *data2 = bson_get_data(b);
+   uint32_t i;
 
    if (!bson_equal(a, b)) {
       for (i = 0; i < MAX(a->len, b->len); i++) {
@@ -199,7 +202,7 @@ test_bson_append_bool (void)
    bson_t *b2;
 
    b = bson_new();
-   assert(bson_append_bool(b, "bool", -1, TRUE));
+   assert(bson_append_bool(b, "bool", -1, true));
    b2 = get_bson("test19.bson");
    assert_bson_equal(b, b2);
    bson_destroy(b);
@@ -279,7 +282,7 @@ test_bson_append_array (void)
 static void
 test_bson_append_binary (void)
 {
-   const static bson_uint8_t binary[] = { '1', '2', '3', '4' };
+   const static uint8_t binary[] = { '1', '2', '3', '4' };
    bson_t *b;
    bson_t *b2;
 
@@ -295,7 +298,7 @@ test_bson_append_binary (void)
 static void
 test_bson_append_binary_deprecated (void)
 {
-   const static bson_uint8_t binary[] = { '1', '2', '3', '4' };
+   const static uint8_t binary[] = { '1', '2', '3', '4' };
    bson_t *b;
    bson_t *b2;
 
@@ -393,11 +396,11 @@ test_bson_append_code (void)
 static void
 test_bson_append_code_with_scope (void)
 {
-   const bson_uint8_t *scope_buf = NULL;
-   bson_uint32_t scopelen = 0;
-   bson_uint32_t len = 0;
+   const uint8_t *scope_buf = NULL;
+   uint32_t scopelen = 0;
+   uint32_t len = 0;
    bson_iter_t iter;
-   bson_bool_t r;
+   bool r;
    const char *code = NULL;
    bson_t *b;
    bson_t *b2;
@@ -491,7 +494,7 @@ static void
 test_bson_append_iter (void)
 {
    bson_iter_t iter;
-   bson_bool_t r;
+   bool r;
    bson_t b;
    bson_t c;
 
@@ -588,7 +591,7 @@ test_bson_append_minkey (void)
 static void
 test_bson_append_general (void)
 {
-   bson_uint8_t bytes[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x01, 0x23, 0x45 };
+   uint8_t bytes[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x01, 0x23, 0x45 };
    bson_oid_t oid;
    bson_t *bson;
    bson_t *array;
@@ -817,7 +820,7 @@ test_bson_init (void)
 static void
 test_bson_init_static (void)
 {
-   static const bson_uint8_t data[5] = { 5 };
+   static const uint8_t data[5] = { 5 };
    bson_t b;
 
    bson_init_static(&b, data, sizeof data);
@@ -829,7 +832,7 @@ test_bson_init_static (void)
 static void
 test_bson_utf8_key (void)
 {
-   bson_uint32_t length;
+   uint32_t length;
    bson_iter_t iter;
    const char *str;
    bson_t *b;
@@ -1078,7 +1081,7 @@ static void
 test_bson_copy_to_excluding (void)
 {
    bson_iter_t iter;
-   bson_bool_t r;
+   bool r;
    bson_t b;
    bson_t c;
    int i;
@@ -1108,7 +1111,7 @@ static void
 test_bson_append_overflow (void)
 {
    const char *key = "a";
-   bson_uint32_t len;
+   uint32_t len;
    bson_t b;
 
    len = BSON_MAX_SIZE;
@@ -1118,7 +1121,7 @@ test_bson_append_overflow (void)
    len -= 1; /* end byte */
 
    bson_init(&b);
-   assert(!bson_append_bool(&b, key, len, TRUE));
+   assert(!bson_append_bool(&b, key, len, true));
    bson_destroy(&b);
 }
 
@@ -1129,7 +1132,7 @@ test_bson_initializer (void)
    bson_t b = BSON_INITIALIZER;
 
    assert(bson_empty(&b));
-   bson_append_bool(&b, "foo", -1, TRUE);
+   bson_append_bool(&b, "foo", -1, true);
    assert(!bson_empty(&b));
    bson_destroy(&b);
 }
@@ -1180,7 +1183,7 @@ test_bson_reinit (void)
 static void
 test_bson_macros (void)
 {
-   const bson_uint8_t data [] = { 1, 2, 3, 4 };
+   const uint8_t data [] = { 1, 2, 3, 4 };
    bson_t b = BSON_INITIALIZER;
    bson_t ar = BSON_INITIALIZER;
    bson_oid_t oid;
@@ -1199,7 +1202,7 @@ test_bson_macros (void)
 
    BSON_APPEND_ARRAY (&b, "0", &ar);
    BSON_APPEND_BINARY (&b, "1", 0, data, sizeof data);
-   BSON_APPEND_BOOL (&b, "2", TRUE);
+   BSON_APPEND_BOOL (&b, "2", true);
    BSON_APPEND_CODE (&b, "3", "function(){}");
    BSON_APPEND_CODE_WITH_SCOPE (&b, "4", "function(){}", &ar);
    BSON_APPEND_DOUBLE (&b, "6", 123.45);
@@ -1221,13 +1224,6 @@ test_bson_macros (void)
 
    bson_destroy (&b);
    bson_destroy (&ar);
-}
-
-
-static void
-init_rand (void)
-{
-   srand((unsigned)time( NULL ));
 }
 
 

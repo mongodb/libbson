@@ -35,13 +35,13 @@ static void
 test_binary (void)
 {
    bson_subtype_t subtype;
-   bson_uint32_t len;
-   const bson_uint8_t *binary;
+   uint32_t len;
+   const uint8_t *binary;
 
    bson_t *bcon = BCON_NEW (
       "foo", BCON_BIN (
          BSON_SUBTYPE_BINARY,
-         (bson_uint8_t *)"deadbeef",
+         (uint8_t *)"deadbeef",
          8
          )
       );
@@ -87,13 +87,13 @@ test_oid (void)
 static void
 test_bool (void)
 {
-   bson_bool_t b;
+   bool b;
 
-   bson_t *bcon = BCON_NEW ("foo", BCON_BOOL (TRUE));
+   bson_t *bcon = BCON_NEW ("foo", BCON_BOOL (true));
 
    assert (BCON_EXTRACT (bcon, "foo", BCONE_BOOL (b)));
 
-   assert (b == TRUE);
+   assert (b == true);
 
    bson_destroy (bcon);
 }
@@ -101,7 +101,7 @@ test_bool (void)
 static void
 test_date_time (void)
 {
-   bson_int64_t out;
+   int64_t out;
 
    bson_t *bcon = BCON_NEW ("foo", BCON_DATE_TIME (10000));
 
@@ -214,7 +214,7 @@ test_codewscope (void)
 static void
 test_int32 (void)
 {
-   bson_int32_t i32;
+   int32_t i32;
 
    bson_t *bcon = BCON_NEW ("foo", BCON_INT32 (10));
 
@@ -229,8 +229,8 @@ test_int32 (void)
 static void
 test_timestamp (void)
 {
-   bson_int32_t timestamp;
-   bson_int32_t increment;
+   int32_t timestamp;
+   int32_t increment;
 
    bson_t *bcon = BCON_NEW ("foo", BCON_TIMESTAMP (100, 1000));
 
@@ -246,7 +246,7 @@ test_timestamp (void)
 static void
 test_int64 (void)
 {
-   bson_int64_t i64;
+   int64_t i64;
 
    bson_t *bcon = BCON_NEW ("foo", BCON_INT64 (10));
 
@@ -317,7 +317,7 @@ test_bson_array (void)
 static void
 test_inline_array (void)
 {
-   bson_int32_t a, b;
+   int32_t a, b;
 
    bson_t *bcon = BCON_NEW (
       "foo", "[",
@@ -340,7 +340,7 @@ test_inline_array (void)
 static void
 test_inline_doc (void)
 {
-   bson_int32_t a, b;
+   int32_t a, b;
 
    bson_t *bcon = BCON_NEW (
       "foo", "{",
@@ -388,7 +388,7 @@ test_extract_ctx_helper (bson_t *bson,
 static void
 test_extract_ctx (void)
 {
-   bson_int32_t a, b, c;
+   int32_t a, b, c;
 
    bson_t *bson = BCON_NEW (
       "a", BCON_INT32 (1),

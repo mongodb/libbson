@@ -42,18 +42,18 @@ BCON_ENSURE_DECLARE (const_bson_ptr, const bson_t *)
 BCON_ENSURE_DECLARE (bson_ptr, bson_t *)
 BCON_ENSURE_DECLARE (subtype, bson_subtype_t)
 BCON_ENSURE_DECLARE (subtype_ptr, bson_subtype_t *)
-BCON_ENSURE_DECLARE (const_uint8_ptr, const bson_uint8_t *)
-BCON_ENSURE_DECLARE (const_uint8_ptr_ptr, const bson_uint8_t **)
-BCON_ENSURE_DECLARE (uint32, bson_uint32_t)
-BCON_ENSURE_DECLARE (uint32_ptr, bson_uint32_t *)
+BCON_ENSURE_DECLARE (const_uint8_ptr, const uint8_t *)
+BCON_ENSURE_DECLARE (const_uint8_ptr_ptr, const uint8_t **)
+BCON_ENSURE_DECLARE (uint32, uint32_t)
+BCON_ENSURE_DECLARE (uint32_ptr, uint32_t *)
 BCON_ENSURE_DECLARE (const_oid_ptr, const bson_oid_t *)
 BCON_ENSURE_DECLARE (const_oid_ptr_ptr, const bson_oid_t **)
-BCON_ENSURE_DECLARE (int32, bson_int32_t)
-BCON_ENSURE_DECLARE (int32_ptr, bson_int32_t *)
-BCON_ENSURE_DECLARE (int64, bson_int64_t)
-BCON_ENSURE_DECLARE (int64_ptr, bson_int64_t *)
-BCON_ENSURE_DECLARE (bool, bson_bool_t)
-BCON_ENSURE_DECLARE (bool_ptr, bson_bool_t *)
+BCON_ENSURE_DECLARE (int32, int32_t)
+BCON_ENSURE_DECLARE (int32_ptr, int32_t *)
+BCON_ENSURE_DECLARE (int64, int64_t)
+BCON_ENSURE_DECLARE (int64_ptr, int64_t *)
+BCON_ENSURE_DECLARE (bool, bool)
+BCON_ENSURE_DECLARE (bool_ptr, bool *)
 BCON_ENSURE_DECLARE (bson_type, bson_type_t)
 BCON_ENSURE_DECLARE (bson_iter_ptr, bson_iter_t *)
 BCON_ENSURE_DECLARE (const_bson_iter_ptr, const bson_iter_t *)
@@ -162,8 +162,8 @@ BCON_ENSURE_DECLARE (const_bson_iter_ptr, const bson_iter_t *)
 #define BCONE_ITER(_val) BCONE_MAGIC, BCON_TYPE_ITER, \
    BCON_ENSURE_STORAGE (bson_iter_ptr, (_val))
 
-extern char *BCON_MAGIC;
-extern char *BCONE_MAGIC;
+extern BSON_API char * BCON_MAGIC;
+extern BSON_API char * BCONE_MAGIC;
 
 typedef enum
 {
@@ -202,14 +202,14 @@ typedef enum
 typedef struct bcon_append_ctx_frame
 {
    int         i;
-   bson_bool_t is_array;
+   bool is_array;
    bson_t      bson;
 } bcon_append_ctx_frame_t;
 
 typedef struct bcon_extract_ctx_frame
 {
    int         i;
-   bson_bool_t is_array;
+   bool is_array;
    bson_iter_t iter;
 } bcon_extract_ctx_frame_t;
 
@@ -242,16 +242,16 @@ bcon_append_ctx_init (bcon_append_ctx_t *ctx);
 void
 bcon_extract_ctx_init (bcon_extract_ctx_t *ctx);
 
-bson_bool_t
+bool
 bcon_extract_ctx_va (bson_t             *bson,
                      bcon_extract_ctx_t *ctx,
                      va_list            *ap);
 
-bson_bool_t
+bool
 bcon_extract (bson_t *bson,
               ...) BSON_GNUC_NULL_TERMINATED;
 
-bson_bool_t
+bool
 bcon_extract_va (bson_t             *bson,
                  bcon_extract_ctx_t *ctx,
                  ...) BSON_GNUC_NULL_TERMINATED;

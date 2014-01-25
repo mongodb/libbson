@@ -71,18 +71,18 @@ BSON_BEGIN_DECLS
 
 typedef struct
 {
-   bson_uint32_t count[2]; /* message length in bits, lsw first */
-   bson_uint32_t abcd[4];  /* digest buffer */
-   bson_uint8_t  buf[64];  /* accumulate block */
+   uint32_t count[2]; /* message length in bits, lsw first */
+   uint32_t abcd[4];  /* digest buffer */
+   uint8_t  buf[64];  /* accumulate block */
 } bson_md5_t;
 
 
 void bson_md5_init   (bson_md5_t         *pms);
 void bson_md5_append (bson_md5_t         *pms,
-                      const bson_uint8_t *data,
-                      bson_uint32_t       nbytes);
+                      const uint8_t *data,
+                      uint32_t       nbytes);
 void bson_md5_finish (bson_md5_t         *pms,
-                      bson_uint8_t        digest[16]);
+                      uint8_t        digest[16]);
 
 
 BSON_END_DECLS

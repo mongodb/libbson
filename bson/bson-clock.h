@@ -31,7 +31,7 @@
 BSON_BEGIN_DECLS
 
 
-bson_int64_t
+int64_t
 bson_get_monotonic_time (void);
 
 int

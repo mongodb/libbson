@@ -56,6 +56,7 @@
  * specified in libbson.
  */
 
+#include "bson-compat.h"
 
 #include <string.h>
 
@@ -69,7 +70,7 @@
 #  define BYTE_ORDER -1
 #endif
 
-#define T_MASK ((bson_uint32_t)~0)
+#define T_MASK ((uint32_t)~0)
 #define T1 /* 0xd76aa478 */ (T_MASK ^ 0x28955b87)
 #define T2 /* 0xe8c7b756 */ (T_MASK ^ 0x173848a9)
 #define T3    0x242070db
@@ -138,21 +139,21 @@
 
 static void
 bson_md5_process (bson_md5_t     *md5,
-                  const bson_uint8_t *data)
+                  const uint8_t *data)
 {
-   bson_uint32_t a = md5->abcd[0];
-   bson_uint32_t b = md5->abcd[1];
-   bson_uint32_t c = md5->abcd[2];
-   bson_uint32_t d = md5->abcd[3];
-   bson_uint32_t t;
+   uint32_t a = md5->abcd[0];
+   uint32_t b = md5->abcd[1];
+   uint32_t c = md5->abcd[2];
+   uint32_t d = md5->abcd[3];
+   uint32_t t;
 
 #if BYTE_ORDER > 0
     /* Define storage only for big-endian CPUs. */
-    bson_uint32_t X[16];
+    uint32_t X[16];
 #else
     /* Define storage for little-endian or both types of CPUs. */
-    bson_uint32_t xbuf[16];
-    const bson_uint32_t *X;
+    uint32_t xbuf[16];
+    const uint32_t *X;
 #endif
 
     {
@@ -164,7 +165,7 @@ bson_md5_process (bson_md5_t     *md5,
          */
         static const int w = 1;
 
-        if (*((const bson_uint8_t *)&w)) /* dynamic little-endian */
+        if (*((const uint8_t *)&w)) /* dynamic little-endian */
 #endif
 #if BYTE_ORDER <= 0     /* little-endian */
         {
@@ -172,9 +173,9 @@ bson_md5_process (bson_md5_t     *md5,
              * On little-endian machines, we can process properly aligned
              * data without copying it.
              */
-            if (!((data - (const bson_uint8_t *)0) & 3)) {
+            if (!((data - (const uint8_t *)0) & 3)) {
                 /* data are properly aligned */
-                X = (const bson_uint32_t *)data;
+                X = (const uint32_t *)data;
             }
             else {
                 /* not aligned */
@@ -192,7 +193,7 @@ bson_md5_process (bson_md5_t     *md5,
              * On big-endian machines, we must arrange the bytes in the
              * right order.
              */
-            const bson_uint8_t *xp = data;
+            const uint8_t *xp = data;
             int i;
 
 #  if BYTE_ORDER == 0
@@ -333,13 +334,13 @@ bson_md5_init (bson_md5_t *pms)
 
 void
 bson_md5_append (bson_md5_t         *pms,
-                 const bson_uint8_t *data,
-                 bson_uint32_t       nbytes)
+                 const uint8_t *data,
+                 uint32_t       nbytes)
 {
-    const bson_uint8_t *p = data;
+    const uint8_t *p = data;
     int left = nbytes;
     int offset = (pms->count[0] >> 3) & 63;
-    bson_uint32_t nbits = (bson_uint32_t)(nbytes << 3);
+    uint32_t nbits = (uint32_t)(nbytes << 3);
 
     if (nbytes <= 0)
         return;
@@ -373,24 +374,24 @@ bson_md5_append (bson_md5_t         *pms,
 
 void
 bson_md5_finish (bson_md5_t   *pms,
-                 bson_uint8_t  digest[16])
+                 uint8_t  digest[16])
 {
-    static const bson_uint8_t pad[64] = {
+    static const uint8_t pad[64] = {
         0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     };
-    bson_uint8_t data[8];
+    uint8_t data[8];
     int i;
 
     /* Save the length before padding. */
     for (i = 0; i < 8; ++i)
-        data[i] = (bson_uint8_t)(pms->count[i >> 2] >> ((i & 3) << 3));
+        data[i] = (uint8_t)(pms->count[i >> 2] >> ((i & 3) << 3));
     /* Pad to 56 bytes mod 64. */
     bson_md5_append(pms, pad, ((55 - (pms->count[0] >> 3)) & 63) + 1);
     /* Append the length. */
     bson_md5_append(pms, data, 8);
     for (i = 0; i < 16; ++i)
-        digest[i] = (bson_uint8_t)(pms->abcd[i >> 2] >> ((i & 3) << 3));
+        digest[i] = (uint8_t)(pms->abcd[i >> 2] >> ((i & 3) << 3));
 }

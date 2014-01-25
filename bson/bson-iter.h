@@ -102,10 +102,10 @@ BSON_BEGIN_DECLS
  * no validation so the is responsible for knowing the BSON is valid. Calling
  * bson_validate() is one way to do this ahead of time.
  */
-static BSON_INLINE bson_uint32_t
+static BSON_INLINE uint32_t
 bson_iter_utf8_len_unsafe (const bson_iter_t *iter)
 {
-   bson_int32_t val;
+   int32_t val;
 
    memcpy (&val, iter->raw + iter->d1, 4);
    val = BSON_UINT32_FROM_LE (val);
@@ -115,20 +115,20 @@ bson_iter_utf8_len_unsafe (const bson_iter_t *iter)
 
 void
 bson_iter_array (const bson_iter_t   *iter,
-                 bson_uint32_t       *array_len,
-                 const bson_uint8_t **array);
+                 uint32_t       *array_len,
+                 const uint8_t **array);
 
 
 void
 bson_iter_binary (const bson_iter_t   *iter,
                   bson_subtype_t      *subtype,
-                  bson_uint32_t       *binary_len,
-                  const bson_uint8_t **binary);
+                  uint32_t       *binary_len,
+                  const uint8_t **binary);
 
 
 const char *
 bson_iter_code (const bson_iter_t *iter,
-                bson_uint32_t     *length);
+                uint32_t     *length);
 
 
 /**
@@ -142,7 +142,7 @@ bson_iter_code (const bson_iter_t *iter,
  */
 static BSON_INLINE const char *
 bson_iter_code_unsafe (const bson_iter_t *iter,
-                       bson_uint32_t     *length)
+                       uint32_t     *length)
 {
    *length = bson_iter_utf8_len_unsafe (iter);
    return (const char *)(iter->raw + iter->d2);
@@ -151,22 +151,22 @@ bson_iter_code_unsafe (const bson_iter_t *iter,
 
 const char *
 bson_iter_codewscope (const bson_iter_t   *iter,
-                      bson_uint32_t       *length,
-                      bson_uint32_t       *scope_len,
-                      const bson_uint8_t **scope);
+                      uint32_t       *length,
+                      uint32_t       *scope_len,
+                      const uint8_t **scope);
 
 
 void
 bson_iter_dbpointer (const bson_iter_t *iter,
-                     bson_uint32_t     *collection_len,
+                     uint32_t     *collection_len,
                      const char       **collection,
                      const bson_oid_t **oid);
 
 
 void
 bson_iter_document (const bson_iter_t   *iter,
-                    bson_uint32_t       *document_len,
-                    const bson_uint8_t **document);
+                    uint32_t       *document_len,
+                    const uint8_t **document);
 
 
 double
@@ -191,24 +191,24 @@ bson_iter_double_unsafe (const bson_iter_t *iter)
 }
 
 
-bson_bool_t
+bool
 bson_iter_init (bson_iter_t  *iter,
                 const bson_t *bson);
 
 
-bson_bool_t
+bool
 bson_iter_init_find (bson_iter_t  *iter,
                      const bson_t *bson,
                      const char   *key);
 
 
-bson_bool_t
+bool
 bson_iter_init_find_case (bson_iter_t  *iter,
                           const bson_t *bson,
                           const char   *key);
 
 
-bson_int32_t
+int32_t
 bson_iter_int32 (const bson_iter_t *iter);
 
 
@@ -220,21 +220,21 @@ bson_iter_int32 (const bson_iter_t *iter);
  *
  * Returns: A 32-bit signed integer.
  */
-static BSON_INLINE bson_int32_t
+static BSON_INLINE int32_t
 bson_iter_int32_unsafe (const bson_iter_t *iter)
 {
-   bson_int32_t val;
+   int32_t val;
 
    memcpy (&val, iter->raw + iter->d1, 4);
    return BSON_UINT32_FROM_LE (val);
 }
 
 
-bson_int64_t
+int64_t
 bson_iter_int64 (const bson_iter_t *iter);
 
 
-bson_int64_t
+int64_t
 bson_iter_as_int64 (const bson_iter_t *iter);
 
 
@@ -246,33 +246,33 @@ bson_iter_as_int64 (const bson_iter_t *iter);
  *
  * Returns: A 64-bit signed integer.
  */
-static BSON_INLINE bson_int64_t
+static BSON_INLINE int64_t
 bson_iter_int64_unsafe (const bson_iter_t *iter)
 {
-   bson_int64_t val;
+   int64_t val;
 
    memcpy (&val, iter->raw + iter->d1, 8);
    return BSON_UINT64_FROM_LE (val);
 }
 
 
-bson_bool_t
+bool
 bson_iter_find (bson_iter_t *iter,
                 const char  *key);
 
 
-bson_bool_t
+bool
 bson_iter_find_case (bson_iter_t *iter,
                      const char  *key);
 
 
-bson_bool_t
+bool
 bson_iter_find_descendant (bson_iter_t *iter,
                            const char  *dotkey,
                            bson_iter_t *descendant);
 
 
-bson_bool_t
+bool
 bson_iter_next (bson_iter_t *iter);
 
 
@@ -316,7 +316,7 @@ bson_iter_key_unsafe (const bson_iter_t *iter)
 
 const char *
 bson_iter_utf8 (const bson_iter_t *iter,
-                bson_uint32_t     *length);
+                uint32_t     *length);
 
 
 /**
@@ -328,7 +328,7 @@ bson_iter_utf8 (const bson_iter_t *iter,
  */
 static BSON_INLINE const char *
 bson_iter_utf8_unsafe (const bson_iter_t *iter,
-                       bson_uint32_t     *length)
+                       uint32_t     *length)
 {
    *length = bson_iter_utf8_len_unsafe (iter);
    return (const char *)(iter->raw + iter->d2);
@@ -337,10 +337,10 @@ bson_iter_utf8_unsafe (const bson_iter_t *iter,
 
 char *
 bson_iter_dup_utf8 (const bson_iter_t *iter,
-                    bson_uint32_t     *length);
+                    uint32_t     *length);
 
 
-bson_int64_t
+int64_t
 bson_iter_date_time (const bson_iter_t *iter);
 
 
@@ -391,11 +391,11 @@ bson_iter_timeval_unsafe (const bson_iter_t *iter,
 
 void
 bson_iter_timestamp (const bson_iter_t *iter,
-                     bson_uint32_t     *timestamp,
-                     bson_uint32_t     *increment);
+                     uint32_t     *timestamp,
+                     uint32_t     *increment);
 
 
-bson_bool_t
+bool
 bson_iter_bool (const bson_iter_t *iter);
 
 
@@ -405,9 +405,9 @@ bson_iter_bool (const bson_iter_t *iter);
  *
  * Similar to bson_iter_bool() but performs no integrity checking.
  *
- * Returns: TRUE or FALSE.
+ * Returns: true or false.
  */
-static BSON_INLINE bson_bool_t
+static BSON_INLINE bool
 bson_iter_bool_unsafe (const bson_iter_t *iter)
 {
    char val;
@@ -417,7 +417,7 @@ bson_iter_bool_unsafe (const bson_iter_t *iter)
 }
 
 
-bson_bool_t
+bool
 bson_iter_as_bool (const bson_iter_t *iter);
 
 
@@ -428,7 +428,7 @@ bson_iter_regex (const bson_iter_t *iter,
 
 const char *
 bson_iter_symbol (const bson_iter_t *iter,
-                  bson_uint32_t     *length);
+                  uint32_t     *length);
 
 
 bson_type_t
@@ -450,19 +450,19 @@ bson_iter_type_unsafe (const bson_iter_t *iter)
 }
 
 
-bson_bool_t
+bool
 bson_iter_recurse (const bson_iter_t *iter,
                    bson_iter_t       *child);
 
 
 void
 bson_iter_overwrite_int32 (bson_iter_t *iter,
-                           bson_int32_t value);
+                           int32_t value);
 
 
 void
 bson_iter_overwrite_int64 (bson_iter_t *iter,
-                           bson_int64_t value);
+                           int64_t value);
 
 
 void
@@ -472,10 +472,10 @@ bson_iter_overwrite_double (bson_iter_t *iter,
 
 void
 bson_iter_overwrite_bool (bson_iter_t *iter,
-                          bson_bool_t  value);
+                          bool  value);
 
 
-bson_bool_t
+bool
 bson_iter_visit_all (bson_iter_t          *iter,
                      const bson_visitor_t *visitor,
                      void                 *data);
