@@ -484,7 +484,9 @@ test_bson_iter_as_bool (void)
 static void
 init_rand (void)
 {
-   srand((unsigned)time( NULL ));
+   int seed = (unsigned)time (NULL);
+   fprintf (stderr, "srand(%u)\n", seed);
+   srand (seed);
 }
 
 
