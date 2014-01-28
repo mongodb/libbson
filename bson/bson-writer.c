@@ -109,16 +109,16 @@ bson_writer_get_length (bson_writer_t *writer)
  * write out a new BSON document. When completed, the caller must call either
  * bson_writer_end() or bson_writer_rollback().
  */
-void
+bson_bool_t
 bson_writer_begin (bson_writer_t *writer,
                    bson_t       **bson)
 {
    bson_impl_alloc_t *b;
    bson_bool_t grown = FALSE;
 
-   bson_return_if_fail (writer);
-   bson_return_if_fail (writer->ready);
-   bson_return_if_fail (bson);
+   bson_return_val_if_fail (writer, FALSE);
+   bson_return_val_if_fail (writer->ready, FALSE);
+   bson_return_val_if_fail (bson, FALSE);
 
    writer->ready = FALSE;
 
@@ -136,6 +136,11 @@ bson_writer_begin (bson_writer_t *writer,
    b->realloc = writer->realloc_func;
 
    while ((writer->offset + writer->b.len) > *writer->buflen) {
+      if (!writer->realloc_func) {
+         memset (&writer->b, 0, sizeof (bson_t));
+         writer->ready = TRUE;
+         return FALSE;
+      }
       grown = TRUE;
 
       if (!*writer->buflen) {
@@ -153,6 +158,8 @@ bson_writer_begin (bson_writer_t *writer,
    (*writer->buf)[writer->offset] = 5;
 
    *bson = &writer->b;
+
+   return TRUE;
 }
 
 
