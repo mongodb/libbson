@@ -46,7 +46,7 @@
 #ifndef MIN
 #  ifdef __cplusplus
 #    define MIN(a, b) std::min(a, b)
-#  elif (_MSC_VER)
+#  elif defined(_MSC_VER)
 #    define MIN(a, b) ((a) < (b) ? (a) : (b))
 #  else
 #    define MIN(a, b) ({     \
@@ -61,7 +61,7 @@
 #ifndef MAX
 #  ifdef __cplusplus
 #    define MAX(a, b) std::max(a, b)
-#  elif(_MSC_VER)
+#  elif defined(_MSC_VER)
 #    define MAX(a, b) ((a) > (b) ? (a) : (b))
 #  else
 #    define MAX(a, b) ({     \
@@ -200,9 +200,9 @@
 
 
 #ifdef _MSC_VER
-#define BSON_ENSURE_ARRAY_PARAM_SIZE(_n)
+# define BSON_ENSURE_ARRAY_PARAM_SIZE(_n)
 #else
-#define BSON_ENSURE_ARRAY_PARAM_SIZE(_n) static (_n)
+# define BSON_ENSURE_ARRAY_PARAM_SIZE(_n) static (_n)
 #endif
 
 #endif /* BSON_MACROS_H */
