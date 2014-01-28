@@ -207,7 +207,7 @@ _bcon_append_single (bson_t        *bson,
                      const char    *key,
                      bcon_append_t *val)
 {
-   switch (type) {
+   switch ((int)type) {
    case BCON_TYPE_UTF8:
       bson_append_utf8 (bson, key, -1, val->UTF8, -1);
       break;
@@ -310,7 +310,7 @@ _bcon_extract_single (const bson_iter_t *iter,
                       bcon_type_t        type,
                       bcon_extract_t    *val)
 {
-   switch (type) {
+   switch ((int)type) {
    case BCON_TYPE_UTF8:
       CHECK_TYPE (BSON_TYPE_UTF8);
       *val->UTF8 = bson_iter_utf8 (iter, NULL);
@@ -457,7 +457,7 @@ _bcon_append_tokenize (va_list       *ap,
    } else if (mark == BCON_MAGIC) {
       type = va_arg (*ap, bcon_type_t);
 
-      switch (type) {
+      switch ((int)type) {
       case BCON_TYPE_UTF8:
          u->UTF8 = va_arg (*ap, char *);
          break;
@@ -587,7 +587,7 @@ _bcon_extract_tokenize (va_list        *ap,
    } else if (mark == BCONE_MAGIC) {
       type = va_arg (*ap, bcon_type_t);
 
-      switch (type) {
+      switch ((int)type) {
       case BCON_TYPE_UTF8:
          u->UTF8 = va_arg (*ap, const char **);
          break;
@@ -772,7 +772,7 @@ bcon_append_ctx_va (bson_t            *bson,
       type = _bcon_append_tokenize (ap, &u);
       assert (type != BCON_TYPE_END);
 
-      switch (type) {
+      switch ((int)type) {
       case BCON_TYPE_BCON:
          assert (STACK_IS_ARRAY);
          _bson_concat_array (STACK_BSON_CHILD, u.BCON, ctx);
@@ -873,7 +873,7 @@ bcon_extract_ctx_va (bson_t             *bson,
 
          if (!bson_iter_find (&current_iter, key)) { return FALSE; }
 
-         switch (type) {
+         switch ((int)type) {
          case BCON_TYPE_DOC_START:
 
             if (bson_iter_type (&current_iter) !=
