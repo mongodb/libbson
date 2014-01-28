@@ -49,7 +49,6 @@ BSON_BEGIN_DECLS
                                               CreateThread (NULL, 0, (void *)f, \
                                                             d, 0, NULL))
 #  define bson_thread_join(t, v)        WaitForSingleObject (t, 0)
-#elif _MSC_VER
 #else
 #  include <pthread.h>
 #  define BSON_MUTEX_INITIALIZER PTHREAD_MUTEX_INITIALIZER
