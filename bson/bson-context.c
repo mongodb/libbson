@@ -27,6 +27,7 @@
 #include <sys/syscall.h>
 #endif
 
+#include "bson-atomic.h"
 #include "bson-clock.h"
 #include "bson-context.h"
 #include "bson-context-private.h"
@@ -143,10 +144,8 @@ _bson_context_get_oid_seq32_threadsafe (bson_context_t *context,
    bson_mutex_lock (&context->_m32);
    seq = context->seq32++;
    bson_mutex_unlock (&context->_m32);
-#elif defined BSON_OS_WIN32
-   bson_uint32_t seq = InterlockedIncrement ((long int *)&context->seq32);
 #else
-   bson_uint32_t seq = __sync_fetch_and_add_4 (&context->seq32, 1);
+   bson_uint32_t seq = bson_atomic_int_add (&context->seq32, 1);
 #endif
 
    seq = BSON_UINT32_TO_BE (seq);

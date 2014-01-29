@@ -25,6 +25,7 @@ missing
 *.pc
 stamp-h1
 *.swp
+test-atomic
 test-bson
 test-bson-clock
 test-bson-endian

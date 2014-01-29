@@ -1,4 +1,5 @@
 noinst_PROGRAMS = \
+	test-atomic \
 	test-bson \
 	test-bson-clock \
 	test-bson-endian \
@@ -15,6 +16,7 @@ noinst_PROGRAMS = \
 
 
 TEST_PROGS = \
+	test-atomic \
 	test-bson \
 	test-bson-clock \
 	test-bson-endian \
@@ -106,6 +108,11 @@ EXTRA_DIST += \
 	tests/binary/test8.bson \
 	tests/binary/test9.bson \
 	tests/binary/trailingnull.bson
+
+
+test_atomic_SOURCES = tests/test-atomic.c
+test_atomic_CPPFLAGS = -I$(top_srcdir)/bson -DBSON_COMPILATION
+test_atomic_LDADD = libbson-1.0.la
 
 
 test_bson_SOURCES = tests/test-bson.c
