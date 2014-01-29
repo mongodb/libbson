@@ -485,7 +485,7 @@ static void
 init_rand (void)
 {
    int seed = (unsigned)time (NULL);
-   fprintf (stderr, "srand(%u)\n", seed);
+   fprintf (stdout, "srand(%u)\n", seed);
    srand (seed);
 }
 
