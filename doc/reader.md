@@ -1,7 +1,7 @@
 # Reading BSON Sequences
 
 Libbson contains `bson_reader_t` to ease the task of parsing a sequence of BSON documents.
-You may have such a case when reading manu documents from disk or from an incoming MongoDB network packet.
+You may have such a case when reading many documents from disk or from an incoming MongoDB network packet.
 
 ## Iterating Documents with bson_reader_t
 
