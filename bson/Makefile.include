@@ -22,6 +22,7 @@ endif
 
 INST_H_FILES = \
 	bson/bson.h \
+	bson/bson-atomic.h \
 	bson/bson-compat.h \
 	bson/bson-config.h \
 	bson/bson-context.h \

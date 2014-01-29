@@ -27,6 +27,7 @@
 
 #include "bson-macros.h"
 #include "bson-config.h"
+#include "bson-atomic.h"
 #include "bson-context.h"
 #include "bson-clock.h"
 #include "bson-error.h"
