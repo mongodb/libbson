@@ -29,11 +29,19 @@ bson_string_new (const char *str)
    bson_string_t *ret;
 
    ret = bson_malloc0 (sizeof *ret);
-   ret->len = str ? ((int)strlen (str) + 1) : 1;
-   ret->str = bson_malloc0 (ret->len);
+   ret->len = str ? (int)strlen (str) : 0;
+   ret->alloc = ret->len + 1;
+
+   if (!bson_is_power_of_two (ret->alloc)) {
+      ret->alloc = bson_next_power_of_two (ret->alloc);
+   }
+
+   ret->str = bson_malloc (ret->alloc);
 
    if (str) {
       memcpy (ret->str, str, ret->len);
+   } else {
+      ret->str [0] = '\0';
    }
 
    return ret;
@@ -70,10 +78,18 @@ bson_string_append (bson_string_t *string,
    bson_return_if_fail (str);
 
    len = (bson_uint32_t)strlen (str);
-   string->str = bson_realloc (string->str, string->len + len);
-   memcpy (&string->str[string->len - 1], str, len);
+
+   if ((string->alloc - string->len - 1) < len) {
+      string->alloc += len;
+      if (!bson_is_power_of_two (string->alloc)) {
+         string->alloc = bson_next_power_of_two (string->alloc);
+      }
+      string->str = bson_realloc (string->str, string->alloc);
+   }
+
+   memcpy (string->str + string->len, str, len);
    string->len += len;
-   string->str[string->len - 1] = '\0';
+   string->str [string->len] = '\0';
 }
 
 
@@ -81,12 +97,19 @@ void
 bson_string_append_c (bson_string_t *string,
                       char           c)
 {
-   bson_return_if_fail (string);
+   char cc[2];
 
-   string->str = bson_realloc (string->str, string->len + 1);
-   string->str[string->len - 1] = c;
-   string->len++;
-   string->str[string->len - 1] = '\0';
+   BSON_ASSERT (string);
+
+   if (BSON_UNLIKELY (string->alloc == (string->len + 1))) {
+      cc [0] = c;
+      cc [1] = '\0';
+      bson_string_append (string, cc);
+      return;
+   }
+
+   string->str [string->len++] = c;
+   string->str [string->len] = '\0';
 }
 
 
@@ -95,15 +118,15 @@ bson_string_append_unichar (bson_string_t *string,
                             bson_unichar_t unichar)
 {
    bson_uint32_t len;
-   char str[7];
+   char str [8];
 
-   bson_return_if_fail (string);
-   bson_return_if_fail (unichar);
+   BSON_ASSERT (string);
+   BSON_ASSERT (unichar);
 
    bson_utf8_from_unichar (unichar, str, &len);
 
    if (len <= 6) {
-      str[len] = '\0';
+      str [len] = '\0';
       bson_string_append (string, str);
    }
 }
@@ -117,8 +140,8 @@ bson_string_append_printf (bson_string_t *string,
    va_list args;
    char *ret;
 
-   bson_return_if_fail (string);
-   bson_return_if_fail (format);
+   BSON_ASSERT (string);
+   BSON_ASSERT (format);
 
    va_start (args, format);
    ret = bson_strdupv_printf (format, args);

@@ -2082,7 +2082,7 @@ bson_as_json (const bson_t *bson,
    bson_string_append (state.str, " }");
 
    if (length) {
-      *length = state.str->len - 1;
+      *length = state.str->len;
    }
 
    return bson_string_free (state.str, FALSE);

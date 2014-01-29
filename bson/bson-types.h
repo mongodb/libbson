@@ -430,6 +430,13 @@ bson_next_power_of_two (bson_uint32_t v)
 }
 
 
+static BSON_INLINE bson_bool_t
+bson_is_power_of_two (bson_uint32_t v)
+{
+   return ((v != 0) && ((v & (v - 1)) == 0));
+}
+
+
 BSON_END_DECLS
 
 
