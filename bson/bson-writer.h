@@ -40,10 +40,10 @@ typedef struct _bson_writer_t bson_writer_t;
 
 
 bson_writer_t *
-bson_writer_new (bson_uint8_t    **buf,
-                 bson_size_t           *buflen,
-                 bson_size_t            offset,
-                 bson_realloc_func realloc_func);
+bson_writer_new (bson_uint8_t      **buf,
+                 bson_size_t        *buflen,
+                 bson_size_t         offset,
+                 bson_realloc_func   realloc_func);
 
 
 void
