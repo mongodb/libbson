@@ -47,19 +47,10 @@ test3 (void)
 }
 
 
-int
-main (int argc,
-      char *argv[])
+void
+test_atomic_install (TestSuite *suite)
 {
-   TestSuite suite;
-   int ret;
-
-   TestSuite_Init (&suite, "", argc, argv);
-   TestSuite_Add (&suite, "/atomic/int/add", test1);
-   TestSuite_Add (&suite, "/atomic/int64/add", test2);
-   TestSuite_Add (&suite, "/atomic/memory_barrier", test3);
-   ret = TestSuite_Run (&suite);
-   TestSuite_Destroy (&suite);
-
-   return ret;
+   TestSuite_Add (suite, "/atomic/int/add", test1);
+   TestSuite_Add (suite, "/atomic/int64/add", test2);
+   TestSuite_Add (suite, "/atomic/memory_barrier", test3);
 }

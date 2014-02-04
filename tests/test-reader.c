@@ -19,6 +19,7 @@
 #include <fcntl.h>
 
 #include "bson-tests.h"
+#include "TestSuite.h"
 
 
 static void
@@ -219,18 +220,15 @@ test_reader_grow_buffer (void)
 }
 
 
-int
-main (int   argc,
-      char *argv[])
+void
+test_reader_install (TestSuite *suite)
 {
-   run_test("/bson/reader/new_from_data", test_reader_from_data);
-   run_test("/bson/reader/new_from_data_overflow",
-            test_reader_from_data_overflow);
-   run_test("/bson/reader/new_from_fd", test_reader_from_fd);
-   run_test("/bson/reader/tell", test_reader_tell);
-   run_test("/bson/reader/new_from_fd_corrupt",
-            test_reader_from_fd_corrupt);
-   run_test("/bson/reader/grow_buffer", test_reader_grow_buffer);
-
-   return 0;
+   TestSuite_Add (suite, "/bson/reader/new_from_data", test_reader_from_data);
+   TestSuite_Add (suite, "/bson/reader/new_from_data_overflow",
+                  test_reader_from_data_overflow);
+   TestSuite_Add (suite, "/bson/reader/new_from_fd", test_reader_from_fd);
+   TestSuite_Add (suite, "/bson/reader/tell", test_reader_tell);
+   TestSuite_Add (suite, "/bson/reader/new_from_fd_corrupt",
+                  test_reader_from_fd_corrupt);
+   TestSuite_Add (suite, "/bson/reader/grow_buffer", test_reader_grow_buffer);
 }

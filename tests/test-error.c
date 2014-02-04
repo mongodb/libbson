@@ -18,6 +18,7 @@
 #include <assert.h>
 
 #include "bson-tests.h"
+#include "TestSuite.h"
 
 
 static void
@@ -32,11 +33,8 @@ test_bson_error_basic (void)
 }
 
 
-int
-main (int   argc,
-      char *argv[])
+void
+test_error_install (TestSuite *suite)
 {
-   run_test("/bson/error/basic", test_bson_error_basic);
-
-   return 0;
+   TestSuite_Add (suite, "/bson/error/basic", test_bson_error_basic);
 }

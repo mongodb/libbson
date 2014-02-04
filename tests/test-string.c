@@ -21,6 +21,7 @@
 #include <time.h>
 
 #include "bson-tests.h"
+#include "TestSuite.h"
 
 
 static void
@@ -159,18 +160,15 @@ test_bson_strndup (void)
 }
 
 
-int
-main (int   argc,
-      char *argv[])
+void
+test_string_install (TestSuite *suite)
 {
-   run_test("/bson/string/new", test_bson_string_new);
-   run_test("/bson/string/append", test_bson_string_append);
-   run_test("/bson/string/append_c", test_bson_string_append_c);
-   run_test("/bson/string/append_printf", test_bson_string_append_printf);
-   run_test("/bson/string/append_unichar", test_bson_string_append_unichar);
-   run_test("/bson/string/strdup", test_bson_strdup);
-   run_test("/bson/string/strdup_printf", test_bson_strdup_printf);
-   run_test("/bson/string/strndup", test_bson_strndup);
-
-   return 0;
+   TestSuite_Add (suite, "/bson/string/new", test_bson_string_new);
+   TestSuite_Add (suite, "/bson/string/append", test_bson_string_append);
+   TestSuite_Add (suite, "/bson/string/append_c", test_bson_string_append_c);
+   TestSuite_Add (suite, "/bson/string/append_printf", test_bson_string_append_printf);
+   TestSuite_Add (suite, "/bson/string/append_unichar", test_bson_string_append_unichar);
+   TestSuite_Add (suite, "/bson/string/strdup", test_bson_strdup);
+   TestSuite_Add (suite, "/bson/string/strdup_printf", test_bson_strdup_printf);
+   TestSuite_Add (suite, "/bson/string/strndup", test_bson_strndup);
 }

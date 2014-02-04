@@ -1,38 +1,45 @@
-noinst_PROGRAMS = \
-	test-atomic \
-	test-bson \
-	test-bson-clock \
-	test-bson-endian \
-	test-bson-error \
-	test-bson-iter \
-	test-bson-json \
-	test-bson-oid \
-	test-bson-reader \
-	test-bson-string \
-	test-bson-utf8 \
-	test-bson-writer \
-	test-bcon-basic \
-	test-bcon-extract
+noinst_PROGRAMS = test-bson
+TEST_PROGS = test-bson
 
-
-TEST_PROGS = \
-	test-atomic \
-	test-bson \
-	test-bson-clock \
-	test-bson-endian \
-	test-bson-error \
-	test-bson-iter \
-	test-bson-json \
-	test-bson-oid \
-	test-bson-reader \
-	test-bson-string \
-	test-bson-utf8 \
-	test-bson-writer \
-	test-bcon-basic \
-	test-bcon-extract
 
 if OS_LINUX
 TEST_PROGS += $(top_srcdir)/tests/abicheck.sh
+endif
+
+
+test_bson_SOURCES = \
+	tests/TestSuite.c \
+	tests/TestSuite.h \
+	tests/main.c \
+	tests/test-atomic.c \
+	tests/test-bson.c \
+	tests/test-endian.c \
+	tests/test-clock.c \
+	tests/test-error.c \
+	tests/test-iter.c \
+	tests/test-json.c \
+	tests/test-oid.c \
+	tests/test-reader.c \
+	tests/test-string.c \
+	tests/test-utf8.c \
+	tests/test-writer.c \
+	tests/test-bcon-basic.c \
+	tests/test-bcon-extract.c
+test_bson_CPPFLAGS = -I$(top_srcdir)/bson -DBSON_COMPILATION
+test_bson_LDADD = libbson-1.0.la
+
+
+if HAVE_PYTHON
+PYTEST_DEPS = cbson.la
+endif
+
+
+test: $(TEST_PROGS) $(PYTEST_DEPS)
+	@ for TEST_PROG in $(TEST_PROGS) ; do \
+		libtool --mode=execute $$VALGRIND ./$$TEST_PROG ; \
+	done
+if HAVE_PYTHON
+	@ LD_LIBRARY_PATH=.libs DYLD_LIBRARY_PATH=.libs PYTHONPATH=.libs ./tests/test_cbson.py
 endif
 
 
@@ -108,87 +115,3 @@ EXTRA_DIST += \
 	tests/binary/test8.bson \
 	tests/binary/test9.bson \
 	tests/binary/trailingnull.bson
-
-
-test_atomic_SOURCES = tests/test-atomic.c tests/TestSuite.h tests/TestSuite.c
-test_atomic_CPPFLAGS = -I$(top_srcdir)/bson -DBSON_COMPILATION
-test_atomic_LDADD = libbson-1.0.la
-
-
-test_bson_SOURCES = tests/test-bson.c
-test_bson_CPPFLAGS = -I$(top_srcdir)/bson -DBSON_COMPILATION
-test_bson_LDADD = libbson-1.0.la
-
-
-test_bson_clock_SOURCES = tests/test-bson-clock.c
-test_bson_clock_CPPFLAGS = -I$(top_srcdir)/bson -DBSON_COMPILATION
-test_bson_clock_LDADD = libbson-1.0.la
-
-
-test_bson_endian_SOURCES = tests/test-endian.c
-test_bson_endian_CPPFLAGS = -I$(top_srcdir)/bson -DBSON_COMPILATION
-test_bson_endian_LDADD = libbson-1.0.la
-
-
-test_bson_error_SOURCES = tests/test-bson-error.c
-test_bson_error_CPPFLAGS = -I$(top_srcdir)/bson -DBSON_COMPILATION
-test_bson_error_LDADD = libbson-1.0.la
-
-
-test_bson_iter_SOURCES = tests/test-bson-iter.c
-test_bson_iter_CPPFLAGS = -I$(top_srcdir)/bson -DBSON_COMPILATION
-test_bson_iter_LDADD = libbson-1.0.la
-
-
-test_bson_json_SOURCES = tests/test-bson-json.c
-test_bson_json_CPPFLAGS = -I$(top_srcdir)/bson -DBSON_COMPILATION
-test_bson_json_LDADD = libbson-1.0.la
-
-
-test_bson_oid_SOURCES = tests/test-bson-oid.c
-test_bson_oid_CPPFLAGS = -I$(top_srcdir)/bson -DBSON_COMPILATION
-test_bson_oid_LDADD = libbson-1.0.la
-
-
-test_bson_reader_SOURCES = tests/test-bson-reader.c
-test_bson_reader_CPPFLAGS = -I$(top_srcdir)/bson -DBSON_COMPILATION
-test_bson_reader_LDADD = libbson-1.0.la
-
-
-test_bson_string_SOURCES = tests/test-bson-string.c
-test_bson_string_CPPFLAGS = -I$(top_srcdir)/bson -DBSON_COMPILATION
-test_bson_string_LDADD = libbson-1.0.la
-
-
-test_bson_utf8_SOURCES = tests/test-bson-utf8.c
-test_bson_utf8_CPPFLAGS = -I$(top_srcdir)/bson -DBSON_COMPILATION
-test_bson_utf8_LDADD = libbson-1.0.la
-
-
-test_bson_writer_SOURCES = tests/test-bson-writer.c
-test_bson_writer_CPPFLAGS = -I$(top_srcdir)/bson -DBSON_COMPILATION
-test_bson_writer_LDADD = libbson-1.0.la
-
-
-test_bcon_basic_SOURCES = tests/test-bcon-basic.c
-test_bcon_basic_CPPFLAGS = -I$(top_srcdir)/bson -DBSON_COMPILATION
-test_bcon_basic_LDADD = libbson-1.0.la
-
-
-test_bcon_extract_SOURCES = tests/test-bcon-extract.c
-test_bcon_extract_CPPFLAGS = -I$(top_srcdir)/bson -DBSON_COMPILATION
-test_bcon_extract_LDADD = libbson-1.0.la
-
-
-if HAVE_PYTHON
-PYTEST_DEPS = cbson.la
-endif
-
-
-test: $(TEST_PROGS) $(PYTEST_DEPS)
-	@ for TEST_PROG in $(TEST_PROGS) ; do \
-		libtool --mode=execute $$VALGRIND ./$$TEST_PROG ; \
-	done
-if HAVE_PYTHON
-	@ LD_LIBRARY_PATH=.libs DYLD_LIBRARY_PATH=.libs PYTHONPATH=.libs ./tests/test_cbson.py
-endif

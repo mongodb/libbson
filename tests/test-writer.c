@@ -19,6 +19,7 @@
 #include <time.h>
 
 #include "bson-tests.h"
+#include "TestSuite.h"
 
 
 static void
@@ -144,14 +145,11 @@ test_bson_writer_null_realloc_2 (void)
    bson_writer_destroy(writer);
 }
 
-int
-main (int   argc,
-      char *argv[])
+void
+test_writer_install (TestSuite *suite)
 {
-   run_test("/bson/writer/shared_buffer", test_bson_writer_shared_buffer);
-   run_test("/bson/writer/empty_sequence", test_bson_writer_empty_sequence);
-   run_test("/bson/writer/null_realloc", test_bson_writer_null_realloc);
-   run_test("/bson/writer/null_realloc_2", test_bson_writer_null_realloc_2);
-
-   return 0;
+   TestSuite_Add (suite, "/bson/writer/shared_buffer", test_bson_writer_shared_buffer);
+   TestSuite_Add (suite, "/bson/writer/empty_sequence", test_bson_writer_empty_sequence);
+   TestSuite_Add (suite, "/bson/writer/null_realloc", test_bson_writer_null_realloc);
+   TestSuite_Add (suite, "/bson/writer/null_realloc_2", test_bson_writer_null_realloc_2);
 }

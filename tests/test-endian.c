@@ -18,6 +18,7 @@
 #include "bson-endian.h"
 
 #include "bson-tests.h"
+#include "TestSuite.h"
 
 
 static void
@@ -50,13 +51,10 @@ test_swap64 (void)
 }
 
 
-int
-main (int argc,
-      char *argv[])
+void
+test_endian_install (TestSuite *suite)
 {
-   run_test("/endian/swap16", test_swap16);
-   run_test("/endian/swap32", test_swap32);
-   run_test("/endian/swap64", test_swap64);
-
-   return 0;
+   TestSuite_Add (suite, "/endian/swap16", test_swap16);
+   TestSuite_Add (suite, "/endian/swap32", test_swap32);
+   TestSuite_Add (suite, "/endian/swap64", test_swap64);
 }

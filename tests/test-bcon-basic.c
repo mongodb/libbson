@@ -1,4 +1,6 @@
 #include "bson-tests.h"
+#include "TestSuite.h"
+
 #include <bcon.h>
 
 static void
@@ -468,7 +470,7 @@ test_inline_nested (void)
    bson_append_array (&foo, "bar", -1, &bar);
    bson_append_document (&expected, "foo", -1, &foo);
 
-   BCON_APPEND(&bcon, 
+   BCON_APPEND(&bcon,
         "foo", "{",
             "bar", "[",
                 BCON_INT32(1), BCON_INT32(2), "{",
@@ -606,37 +608,34 @@ static void test_append_ctx (void)
 }
 
 
-int
-main (int   argc,
-      char *argv[])
+void
+test_bcon_basic_install (TestSuite *suite)
 {
-   run_test("/bson/bcon/test_utf8", test_utf8);
-   run_test("/bson/bcon/test_double", test_double);
-   run_test("/bson/bcon/test_binary", test_binary);
-   run_test("/bson/bcon/test_undefined", test_undefined);
-   run_test("/bson/bcon/test_oid", test_oid);
-   run_test("/bson/bcon/test_bool", test_bool);
-   run_test("/bson/bcon/test_date_time", test_date_time);
-   run_test("/bson/bcon/test_null", test_null);
-   run_test("/bson/bcon/test_regex", test_regex);
-   run_test("/bson/bcon/test_dbpointer", test_dbpointer);
-   run_test("/bson/bcon/test_code", test_code);
-   run_test("/bson/bcon/test_symbol", test_symbol);
-   run_test("/bson/bcon/test_codewscope", test_codewscope);
-   run_test("/bson/bcon/test_int32", test_int32);
-   run_test("/bson/bcon/test_timestamp", test_timestamp);
-   run_test("/bson/bcon/test_int64", test_int64);
-   run_test("/bson/bcon/test_maxkey", test_maxkey);
-   run_test("/bson/bcon/test_minkey", test_minkey);
-   run_test("/bson/bcon/test_bson_document", test_bson_document);
-   run_test("/bson/bcon/test_bson_array", test_bson_array);
-   run_test("/bson/bcon/test_inline_array", test_inline_array);
-   run_test("/bson/bcon/test_inline_doc", test_inline_doc);
-   run_test("/bson/bcon/test_inline_nested", test_inline_nested);
-   run_test("/bson/bcon/test_concat", test_concat);
-   run_test("/bson/bcon/test_iter", test_iter);
-   run_test("/bson/bcon/test_bcon_new", test_bcon_new);
-   run_test("/bson/bcon/test_append_ctx", test_append_ctx);
-
-   return 0;
+   TestSuite_Add (suite, "/bson/bcon/test_utf8", test_utf8);
+   TestSuite_Add (suite, "/bson/bcon/test_double", test_double);
+   TestSuite_Add (suite, "/bson/bcon/test_binary", test_binary);
+   TestSuite_Add (suite, "/bson/bcon/test_undefined", test_undefined);
+   TestSuite_Add (suite, "/bson/bcon/test_oid", test_oid);
+   TestSuite_Add (suite, "/bson/bcon/test_bool", test_bool);
+   TestSuite_Add (suite, "/bson/bcon/test_date_time", test_date_time);
+   TestSuite_Add (suite, "/bson/bcon/test_null", test_null);
+   TestSuite_Add (suite, "/bson/bcon/test_regex", test_regex);
+   TestSuite_Add (suite, "/bson/bcon/test_dbpointer", test_dbpointer);
+   TestSuite_Add (suite, "/bson/bcon/test_code", test_code);
+   TestSuite_Add (suite, "/bson/bcon/test_symbol", test_symbol);
+   TestSuite_Add (suite, "/bson/bcon/test_codewscope", test_codewscope);
+   TestSuite_Add (suite, "/bson/bcon/test_int32", test_int32);
+   TestSuite_Add (suite, "/bson/bcon/test_timestamp", test_timestamp);
+   TestSuite_Add (suite, "/bson/bcon/test_int64", test_int64);
+   TestSuite_Add (suite, "/bson/bcon/test_maxkey", test_maxkey);
+   TestSuite_Add (suite, "/bson/bcon/test_minkey", test_minkey);
+   TestSuite_Add (suite, "/bson/bcon/test_bson_document", test_bson_document);
+   TestSuite_Add (suite, "/bson/bcon/test_bson_array", test_bson_array);
+   TestSuite_Add (suite, "/bson/bcon/test_inline_array", test_inline_array);
+   TestSuite_Add (suite, "/bson/bcon/test_inline_doc", test_inline_doc);
+   TestSuite_Add (suite, "/bson/bcon/test_inline_nested", test_inline_nested);
+   TestSuite_Add (suite, "/bson/bcon/test_concat", test_concat);
+   TestSuite_Add (suite, "/bson/bcon/test_iter", test_iter);
+   TestSuite_Add (suite, "/bson/bcon/test_bcon_new", test_bcon_new);
+   TestSuite_Add (suite, "/bson/bcon/test_append_ctx", test_append_ctx);
 }

@@ -25,17 +25,4 @@ missing
 *.pc
 stamp-h1
 *.swp
-test-atomic
 test-bson
-test-bson-clock
-test-bson-endian
-test-bson-error
-test-bson-iter
-test-bson-json
-test-bson-oid
-test-bson-reader
-test-bson-string
-test-bson-utf8
-test-bson-writer
-test-bcon-basic
-test-bcon-extract

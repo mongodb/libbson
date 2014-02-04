@@ -18,6 +18,7 @@
 #include <assert.h>
 
 #include "bson-tests.h"
+#include "TestSuite.h"
 
 
 static void
@@ -163,14 +164,11 @@ test_bson_utf8_from_unichar (void)
 }
 
 
-int
-main (int   argc,
-      char *argv[])
+void
+test_utf8_install (TestSuite *suite)
 {
-   run_test("/bson/utf8/validate", test_bson_utf8_validate);
-   run_test("/bson/utf8/escape_for_json", test_bson_utf8_escape_for_json);
-   run_test("/bson/utf8/get_char_next_char", test_bson_utf8_get_char);
-   run_test("/bson/utf8/from_unichar", test_bson_utf8_from_unichar);
-
-   return 0;
+   TestSuite_Add (suite, "/bson/utf8/validate", test_bson_utf8_validate);
+   TestSuite_Add (suite, "/bson/utf8/escape_for_json", test_bson_utf8_escape_for_json);
+   TestSuite_Add (suite, "/bson/utf8/get_char_next_char", test_bson_utf8_get_char);
+   TestSuite_Add (suite, "/bson/utf8/from_unichar", test_bson_utf8_from_unichar);
 }

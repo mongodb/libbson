@@ -46,7 +46,8 @@ BSON_BEGIN_DECLS
       }                                                                 \
    } while (0)
 
-void
+
+static inline void
 bson_eq_bson (bson_t *bson,
               bson_t *expected)
 {
@@ -68,7 +69,7 @@ bson_eq_bson (bson_t *bson,
 }
 
 
-void
+static inline void
 run_test (const char *name,
           void (*func) (void))
 {

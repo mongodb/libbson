@@ -1,5 +1,6 @@
 #include <assert.h>
 
+#include "TestSuite.h"
 #include "bson-tests.h"
 
 
@@ -17,11 +18,8 @@ test_get_monotonic_time (void)
 }
 
 
-int
-main (int   argc,
-      char *argv[])
+void
+test_clock_install (TestSuite *suite)
 {
-   run_test("/bson/clock/get_monotonic_time", test_get_monotonic_time);
-
-   return 0;
+   TestSuite_Add (suite, "/bson/clock/get_monotonic_time", test_get_monotonic_time);
 }

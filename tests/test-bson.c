@@ -21,6 +21,7 @@
 #include <time.h>
 
 #include "bson-tests.h"
+#include "TestSuite.h"
 
 
 static bson_t *
@@ -1230,58 +1231,53 @@ init_rand (void)
 }
 
 
-int
-main (int   argc,
-      char *argv[])
+void
+test_bson_install (TestSuite *suite)
 {
-   init_rand();
-
-   run_test("/bson/new", test_bson_new);
-   run_test("/bson/init", test_bson_init);
-   run_test("/bson/init_static", test_bson_init_static);
-   run_test("/bson/basic", test_bson_alloc);
-   run_test("/bson/append_overflow", test_bson_append_overflow);
-   run_test("/bson/append_array", test_bson_append_array);
-   run_test("/bson/append_binary", test_bson_append_binary);
-   run_test("/bson/append_binary_deprecated", test_bson_append_binary_deprecated);
-   run_test("/bson/append_bool", test_bson_append_bool);
-   run_test("/bson/append_code", test_bson_append_code);
-   run_test("/bson/append_code_with_scope", test_bson_append_code_with_scope);
-   run_test("/bson/append_dbpointer", test_bson_append_dbpointer);
-   run_test("/bson/append_document", test_bson_append_document);
-   run_test("/bson/append_double", test_bson_append_double);
-   run_test("/bson/append_int32", test_bson_append_int32);
-   run_test("/bson/append_int64", test_bson_append_int64);
-   run_test("/bson/append_iter", test_bson_append_iter);
-   run_test("/bson/append_maxkey", test_bson_append_maxkey);
-   run_test("/bson/append_minkey", test_bson_append_minkey);
-   run_test("/bson/append_null", test_bson_append_null);
-   run_test("/bson/append_oid", test_bson_append_oid);
-   run_test("/bson/append_regex", test_bson_append_regex);
-   run_test("/bson/append_utf8", test_bson_append_utf8);
-   run_test("/bson/append_symbol", test_bson_append_symbol);
-   run_test("/bson/append_time_t", test_bson_append_time_t);
-   run_test("/bson/append_timestamp", test_bson_append_timestamp);
-   run_test("/bson/append_timeval", test_bson_append_timeval);
-   run_test("/bson/append_undefined", test_bson_append_undefined);
-   run_test("/bson/append_general", test_bson_append_general);
-   run_test("/bson/append_deep", test_bson_append_deep);
-   run_test("/bson/utf8_key", test_bson_utf8_key);
-   run_test("/bson/validate", test_bson_validate);
-   run_test("/bson/new_1mm", test_bson_new_1mm);
-   run_test("/bson/init_1mm", test_bson_init_1mm);
-   run_test("/bson/build_child", test_bson_build_child);
-   run_test("/bson/build_child_deep", test_bson_build_child_deep);
-   run_test("/bson/build_child_deep_no_begin_end", test_bson_build_child_deep_no_begin_end);
-   run_test("/bson/build_child_array", test_bson_build_child_array);
-   run_test("/bson/count", test_bson_count_keys);
-   run_test("/bson/copy", test_bson_copy);
-   run_test("/bson/copy_to", test_bson_copy_to);
-   run_test("/bson/copy_to_excluding", test_bson_copy_to_excluding);
-   run_test("/bson/initializer", test_bson_initializer);
-   run_test("/bson/concat", test_bson_concat);
-   run_test("/bson/reinit", test_bson_reinit);
-   run_test("/bson/macros", test_bson_macros);
-
-   return 0;
+   TestSuite_Add (suite, "/bson/new", test_bson_new);
+   TestSuite_Add (suite, "/bson/init", test_bson_init);
+   TestSuite_Add (suite, "/bson/init_static", test_bson_init_static);
+   TestSuite_Add (suite, "/bson/basic", test_bson_alloc);
+   TestSuite_Add (suite, "/bson/append_overflow", test_bson_append_overflow);
+   TestSuite_Add (suite, "/bson/append_array", test_bson_append_array);
+   TestSuite_Add (suite, "/bson/append_binary", test_bson_append_binary);
+   TestSuite_Add (suite, "/bson/append_binary_deprecated", test_bson_append_binary_deprecated);
+   TestSuite_Add (suite, "/bson/append_bool", test_bson_append_bool);
+   TestSuite_Add (suite, "/bson/append_code", test_bson_append_code);
+   TestSuite_Add (suite, "/bson/append_code_with_scope", test_bson_append_code_with_scope);
+   TestSuite_Add (suite, "/bson/append_dbpointer", test_bson_append_dbpointer);
+   TestSuite_Add (suite, "/bson/append_document", test_bson_append_document);
+   TestSuite_Add (suite, "/bson/append_double", test_bson_append_double);
+   TestSuite_Add (suite, "/bson/append_int32", test_bson_append_int32);
+   TestSuite_Add (suite, "/bson/append_int64", test_bson_append_int64);
+   TestSuite_Add (suite, "/bson/append_iter", test_bson_append_iter);
+   TestSuite_Add (suite, "/bson/append_maxkey", test_bson_append_maxkey);
+   TestSuite_Add (suite, "/bson/append_minkey", test_bson_append_minkey);
+   TestSuite_Add (suite, "/bson/append_null", test_bson_append_null);
+   TestSuite_Add (suite, "/bson/append_oid", test_bson_append_oid);
+   TestSuite_Add (suite, "/bson/append_regex", test_bson_append_regex);
+   TestSuite_Add (suite, "/bson/append_utf8", test_bson_append_utf8);
+   TestSuite_Add (suite, "/bson/append_symbol", test_bson_append_symbol);
+   TestSuite_Add (suite, "/bson/append_time_t", test_bson_append_time_t);
+   TestSuite_Add (suite, "/bson/append_timestamp", test_bson_append_timestamp);
+   TestSuite_Add (suite, "/bson/append_timeval", test_bson_append_timeval);
+   TestSuite_Add (suite, "/bson/append_undefined", test_bson_append_undefined);
+   TestSuite_Add (suite, "/bson/append_general", test_bson_append_general);
+   TestSuite_Add (suite, "/bson/append_deep", test_bson_append_deep);
+   TestSuite_Add (suite, "/bson/utf8_key", test_bson_utf8_key);
+   TestSuite_Add (suite, "/bson/validate", test_bson_validate);
+   TestSuite_Add (suite, "/bson/new_1mm", test_bson_new_1mm);
+   TestSuite_Add (suite, "/bson/init_1mm", test_bson_init_1mm);
+   TestSuite_Add (suite, "/bson/build_child", test_bson_build_child);
+   TestSuite_Add (suite, "/bson/build_child_deep", test_bson_build_child_deep);
+   TestSuite_Add (suite, "/bson/build_child_deep_no_begin_end", test_bson_build_child_deep_no_begin_end);
+   TestSuite_Add (suite, "/bson/build_child_array", test_bson_build_child_array);
+   TestSuite_Add (suite, "/bson/count", test_bson_count_keys);
+   TestSuite_Add (suite, "/bson/copy", test_bson_copy);
+   TestSuite_Add (suite, "/bson/copy_to", test_bson_copy_to);
+   TestSuite_Add (suite, "/bson/copy_to_excluding", test_bson_copy_to_excluding);
+   TestSuite_Add (suite, "/bson/initializer", test_bson_initializer);
+   TestSuite_Add (suite, "/bson/concat", test_bson_concat);
+   TestSuite_Add (suite, "/bson/reinit", test_bson_reinit);
+   TestSuite_Add (suite, "/bson/macros", test_bson_macros);
 }

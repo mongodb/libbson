@@ -21,6 +21,7 @@
 #include <time.h>
 
 #include "bson-tests.h"
+#include "TestSuite.h"
 
 #define N_THREADS 4
 
@@ -293,22 +294,19 @@ test_bson_oid_init_with_threads (void)
    }
 }
 
-int
-main (int   argc,
-      char *argv[])
+void
+test_oid_install (TestSuite *suite)
 {
-   run_test("/bson/oid/init", test_bson_oid_init);
-   run_test("/bson/oid/init_from_string", test_bson_oid_init_from_string);
-   run_test("/bson/oid/init_sequence", test_bson_oid_init_sequence);
-   run_test("/bson/oid/init_sequence_thread_safe", test_bson_oid_init_sequence_thread_safe);
+   TestSuite_Add (suite, "/bson/oid/init", test_bson_oid_init);
+   TestSuite_Add (suite, "/bson/oid/init_from_string", test_bson_oid_init_from_string);
+   TestSuite_Add (suite, "/bson/oid/init_sequence", test_bson_oid_init_sequence);
+   TestSuite_Add (suite, "/bson/oid/init_sequence_thread_safe", test_bson_oid_init_sequence_thread_safe);
 #if defined(__linux__)
-   run_test("/bson/oid/init_sequence_with_tid", test_bson_oid_init_sequence_with_tid);
+   TestSuite_Add (suite, "/bson/oid/init_sequence_with_tid", test_bson_oid_init_sequence_with_tid);
 #endif
-   run_test("/bson/oid/init_with_threads", test_bson_oid_init_with_threads);
-   run_test("/bson/oid/hash", test_bson_oid_hash);
-   run_test("/bson/oid/compare", test_bson_oid_compare);
-   run_test("/bson/oid/copy", test_bson_oid_copy);
-   run_test("/bson/oid/get_time_t", test_bson_oid_get_time_t);
-
-   return 0;
+   TestSuite_Add (suite, "/bson/oid/init_with_threads", test_bson_oid_init_with_threads);
+   TestSuite_Add (suite, "/bson/oid/hash", test_bson_oid_hash);
+   TestSuite_Add (suite, "/bson/oid/compare", test_bson_oid_compare);
+   TestSuite_Add (suite, "/bson/oid/copy", test_bson_oid_copy);
+   TestSuite_Add (suite, "/bson/oid/get_time_t", test_bson_oid_get_time_t);
 }

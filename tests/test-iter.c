@@ -21,6 +21,7 @@
 #include <time.h>
 
 #include "bson-tests.h"
+#include "TestSuite.h"
 
 
 #define FUZZ_N_PASSES 100000
@@ -490,29 +491,24 @@ init_rand (void)
 }
 
 
-int
-main (int   argc,
-      char *argv[])
+void
+test_iter_install (TestSuite *suite)
 {
-   init_rand();
-
-   run_test("/bson/iter/test_string", test_bson_iter_utf8);
-   run_test("/bson/iter/test_mixed", test_bson_iter_mixed);
-   run_test("/bson/iter/test_overflow", test_bson_iter_overflow);
-   run_test("/bson/iter/test_trailing_null", test_bson_iter_trailing_null);
-   run_test("/bson/iter/test_fuzz", test_bson_iter_fuzz);
-   run_test("/bson/iter/test_regex", test_bson_iter_regex);
-   run_test("/bson/iter/test_next_after_finish", test_bson_iter_next_after_finish);
-   run_test("/bson/iter/test_find_case", test_bson_iter_find_case);
-   run_test("/bson/iter/test_overwrite_int32", test_bson_iter_overwrite_int32);
-   run_test("/bson/iter/test_overwrite_int64", test_bson_iter_overwrite_int64);
-   run_test("/bson/iter/test_overwrite_double", test_bson_iter_overwrite_double);
-   run_test("/bson/iter/test_overwrite_bool", test_bson_iter_overwrite_bool);
-   run_test("/bson/iter/recurse", test_bson_iter_recurse);
-   run_test("/bson/iter/init_find_case", test_bson_iter_init_find_case);
-   run_test("/bson/iter/find_descendant", test_bson_iter_find_descendant);
-   run_test("/bson/iter/as_bool", test_bson_iter_as_bool);
-   run_test("/bson/iter/binary_deprecated", test_bson_iter_binary_deprecated);
-
-   return 0;
+   TestSuite_Add (suite, "/bson/iter/test_string", test_bson_iter_utf8);
+   TestSuite_Add (suite, "/bson/iter/test_mixed", test_bson_iter_mixed);
+   TestSuite_Add (suite, "/bson/iter/test_overflow", test_bson_iter_overflow);
+   TestSuite_Add (suite, "/bson/iter/test_trailing_null", test_bson_iter_trailing_null);
+   TestSuite_Add (suite, "/bson/iter/test_fuzz", test_bson_iter_fuzz);
+   TestSuite_Add (suite, "/bson/iter/test_regex", test_bson_iter_regex);
+   TestSuite_Add (suite, "/bson/iter/test_next_after_finish", test_bson_iter_next_after_finish);
+   TestSuite_Add (suite, "/bson/iter/test_find_case", test_bson_iter_find_case);
+   TestSuite_Add (suite, "/bson/iter/test_overwrite_int32", test_bson_iter_overwrite_int32);
+   TestSuite_Add (suite, "/bson/iter/test_overwrite_int64", test_bson_iter_overwrite_int64);
+   TestSuite_Add (suite, "/bson/iter/test_overwrite_double", test_bson_iter_overwrite_double);
+   TestSuite_Add (suite, "/bson/iter/test_overwrite_bool", test_bson_iter_overwrite_bool);
+   TestSuite_Add (suite, "/bson/iter/recurse", test_bson_iter_recurse);
+   TestSuite_Add (suite, "/bson/iter/init_find_case", test_bson_iter_init_find_case);
+   TestSuite_Add (suite, "/bson/iter/find_descendant", test_bson_iter_find_descendant);
+   TestSuite_Add (suite, "/bson/iter/as_bool", test_bson_iter_as_bool);
+   TestSuite_Add (suite, "/bson/iter/binary_deprecated", test_bson_iter_binary_deprecated);
 }

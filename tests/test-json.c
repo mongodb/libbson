@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 #include "bson-tests.h"
+#include "TestSuite.h"
 
 static void
 test_bson_as_json (void)
@@ -261,20 +262,17 @@ test_bson_corrupt_binary (void)
 }
 
 
-int
-main (int   argc,
-      char *argv[])
+void
+test_json_install (TestSuite *suite)
 {
-   run_test("/bson/as_json/x1000", test_bson_as_json);
-   run_test("/bson/as_json/string", test_bson_as_json_string);
-   run_test("/bson/as_json/int32", test_bson_as_json_int32);
-   run_test("/bson/as_json/int64", test_bson_as_json_int64);
-   run_test("/bson/as_json/double", test_bson_as_json_double);
-   run_test("/bson/as_json/utf8", test_bson_as_json_utf8);
-   run_test("/bson/as_json/stack_overflow", test_bson_as_json_stack_overflow);
-   run_test("/bson/as_json/corrupt", test_bson_corrupt);
-   run_test("/bson/as_json/corrupt_utf8", test_bson_corrupt_utf8);
-   run_test("/bson/as_json/corrupt_binary", test_bson_corrupt_binary);
-
-   return 0;
+   TestSuite_Add (suite, "/bson/as_json/x1000", test_bson_as_json);
+   TestSuite_Add (suite, "/bson/as_json/string", test_bson_as_json_string);
+   TestSuite_Add (suite, "/bson/as_json/int32", test_bson_as_json_int32);
+   TestSuite_Add (suite, "/bson/as_json/int64", test_bson_as_json_int64);
+   TestSuite_Add (suite, "/bson/as_json/double", test_bson_as_json_double);
+   TestSuite_Add (suite, "/bson/as_json/utf8", test_bson_as_json_utf8);
+   TestSuite_Add (suite, "/bson/as_json/stack_overflow", test_bson_as_json_stack_overflow);
+   TestSuite_Add (suite, "/bson/as_json/corrupt", test_bson_corrupt);
+   TestSuite_Add (suite, "/bson/as_json/corrupt_utf8", test_bson_corrupt_utf8);
+   TestSuite_Add (suite, "/bson/as_json/corrupt_binary", test_bson_corrupt_binary);
 }
