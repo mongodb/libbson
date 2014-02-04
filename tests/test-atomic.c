@@ -15,9 +15,9 @@
  */
 
 
-#include "bson-atomic.h"
+#include <bson.h>
 
-#include "bson-tests.h"
+#include "TestSuite.h"
 
 
 static void
@@ -51,9 +51,15 @@ int
 main (int argc,
       char *argv[])
 {
-   run_test("/atomic/int/add", test1);
-   run_test("/atomic/int64/add", test2);
-   run_test("/atomic/memory_barrier", test3);
+   TestSuite suite;
+   int ret;
 
-   return 0;
+   TestSuite_Init (&suite, "", argc, argv);
+   TestSuite_Add (&suite, "/atomic/int/add", test1);
+   TestSuite_Add (&suite, "/atomic/int64/add", test2);
+   TestSuite_Add (&suite, "/atomic/memory_barrier", test3);
+   ret = TestSuite_Run (&suite);
+   TestSuite_Destroy (&suite);
+
+   return ret;
 }

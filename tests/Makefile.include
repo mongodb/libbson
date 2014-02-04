@@ -110,7 +110,7 @@ EXTRA_DIST += \
 	tests/binary/trailingnull.bson
 
 
-test_atomic_SOURCES = tests/test-atomic.c
+test_atomic_SOURCES = tests/test-atomic.c tests/TestSuite.h tests/TestSuite.c
 test_atomic_CPPFLAGS = -I$(top_srcdir)/bson -DBSON_COMPILATION
 test_atomic_LDADD = libbson-1.0.la
 
