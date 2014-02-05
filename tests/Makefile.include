@@ -1,5 +1,5 @@
-noinst_PROGRAMS = test-bson
-TEST_PROGS = test-bson
+noinst_PROGRAMS = test-libbson
+TEST_PROGS = test-libbson
 
 
 if OS_LINUX
@@ -7,10 +7,10 @@ TEST_PROGS += $(top_srcdir)/tests/abicheck.sh
 endif
 
 
-test_bson_SOURCES = \
+test_libbson_SOURCES = \
 	tests/TestSuite.c \
 	tests/TestSuite.h \
-	tests/main.c \
+	tests/test-libbson.c \
 	tests/test-atomic.c \
 	tests/test-bson.c \
 	tests/test-endian.c \
@@ -25,8 +25,8 @@ test_bson_SOURCES = \
 	tests/test-writer.c \
 	tests/test-bcon-basic.c \
 	tests/test-bcon-extract.c
-test_bson_CPPFLAGS = -I$(top_srcdir)/bson -DBSON_COMPILATION
-test_bson_LDADD = libbson-1.0.la
+test_libbson_CPPFLAGS = -I$(top_srcdir)/bson -DBSON_COMPILATION
+test_libbson_LDADD = libbson-1.0.la
 
 
 if HAVE_PYTHON

@@ -25,4 +25,4 @@ missing
 *.pc
 stamp-h1
 *.swp
-test-bson
+test-libbson
