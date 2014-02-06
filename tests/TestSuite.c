@@ -18,6 +18,9 @@
 #include <assert.h>
 #include <fcntl.h>
 #include <inttypes.h>
+#if defined(__APPLE__)
+#include <mach/mach_time.h>
+#endif
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
