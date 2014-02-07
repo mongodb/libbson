@@ -124,6 +124,7 @@ bson_sized_new
 bson_strdup
 bson_strdup_printf
 bson_strdupv_printf
+bson_strfreev
 bson_string_append
 bson_string_append_c
 bson_string_append_printf

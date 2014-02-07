@@ -256,9 +256,9 @@ bson_strfreev (char **str)
 {
    int i;
 
-   for (i = 0; str [i]; i++) {
-      bson_free (str [i]);
+   if (str) {
+      for (i = 0; str [i]; i++)
+         bson_free (str [i]);
+      bson_free (str);
    }
-
-   bson_free (str);
 }
