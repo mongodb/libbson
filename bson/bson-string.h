@@ -95,6 +95,9 @@ bson_strndup (const char *str,
               bson_size_t      n_bytes);
 
 
+void bson_strfreev (char **strv);
+
+
 BSON_END_DECLS
 
 

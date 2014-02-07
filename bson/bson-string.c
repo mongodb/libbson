@@ -249,3 +249,16 @@ bson_strndup (const char *str,
 
    return ret;
 }
+
+
+void
+bson_strfreev (char **str)
+{
+   int i;
+
+   for (i = 0; str [i]; i++) {
+      bson_free (str [i]);
+   }
+
+   bson_free (str);
+}
