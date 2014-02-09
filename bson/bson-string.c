@@ -36,13 +36,15 @@ bson_string_new (const char *str)
       ret->alloc = bson_next_power_of_two (ret->alloc);
    }
 
+   BSON_ASSERT (ret->alloc >= 1);
+
    ret->str = bson_malloc (ret->alloc);
 
    if (str) {
       memcpy (ret->str, str, ret->len);
-   } else {
-      ret->str [0] = '\0';
    }
+
+   ret->str [ret->len] = '\0';
 
    return ret;
 }

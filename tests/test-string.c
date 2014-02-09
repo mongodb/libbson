@@ -39,7 +39,8 @@ test_bson_string_new (void)
    str = bson_string_new("");
    s = bson_string_free(str, FALSE);
    assert(s);
-   assert(!strcmp(s, ""));
+   assert(!*s);
+   assert(0 == strcmp(s, ""));
    bson_free(s);
 
    str = bson_string_new("abcdef");
