@@ -15,6 +15,10 @@
  */
 
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #include <stdarg.h>
 #include <string.h>
 
@@ -263,4 +267,24 @@ bson_strfreev (char **str)
          bson_free (str [i]);
       bson_free (str);
    }
+}
+
+
+size_t
+bson_strnlen (const char *s,
+              size_t      maxlen)
+{
+#ifdef HAVE_STRNLEN
+   return strnlen (s, maxlen);
+#else
+   size_t i;
+
+   for (i = 0; i < maxlen; i++) {
+      if (s [i] == '\0') {
+         return i + 1;
+      }
+   }
+
+   return maxlen;
+#endif
 }

@@ -161,7 +161,7 @@ AC_CHECK_FUNCS([clock_gettime], [CLOCK_LIB=],
 			     [CLOCK_LIB=])])
 AC_SUBST([CLOCK_LIB])
 
-AC_CHECK_FUNCS(posix_memalign memalign)
+AC_CHECK_FUNCS(posix_memalign memalign strnlen)
 
 
 dnl **************************************************************************
