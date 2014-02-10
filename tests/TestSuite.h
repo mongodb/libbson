@@ -33,6 +33,31 @@ extern "C" {
 #define ASSERT assert
 
 
+#ifdef ASSERT_CMPINT
+# undef ASSERT_CMPINT
+#endif
+#define ASSERT_CMPINT(a, eq, b) \
+   do { \
+      if (!((a) eq (b))) { \
+         fprintf(stderr, "FAIL\n\nAssert Failure: %d %s %d\n" \
+                         "%s:%d  %s()\n", \
+                         a, #eq, b, \
+                         __FILE__, __LINE__, __FUNCTION__); \
+         abort(); \
+      } \
+   } while (0)
+
+
+#define ASSERT_CMPSTR(a, b) \
+   do { \
+      if (((a) != (b)) && !!strcmp((a), (b))) { \
+         fprintf(stderr, "FAIL\n\nAssert Failure: \"%s\" != \"%s\"\n", \
+                         a, b); \
+         abort(); \
+      } \
+   } while (0)
+
+
 typedef void (*TestFunc) (void);
 typedef struct _Test Test;
 typedef struct _TestSuite TestSuite;

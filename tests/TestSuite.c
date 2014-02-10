@@ -344,12 +344,18 @@ TestSuite_PrintJsonHeader (TestSuite *suite) /* IN */
             "      \"npages\": %"PRIu64"\n"
             "    }\n"
             "  },\n"
+            "  \"options\": {\n"
+            "    \"parallel\": \"%s\",\n"
+            "    \"fork\": \"%s\"\n"
+            "  },\n"
             "  \"tests\": [\n",
             u.sysname,
             u.release,
             u.machine,
             pagesize,
-            npages);
+            npages,
+            (suite->flags & TEST_NOTHREADS) ? "false" : "true",
+            (suite->flags & TEST_NOFORK) ? "false" : "true");
 
    fflush (stdout);
 }
@@ -492,12 +498,16 @@ TestSuite_Run (TestSuite *suite) /* IN */
 
    TestSuite_PrintJsonHeader (suite);
 
-   if (suite->testname) {
-      TestSuite_RunNamed (suite, suite->testname);
-   } else if ((suite->flags & TEST_NOTHREADS)) {
-      TestSuite_RunSerial (suite);
+   if (suite->tests) {
+      if (suite->testname) {
+         TestSuite_RunNamed (suite, suite->testname);
+      } else if ((suite->flags & TEST_NOTHREADS)) {
+         TestSuite_RunSerial (suite);
+      } else {
+         TestSuite_RunParallel (suite);
+      }
    } else {
-      TestSuite_RunParallel (suite);
+      TestSuite_PrintJsonFooter ();
    }
 
    return 0;
@@ -520,3 +530,24 @@ TestSuite_Destroy (TestSuite *suite)
    free (suite->prgname);
    free (suite->testname);
 }
+
+#if 0
+static void
+seed_rand (void)
+{
+   int seed;
+   int fd;
+   int n_read;
+
+   fd = open ("/dev/urandom", O_RDONLY);
+   assert (fd != -1);
+
+   n_read = read (fd, &seed, 4);
+   assert (n_read == 4);
+
+   fprintf (stderr, "srand(%u)\n", seed);
+   srand (seed);
+
+   close (fd);
+}
+#endif
