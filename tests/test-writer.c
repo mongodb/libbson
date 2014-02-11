@@ -115,6 +115,8 @@ test_bson_writer_null_realloc (void)
    r = memcmp(buf, testdata, 32);
    assert(r == 0);
    bson_writer_destroy(writer);
+
+   bson_free (buf);
 }
 
 static void
@@ -143,6 +145,8 @@ test_bson_writer_null_realloc_2 (void)
    r = memcmp(buf, testdata, 32);
    assert(r == 0);
    bson_writer_destroy(writer);
+
+   bson_free (buf);
 }
 
 void
