@@ -50,6 +50,7 @@ bson_count_keys
 bson_destroy
 bson_equal
 bson_free
+bson_from_json
 bson_get_data
 bson_get_monotonic_time
 bson_gettimeofday
@@ -92,6 +93,11 @@ bson_iter_timeval
 bson_iter_type
 bson_iter_utf8
 bson_iter_visit_all
+bson_json_data_reader_ingest
+bson_json_data_reader_new
+bson_json_read
+bson_json_reader_destroy
+bson_json_reader_new
 bson_malloc
 bson_malloc0
 bson_md5_init

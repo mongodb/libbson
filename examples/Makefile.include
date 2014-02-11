@@ -20,3 +20,8 @@ noinst_PROGRAMS += bcon-col-view
 bcon_col_view_SOURCES = $(top_srcdir)/examples/bcon-col-view.c
 bcon_col_view_CPPFLAGS = -I$(top_srcdir)/bson
 bcon_col_view_LDADD = libbson-1.0.la
+
+noinst_PROGRAMS += json-to-bson
+json_to_bson_SOURCES = $(top_srcdir)/examples/json-to-bson.c
+json_to_bson_CPPFLAGS = -I$(top_srcdir)/bson
+json_to_bson_LDADD = libbson-1.0.la
