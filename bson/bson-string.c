@@ -19,6 +19,7 @@
 # include <config.h>
 #endif
 
+#include <limits.h>
 #include <stdarg.h>
 #include <string.h>
 
@@ -161,13 +162,26 @@ void
 bson_string_truncate (bson_string_t *string,
                       bson_uint32_t  len)
 {
-   bson_return_if_fail (string);
+   bson_uint32_t alloc;
 
-   if (len < string->len) {
-      string->str[len] = '\0';
-      string->len = len + 1;
-      string->str = bson_realloc (string->str, string->len);
+   bson_return_if_fail (string);
+   bson_return_if_fail (len < INT_MAX);
+
+   alloc = len + 1;
+
+   if (alloc < 16) {
+      alloc = 16;
    }
+
+   if (!bson_is_power_of_two (alloc)) {
+      alloc = bson_next_power_of_two (alloc);
+   }
+
+   string->str = bson_realloc (string->str, alloc);
+   string->alloc = alloc;
+   string->len = len;
+
+   string->str [string->len] = '\0';
 }
 
 
