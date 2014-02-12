@@ -18,6 +18,7 @@
 #include <string.h>
 
 #include "bson-memory.h"
+#include "bson-string.h"
 #include "bson-utf8.h"
 
 
@@ -134,46 +135,59 @@ bson_utf8_validate (const char *utf8,
  * Returns: A newly allocated string that should be freed with bson_free().
  */
 char *
-bson_utf8_escape_for_json (const char *utf8,
-                           bson_ssize_t     utf8_len)
+bson_utf8_escape_for_json (const char   *utf8,
+                           bson_ssize_t  utf8_len)
 {
-   unsigned int i = 0;
-   unsigned int o = 0;
-   bson_uint8_t seq_len;
-   bson_uint8_t mask;
-   char *ret;
+   bson_unichar_t c;
+   bson_string_t *str;
+   const char *end;
 
    bson_return_val_if_fail (utf8, NULL);
+
+   str = bson_string_new (NULL);
 
    if (utf8_len < 0) {
       utf8_len = strlen (utf8);
    }
 
-   ret = bson_malloc0 ((utf8_len * 2) + 1);
+   end = utf8 + utf8_len;
 
-   while (i < utf8_len) {
-      _bson_utf8_get_sequence (&utf8[i], &seq_len, &mask);
+   for (; utf8 < end; utf8 = bson_utf8_next_char (utf8)) {
+      c = bson_utf8_get_char (utf8);
 
-      if ((i + seq_len) > utf8_len) {
-         bson_free (ret);
-         return NULL;
-      }
-
-      switch (utf8[i]) {
-      case '"':
+      switch (c) {
       case '\\':
-         ret[o++] = '\\';
-      /* fall through */
+      case '"':
+      case '/':
+         bson_string_append_c (str, '\\');
+         bson_string_append_unichar (str, c);
+         break;
+      case '\b':
+         bson_string_append (str, "\\b");
+         break;
+      case '\f':
+         bson_string_append (str, "\\f");
+         break;
+      case '\n':
+         bson_string_append (str, "\\n");
+         break;
+      case '\r':
+         bson_string_append (str, "\\r");
+         break;
+      case '\t':
+         bson_string_append (str, "\\t");
+         break;
       default:
-         memcpy (&ret[o], &utf8[i], seq_len);
-         o += seq_len;
+         if (c < ' ') {
+            bson_string_append_printf (str, "\\u%04u", (unsigned)c);
+         } else {
+            bson_string_append_unichar (str, c);
+         }
          break;
       }
-
-      i += seq_len;
    }
 
-   return ret;
+   return bson_string_free (str, FALSE);
 }
 
 

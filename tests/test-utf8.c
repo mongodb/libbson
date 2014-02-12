@@ -44,7 +44,7 @@ test_bson_utf8_escape_for_json (void)
    char *str;
 
    str = bson_utf8_escape_for_json("my\0key", 6);
-   assert(0 == memcmp(str, "my\0key", 7));
+   assert(0 == memcmp(str, "my\\u0000key", 7));
    bson_free(str);
 
    str = bson_utf8_escape_for_json("my\"key", 6);
@@ -55,7 +55,7 @@ test_bson_utf8_escape_for_json (void)
    assert(0 == memcmp(str, "my\\\\key", 8));
    bson_free(str);
 
-   str = bson_utf8_escape_for_json("\\\"\\\"", 5);
+   str = bson_utf8_escape_for_json("\\\"\\\"", -1);
    assert(0 == memcmp(str, "\\\\\\\"\\\\\\\"", 9));
    bson_free(str);
 }
