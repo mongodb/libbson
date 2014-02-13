@@ -44,21 +44,21 @@ bson_oid_copy (const bson_oid_t *src,
                bson_oid_t       *dst);
 
 
-bson_bool_t
+bool
 bson_oid_equal (const bson_oid_t *oid1,
                 const bson_oid_t *oid2);
 
 
-bson_bool_t
+bool
 bson_oid_is_valid (const char *str,
-                   bson_size_t      length);
+                   size_t      length);
 
 
 time_t
 bson_oid_get_time_t (const bson_oid_t *oid);
 
 
-bson_uint32_t
+uint32_t
 bson_oid_hash (const bson_oid_t *oid);
 
 
@@ -69,7 +69,7 @@ bson_oid_init (bson_oid_t     *oid,
 
 void
 bson_oid_init_from_data (bson_oid_t         *oid,
-                         const bson_uint8_t *data);
+                         const uint8_t *data);
 
 
 void
@@ -118,9 +118,9 @@ bson_oid_compare_unsafe (const bson_oid_t *oid1,
  * This function is meant to be as fast as possible and therefore performs
  * no checks for argument validity. That is the callers responsibility.
  *
- * Returns: TRUE if @oid1 and @oid2 are equal; otherwise FALSE.
+ * Returns: true if @oid1 and @oid2 are equal; otherwise false.
  */
-static BSON_INLINE bson_bool_t
+static BSON_INLINE bool
 bson_oid_equal_unsafe (const bson_oid_t *oid1,
                        const bson_oid_t *oid2)
 {
@@ -138,13 +138,13 @@ bson_oid_equal_unsafe (const bson_oid_t *oid1,
  * validation of arguments. The caller is responsible to ensure they are
  * passing valid arguments.
  *
- * Returns: A bson_uint32_t containing a hash code.
+ * Returns: A uint32_t containing a hash code.
  */
-static BSON_INLINE bson_uint32_t
+static BSON_INLINE uint32_t
 bson_oid_hash_unsafe (const bson_oid_t *oid)
 {
-   bson_uint32_t hash = 5381;
-   bson_uint32_t i;
+   uint32_t hash = 5381;
+   uint32_t i;
 
    for (i = 0; i < sizeof oid->bytes; i++) {
       hash = ((hash << 5) + hash) + oid->bytes[i];
@@ -182,7 +182,7 @@ bson_oid_copy_unsafe (const bson_oid_t *src,
  *
  * Returns: An integer between 0 and 15.
  */
-static BSON_INLINE bson_uint8_t
+static BSON_INLINE uint8_t
 bson_oid_parse_hex_char (char hex)
 {
    switch (hex) {
@@ -265,7 +265,7 @@ bson_oid_init_from_string_unsafe (bson_oid_t *oid,
 static BSON_INLINE time_t
 bson_oid_get_time_t_unsafe (const bson_oid_t *oid)
 {
-   bson_uint32_t t;
+   uint32_t t;
 
    memcpy (&t, oid, 4);
    return BSON_UINT32_FROM_BE (t);

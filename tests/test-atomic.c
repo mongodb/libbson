@@ -23,7 +23,7 @@
 static void
 test1 (void)
 {
-   bson_int32_t v = 0;
+   int32_t v = 0;
 
    bson_atomic_int_add (&v, 1);
    assert (v == 1);
@@ -33,7 +33,7 @@ test1 (void)
 static void
 test2 (void)
 {
-   bson_int64_t v = 0;
+   int64_t v = 0;
 
    bson_atomic_int64_add (&v, 1);
    assert (v == 1);

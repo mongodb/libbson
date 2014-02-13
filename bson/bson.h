@@ -18,12 +18,12 @@
 #ifndef BSON_H
 #define BSON_H
 
-#include <string.h>
-#include <time.h>
-
 #define BSON_INSIDE
 
 #include "bson-compat.h"
+
+#include <string.h>
+#include <time.h>
 
 #include "bson-macros.h"
 #include "bson-config.h"
@@ -38,7 +38,6 @@
 #include "bson-oid.h"
 #include "bson-reader.h"
 #include "bson-string.h"
-#include "bson-thread.h"
 #include "bson-types.h"
 #include "bson-utf8.h"
 #include "bson-version.h"
@@ -74,7 +73,7 @@ BSON_BEGIN_DECLS
  *
  * The maximum size in bytes of a BSON document.
  */
-#define BSON_MAX_SIZE ((bson_size_t)((1U << 31) - 1))
+#define BSON_MAX_SIZE ((size_t)((1U << 31) - 1))
 
 
 #define BSON_APPEND_ARRAY(b,key,val) \
@@ -164,12 +163,12 @@ bson_new (void);
  * like to use a stack allocation for your bson and do not need to grow the
  * buffer. @data must be valid for the life of @b.
  *
- * Returns: TRUE if initialized successfully; otherwise FALSE.
+ * Returns: true if initialized successfully; otherwise false.
  */
-bson_bool_t
+bool
 bson_init_static (bson_t             *b,
-                  const bson_uint8_t *data,
-                  bson_uint32_t       length);
+                  const uint8_t *data,
+                  uint32_t       length);
 
 
 /**
@@ -215,13 +214,13 @@ bson_reinit (bson_t *b);
  *   then NULL will be returned.
  */
 bson_t *
-bson_new_from_data (const bson_uint8_t *data,
-                    bson_uint32_t       length);
+bson_new_from_data (const uint8_t *data,
+                    uint32_t       length);
 
 
 /**
  * bson_sized_new:
- * @size: A bson_size_t containing the number of bytes to allocate.
+ * @size: A size_t containing the number of bytes to allocate.
  *
  * This will allocate a new bson_t with enough bytes to hold a buffer
  * sized @size. @size must be smaller than INT_MAX bytes.
@@ -229,7 +228,7 @@ bson_new_from_data (const bson_uint8_t *data,
  * Returns: A newly allocated bson_t that should be freed with bson_destroy().
  */
 bson_t *
-bson_sized_new (bson_size_t size);
+bson_sized_new (size_t size);
 
 
 /**
@@ -292,7 +291,7 @@ bson_destroy (bson_t *bson);
  *
  * Returns: A buffer that should not be modified or freed.
  */
-const bson_uint8_t *
+const uint8_t *
 bson_get_data (const bson_t *bson);
 
 
@@ -302,7 +301,7 @@ bson_get_data (const bson_t *bson);
  *
  * Counts the number of elements found in @bson.
  */
-bson_uint32_t
+uint32_t
 bson_count_keys (const bson_t *bson);
 
 
@@ -315,9 +314,9 @@ bson_count_keys (const bson_t *bson);
  *
  * This function is case-sensitive.
  *
- * Returns: TRUE if @key exists in @bson; otherwise FALSE.
+ * Returns: true if @key exists in @bson; otherwise false.
  */
-bson_bool_t
+bool
 bson_has_field (const bson_t *bson,
                 const char   *key);
 
@@ -343,9 +342,9 @@ bson_compare (const bson_t *bson,
  *
  * Checks to see if @bson and @other are equal.
  *
- * Returns: TRUE if equal; otherwise FALSE.
+ * Returns: true if equal; otherwise false.
  */
-bson_bool_t
+bool
 bson_equal (const bson_t *bson,
             const bson_t *other);
 
@@ -358,12 +357,12 @@ bson_equal (const bson_t *bson,
  * Validates a BSON document by walking through the document and inspecting
  * the fields for valid content.
  *
- * Returns: TRUE if @bson is valid; otherwise FALSE and @offset is set.
+ * Returns: true if @bson is valid; otherwise false and @offset is set.
  */
-bson_bool_t
+bool
 bson_validate (const bson_t         *bson,
                bson_validate_flags_t flags,
-               bson_size_t               *offset);
+               size_t               *offset);
 
 
 /**
@@ -382,7 +381,7 @@ bson_validate (const bson_t         *bson,
  */
 char *
 bson_as_json (const bson_t *bson,
-              bson_size_t       *length);
+              size_t       *length);
 
 
 /**
@@ -395,9 +394,9 @@ bson_as_json (const bson_t *bson,
  * key is the string version of the index. For example, the first item of the
  * array would have the key "0". The second item would have the index "1".
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_array (bson_t       *bson,
                    const char   *key,
                    int           key_length,
@@ -414,15 +413,15 @@ bson_append_array (bson_t       *bson,
  *
  * Appends a binary buffer to the BSON document.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_binary (bson_t             *bson,
                     const char         *key,
                     int                 key_length,
                     bson_subtype_t      subtype,
-                    const bson_uint8_t *binary,
-                    bson_uint32_t       length);
+                    const uint8_t *binary,
+                    uint32_t       length);
 
 
 /**
@@ -433,13 +432,13 @@ bson_append_binary (bson_t             *bson,
  *
  * Appends a new field to @bson of type BSON_TYPE_BOOL.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_bool (bson_t     *bson,
                   const char *key,
                   int         key_length,
-                  bson_bool_t value);
+                  bool value);
 
 
 /**
@@ -451,9 +450,9 @@ bson_append_bool (bson_t     *bson,
  * Appends a field of type BSON_TYPE_CODE to the BSON document. @javascript
  * should contain a script in javascript to be executed.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_code (bson_t     *bson,
                   const char *key,
                   int         key_length,
@@ -470,9 +469,9 @@ bson_append_code (bson_t     *bson,
  * Appends a field of type BSON_TYPE_CODEWSCOPE to the BSON document.
  * @javascript should contain a script in javascript to be executed.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_code_with_scope (bson_t       *bson,
                              const char   *key,
                              int           key_length,
@@ -490,9 +489,9 @@ bson_append_code_with_scope (bson_t       *bson,
  * Appends a new field of type BSON_TYPE_DBPOINTER. This datum type is
  * deprecated in the BSON spec and should not be used in new code.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_dbpointer (bson_t           *bson,
                        const char       *key,
                        int               key_length,
@@ -507,9 +506,9 @@ bson_append_dbpointer (bson_t           *bson,
  *
  * Appends a new field to @bson of the type BSON_TYPE_DOUBLE.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_double (bson_t     *bson,
                     const char *key,
                     int         key_length,
@@ -525,9 +524,9 @@ bson_append_double (bson_t     *bson,
  * Appends a new field to @bson of the type BSON_TYPE_DOCUMENT.
  * The documents contents will be copied into @bson.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_document (bson_t       *bson,
                       const char   *key,
                       int           key_length,
@@ -549,9 +548,9 @@ bson_append_document (bson_t       *bson,
  * a single malloc'd buffer to be used when building documents which can help
  * reduce memory fragmentation.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_document_begin (bson_t     *bson,
                             const char *key,
                             int         key_length,
@@ -566,9 +565,9 @@ bson_append_document_begin (bson_t     *bson,
  * Finishes the appending of a document to a @bson. @child is considered
  * disposed after this call and should not be used any further.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_document_end (bson_t *bson,
                           bson_t *child);
 
@@ -591,9 +590,9 @@ bson_append_document_end (bson_t *bson,
  * The type of @child will be BSON_TYPE_ARRAY and therefore the keys inside
  * of it MUST be "0", "1", etc.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_array_begin (bson_t     *bson,
                          const char *key,
                          int         key_length,
@@ -608,9 +607,9 @@ bson_append_array_begin (bson_t     *bson,
  * Finishes the appending of a array to a @bson. @child is considered
  * disposed after this call and should not be used any further.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_array_end (bson_t *bson,
                        bson_t *child);
 
@@ -619,34 +618,34 @@ bson_append_array_end (bson_t *bson,
  * bson_append_int32:
  * @bson: A bson_t.
  * @key: The key for the field.
- * @value: The bson_int32_t 32-bit integer value.
+ * @value: The int32_t 32-bit integer value.
  *
  * Appends a new field of type BSON_TYPE_INT32 to @bson.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_int32 (bson_t      *bson,
                    const char  *key,
                    int          key_length,
-                   bson_int32_t value);
+                   int32_t value);
 
 
 /**
  * bson_append_int64:
  * @bson: A bson_t.
  * @key: The key for the field.
- * @value: The bson_int64_t 64-bit integer value.
+ * @value: The int64_t 64-bit integer value.
  *
  * Appends a new field of type BSON_TYPE_INT64 to @bson.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_int64 (bson_t      *bson,
                    const char  *key,
                    int          key_length,
-                   bson_int64_t value);
+                   int64_t value);
 
 
 /**
@@ -659,9 +658,9 @@ bson_append_int64 (bson_t      *bson,
  * Appends a new field to @bson that is equivalent to the field currently
  * pointed to by @iter.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_iter (bson_t            *bson,
                   const char        *key,
                   int                key_length,
@@ -678,9 +677,9 @@ bson_append_iter (bson_t            *bson,
  *
  * See http://bsonspec.org for more information on this type.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_minkey (bson_t     *bson,
                     const char *key,
                     int         key_length);
@@ -696,9 +695,9 @@ bson_append_minkey (bson_t     *bson,
  *
  * See http://bsonspec.org for more information on this type.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_maxkey (bson_t     *bson,
                     const char *key,
                     int         key_length);
@@ -711,9 +710,9 @@ bson_append_maxkey (bson_t     *bson,
  *
  * Appends a new field to @bson with NULL for the value.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_null (bson_t     *bson,
                   const char *key,
                   int         key_length);
@@ -728,9 +727,9 @@ bson_append_null (bson_t     *bson,
  * Appends a new field to the @bson of type BSON_TYPE_OID using the contents of
  * @oid.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_oid (bson_t           *bson,
                  const char       *key,
                  int               key_length,
@@ -758,9 +757,9 @@ bson_append_oid (bson_t           *bson,
  *
  * For more information on what comprimises a BSON regex, see bsonspec.org.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_regex (bson_t     *bson,
                    const char *key,
                    int         key_length,
@@ -781,9 +780,9 @@ bson_append_regex (bson_t     *bson,
  * It is the callers responsibility to ensure @value is valid UTF-8. You can
  * use bson_utf8_validate() to perform this check.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_utf8 (bson_t     *bson,
                   const char *key,
                   int         key_length,
@@ -803,9 +802,9 @@ bson_append_utf8 (bson_t     *bson,
  *
  * See http://bsonspec.org for more information on this type.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_symbol (bson_t     *bson,
                     const char *key,
                     int         key_length,
@@ -822,9 +821,9 @@ bson_append_symbol (bson_t     *bson,
  * Appends a BSON_TYPE_DATE_TIME field to @bson using the time_t @value for the
  * number of seconds since UNIX epoch in UTC.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_time_t (bson_t     *bson,
                     const char *key,
                     int         key_length,
@@ -840,9 +839,9 @@ bson_append_time_t (bson_t     *bson,
  * Appends a BSON_TYPE_DATE_TIME field to @bson using the struct timeval
  * provided. The time is persisted in milliseconds since the UNIX epoch in UTC.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_timeval (bson_t         *bson,
                      const char     *key,
                      int             key_length,
@@ -858,13 +857,13 @@ bson_append_timeval (bson_t         *bson,
  *
  * Appends a new field to @bson of type BSON_TYPE_DATE_TIME.
  *
- * Returns: TRUE if sucessful; otherwise FALSE.
+ * Returns: true if sucessful; otherwise false.
  */
-bson_bool_t
+bool
 bson_append_date_time (bson_t      *bson,
                        const char  *key,
                        int          key_length,
-                       bson_int64_t value);
+                       int64_t value);
 
 
 /**
@@ -876,9 +875,9 @@ bson_append_date_time (bson_t      *bson,
  * Appends a BSON_TYPE_DATE_TIME field to @bson using the current time in UTC
  * as the field value.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_now_utc (bson_t     *bson,
                      const char *key,
                      int         key_length);
@@ -897,14 +896,14 @@ bson_append_now_utc (bson_t     *bson,
  * Setting @increment and @timestamp to zero has special semantics. See
  * http://bsonspec.org for more information on this field type.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_timestamp (bson_t       *bson,
                        const char   *key,
                        int           key_length,
-                       bson_uint32_t timestamp,
-                       bson_uint32_t increment);
+                       uint32_t timestamp,
+                       uint32_t increment);
 
 
 /**
@@ -916,15 +915,15 @@ bson_append_timestamp (bson_t       *bson,
  * spec and should not be used for new code. However, it is provided for those
  * needing to interact with legacy systems.
  *
- * Returns: TRUE if successful; FALSE if append would overflow max size.
+ * Returns: true if successful; false if append would overflow max size.
  */
-bson_bool_t
+bool
 bson_append_undefined (bson_t     *bson,
                        const char *key,
                        int         key_length);
 
 
-bson_bool_t
+bool
 bson_concat (bson_t       *dst,
              const bson_t *src);
 

@@ -1,6 +1,5 @@
-#include <assert.h>
 #include <bson.h>
-#include <bson-string.h>
+#include <assert.h>
 #include <fcntl.h>
 #include <stdio.h>
 
@@ -27,10 +26,10 @@ test_bson_as_json (void)
    assert(bson_append_undefined(b, "undefined", -1));
    assert(bson_append_null(b, "null", -1));
    assert(bson_append_oid(b, "oid", -1, &oid));
-   assert(bson_append_bool(b, "true", -1, TRUE));
-   assert(bson_append_bool(b, "false", -1, FALSE));
+   assert(bson_append_bool(b, "true", -1, true));
+   assert(bson_append_bool(b, "false", -1, false));
    assert(bson_append_time_t(b, "date", -1, time(NULL)));
-   assert(bson_append_timestamp(b, "timestamp", -1, (bson_uint32_t)time(NULL), 1234));
+   assert(bson_append_timestamp(b, "timestamp", -1, (uint32_t)time(NULL), 1234));
    assert(bson_append_regex(b, "regex", -1, "^abcd", "xi"));
    assert(bson_append_dbpointer(b, "dbpointer", -1, "mycollection", &oid));
    assert(bson_append_minkey(b, "minkey", -1));
@@ -43,7 +42,7 @@ test_bson_as_json (void)
    assert(bson_append_array(b, "array", -1, b2));
 
    {
-      const bson_uint8_t binary[] = { 0, 1, 2, 3, 4 };
+      const uint8_t binary[] = { 0, 1, 2, 3, 4 };
       assert(bson_append_binary(b, "binary", -1, BSON_SUBTYPE_BINARY,
                                 binary, sizeof binary));
    }
@@ -146,17 +145,17 @@ test_bson_as_json_utf8 (void)
 static void
 test_bson_as_json_stack_overflow (void)
 {
-   bson_uint8_t *buf;
+   uint8_t *buf;
    bson_t b;
    size_t buflen = 1024 * 1024 * 17;
    char *str;
    int fd;
-   bson_ssize_t r;
+   ssize_t r;
 
    buf = bson_malloc0(buflen);
 
-   fd = bson_open("tests/binary/stackoverflow.bson", BSON_O_RDONLY);
-   BSON_ASSERT(fd != -1);
+   fd = bson_open("tests/binary/stackoverflow.bson", O_RDONLY);
+   BSON_ASSERT(-1 != fd);
 
    r = bson_read(fd, buf, buflen);
    BSON_ASSERT(r == 16777220);
@@ -179,22 +178,22 @@ test_bson_as_json_stack_overflow (void)
 static void
 test_bson_corrupt (void)
 {
-   bson_uint8_t *buf;
+   uint8_t *buf;
    bson_t b;
    size_t buflen = 1024;
    char *str;
    int fd;
-   bson_ssize_t r;
+   ssize_t r;
 
    buf = bson_malloc0(buflen);
 
-   fd = bson_open("tests/binary/test55.bson", BSON_O_RDONLY);
-   BSON_ASSERT(fd != -1);
+   fd = bson_open("tests/binary/test55.bson", O_RDONLY);
+   BSON_ASSERT(-1 != fd);
 
    r = bson_read(fd, buf, buflen);
    BSON_ASSERT(r == 24);
 
-   r = bson_init_static(&b, buf, (bson_uint32_t)r);
+   r = bson_init_static(&b, buf, (uint32_t)r);
    BSON_ASSERT(r);
 
    str = bson_as_json(&b, NULL);
@@ -207,22 +206,22 @@ test_bson_corrupt (void)
 static void
 test_bson_corrupt_utf8 (void)
 {
-   bson_uint8_t *buf;
+   uint8_t *buf;
    bson_t b;
    size_t buflen = 1024;
    char *str;
    int fd;
-   bson_ssize_t r;
+   ssize_t r;
 
    buf = bson_malloc0(buflen);
 
-   fd = bson_open("tests/binary/test56.bson", BSON_O_RDONLY);
-   BSON_ASSERT(fd != -1);
+   fd = bson_open("tests/binary/test56.bson", O_RDONLY);
+   BSON_ASSERT(-1 != fd);
 
    r = bson_read(fd, buf, buflen);
    BSON_ASSERT(r == 42);
 
-   r = bson_init_static(&b, buf, (bson_uint32_t)r);
+   r = bson_init_static(&b, buf, (uint32_t)r);
    BSON_ASSERT(r);
 
    str = bson_as_json(&b, NULL);
@@ -236,22 +235,22 @@ test_bson_corrupt_utf8 (void)
 static void
 test_bson_corrupt_binary (void)
 {
-   bson_uint8_t *buf;
+   uint8_t *buf;
    bson_t b;
    size_t buflen = 1024;
    char *str;
    int fd;
-   bson_ssize_t r;
+   ssize_t r;
 
    buf = bson_malloc0(buflen);
 
-   fd = bson_open("tests/binary/test57.bson", BSON_O_RDONLY);
-   BSON_ASSERT(fd != -1);
+   fd = bson_open("tests/binary/test57.bson", O_RDONLY);
+   BSON_ASSERT(-1 != fd);
 
    r = bson_read(fd, buf, buflen);
    BSON_ASSERT(r == 26);
 
-   r = bson_init_static(&b, buf, (bson_uint32_t)r);
+   r = bson_init_static(&b, buf, (uint32_t)r);
    BSON_ASSERT(r);
 
    str = bson_as_json(&b, NULL);

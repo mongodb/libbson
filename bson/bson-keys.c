@@ -124,8 +124,8 @@ static const char * gUint32Strs[] = {
 
 
 /**
- * bson_uint32_to_string:
- * @value: A #bson_uint32_t to convert to string.
+ * uint32_to_string:
+ * @value: A #uint32_t to convert to string.
  * @strptr: (out): A pointer to the resulting string.
  * @str: (out): Storage for a string made with snprintf.
  * @size: Size of @str.
@@ -142,12 +142,12 @@ static const char * gUint32Strs[] = {
  * string. You will want to use this as your key.
  */
 void
-bson_uint32_to_string (bson_uint32_t value,
+bson_uint32_to_string (uint32_t value,
                        const char  **strptr,
                        char         *str,
-                       bson_size_t   size)
+                       size_t   size)
 {
-   bson_size_t i;
+   size_t i;
 
    if (value <= 1000) {
       *strptr = gUint32Strs[value];

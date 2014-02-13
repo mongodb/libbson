@@ -15,7 +15,7 @@ if OS_LINUX
 AM_CPPFLAGS += -DOS_LINUX
 endif
 
-if OS_LINUX
+if OS_WIN32
 AM_CPPFLAGS += -DOS_WIN32
 endif
 
@@ -37,8 +37,8 @@ INST_H_FILES = \
 	bson/bson-oid.h \
 	bson/bson-reader.h \
 	bson/bson-stdint.h \
+	bson/bson-stdint-win32.h \
 	bson/bson-string.h \
-	bson/bson-thread.h \
 	bson/bson-types.h \
 	bson/bson-utf8.h \
 	bson/bson-version.h \
@@ -49,6 +49,7 @@ INST_H_FILES = \
 NOINST_H_FILES = \
 	bson/b64_ntop.h \
 	bson/bson-context-private.h \
+	bson/bson-thread-private.h \
 	bson/bson-private.h
 
 
@@ -56,7 +57,6 @@ libbson_1_0_la_SOURCES = \
 	$(INST_H_FILES) \
 	$(NOINST_H_FILES) \
 	bson/bson.c \
-	bson/bson-compat.c \
 	bson/bson-context.c \
 	bson/bson-clock.c \
 	bson/bson-error.c \

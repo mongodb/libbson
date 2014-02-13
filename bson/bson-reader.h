@@ -32,13 +32,14 @@ BSON_BEGIN_DECLS
 
 
 bson_reader_t *
-bson_reader_new_from_fd (int         fd,
-                         bson_bool_t close_fd);
+bson_reader_new_from_handle (void                      *handle,
+                             bson_reader_read_func_t    rf,
+                             bson_reader_destroy_func_t df);
 
 
 bson_reader_t *
-bson_reader_new_from_data (const bson_uint8_t *data,
-                           bson_size_t              length);
+bson_reader_new_from_data (const uint8_t *data,
+                           size_t              length);
 
 
 void
@@ -46,16 +47,19 @@ bson_reader_destroy (bson_reader_t *reader);
 
 
 void
-bson_reader_set_read_func (bson_reader_t   *reader,
-                           bson_read_func_t func);
+bson_reader_set_read_func (bson_reader_t          *reader,
+                           bson_reader_read_func_t func);
 
+void
+bson_reader_set_destroy_func (bson_reader_t             *reader,
+                              bson_reader_destroy_func_t func);
 
 const bson_t *
 bson_reader_read (bson_reader_t *reader,
-                  bson_bool_t   *reached_eof);
+                  bool   *reached_eof);
 
 
-bson_off_t
+off_t
 bson_reader_tell (bson_reader_t *reader);
 
 

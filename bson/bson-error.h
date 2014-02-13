@@ -19,6 +19,7 @@
 #define BSON_ERROR_H
 
 
+#include "bson-compat.h"
 #include "bson-macros.h"
 #include "bson-types.h"
 
@@ -28,11 +29,15 @@ BSON_BEGIN_DECLS
 
 void
 bson_set_error (bson_error_t *error,
-                bson_uint32_t domain,
-                bson_uint32_t code,
+                uint32_t domain,
+                uint32_t code,
                 const char   *format,
                 ...) BSON_GNUC_PRINTF (4, 5);
 
+char *
+bson_strerror_r (int         err_code,
+                 char       *buf,
+                 size_t buflen);
 
 BSON_END_DECLS
 

@@ -15,8 +15,8 @@
  */
 
 
-#include <assert.h>
 #include <bson.h>
+#include <assert.h>
 #include <fcntl.h>
 #include <time.h>
 
@@ -26,16 +26,15 @@
 
 #define FUZZ_N_PASSES 100000
 
-
 static bson_t *
 get_bson (const char *filename)
 {
-   bson_uint8_t buf[4096];
+   uint8_t buf[4096];
    bson_t *b;
-   bson_ssize_t len;
+   ssize_t len;
    int fd;
 
-   if (-1 == (fd = bson_open(filename, BSON_O_RDONLY))) {
+   if (-1 == (fd = bson_open(filename, O_RDONLY))) {
       fprintf(stderr, "Failed to open: %s\n", filename);
       abort();
    }
@@ -44,7 +43,7 @@ get_bson (const char *filename)
       abort();
    }
    assert(len > 0);
-   b = bson_new_from_data(buf, (bson_uint32_t)len);
+   b = bson_new_from_data(buf, (uint32_t)len);
    bson_close(fd);
 
    return b;
@@ -54,7 +53,7 @@ get_bson (const char *filename)
 static void
 test_bson_iter_utf8 (void)
 {
-   bson_uint32_t len = 0;
+   uint32_t len = 0;
    bson_iter_t iter;
    bson_t *b;
    char *s;
@@ -141,8 +140,8 @@ static void
 test_bson_iter_binary_deprecated (void)
 {
    bson_subtype_t subtype;
-   bson_uint32_t binary_len;
-   const bson_uint8_t * binary;
+   uint32_t binary_len;
+   const uint8_t * binary;
    bson_iter_t iter;
    bson_t * b;
 
@@ -176,13 +175,13 @@ test_bson_iter_trailing_null (void)
 static void
 test_bson_iter_fuzz (void)
 {
-   bson_uint8_t *data;
-   bson_uint32_t len = 512;
-   bson_uint32_t len_le;
-   bson_uint32_t r;
+   uint8_t *data;
+   uint32_t len = 512;
+   uint32_t len_le;
+   uint32_t r;
    bson_iter_t iter;
    bson_t *b;
-   bson_uint32_t i;
+   uint32_t i;
    int pass;
 
    len_le = BSON_UINT32_TO_LE(len);
@@ -218,14 +217,14 @@ test_bson_iter_fuzz (void)
          case BSON_TYPE_ARRAY:
          case BSON_TYPE_DOCUMENT:
             {
-               const bson_uint8_t *child = NULL;
-               bson_uint32_t child_len = -1;
+               const uint8_t *child = NULL;
+               uint32_t child_len = -1;
 
                bson_iter_document(&iter, &child_len, &child);
                assert(child);
                assert(child_len >= 5);
                assert((iter.off + child_len) < b->len);
-               assert(child_len < (bson_uint32_t)-1);
+               assert(child_len < (uint32_t)-1);
                memcpy(&child_len, child, 4);
                child_len = BSON_UINT32_FROM_LE(child_len);
                assert(child_len >= 5);
@@ -257,7 +256,7 @@ test_bson_iter_fuzz (void)
          case BSON_TYPE_EOD:
          default:
             /* Code should not be reached. */
-            assert(FALSE);
+            assert(false);
             break;
          }
       }
@@ -383,13 +382,13 @@ test_bson_iter_overwrite_bool (void)
    bson_t b;
 
    bson_init(&b);
-   assert(bson_append_bool(&b, "key", -1, TRUE));
+   assert(bson_append_bool(&b, "key", -1, true));
    assert(bson_iter_init_find(&iter, &b, "key"));
    assert(BSON_ITER_HOLDS_BOOL(&iter));
-   bson_iter_overwrite_bool(&iter, FALSE);
+   bson_iter_overwrite_bool(&iter, false);
    assert(bson_iter_init_find(&iter, &b, "key"));
    assert(BSON_ITER_HOLDS_BOOL(&iter));
-   assert_cmpint(bson_iter_bool(&iter), ==, FALSE);
+   assert_cmpint(bson_iter_bool(&iter), ==, false);
    bson_destroy(&b);
 }
 
@@ -466,28 +465,19 @@ test_bson_iter_as_bool (void)
 
    bson_iter_init(&iter, &b);
    bson_iter_next(&iter);
-   assert_cmpint(TRUE, ==, bson_iter_as_bool(&iter));
+   assert_cmpint(true, ==, bson_iter_as_bool(&iter));
    bson_iter_next(&iter);
-   assert_cmpint(FALSE, ==, bson_iter_as_bool(&iter));
+   assert_cmpint(false, ==, bson_iter_as_bool(&iter));
    bson_iter_next(&iter);
-   assert_cmpint(TRUE, ==, bson_iter_as_bool(&iter));
+   assert_cmpint(true, ==, bson_iter_as_bool(&iter));
    bson_iter_next(&iter);
-   assert_cmpint(FALSE, ==, bson_iter_as_bool(&iter));
+   assert_cmpint(false, ==, bson_iter_as_bool(&iter));
    bson_iter_next(&iter);
-   assert_cmpint(TRUE, ==, bson_iter_as_bool(&iter));
+   assert_cmpint(true, ==, bson_iter_as_bool(&iter));
    bson_iter_next(&iter);
-   assert_cmpint(FALSE, ==, bson_iter_as_bool(&iter));
+   assert_cmpint(false, ==, bson_iter_as_bool(&iter));
 
    bson_destroy(&b);
-}
-
-
-static void
-init_rand (void)
-{
-   int seed = (unsigned)time (NULL);
-   fprintf (stdout, "srand(%u)\n", seed);
-   srand (seed);
 }
 
 

@@ -94,13 +94,13 @@ typedef union bcon_append {
    struct
    {
       bson_subtype_t subtype;
-      bson_uint8_t  *binary;
-      bson_uint32_t  length;
+      uint8_t  *binary;
+      uint32_t  length;
    } BIN;
 
    bson_oid_t    *OID;
-   bson_bool_t    BOOL;
-   bson_int64_t   DATE_TIME;
+   bool BOOL;
+   int64_t   DATE_TIME;
 
    struct
    {
@@ -124,15 +124,15 @@ typedef union bcon_append {
       bson_t     *scope;
    } CODEWSCOPE;
 
-   bson_int32_t INT32;
+   int32_t INT32;
 
    struct
    {
-      bson_uint32_t timestamp;
-      bson_uint32_t increment;
+      uint32_t timestamp;
+      uint32_t increment;
    } TIMESTAMP;
 
-   bson_int64_t       INT64;
+   int64_t       INT64;
    const bson_iter_t *ITER;
 } bcon_append_t;
 
@@ -150,13 +150,13 @@ typedef union bcon_extract {
    struct
    {
       bson_subtype_t      *subtype;
-      const bson_uint8_t **binary;
-      bson_uint32_t       *length;
+      const uint8_t **binary;
+      uint32_t       *length;
    } BIN;
 
    const bson_oid_t **OID;
-   bson_bool_t       *BOOL;
-   bson_int64_t      *DATE_TIME;
+   bool *BOOL;
+   int64_t      *DATE_TIME;
 
    struct
    {
@@ -180,19 +180,19 @@ typedef union bcon_extract {
       bson_t      *scope;
    } CODEWSCOPE;
 
-   bson_int32_t *INT32;
+   int32_t *INT32;
 
    struct
    {
-      bson_uint32_t *timestamp;
-      bson_uint32_t *increment;
+      uint32_t *timestamp;
+      uint32_t *increment;
    } TIMESTAMP;
 
-   bson_int64_t *INT64;
+   int64_t *INT64;
 } bcon_extract_t;
 
-char *BCON_MAGIC = "BCON_MAGIC";
-char *BCONE_MAGIC = "BCONE_MAGIC";
+BSON_API char *BCON_MAGIC = "BCON_MAGIC";
+BSON_API char *BCONE_MAGIC = "BCONE_MAGIC";
 
 static void
 _noop (void)
@@ -226,7 +226,7 @@ _bcon_append_single (bson_t        *bson,
       bson_append_oid (bson, key, -1, val->OID);
       break;
    case BCON_TYPE_BOOL:
-      bson_append_bool (bson, key, -1, val->BOOL);
+      bson_append_bool (bson, key, -1, (bool)val->BOOL);
       break;
    case BCON_TYPE_DATE_TIME:
       bson_append_date_time (bson, key, -1, val->DATE_TIME);
@@ -289,7 +289,7 @@ _bcon_append_single (bson_t        *bson,
 
 #define CHECK_TYPE(_type) \
    do { \
-      if (bson_iter_type (iter) != (_type)) { return FALSE; } \
+      if (bson_iter_type (iter) != (_type)) { return false; } \
    } while (0)
 
 /* extracts the value under the iterator and writes it to val.  returns false
@@ -305,7 +305,7 @@ _bcon_append_single (bson_t        *bson,
  *    Returns the underlying iterator.  This could allow for more complicated,
  *    procedural verification (if a parameter could have multiple types).
  * */
-static bson_bool_t
+static bool
 _bcon_extract_single (const bson_iter_t *iter,
                       bcon_type_t        type,
                       bcon_extract_t    *val)
@@ -361,8 +361,8 @@ _bcon_extract_single (const bson_iter_t *iter,
       *val->SYMBOL = bson_iter_symbol (iter, NULL);
       break;
    case BCON_TYPE_CODEWSCOPE: {
-         const bson_uint8_t *buf;
-         bson_uint32_t len;
+         const uint8_t *buf;
+         uint32_t len;
 
          CHECK_TYPE (BSON_TYPE_CODEWSCOPE);
 
@@ -391,8 +391,8 @@ _bcon_extract_single (const bson_iter_t *iter,
       CHECK_TYPE (BSON_TYPE_MINKEY);
       break;
    case BCON_TYPE_ARRAY: {
-         const bson_uint8_t *buf;
-         bson_uint32_t len;
+         const uint8_t *buf;
+         uint32_t len;
 
          CHECK_TYPE (BSON_TYPE_ARRAY);
 
@@ -402,8 +402,8 @@ _bcon_extract_single (const bson_iter_t *iter,
          break;
       }
    case BCON_TYPE_DOCUMENT: {
-         const bson_uint8_t *buf;
-         bson_uint32_t len;
+         const uint8_t *buf;
+         uint32_t len;
 
          CHECK_TYPE (BSON_TYPE_DOCUMENT);
 
@@ -423,7 +423,7 @@ _bcon_extract_single (const bson_iter_t *iter,
       break;
    }
 
-   return TRUE;
+   return true;
 }
 
 /* Consumes ap, storing output values into u and returning the type of the
@@ -472,8 +472,8 @@ _bcon_append_tokenize (va_list       *ap,
          break;
       case BCON_TYPE_BIN:
          u->BIN.subtype = va_arg (*ap, bson_subtype_t);
-         u->BIN.binary = va_arg (*ap, bson_uint8_t *);
-         u->BIN.length = va_arg (*ap, bson_uint32_t);
+         u->BIN.binary = va_arg (*ap, uint8_t *);
+         u->BIN.length = va_arg (*ap, uint32_t);
          break;
       case BCON_TYPE_UNDEFINED:
          break;
@@ -481,10 +481,10 @@ _bcon_append_tokenize (va_list       *ap,
          u->OID = va_arg (*ap, bson_oid_t *);
          break;
       case BCON_TYPE_BOOL:
-         u->BOOL = va_arg (*ap, bson_bool_t);
+         u->BOOL = va_arg (*ap, int);
          break;
       case BCON_TYPE_DATE_TIME:
-         u->DATE_TIME = va_arg (*ap, bson_int64_t);
+         u->DATE_TIME = va_arg (*ap, int64_t);
          break;
       case BCON_TYPE_NULL:
          break;
@@ -507,14 +507,14 @@ _bcon_append_tokenize (va_list       *ap,
          u->CODEWSCOPE.scope = va_arg (*ap, bson_t *);
          break;
       case BCON_TYPE_INT32:
-         u->INT32 = va_arg (*ap, bson_int32_t);
+         u->INT32 = va_arg (*ap, int32_t);
          break;
       case BCON_TYPE_TIMESTAMP:
-         u->TIMESTAMP.timestamp = va_arg (*ap, bson_uint32_t);
-         u->TIMESTAMP.increment = va_arg (*ap, bson_uint32_t);
+         u->TIMESTAMP.timestamp = va_arg (*ap, uint32_t);
+         u->TIMESTAMP.increment = va_arg (*ap, uint32_t);
          break;
       case BCON_TYPE_INT64:
-         u->INT64 = va_arg (*ap, bson_int64_t);
+         u->INT64 = va_arg (*ap, int64_t);
          break;
       case BCON_TYPE_MAXKEY:
          break;
@@ -602,8 +602,8 @@ _bcon_extract_tokenize (va_list        *ap,
          break;
       case BCON_TYPE_BIN:
          u->BIN.subtype = va_arg (*ap, bson_subtype_t *);
-         u->BIN.binary = va_arg (*ap, const bson_uint8_t * *);
-         u->BIN.length = va_arg (*ap, bson_uint32_t *);
+         u->BIN.binary = va_arg (*ap, const uint8_t * *);
+         u->BIN.length = va_arg (*ap, uint32_t *);
          break;
       case BCON_TYPE_UNDEFINED:
          break;
@@ -611,10 +611,10 @@ _bcon_extract_tokenize (va_list        *ap,
          u->OID = va_arg (*ap, const bson_oid_t * *);
          break;
       case BCON_TYPE_BOOL:
-         u->BOOL = va_arg (*ap, bson_bool_t *);
+         u->BOOL = va_arg (*ap, bool *);
          break;
       case BCON_TYPE_DATE_TIME:
-         u->DATE_TIME = va_arg (*ap, bson_int64_t *);
+         u->DATE_TIME = va_arg (*ap, int64_t *);
          break;
       case BCON_TYPE_NULL:
          break;
@@ -637,14 +637,14 @@ _bcon_extract_tokenize (va_list        *ap,
          u->CODEWSCOPE.scope = va_arg (*ap, bson_t *);
          break;
       case BCON_TYPE_INT32:
-         u->INT32 = va_arg (*ap, bson_int32_t *);
+         u->INT32 = va_arg (*ap, int32_t *);
          break;
       case BCON_TYPE_TIMESTAMP:
-         u->TIMESTAMP.timestamp = va_arg (*ap, bson_uint32_t *);
-         u->TIMESTAMP.increment = va_arg (*ap, bson_uint32_t *);
+         u->TIMESTAMP.timestamp = va_arg (*ap, uint32_t *);
+         u->TIMESTAMP.increment = va_arg (*ap, uint32_t *);
          break;
       case BCON_TYPE_INT64:
-         u->INT64 = va_arg (*ap, bson_int64_t *);
+         u->INT64 = va_arg (*ap, int64_t *);
          break;
       case BCON_TYPE_MAXKEY:
          break;
@@ -824,7 +824,7 @@ bcon_append_ctx_va (bson_t            *bson,
  * The function returns true if all tokens could be successfully matched, false
  * otherwise.
  * */
-bson_bool_t
+bool
 bcon_extract_ctx_va (bson_t             *bson,
                      bcon_extract_ctx_t *ctx,
                      va_list            *ap)
@@ -848,7 +848,7 @@ bcon_extract_ctx_va (bson_t             *bson,
          type = _bcon_extract_tokenize (ap, &u);
 
          if (type == BCON_TYPE_END) {
-            return TRUE;
+            return true;
          }
 
          if (type == BCON_TYPE_DOC_END) {
@@ -871,13 +871,13 @@ bcon_extract_ctx_va (bson_t             *bson,
       } else {
          memcpy (&current_iter, STACK_ITER_CHILD, sizeof current_iter);
 
-         if (!bson_iter_find (&current_iter, key)) { return FALSE; }
+         if (!bson_iter_find (&current_iter, key)) { return false; }
 
          switch ((int)type) {
          case BCON_TYPE_DOC_START:
 
             if (bson_iter_type (&current_iter) !=
-                BSON_TYPE_DOCUMENT) { return FALSE; }
+                BSON_TYPE_DOCUMENT) { return false; }
 
             STACK_PUSH_DOC (bson_iter_recurse (&current_iter,
                                                STACK_ITER_CHILD));
@@ -888,7 +888,7 @@ bcon_extract_ctx_va (bson_t             *bson,
          case BCON_TYPE_ARRAY_START:
 
             if (bson_iter_type (&current_iter) !=
-                BSON_TYPE_ARRAY) { return FALSE; }
+                BSON_TYPE_ARRAY) { return false; }
 
             STACK_PUSH_ARRAY (bson_iter_recurse (&current_iter,
                                                  STACK_ITER_CHILD));
@@ -899,7 +899,7 @@ bcon_extract_ctx_va (bson_t             *bson,
          default:
 
             if (!_bcon_extract_single (&current_iter, type, &u)) {
-               return FALSE;
+               return false;
             }
 
             break;
@@ -912,16 +912,16 @@ void
 bcon_extract_ctx_init (bcon_extract_ctx_t *ctx)
 {
    ctx->n = 0;
-   ctx->stack[0].is_array = FALSE;
+   ctx->stack[0].is_array = false;
 }
 
-bson_bool_t
+bool
 bcon_extract (bson_t *bson,
               ...)
 {
    va_list ap;
    bcon_extract_ctx_t ctx;
-   bson_bool_t r;
+   bool r;
 
    bcon_extract_ctx_init (&ctx);
 

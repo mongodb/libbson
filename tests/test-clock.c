@@ -1,3 +1,4 @@
+#include <bson.h>
 #include <assert.h>
 
 #include "TestSuite.h"
@@ -7,8 +8,8 @@
 static void
 test_get_monotonic_time (void)
 {
-   bson_int64_t t;
-   bson_int64_t t2;
+   int64_t t;
+   int64_t t2;
 
    t = bson_get_monotonic_time();
    t2 = bson_get_monotonic_time();

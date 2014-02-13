@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
+#include "bson-compat.h"
 
 #include <limits.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
-#include "bson-compat.h"
 
 #if defined(__linux__)
 #include <sys/syscall.h>
@@ -33,7 +32,7 @@
 #include "bson-context-private.h"
 #include "bson-md5.h"
 #include "bson-memory.h"
-#include "bson-thread.h"
+#include "bson-thread-private.h"
 
 #ifndef HOST_NAME_MAX
 #define HOST_NAME_MAX 256
@@ -44,7 +43,7 @@ static bson_context_t *gContextDefault;
 
 
 #if defined(__linux__)
-static bson_uint16_t
+static uint16_t
 gettid (void)
 {
    return syscall (SYS_gettid);
@@ -56,8 +55,8 @@ static void
 _bson_context_get_oid_host (bson_context_t *context,
                             bson_oid_t     *oid)
 {
-   bson_uint8_t *bytes = (bson_uint8_t *)oid;
-   bson_uint8_t digest[16];
+   uint8_t *bytes = (uint8_t *)oid;
+   uint8_t digest[16];
    bson_md5_t md5;
    char hostname[HOST_NAME_MAX];
 
@@ -65,7 +64,7 @@ _bson_context_get_oid_host (bson_context_t *context,
    hostname[HOST_NAME_MAX - 1] = '\0';
 
    bson_md5_init (&md5);
-   bson_md5_append (&md5, (const bson_uint8_t *)hostname, (bson_uint32_t)strlen (hostname));
+   bson_md5_append (&md5, (const uint8_t *)hostname, (uint32_t)strlen (hostname));
    bson_md5_finish (&md5, &digest[0]);
 
    bytes[4] = digest[0];
@@ -84,10 +83,10 @@ _bson_context_get_oid_host_cached (bson_context_t *context,
 }
 
 
-static BSON_INLINE bson_uint16_t
+static BSON_INLINE uint16_t
 _bson_getpid (void)
 {
-   bson_uint16_t pid;
+   uint16_t pid;
 #ifdef BSON_OS_WIN32
    DWORD real_pid;
 
@@ -105,8 +104,8 @@ static void
 _bson_context_get_oid_pid (bson_context_t *context,
                            bson_oid_t     *oid)
 {
-   bson_uint16_t pid = _bson_getpid ();
-   bson_uint8_t *bytes = (bson_uint8_t *)&pid;
+   uint16_t pid = _bson_getpid ();
+   uint8_t *bytes = (uint8_t *)&pid;
 
    pid = BSON_UINT16_TO_BE (pid);
 
@@ -128,10 +127,10 @@ static void
 _bson_context_get_oid_seq32 (bson_context_t *context,
                              bson_oid_t     *oid)
 {
-   bson_uint32_t seq = context->seq32++;
+   uint32_t seq = context->seq32++;
 
    seq = BSON_UINT32_TO_BE (seq);
-   memcpy (&oid->bytes[9], ((bson_uint8_t *)&seq) + 1, 3);
+   memcpy (&oid->bytes[9], ((uint8_t *)&seq) + 1, 3);
 }
 
 
@@ -140,16 +139,16 @@ _bson_context_get_oid_seq32_threadsafe (bson_context_t *context,
                                         bson_oid_t     *oid)
 {
 #if defined WITH_OID32_PT
-   bson_uint32_t seq;
+   uint32_t seq;
    bson_mutex_lock (&context->_m32);
    seq = context->seq32++;
    bson_mutex_unlock (&context->_m32);
 #else
-   bson_uint32_t seq = bson_atomic_int_add (&context->seq32, 1);
+   uint32_t seq = bson_atomic_int_add (&context->seq32, 1);
 #endif
 
    seq = BSON_UINT32_TO_BE (seq);
-   memcpy (&oid->bytes[9], ((bson_uint8_t *)&seq) + 1, 3);
+   memcpy (&oid->bytes[9], ((uint8_t *)&seq) + 1, 3);
 }
 
 
@@ -157,7 +156,7 @@ static void
 _bson_context_get_oid_seq64 (bson_context_t *context,
                              bson_oid_t     *oid)
 {
-   bson_uint64_t seq = context->seq64++;
+   uint64_t seq = context->seq64++;
 
    seq = BSON_UINT64_TO_BE (seq);
    memcpy (&oid->bytes[4], &seq, 8);
@@ -169,14 +168,14 @@ _bson_context_get_oid_seq64_threadsafe (bson_context_t *context,
                                         bson_oid_t     *oid)
 {
 #if defined WITH_OID64_PT
-   bson_uint64_t seq;
+   uint64_t seq;
    bson_mutex_lock (&context->_m64);
    seq = context->seq64++;
    bson_mutex_unlock (&context->_m64);
 #elif defined BSON_OS_WIN32
-   bson_uint64_t seq = InterlockedIncrement64 (&context->seq64);
+   uint64_t seq = InterlockedIncrement64 ((int64_t *)&context->seq64);
 #else
-   bson_uint64_t seq = __sync_fetch_and_add_8 (&context->seq64, 1);
+   uint64_t seq = __sync_fetch_and_add_8 (&context->seq64, 1);
 #endif
 
    seq = BSON_UINT64_TO_BE (seq);
@@ -214,7 +213,7 @@ bson_context_new (bson_context_flags_t flags)
 {
    bson_context_t *context;
    struct timeval tv;
-   bson_uint16_t pid;
+   uint16_t pid;
    unsigned int seed[3];
    unsigned int real_seed;
    bson_oid_t oid;
@@ -276,7 +275,7 @@ bson_context_new (bson_context_flags_t flags)
 #if defined(__linux__)
 
       if ((flags & BSON_CONTEXT_USE_TASK_ID)) {
-         bson_int32_t tid;
+         int32_t tid;
 
          if ((tid = gettid ())) {
             pid = BSON_UINT16_TO_BE (tid);

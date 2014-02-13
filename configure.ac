@@ -74,6 +74,7 @@ AS_CASE([$host],
 	[*-*-mingw*],
 	[
 		BSON_LT_LDFLAGS="$BSON_LT_LDFLAGS -no-undefined -lws2_32"
+                CFLAGS="$CFLAGS -D_WIN32_WINNT=0x0600"
 		platform_win32=yes
 		BSON_OS=2
 	],
@@ -134,6 +135,7 @@ dnl Check for Required Headers
 dnl **************************************************************************
 AC_CREATE_STDINT_H([bson/bson-stdint.h])
 
+AC_HEADER_STDBOOL
 
 dnl **************************************************************************
 dnl Check for Python Support
@@ -174,6 +176,7 @@ else
 fi
 
 AX_PTHREAD([
+   if test "$platform_win32" = "no"; then
 	PTHREAD_LIB="-lpthread"
 	AC_TRY_LINK([#include <stdint.h>],
 	   [uint32_t seq = __sync_fetch_and_add_4(&seq, 1);],
@@ -195,6 +198,9 @@ AX_PTHREAD([
 	LDFLAGS="$LDFLAGS $PTHREAD_LDFLAGS"
 	AC_SUBST(PTHREAD_LIB)
 	enable_pthreads=yes
+     else
+	enable_pthreads=no
+     fi
 ],[
 	enable_pthreads=no
 ])

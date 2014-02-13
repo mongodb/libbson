@@ -19,10 +19,7 @@
 #define BSON_ATOMIC_H
 
 
-#if defined(_MSC_VER) || defined(_WIN32)
-# include <windows.h>
-#endif
-
+#include "bson-compat.h"
 #include "bson-macros.h"
 
 

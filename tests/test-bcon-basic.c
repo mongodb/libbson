@@ -46,12 +46,12 @@ test_binary (void)
    bson_init (&expected);
 
    bson_append_binary (
-      &expected, "foo", -1, BSON_SUBTYPE_BINARY, (bson_uint8_t *)"deadbeef", 8);
+      &expected, "foo", -1, BSON_SUBTYPE_BINARY, (uint8_t *)"deadbeef", 8);
 
    BCON_APPEND (&bcon,
       "foo", BCON_BIN (
          BSON_SUBTYPE_BINARY,
-         (const bson_uint8_t *)"deadbeef",
+         (const uint8_t *)"deadbeef",
          8
       ),
    NULL);

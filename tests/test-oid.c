@@ -16,7 +16,10 @@
 
 
 #include <assert.h>
-#include <bson-thread.h>
+#include <bson.h>
+#define BSON_INSIDE
+#include "bson-thread-private.h"
+#undef BSON_INSIDE
 #include <fcntl.h>
 #include <time.h>
 
@@ -53,7 +56,7 @@ oid_worker (void *data)
    bson_oid_init(&oid2, context);
    for (i = 0; i < 500000; i++) {
       bson_oid_init(&oid, context);
-      assert(FALSE == bson_oid_equal(&oid, &oid2));
+      assert(false == bson_oid_equal(&oid, &oid2));
       assert(0 < bson_oid_compare(&oid, &oid2));
       bson_oid_copy(&oid, &oid2);
    }
@@ -114,13 +117,13 @@ test_bson_oid_compare (void)
    bson_oid_init_from_string(&oid,  "000000000000000000001234");
    bson_oid_init_from_string(&oid2, "000000000000000000001234");
    assert(0 == bson_oid_compare(&oid, &oid2));
-   assert(TRUE == bson_oid_equal(&oid, &oid2));
+   assert(true == bson_oid_equal(&oid, &oid2));
 
    bson_oid_init_from_string(&oid, "000000000000000000001234");
    bson_oid_init_from_string(&oid2, "000000000000000000004321");
    assert(bson_oid_compare(&oid, &oid2) < 0);
    assert(bson_oid_compare(&oid2, &oid) > 0);
-   assert(FALSE == bson_oid_equal(&oid, &oid2));
+   assert(false == bson_oid_equal(&oid, &oid2));
 }
 
 
@@ -133,7 +136,7 @@ test_bson_oid_copy (void)
    bson_oid_init_from_string(&oid, "000000000000000000001234");
    bson_oid_init_from_string(&oid2, "000000000000000000004321");
    bson_oid_copy(&oid, &oid2);
-   assert(TRUE == bson_oid_equal(&oid, &oid2));
+   assert(true == bson_oid_equal(&oid, &oid2));
 }
 
 
@@ -149,7 +152,7 @@ test_bson_oid_init (void)
    bson_oid_init(&oid, context);
    for (i = 0; i < 10000; i++) {
       bson_oid_init(&oid2, context);
-      assert(FALSE == bson_oid_equal(&oid, &oid2));
+      assert(false == bson_oid_equal(&oid, &oid2));
       assert(0 > bson_oid_compare(&oid, &oid2));
       bson_oid_copy(&oid2, &oid);
    }
@@ -175,7 +178,7 @@ test_bson_oid_init_sequence (void)
    bson_oid_init_sequence(&oid, context);
    for (i = 0; i < 10000; i++) {
       bson_oid_init_sequence(&oid2, context);
-      assert(FALSE == bson_oid_equal(&oid, &oid2));
+      assert(false == bson_oid_equal(&oid, &oid2));
       assert(0 > bson_oid_compare(&oid, &oid2));
       bson_oid_copy(&oid2, &oid);
    }
@@ -195,7 +198,7 @@ test_bson_oid_init_sequence_thread_safe (void)
    bson_oid_init_sequence(&oid, context);
    for (i = 0; i < 10000; i++) {
       bson_oid_init_sequence(&oid2, context);
-      assert(FALSE == bson_oid_equal(&oid, &oid2));
+      assert(false == bson_oid_equal(&oid, &oid2));
       assert(0 > bson_oid_compare(&oid, &oid2));
       bson_oid_copy(&oid2, &oid);
    }
@@ -216,7 +219,7 @@ test_bson_oid_init_sequence_with_tid (void)
    bson_oid_init_sequence(&oid, context);
    for (i = 0; i < 10000; i++) {
       bson_oid_init_sequence(&oid2, context);
-      assert(FALSE == bson_oid_equal(&oid, &oid2));
+      assert(false == bson_oid_equal(&oid, &oid2));
       assert(0 > bson_oid_compare(&oid, &oid2));
       bson_oid_copy(&oid2, &oid);
    }
@@ -262,11 +265,11 @@ test_bson_oid_init_with_threads (void)
 
       for (i = 0; i < N_THREADS; i++) {
          contexts[i] = bson_context_new(flags);
-         bson_thread_create(&threads[i], NULL, oid_worker, contexts[i]);
+         bson_thread_create(&threads[i], oid_worker, contexts[i]);
       }
 
       for (i = 0; i < N_THREADS; i++) {
-         bson_thread_join(threads[i], NULL);
+         bson_thread_join(threads[i]);
       }
 
       for (i = 0; i < N_THREADS; i++) {
@@ -283,11 +286,11 @@ test_bson_oid_init_with_threads (void)
       context = bson_context_new(BSON_CONTEXT_THREAD_SAFE);
 
       for (i = 0; i < N_THREADS; i++) {
-         bson_thread_create(&threads[i], NULL, oid_worker, context);
+         bson_thread_create(&threads[i], oid_worker, context);
       }
 
       for (i = 0; i < N_THREADS; i++) {
-         bson_thread_join(threads[i], NULL);
+         bson_thread_join(threads[i]);
       }
 
       bson_context_destroy(context);

@@ -15,7 +15,7 @@
  */
 
 
-#include "bson-endian.h"
+#include "bson.h"
 
 #include "bson-tests.h"
 #include "TestSuite.h"
@@ -24,7 +24,7 @@
 static void
 test_swap16 (void)
 {
-   bson_uint16_t v = 0xFCBA;
+   uint16_t v = 0xFCBA;
 
    BSON_ASSERT(BSON_UINT16_SWAP_LE_BE(v) == 0xBAFC);
    BSON_ASSERT(__bson_uint16_swap_slow(v) == 0xBAFC);
@@ -34,7 +34,7 @@ test_swap16 (void)
 static void
 test_swap32 (void)
 {
-   bson_uint32_t v = 0x00112233;
+   uint32_t v = 0x00112233;
 
    BSON_ASSERT(BSON_UINT32_SWAP_LE_BE(v) == 0x33221100);
    BSON_ASSERT(__bson_uint32_swap_slow(v) == 0x33221100);
@@ -44,7 +44,7 @@ test_swap32 (void)
 static void
 test_swap64 (void)
 {
-   bson_uint64_t v = 0x0011223344556677ULL;
+   uint64_t v = 0x0011223344556677ULL;
 
    BSON_ASSERT(BSON_UINT64_SWAP_LE_BE(v) == 0x7766554433221100ULL);
    BSON_ASSERT(__bson_uint64_swap_slow(v) == 0x7766554433221100ULL);

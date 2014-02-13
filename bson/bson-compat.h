@@ -20,8 +20,6 @@
 #endif
 
 #include "bson-config.h"
-#include "bson-macros.h"
-
 #ifndef BSON_COMPAT_H
 #define BSON_COMPAT_H
 
@@ -34,6 +32,7 @@
 #endif
 
 #ifdef BSON_OS_WIN32
+#include <winsock2.h>
 #  ifndef WIN32_LEAN_AND_MEAN
 #    define WIN32_LEAN_AND_MEAN
 #    include <windows.h>
@@ -41,120 +40,65 @@
 #  else
 #    include <windows.h>
 #  endif
-#include <winsock.h>
+#include <direct.h>
 #include <io.h>
-#include <share.h>
 #else
 #include <unistd.h>
 #include <sys/time.h>
-#include <bson-stdint.h>
 #endif
 
-#include <limits.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#include "bson-macros.h"
+
+#include <errno.h>
 #include <ctype.h>
+#include <limits.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
-#ifdef BSON_OS_WIN32
-typedef UINT32 bson_bool_t;
-typedef INT8 bson_int8_t;
-typedef INT16 bson_int16_t;
-typedef INT32 bson_int32_t;
-typedef INT64 bson_int64_t;
-typedef UINT8 bson_uint8_t;
-typedef UINT16 bson_uint16_t;
-typedef UINT32 bson_uint32_t;
-typedef UINT64 bson_uint64_t;
-typedef UINT32 bson_unichar_t;
-typedef SIZE_T bson_size_t;
-typedef SSIZE_T bson_off_t;
-typedef SSIZE_T bson_ssize_t;
+BSON_BEGIN_DECLS
+#ifdef _MSC_VER
+#  include "bson-stdint-win32.h"
+   typedef SSIZE_T ssize_t;
+   typedef SIZE_T size_t;
+#  define PRIi32 "d"
+#  define PRId32 "d"
+#  define PRIu32 "u"
+#  define PRIi64 "I64i"
+#  define PRId64 "I64i"
+#  define PRIu64 "I64u"
 #else
-typedef uint32_t bson_bool_t;
-typedef int8_t bson_int8_t;
-typedef int16_t bson_int16_t;
-typedef int32_t bson_int32_t;
-typedef int64_t bson_int64_t;
-typedef uint8_t bson_uint8_t;
-typedef uint16_t bson_uint16_t;
-typedef uint32_t bson_uint32_t;
-typedef uint64_t bson_uint64_t;
-typedef uint32_t bson_unichar_t;
-typedef size_t bson_size_t;
-typedef off_t bson_off_t;
-typedef ssize_t  bson_ssize_t;
+#  include <bson-stdint.h>
+#  include <inttypes.h>
 #endif
 
-#ifdef BSON_OS_WIN32
-
-static BSON_INLINE int
-bson_vsnprintf (char * str, bson_size_t size, const char * format, va_list ap)
-{
-    int r = -1;
-
-    if (size != 0) {
-        r = _vsnprintf_s(str, size, _TRUNCATE, format, ap);
-    }
-
-    if (r == -1) {
-        r = _vscprintf(format, ap);
-    }
-
-    return r;
-}
-
-static BSON_INLINE int
-bson_snprintf (char * str, bson_size_t size, const char * format, ...)
-{
-    int r;
-    va_list ap;
-
-    va_start(ap, format);
-    r = bson_vsnprintf(str, size, format, ap);
-    va_end(ap);
-
-    return r;
-}
-#define bson_strcasecmp _stricmp
+#ifdef HAVE_STDBOOL_H
+# include <stdbool.h>
 #else
-#define bson_vsnprintf vsnprintf
-#define bson_snprintf snprintf
-#define bson_strcasecmp strcasecmp
+# ifndef __cplusplus
+    typedef signed char bool;
+# define false 0
+# define true 1
+# endif
+# define __bool_true_false_are_defined 1
 #endif
 
-#ifdef BSON_OS_WIN32
-
-static BSON_INLINE int bson_open(const char * filename, int flags)
-{
-    int fd;
-    errno_t err;
-
-    err = _sopen_s(&fd, filename, flags | _O_BINARY, _SH_DENYNO, _S_IREAD | _S_IWRITE);
-    if (err) {
-        errno = err;
-        return -1;
-    }
-
-    return fd;
-}
-
-static BSON_INLINE bson_ssize_t bson_read(int fd, void * buf, bson_size_t count)
-{
-    return (bson_ssize_t)_read(fd, buf, (int)count);
-}
-
-#define bson_lseek _lseek
-#define bson_close _close
-#define BSON_O_RDONLY _O_RDONLY
-#else
-#define bson_open open
-#define bson_read read
-#define bson_close close
-#define bson_lseek lseek
-#define BSON_O_RDONLY O_RDONLY
+#if defined(__GNUC__)
+# if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
+#  define bson_sync_synchronize() __sync_synchronize()
+# elif defined(__i386__ ) || defined( __i486__ ) || defined( __i586__ ) || \
+          defined( __i686__ ) || defined( __x86_64__ )
+#  define bson_sync_synchronize() asm volatile("mfence":::"memory")
+# else
+#  define bson_sync_synchronize() asm volatile("sync":::"memory")
+# endif
+#elif defined(_MSC_VER)
+# define bson_sync_synchronize() MemoryBarrier()
 #endif
+
+BSON_END_DECLS
 
 #endif /* BSON_COMPAT_H */

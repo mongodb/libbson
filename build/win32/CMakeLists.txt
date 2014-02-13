@@ -19,8 +19,6 @@ set (CPACK_PACKAGE_VERSION_MINOR ${BSON_MINOR_VERSION})
 
 include (CPack)
 
-add_definitions(-DBSON_COMPILATION)
-
 TEST_BIG_ENDIAN(BSON_BIG_ENDIAN)
 
 if (MSVC)
@@ -52,14 +50,13 @@ configure_file (
    "${PROJECT_BINARY_DIR}/bson/bson-stdint.h"
 )
 
-include_directories("${SOURCE_DIR}/bson")
 include_directories("${PROJECT_BINARY_DIR}/bson")
+include_directories("${SOURCE_DIR}/bson")
 
 set (SOURCES
    ${SOURCE_DIR}/bson/bcon.c
    ${SOURCE_DIR}/bson/bson.c
    ${SOURCE_DIR}/bson/bson-clock.c
-   ${SOURCE_DIR}/bson/bson-compat.c
    ${SOURCE_DIR}/bson/bson-context.c
    ${SOURCE_DIR}/bson/bson-error.c
    ${SOURCE_DIR}/bson/bson-iter.c
@@ -78,6 +75,7 @@ set (HEADERS
    ${PROJECT_BINARY_DIR}/bson/bson-stdint.h
    ${PROJECT_BINARY_DIR}/bson/bson-version.h
    ${SOURCE_DIR}/bson/bcon.h
+   ${SOURCE_DIR}/bson/bson-atomic.h
    ${SOURCE_DIR}/bson/bson-clock.h
    ${SOURCE_DIR}/bson/bson-compat.h
    ${SOURCE_DIR}/bson/bson-context.h
@@ -91,21 +89,30 @@ set (HEADERS
    ${SOURCE_DIR}/bson/bson-memory.h
    ${SOURCE_DIR}/bson/bson-oid.h
    ${SOURCE_DIR}/bson/bson-reader.h
+   ${SOURCE_DIR}/bson/bson-stdint-win32.h
    ${SOURCE_DIR}/bson/bson-string.h
-   ${SOURCE_DIR}/bson/bson-thread.h
    ${SOURCE_DIR}/bson/bson-types.h
    ${SOURCE_DIR}/bson/bson-utf8.h
    ${SOURCE_DIR}/bson/bson-writer.h
 )
 
-add_library(bson_shared SHARED ${SOURCES} ${HEADERS})
+if (MSVC)
+   set(BSON_SHARED_SOURCES ${SOURCES} ${PROJECT_SOURCE_DIR}/libbson.def)
+else()
+   set(BSON_SHARED_SOURCES ${SOURCES})
+endif()
+
+add_library(bson_shared SHARED ${BSON_SHARED_SOURCES} ${HEADERS})
 add_library(bson_static STATIC ${SOURCES} ${HEADERS})
+
+set_target_properties(bson_shared PROPERTIES COMPILE_DEFINITIONS "BSON_COMPILATION")
+set_target_properties(bson_static PROPERTIES COMPILE_DEFINITIONS "BSON_COMPILATION")
 
 set_target_properties(bson_shared PROPERTIES VERSION ${BSON_VERSION} SOVERSION ${BSON_MAJOR_VERSION})
 set_target_properties(bson_static PROPERTIES VERSION ${BSON_VERSION} SOVERSION ${BSON_MAJOR_VERSION})
 
 set_target_properties(bson_shared PROPERTIES OUTPUT_NAME "bson-${BSON_API_VERSION}" PREFIX "lib")
-set_target_properties(bson_static PROPERTIES OUTPUT_NAME "bson-${BSON_API_VERSION}")
+set_target_properties(bson_static PROPERTIES OUTPUT_NAME "bson-static-${BSON_API_VERSION}")
 
 if (UNIX)
     target_link_libraries (bson_shared ${CMAKE_THREAD_LIBS_INIT})
@@ -117,25 +124,28 @@ endif()
 
 enable_testing()
 
-function(bson_add_test test)
-   add_executable(${test} ${ARGN})
-   target_link_libraries(${test} bson_static)
-   add_test(NAME ${test} COMMAND ${test})
-endfunction()
+add_executable(test-libbson
+   ${SOURCE_DIR}/tests/TestSuite.c
+   ${SOURCE_DIR}/tests/TestSuite.h
+   ${SOURCE_DIR}/tests/test-libbson.c
+   ${SOURCE_DIR}/tests/test-atomic.c
+   ${SOURCE_DIR}/tests/test-bson.c
+   ${SOURCE_DIR}/tests/test-endian.c
+   ${SOURCE_DIR}/tests/test-clock.c
+   ${SOURCE_DIR}/tests/test-error.c
+   ${SOURCE_DIR}/tests/test-iter.c
+   ${SOURCE_DIR}/tests/test-json.c
+   ${SOURCE_DIR}/tests/test-oid.c
+   ${SOURCE_DIR}/tests/test-reader.c
+   ${SOURCE_DIR}/tests/test-string.c
+   ${SOURCE_DIR}/tests/test-utf8.c
+   ${SOURCE_DIR}/tests/test-writer.c
+   ${SOURCE_DIR}/tests/test-bcon-basic.c
+   ${SOURCE_DIR}/tests/test-bcon-extract.c
+)
 
-bson_add_test(test-bcon-basic ${SOURCE_DIR}/tests/test-bcon-basic.c)
-bson_add_test(test-bcon-extract ${SOURCE_DIR}/tests/test-bcon-extract.c)
-bson_add_test(test-bson-clock ${SOURCE_DIR}/tests/test-bson-clock.c)
-bson_add_test(test-bson-endian ${SOURCE_DIR}/tests/test-endian.c)
-bson_add_test(test-bson-error ${SOURCE_DIR}/tests/test-bson-error.c)
-bson_add_test(test-bson-iter ${SOURCE_DIR}/tests/test-bson-iter.c)
-bson_add_test(test-bson-json ${SOURCE_DIR}/tests/test-bson-json.c)
-bson_add_test(test-bson-oid ${SOURCE_DIR}/tests/test-bson-oid.c)
-bson_add_test(test-bson-reader ${SOURCE_DIR}/tests/test-bson-reader.c)
-bson_add_test(test-bson-string ${SOURCE_DIR}/tests/test-bson-string.c)
-bson_add_test(test-bson ${SOURCE_DIR}/tests/test-bson.c)
-bson_add_test(test-bson-utf8 ${SOURCE_DIR}/tests/test-bson-utf8.c)
-bson_add_test(test-bson-writer ${SOURCE_DIR}/tests/test-bson-writer.c)
+target_link_libraries(test-libbson bson_shared)
+add_test(NAME test-libbson COMMAND test-libbson)
 
 file(COPY ${SOURCE_DIR}/tests/binary DESTINATION ${PROJECT_BINARY_DIR}/tests)
 

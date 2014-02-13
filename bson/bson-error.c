@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+#include "bson-compat.h"
 
 #include <stdio.h>
 #include <stdarg.h>
 
+#include "bson-string.h"
 #include "bson-error.h"
 #include "bson-memory.h"
 #include "bson-types.h"
@@ -42,8 +44,8 @@
  */
 void
 bson_set_error (bson_error_t *error,
-                bson_uint32_t domain,
-                bson_uint32_t code,
+                uint32_t domain,
+                uint32_t code,
                 const char   *format,
                 ...)
 {
@@ -60,3 +62,33 @@ bson_set_error (bson_error_t *error,
       error->message[sizeof error->message - 1] = '\0';
    }
 }
+
+char *
+bson_strerror_r (int         err_code,
+                 char       *buf,
+                 size_t buflen)
+{
+   const char *unknown_msg = "Unknown error";
+
+   assert (buflen > strlen (unknown_msg) + 1);
+#if defined(__GNUC__) && defined(_GNU_SOURCE)
+   /* put "Unknown error" in buf for us if unknown*/
+   return strerror_r (err_code, buf, buflen);
+#else
+# if defined BSON_OS_WIN32
+
+   if (strerror_s (buf, buflen, err_code) != 0)
+# else
+
+   /* XSI strerror_r */
+   if (strerror_r (err_code, buf, buflen) != 0)
+# endif
+   {
+      memcpy (buf, unknown_msg, strlen (unknown_msg) + 1);
+   }
+
+#endif
+
+   return buf;
+}
+

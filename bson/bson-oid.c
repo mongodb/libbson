@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include "bson-compat.h"
 
 #include <limits.h>
 #include <stdarg.h>
@@ -27,11 +28,11 @@
 
 /*
  * This table contains an array of two character pairs for every possible
- * bson_uint8_t. It is used as a lookup table when encoding a bson_oid_t
+ * uint8_t. It is used as a lookup table when encoding a bson_oid_t
  * to hex formatted ASCII. Performing two characters at a time roughly
  * reduces the number of operations by one-half.
  */
-static const bson_uint16_t gHexCharPairs[] = {
+static const uint16_t gHexCharPairs[] = {
 #if BSON_BYTE_ORDER == BSON_BIG_ENDIAN
    12336, 12337, 12338, 12339, 12340, 12341, 12342, 12343, 12344, 12345,
    12385, 12386, 12387, 12388, 12389, 12390, 12592, 12593, 12594, 12595,
@@ -107,7 +108,7 @@ void
 bson_oid_init_sequence (bson_oid_t     *oid,
                         bson_context_t *context)
 {
-   bson_uint32_t now = (bson_uint32_t)(time (NULL));
+   uint32_t now = (uint32_t)(time (NULL));
 
    if (!context) {
       context = bson_context_get_default ();
@@ -132,7 +133,7 @@ void
 bson_oid_init (bson_oid_t     *oid,
                bson_context_t *context)
 {
-   bson_uint32_t now = (bson_uint32_t)(time (NULL));
+   uint32_t now = (uint32_t)(time (NULL));
 
    bson_return_if_fail (oid);
 
@@ -159,7 +160,7 @@ bson_oid_init (bson_oid_t     *oid,
  */
 void
 bson_oid_init_from_data (bson_oid_t         *oid,
-                         const bson_uint8_t *data)
+                         const uint8_t *data)
 {
    bson_return_if_fail (oid);
    bson_return_if_fail (data);
@@ -216,13 +217,13 @@ void
 bson_oid_to_string (const bson_oid_t *oid,
                     char              str[BSON_ENSURE_ARRAY_PARAM_SIZE(25)])
 {
-   bson_uint16_t *dst;
-   bson_uint8_t *id = (bson_uint8_t *)oid;
+   uint16_t *dst;
+   uint8_t *id = (uint8_t *)oid;
 
    bson_return_if_fail (oid);
    bson_return_if_fail (str);
 
-   dst = (bson_uint16_t *)(void *)str;
+   dst = (uint16_t *)(void *)str;
    dst[0] = gHexCharPairs[id[0]];
    dst[1] = gHexCharPairs[id[1]];
    dst[2] = gHexCharPairs[id[2]];
@@ -248,7 +249,7 @@ bson_oid_to_string (const bson_oid_t *oid,
  *
  * Returns: A hash value corresponding to @oid.
  */
-bson_uint32_t
+uint32_t
 bson_oid_hash (const bson_oid_t *oid)
 {
    bson_return_val_if_fail (oid, 5381);
@@ -285,16 +286,16 @@ bson_oid_compare (const bson_oid_t *oid1,
  * @oid2: A bson_oid_t.
  *
  * Compares for equality of @oid1 and @oid2. If they are equal, then
- * TRUE is returned, otherwise FALSE.
+ * true is returned, otherwise false.
  *
  * Returns: A boolean indicating the equality of @oid1 and @oid2.
  */
-bson_bool_t
+bool
 bson_oid_equal (const bson_oid_t *oid1,
                 const bson_oid_t *oid2)
 {
-   bson_return_val_if_fail (oid1, FALSE);
-   bson_return_val_if_fail (oid2, FALSE);
+   bson_return_val_if_fail (oid1, false);
+   bson_return_val_if_fail (oid2, false);
 
    return bson_oid_equal_unsafe (oid1, oid2);
 }
@@ -326,15 +327,15 @@ bson_oid_copy (const bson_oid_t *src,
  * Validates that @str is a valid OID string. @length MUST be 12, but is
  * provided as a parameter to simplify calling code.
  *
- * Returns: TRUE if @str can be passed to bson_oid_init_from_string().
+ * Returns: true if @str can be passed to bson_oid_init_from_string().
  */
-bson_bool_t
+bool
 bson_oid_is_valid (const char *str,
-                   bson_size_t      length)
+                   size_t      length)
 {
-   bson_size_t i;
+   size_t i;
 
-   bson_return_val_if_fail (str, FALSE);
+   bson_return_val_if_fail (str, false);
 
    if (length == 24) {
       for (i = 0; i < length; i++) {
@@ -344,11 +345,11 @@ bson_oid_is_valid (const char *str,
          case 'e': case 'f':
             break;
          default:
-            return FALSE;
+            return false;
          }
       }
-      return TRUE;
+      return true;
    }
 
-   return FALSE;
+   return false;
 }

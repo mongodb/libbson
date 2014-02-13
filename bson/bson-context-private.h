@@ -20,7 +20,7 @@
 
 
 #include "bson-context.h"
-#include "bson-thread.h"
+#include "bson-thread-private.h"
 
 
 BSON_BEGIN_DECLS
@@ -29,11 +29,11 @@ BSON_BEGIN_DECLS
 struct _bson_context_t
 {
    bson_context_flags_t flags      : 7;
-   bson_bool_t          pidbe_once : 1;
-   bson_uint8_t         pidbe[2];
-   bson_uint8_t         md5[3];
-   bson_uint32_t        seq32;
-   bson_uint64_t        seq64;
+   bool          pidbe_once : 1;
+   uint8_t         pidbe[2];
+   uint8_t         md5[3];
+   uint32_t        seq32;
+   uint64_t        seq64;
 #if defined WITH_OID32_PT
    bson_mutex_t _m32;
 #endif

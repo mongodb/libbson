@@ -42,6 +42,16 @@
 #  define BSON_END_DECLS
 #endif
 
+#ifdef _MSC_VER
+#  ifdef BSON_COMPILATION
+#    define BSON_API __declspec(dllexport)
+#  else
+#    define BSON_API __declspec(dllimport)
+#  endif
+#else
+#  define BSON_API
+#endif
+
 
 #ifndef MIN
 #  ifdef __cplusplus
@@ -75,16 +85,6 @@
 
 #ifndef ABS
 #  define ABS(a) (((a) < 0) ? ((a) * -1) : (a))
-#endif
-
-
-#ifndef TRUE
-#  define TRUE 1
-#endif
-
-
-#ifndef FALSE
-#  define FALSE (!TRUE)
 #endif
 
 
@@ -125,7 +125,7 @@
 #endif
 
 
-#if defined(__GNUC__) && (__GNUC__ >= 4)
+#if defined(__GNUC__) && (__GNUC__ >= 4) && ! defined(BSON_OS_WIN32)
 #  define BSON_GNUC_NULL_TERMINATED __attribute__((sentinel))
 #  define BSON_GNUC_INTERNAL __attribute__((visibility ("hidden")))
 #else
@@ -148,7 +148,7 @@
                        + __GNUC_MINOR__ * 100 \
                        + __GNUC_PATCHLEVEL__)
 #  if GCC_VERSION > 40400
-#    define BSON_GNUC_PRINTF(f, v) __attribute__((format (gnu_printf, f, v)))
+#    define BSON_GNUC_PRINTF(f, v) __attribute__((format (printf, f, v)))
 #  else
 #    define BSON_GNUC_PRINTF(f, v)
 #  endif /* GCC_VERSION > 40400 */
@@ -200,9 +200,11 @@
 
 
 #ifdef _MSC_VER
-# define BSON_ENSURE_ARRAY_PARAM_SIZE(_n)
+#define BSON_ENSURE_ARRAY_PARAM_SIZE(_n)
+#define BSON_TYPEOF decltype
 #else
-# define BSON_ENSURE_ARRAY_PARAM_SIZE(_n) static (_n)
+#define BSON_ENSURE_ARRAY_PARAM_SIZE(_n) static (_n)
+#define BSON_TYPEOF typeof 
 #endif
 
 #endif /* BSON_MACROS_H */
