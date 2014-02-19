@@ -68,7 +68,8 @@ bson_string_append_unichar (bson_string_t *string,
 void
 bson_string_append_printf (bson_string_t *string,
                            const char    *format,
-                           ...) BSON_GNUC_PRINTF (2, 3);
+                           ...)
+   BSON_GNUC_PRINTF (2, 3);
 
 
 void
@@ -82,12 +83,14 @@ bson_strdup (const char *str);
 
 char *
 bson_strdup_printf (const char *format,
-                    ...) BSON_GNUC_PRINTF (1, 2);
+                    ...)
+   BSON_GNUC_PRINTF (1, 2);
 
 
 char *
 bson_strdupv_printf (const char *format,
-                     va_list     args) BSON_GNUC_PRINTF (1, 0);
+                     va_list     args)
+   BSON_GNUC_PRINTF (1, 0);
 
 
 char *
@@ -103,18 +106,24 @@ int
 bson_vsnprintf (char       *str,
                 size_t size,
                 const char *format,
-                va_list     ap);
+                va_list     ap)
+   BSON_GNUC_PRINTF (3, 0);
 
 int
 bson_snprintf (char       *str,
-               size_t size,
+               size_t      size,
                const char *format,
-               ...);
+               ...)
+   BSON_GNUC_PRINTF (3, 4);
 
-void bson_strfreev (char **strv);
+
+void
+bson_strfreev (char **strv);
 
 
-size_t bson_strnlen (const char *s, size_t maxlen);
+size_t
+bson_strnlen (const char *s,
+              size_t      maxlen);
 
 
 BSON_END_DECLS

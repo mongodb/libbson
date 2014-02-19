@@ -303,6 +303,7 @@ bson_strnlen (const char *s,
 #endif
 }
 
+
 void
 bson_strcpy_w_null (char       *dst,
                     const char *src,
@@ -316,35 +317,47 @@ bson_strcpy_w_null (char       *dst,
 #endif
 }
 
+
 int
-bson_vsnprintf (char * str, size_t size, const char * format, va_list ap)
+bson_vsnprintf (char       *str,
+                size_t      size,
+                const char *format,
+                va_list     ap)
 {
 #ifdef BSON_OS_WIN32
-    int r = -1;
+   int r = -1;
 
-    if (size != 0) {
-        r = _vsnprintf_s(str, size, _TRUNCATE, format, ap);
-    }
+   BSON_ASSERT (str);
 
-    if (r == -1) {
-        r = _vscprintf(format, ap);
-    }
+   if (size != 0) {
+       r = _vsnprintf_s (str, size, _TRUNCATE, format, ap);
+   }
 
-    return r;
+   if (r == -1) {
+      r = _vscprintf (format, ap);
+   }
+
+   return r;
 #else
-    return vsnprintf(str, size, format, ap);
+   return vsnprintf (str, size, format, ap);
 #endif
 }
 
+
 int
-bson_snprintf (char * str, size_t size, const char * format, ...)
+bson_snprintf (char       *str,
+               size_t      size,
+               const char *format,
+               ...)
 {
-    int r;
-    va_list ap;
+   int r;
+   va_list ap;
 
-    va_start(ap, format);
-    r = bson_vsnprintf(str, size, format, ap);
-    va_end(ap);
+   BSON_ASSERT (str);
 
-    return r;
+   va_start (ap, format);
+   r = bson_vsnprintf (str, size, format, ap);
+   va_end (ap);
+
+   return r;
 }

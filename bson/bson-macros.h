@@ -143,12 +143,14 @@
 #endif
 
 
-#if defined(__GNUC__)
+#if defined(__clang__)
+# define BSON_GNUC_PRINTF(f, v) __attribute__((format (printf, f, v)))
+#elif defined(__GNUC__)
 #  define GCC_VERSION (__GNUC__ * 10000 \
                        + __GNUC_MINOR__ * 100 \
                        + __GNUC_PATCHLEVEL__)
 #  if GCC_VERSION > 40400
-#    define BSON_GNUC_PRINTF(f, v) __attribute__((format (printf, f, v)))
+#    define BSON_GNUC_PRINTF(f, v) __attribute__((format (gnu_printf, f, v)))
 #  else
 #    define BSON_GNUC_PRINTF(f, v)
 #  endif /* GCC_VERSION > 40400 */

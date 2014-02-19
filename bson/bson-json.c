@@ -202,6 +202,14 @@ struct _bson_json_reader
       bson->n--; \
    } while (0)
 
+
+static void
+_bson_json_read_set_error (bson_json_reader_t *reader,
+                           const char         *fmt,
+                           ...)
+   BSON_GNUC_PRINTF (2, 3);
+
+
 static void
 _bson_json_read_set_error (bson_json_reader_t *reader,
                            const char         *fmt,
