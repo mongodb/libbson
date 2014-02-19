@@ -290,7 +290,6 @@ AS_IF([test "x$enable_maintainer_flags" = "xyes" && test "x$GCC" = "xyes"],
                            -Wswitch-default
                            -Wswitch-enum
                            -Wundef
-                           -Wunused-but-set-parameter
                            -Wuninitialized
                           "])]
 )
