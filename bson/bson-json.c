@@ -320,10 +320,13 @@ static int
 _bson_json_read_integer (void     *_ctx,
                          long long val)
 {
+   _bson_json_read_state_t rs;
+   _bson_json_read_bson_state_t bs;
+
    BASIC_YAJL_CB_PREAMBLE;
 
-   _bson_json_read_state_t rs = bson->read_state;
-   _bson_json_read_bson_state_t bs = bson->bson_state;
+   rs = bson->read_state;
+   bs = bson->bson_state;
 
    if (rs == BSON_JSON_REGULAR) {
       if (abs (val) <= INT32_MAX) {
@@ -352,6 +355,14 @@ _bson_json_read_integer (void     *_ctx,
       case BSON_JSON_LF_MAXKEY:
          bson->bson_type_data.maxkey.has_maxkey = true;
          break;
+      case BSON_JSON_LF_REGEX:
+      case BSON_JSON_LF_OPTIONS:
+      case BSON_JSON_LF_OID:
+      case BSON_JSON_LF_BINARY:
+      case BSON_JSON_LF_TYPE:
+      case BSON_JSON_LF_REF:
+      case BSON_JSON_LF_ID:
+      case BSON_JSON_LF_UNDEFINED:
       default:
          _bson_json_read_set_error (reader,
                                     "Invalid special type for integer read %d",
@@ -384,10 +395,13 @@ _bson_json_read_string (void                *_ctx,
                         const unsigned char *val,
                         size_t               vlen)
 {
+   _bson_json_read_state_t rs;
+   _bson_json_read_bson_state_t bs;
+
    BASIC_YAJL_CB_PREAMBLE;
 
-   _bson_json_read_state_t rs = bson->read_state;
-   _bson_json_read_bson_state_t bs = bson->bson_state;
+   rs = bson->read_state;
+   bs = bson->bson_state;
 
    if (rs == BSON_JSON_REGULAR) {
       bson_append_utf8 (STACK_BSON_CHILD, key, len, (const char *)val, vlen);
@@ -448,6 +462,12 @@ _bson_json_read_string (void                *_ctx,
          bson->bson_type_data.ref.has_id = true;
          bson_oid_init_from_string (&bson->bson_type_data.ref.id, val_w_null);
          break;
+      case BSON_JSON_LF_DATE:
+      case BSON_JSON_LF_TIMESTAMP_T:
+      case BSON_JSON_LF_TIMESTAMP_I:
+      case BSON_JSON_LF_UNDEFINED:
+      case BSON_JSON_LF_MINKEY:
+      case BSON_JSON_LF_MAXKEY:
       default:
          goto BAD_PARSE;
       }
@@ -478,6 +498,10 @@ _bson_json_read_start_map (void *_ctx)
    } else {
       bson->read_state = BSON_JSON_IN_START_MAP;
    }
+
+   /* silence some warnings */
+   (void)len;
+   (void)key;
 
    return 1;
 }
@@ -695,6 +719,19 @@ _bson_json_read_end_map (void *_ctx)
       case BSON_TYPE_MAXKEY:
          return bson_append_maxkey (STACK_BSON_CHILD, bson->key,
                                     bson->key_buf.len);
+      case BSON_TYPE_EOD:
+      case BSON_TYPE_DOUBLE:
+      case BSON_TYPE_UTF8:
+      case BSON_TYPE_DOCUMENT:
+      case BSON_TYPE_ARRAY:
+      case BSON_TYPE_BOOL:
+      case BSON_TYPE_NULL:
+      case BSON_TYPE_CODE:
+      case BSON_TYPE_SYMBOL:
+      case BSON_TYPE_CODEWSCOPE:
+      case BSON_TYPE_INT32:
+      case BSON_TYPE_TIMESTAMP:
+      case BSON_TYPE_INT64:
       default:
          _bson_json_read_set_error (reader, "Unknown type %d", bson->bson_type);
          return 0;

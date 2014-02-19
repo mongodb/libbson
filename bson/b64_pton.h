@@ -260,6 +260,8 @@ b64_pton_do(char const *src, uint8_t *target, size_t targsize)
 			 */
 			if (target[tarindex] != 0)
 				return (-1);
+		default:
+			break;
 		}
 	} else {
 		/*
@@ -353,6 +355,8 @@ b64_pton_len(char const *src)
 				if (b64rmap[ch] != b64rmap_space)
 					return (-1);
 
+		default:
+			break;
 		}
 	} else {
 		/*
