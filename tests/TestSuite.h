@@ -69,6 +69,7 @@ struct _Test
    char *name;
    TestFunc func;
    int exit_code;
+   unsigned seed;
    int (*check) (void);
 };
 
@@ -96,7 +97,6 @@ void TestSuite_AddFull (TestSuite *suite,
                         int (*check) (void));
 int  TestSuite_Run     (TestSuite *suite);
 void TestSuite_Destroy (TestSuite *suite);
-
 
 #ifdef __cplusplus
 }
