@@ -175,10 +175,14 @@ bson_md5_process (bson_md5_t     *md5,
              */
             if (!((data - (const uint8_t *)0) & 3)) {
                 /* data are properly aligned */
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wcast-align"
+#endif
                 X = (const uint32_t *)data;
+#ifdef __clang__
 #pragma clang diagnostic pop
+#endif
             }
             else {
                 /* not aligned */
