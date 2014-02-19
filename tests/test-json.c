@@ -1,4 +1,5 @@
 #include <bson.h>
+#include <bcon.h>
 #include <assert.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -260,6 +261,194 @@ test_bson_corrupt_binary (void)
    bson_free(buf);
 }
 
+static void
+_test_bson_json_read_compare (const char *json,
+                              int         size,
+                              ...)
+{
+   bson_error_t error;
+   bson_json_reader_t *reader;
+   va_list ap;
+   int r;
+   bson_t bson;
+   bson_t *compare;
+
+   bson_init (&bson);
+
+   reader = bson_json_data_reader_new ((size == 1), size);
+   bson_json_data_reader_ingest(reader, (uint8_t *)json, strlen(json));
+
+   va_start (ap, size);
+
+   while ((r = bson_json_read (reader, &bson, &error))) {
+      if (r == -1) {
+         fprintf (stderr, "%s\n", error.message);
+         abort ();
+      }
+
+      compare = va_arg (ap, bson_t *);
+
+      assert (compare);
+
+      bson_eq_bson (&bson, compare);
+
+      bson_destroy (compare);
+
+      bson_reinit (&bson);
+   }
+
+   va_end (ap);
+
+   bson_destroy (&bson);
+
+   bson_json_reader_destroy (reader);
+}
+
+static void
+test_bson_json_read(void)
+{
+   const char * json = "{ \n\
+      \"foo\" : \"bar\", \n\
+      \"bar\" : 12341, \n\
+      \"baz\" : 123.456, \n\
+      \"map\" : { \"a\" : 1 }, \n\
+      \"array\" : [ 1, 2, 3, 4 ], \n\
+      \"null\" : null, \n\
+      \"boolean\" : true, \n\
+      \"oid\" : { \n\
+        \"$oid\" : \"000000000000000000000000\" \n\
+      }, \n\
+      \"binary\" : { \n\
+        \"$binary\" : \"ZGVhZGJlZWY=\", \n\
+        \"$type\" : \"00\" \n\
+      }, \n\
+      \"regex\" : { \n\
+        \"$options\" : \"ism\", \n\
+        \"$regex\" : \"foo|bar\" \n\
+      }, \n\
+      \"date\" : { \n\
+        \"$date\" : 10000 \n\
+      }, \n\
+      \"ref\" : { \n\
+        \"$ref\" : \"foo\", \n\
+        \"$id\" : \"000000000000000000000000\" \n\
+      }, \n\
+      \"undefined\" : { \n\
+        \"$undefined\" : true \n\
+      }, \n\
+      \"minkey\" : { \n\
+        \"$minkey\" : 1 \n\
+      }, \n\
+      \"maxkey\" : { \n\
+        \"$maxkey\" : 1 \n\
+      }, \n\
+      \"timestamp\" : { \n\
+        \"$timestamp\" : { \n\
+           \"t\" : 100, \n\
+           \"i\" : 1000 \n\
+        } \n\
+      } \n\
+   } { \"after\": \"b\" } { \"twice\" : true }";
+
+   bson_oid_t oid;
+   bson_t * first, *second, *third;
+
+   bson_oid_init_from_string(&oid, "000000000000000000000000");
+   
+   first = BCON_NEW(
+      "foo", "bar",
+      "bar", BCON_INT32(12341),
+      "baz", BCON_DOUBLE(123.456),
+      "map", "{",
+         "a", BCON_INT32(1),
+      "}",
+      "array", "[", BCON_INT32(1), BCON_INT32(2), BCON_INT32(3), BCON_INT32(4), "]",
+      "null", BCON_NULL,
+      "boolean", BCON_BOOL(true),
+      "oid", BCON_OID(&oid),
+      "binary", BCON_BIN(BSON_SUBTYPE_BINARY, (const uint8_t *)"deadbeef", 8),
+      "regex", BCON_REGEX("foo|bar", "ism"),
+      "date", BCON_DATE_TIME(10000),
+      "ref", BCON_DBPOINTER("foo", &oid),
+      "undefined", BCON_UNDEFINED,
+      "minkey", BCON_MINKEY,
+      "maxkey", BCON_MAXKEY,
+      "timestamp", BCON_TIMESTAMP(100, 1000)
+   );
+
+   second = BCON_NEW("after", "b");
+   third = BCON_NEW("twice", BCON_BOOL(true));
+
+   _test_bson_json_read_compare(json, 5, first, second, third, NULL);
+}
+
+static void
+test_bson_json_error (const char              *json,
+                      bson_json_error_domain_t domain,
+                      bson_json_error_code_t   code)
+{
+   bson_error_t error;
+   bson_t * bson;
+
+   bson = bson_from_json((const uint8_t *)json, strlen(json), &error);
+
+   assert (! bson);
+   assert (error.domain == domain);
+   assert (error.code == code);
+}
+
+static void
+test_bson_json_read_missing_complex(void)
+{
+   const char * json = "{ \n\
+      \"foo\" : { \n\
+         \"$options\" : \"ism\"\n\
+      }\n\
+   }";
+
+   test_bson_json_error (json, BSON_JSON_ERROR_READ,
+                         BSON_JSON_ERROR_READ_INVALID_PARAM);
+}
+
+static void
+test_bson_json_read_invalid_json(void)
+{
+   const char * json = "{ \n\
+      \"foo\" : { \n\
+   }";
+
+   test_bson_json_error (json, BSON_JSON_ERROR_READ,
+                         BSON_JSON_ERROR_READ_CORRUPT_JS);
+}
+
+static ssize_t
+test_bson_json_read_bad_cb_helper(void *_ctx, uint8_t * buf, size_t len)
+{
+   return -1;
+}
+
+static void
+test_bson_json_read_bad_cb(void)
+{
+   bson_error_t error;
+   bson_json_reader_t *reader;
+   int r;
+   bson_t bson;
+
+   bson_init (&bson);
+
+   reader = bson_json_reader_new (NULL, &test_bson_json_read_bad_cb_helper, NULL, false, 0);
+
+   r = bson_json_read (reader, &bson, &error);
+
+   assert(r == -1);
+   assert(error.domain = BSON_JSON_ERROR_READ);
+   assert(error.code = BSON_JSON_ERROR_READ_CB_FAILURE);
+
+   bson_destroy (&bson);
+
+   bson_json_reader_destroy (reader);
+}
 
 void
 test_json_install (TestSuite *suite)
@@ -274,4 +463,8 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/as_json/corrupt", test_bson_corrupt);
    TestSuite_Add (suite, "/bson/as_json/corrupt_utf8", test_bson_corrupt_utf8);
    TestSuite_Add (suite, "/bson/as_json/corrupt_binary", test_bson_corrupt_binary);
+   TestSuite_Add (suite, "/bson/json/read", test_bson_json_read);
+   TestSuite_Add (suite, "/bson/json/read/missing_complex", test_bson_json_read_missing_complex);
+   TestSuite_Add (suite, "/bson/json/read/invalid_json", test_bson_json_read_invalid_json);
+   TestSuite_Add (suite, "/bson/json/read/bad_cb", test_bson_json_read_bad_cb);
 }

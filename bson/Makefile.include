@@ -30,6 +30,7 @@ INST_H_FILES = \
 	bson/bson-endian.h \
 	bson/bson-error.h \
 	bson/bson-iter.h \
+	bson/bson-json.h \
 	bson/bson-keys.h \
 	bson/bson-macros.h \
 	bson/bson-md5.h \
@@ -61,6 +62,7 @@ libbson_1_0_la_SOURCES = \
 	bson/bson-clock.c \
 	bson/bson-error.c \
 	bson/bson-iter.c \
+	bson/bson-json.c \
 	bson/bson-keys.c \
 	bson/bson-md5.c \
 	bson/bson-memory.c \
@@ -76,12 +78,14 @@ libbson_1_0_la_CPPFLAGS = \
 	-DBSON_COMPILATION \
 	$(BSON_DEBUG_CFLAGS) \
 	-I$(top_srcdir)/bson \
+	-I$(top_srcdir)/yajl \
 	$(MAINTAINER_CFLAGS)
 
 
 libbson_1_0_la_LIBADD = \
 	$(CLOCK_LIB) \
-	$(PTHREAD_LIB)
+	$(PTHREAD_LIB) \
+	libyajl.la
 
 
 libbson_1_0_la_LDFLAGS = \

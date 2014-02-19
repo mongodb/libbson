@@ -119,7 +119,7 @@ static const char * gUint32Strs[] = {
    "961", "962", "963", "964", "965", "966", "967", "968", "969", "970",
    "971", "972", "973", "974", "975", "976", "977", "978", "979", "980",
    "981", "982", "983", "984", "985", "986", "987", "988", "989", "990",
-   "991", "992", "993", "994", "995", "996", "997", "998", "999", "1000",
+   "991", "992", "993", "994", "995", "996", "997", "998", "999"
 };
 
 
@@ -141,7 +141,7 @@ static const char * gUint32Strs[] = {
  * @strptr will always be set. It will either point to @str or a constant
  * string. You will want to use this as your key.
  */
-void
+size_t
 bson_uint32_to_string (uint32_t value,
                        const char  **strptr,
                        char         *str,
@@ -149,9 +149,16 @@ bson_uint32_to_string (uint32_t value,
 {
    size_t i;
 
-   if (value <= 1000) {
+   if (value < 1000) {
       *strptr = gUint32Strs[value];
-      return;
+
+      if (value < 10) {
+         return 1;
+      } else if (value < 100) {
+         return 2;
+      } else {
+         return 3;
+      }
    } else {
       i = size;
       str[i] = '\0';
@@ -163,5 +170,7 @@ bson_uint32_to_string (uint32_t value,
       }
 
       *strptr = str + i;
+
+      return size - i;
    }
 }

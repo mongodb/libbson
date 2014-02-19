@@ -13,6 +13,7 @@ depcomp
 .deps
 INSTALL
 install-sh
+json-to-bson
 *.la
 .libs
 libtool
