@@ -132,13 +132,13 @@ static void
 b64_initialize_rmap ()
 {
 	int i;
-	char ch;
+	unsigned char ch;
 
 	/* Null: end of string, stop parsing */
 	b64rmap[0] = b64rmap_end;
 
 	for (i = 1; i < 256; ++i) {
-		ch = (char)i;
+		ch = (unsigned char)i;
 		/* Whitespaces */
 		if (isspace(ch))
 			b64rmap[i] = b64rmap_space;
