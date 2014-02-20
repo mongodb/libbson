@@ -15,12 +15,16 @@
  */
 
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #include <assert.h>
 #include <fcntl.h>
 #include <stdarg.h>
 
 #if defined(__APPLE__)
-#include <mach/mach_time.h>
+# include <mach/mach_time.h>
 #endif
 
 #include <stdio.h>
@@ -137,11 +141,7 @@ snprintf (char *str,
 void
 _Clock_GetMonotonic (struct timespec *ts) /* OUT */
 {
-#if defined(__linux__) || \
-    defined(__FreeBSD__) || \
-    defined(__OpenBSD__) || \
-    defined(__NetBSD__) || \
-    defined(__DragonFly__)
+#if defined(HAVE_CLOCK_GETTIME)
    clock_gettime (CLOCK_MONOTONIC, ts);
 #elif defined(__APPLE__)
    static mach_timebase_info_data_t info = { 0 };
