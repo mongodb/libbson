@@ -14,40 +14,58 @@
  * limitations under the License.
  */
 
-#include "bson-compat.h"
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
 #include <stdio.h>
 #include <stdarg.h>
 
-#include "bson-string.h"
+#include "bson-compat.h"
 #include "bson-error.h"
 #include "bson-memory.h"
+#include "bson-string.h"
 #include "bson-types.h"
 
 
-/**
- * bson_set_error:
- * @error: (out): A #bson_error_t.
- * @domain: (in): The error domain.
- * @code: (in): The error code.
- * @format: (in): A printf style format string.
+/*
+ *--------------------------------------------------------------------------
  *
- * Initializes @error using the parameters specified.
+ * bson_set_error --
  *
- * @domain is an application specific error domain which should describe
- * which module initiated the error. Think of this as the exception type.
+ *       Initializes @error using the parameters specified.
  *
- * @code is the @domain specific error code.
+ *       @domain is an application specific error domain which should
+ *       describe which module initiated the error. Think of this as the
+ *       exception type.
  *
- * @format is used to generate the format string. It uses vsnprintf()
- * internally so the format should match what you would use there.
+ *       @code is the @domain specific error code.
+ *
+ *       @format is used to generate the format string. It uses vsnprintf()
+ *       internally so the format should match what you would use there.
+ *
+ * Parameters:
+ *       @error: A #bson_error_t.
+ *       @domain: The error domain.
+ *       @code: The error code.
+ *       @format: A printf style format string.
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       @error is initialized.
+ *
+ *--------------------------------------------------------------------------
  */
+
 void
-bson_set_error (bson_error_t *error,
-                uint32_t domain,
-                uint32_t code,
-                const char   *format,
-                ...)
+bson_set_error (bson_error_t *error,  /* OUT */
+                uint32_t      domain, /* IN */
+                uint32_t      code,   /* IN */
+                const char   *format, /* IN */
+                ...)                  /* IN */
 {
    va_list args;
 
@@ -63,31 +81,50 @@ bson_set_error (bson_error_t *error,
    }
 }
 
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_strerror_r --
+ *
+ *       This is a reentrant safe macro for strerror.
+ *
+ *       The resulting string is stored in @buf and @buf is returned.
+ *
+ * Returns:
+ *       A pointer to a static string or @buf.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 char *
-bson_strerror_r (int         err_code,
-                 char       *buf,
-                 size_t buflen)
+bson_strerror_r (int     err_code,  /* IN */
+                 char   *buf,       /* IN */
+                 size_t  buflen)    /* IN */
 {
-   const char *unknown_msg = "Unknown error";
+   static const char *unknown_msg = "Unknown error";
+   char *ret = NULL;
 
-   assert (buflen > strlen (unknown_msg) + 1);
 #if defined(__GNUC__) && defined(_GNU_SOURCE)
-   /* put "Unknown error" in buf for us if unknown*/
-   return strerror_r (err_code, buf, buflen);
-#else
-# if defined BSON_OS_WIN32
-
-   if (strerror_s (buf, buflen, err_code) != 0)
-# else
-
-   /* XSI strerror_r */
-   if (strerror_r (err_code, buf, buflen) != 0)
-# endif
-   {
-      memcpy (buf, unknown_msg, strlen (unknown_msg) + 1);
+   ret = strerror_r (err_code, buf, buflen);
+#elif defined(_WIN32)
+   if (strerror_s (buf, buflen, err_code) != 0) {
+      ret = buf;
    }
-
+#else /* XSI strerror_r */
+   if (strerror_r (err_code, buf, buflen) != 0) {
+      ret = buf;
+   }
 #endif
+
+   if (!ret) {
+      memcpy (buf, unknown_msg, MIN (buflen, strlen (unknown_msg)));
+      buf [buflen - 1] = '\0';
+      ret = buf;
+   }
 
    return buf;
 }
