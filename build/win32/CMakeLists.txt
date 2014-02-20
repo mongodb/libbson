@@ -70,6 +70,15 @@ set (SOURCES
    ${SOURCE_DIR}/bson/bson-string.c
    ${SOURCE_DIR}/bson/bson-utf8.c
    ${SOURCE_DIR}/bson/bson-writer.c
+   ${SOURCE_DIR}/yajl/yajl_alloc.c
+   ${SOURCE_DIR}/yajl/yajl_buf.c
+   ${SOURCE_DIR}/yajl/yajl.c
+   ${SOURCE_DIR}/yajl/yajl_encode.c
+   ${SOURCE_DIR}/yajl/yajl_gen.c
+   ${SOURCE_DIR}/yajl/yajl_lex.c
+   ${SOURCE_DIR}/yajl/yajl_parser.c
+   ${SOURCE_DIR}/yajl/yajl_tree.c
+   ${SOURCE_DIR}/yajl/yajl_version.c
 )
 
 set (HEADERS
