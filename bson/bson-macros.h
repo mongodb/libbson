@@ -206,7 +206,7 @@
 #define BSON_TYPEOF decltype
 #else
 #define BSON_ENSURE_ARRAY_PARAM_SIZE(_n) static (_n)
-#define BSON_TYPEOF typeof 
+#define BSON_TYPEOF typeof
 #endif
 
 #endif /* BSON_MACROS_H */
