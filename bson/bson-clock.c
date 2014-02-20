@@ -24,6 +24,7 @@
 # include <mach/mach.h>
 #elif defined(HAVE_CLOCK_GETTIME)
 # include <time.h>
+# include <sys/time.h>
 #endif
 
 #include "bson-compat.h"
