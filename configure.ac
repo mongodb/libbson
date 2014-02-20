@@ -158,10 +158,13 @@ AM_CONDITIONAL([HAVE_PYTHON], [test "x$ax_python_header" != "xno"])
 dnl **************************************************************************
 dnl Check for necessary libraries.
 dnl **************************************************************************
+saved_CFLAGS="$CFLAGS"
+CFLAGS="$CFLAGS -D_POSIX_C_SOURCE"
 AC_CHECK_FUNCS([clock_gettime], [CLOCK_LIB=],
 	       [AC_CHECK_LIB([rt], [clock_gettime], [CLOCK_LIB=-lrt],
 			     [CLOCK_LIB=])])
 AC_SUBST([CLOCK_LIB])
+CFLAGS="$saved_CFLAGS"
 
 AC_CHECK_FUNCS(posix_memalign memalign strnlen)
 
