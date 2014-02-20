@@ -17,6 +17,7 @@
 
 #include <assert.h>
 #include <fcntl.h>
+#include <stdarg.h>
 
 #if defined(__APPLE__)
 #include <mach/mach_time.h>
@@ -116,7 +117,7 @@ snprintf (char *str,
           const char *format,
           ...)
 {
-   int r = -1;;
+   int r = -1;
    va_list ap;
 
    va_start (ap, format);
