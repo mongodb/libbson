@@ -99,6 +99,14 @@ BSON_BEGIN_DECLS
 # define bson_sync_synchronize() MemoryBarrier()
 #endif
 
+#if !defined(va_copy) && defined(_MSC_VER)
+#define va_copy(dst,src) ((dst) = (src))
+#endif
+
+#if !defined(va_copy) && defined(__GNUC__) && __GNUC__ < 3
+#define va_copy(dst,src) __va_copy(dst, src)
+#endif
+
 BSON_END_DECLS
 
 #endif /* BSON_COMPAT_H */
