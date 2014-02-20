@@ -16,12 +16,13 @@
 
 
 #if !defined (BSON_INSIDE) && !defined (BSON_COMPILATION)
-#error "Only <bson.h> can be included directly."
+# error "Only <bson.h> can be included directly."
 #endif
 
 
-#ifndef BSON_THREAD_H
-#define BSON_THREAD_H
+#ifndef BSON_THREAD_PRIVATE_H
+#define BSON_THREAD_PRIVATE_H
+
 
 #include "bson-compat.h"
 #include "bson-config.h"
@@ -31,31 +32,24 @@
 BSON_BEGIN_DECLS
 
 
-/*
- * The following tries to abstract the native threading implementation for
- * the current system using macros.
- */
-
-
 #if defined(BSON_OS_UNIX)
 #  include <pthread.h>
-#  define bson_mutex_t                 pthread_mutex_t
-#  define bson_mutex_init(_n)          pthread_mutex_init((_n), NULL)
-#  define bson_mutex_lock              pthread_mutex_lock
-#  define bson_mutex_unlock            pthread_mutex_unlock
-#  define bson_mutex_destroy           pthread_mutex_destroy
-#  define bson_thread_t                pthread_t
-#  define bson_thread_create(_t,_f,_d) pthread_create((_t), NULL, (_f), (_d))
-#  define bson_thread_join(_n)         pthread_join((_n), NULL)
-#  define bson_once_t                  pthread_once_t
-#  define bson_once                    pthread_once
-#  define BSON_ONCE_FUN(n)             void n(void)
-#  define BSON_ONCE_RETURN             return
-
+#  define bson_mutex_t                    pthread_mutex_t
+#  define bson_mutex_init(_n)             pthread_mutex_init((_n), NULL)
+#  define bson_mutex_lock                 pthread_mutex_lock
+#  define bson_mutex_unlock               pthread_mutex_unlock
+#  define bson_mutex_destroy              pthread_mutex_destroy
+#  define bson_thread_t                   pthread_t
+#  define bson_thread_create(_t,_f,_d)    pthread_create((_t), NULL, (_f), (_d))
+#  define bson_thread_join(_n)            pthread_join((_n), NULL)
+#  define bson_once_t                     pthread_once_t
+#  define bson_once                       pthread_once
+#  define BSON_ONCE_FUN(n)                void n(void)
+#  define BSON_ONCE_RETURN                return
 #  ifdef _PTHREAD_ONCE_INIT_NEEDS_BRACES
-#    define BSON_ONCE_INIT       { PTHREAD_ONCE_INIT }
+#    define BSON_ONCE_INIT                {PTHREAD_ONCE_INIT}
 #  else
-#    define BSON_ONCE_INIT       PTHREAD_ONCE_INIT
+#    define BSON_ONCE_INIT                PTHREAD_ONCE_INIT
 #  endif
 #else
 #  define bson_mutex_t                    CRITICAL_SECTION
@@ -64,11 +58,7 @@ BSON_BEGIN_DECLS
 #  define bson_mutex_unlock               LeaveCriticalSection
 #  define bson_mutex_destroy              DeleteCriticalSection
 #  define bson_thread_t                   HANDLE
-static BSON_INLINE int bson_thread_create(bson_thread_t *thread, void *(*cb)(void *), void *arg)
-{
-   *thread = CreateThread(NULL, 0, (void *)cb, arg, 0, NULL);
-   return 0;
-}
+#  define bson_thread_create(_t,_f,_d)    (!(*(_t) = CreateThread(NULL,0,(void*)_f,_d,0,NULL)))
 #  define bson_thread_join(_n)            WaitForSingleObject((_n), INFINITE)
 #  define bson_once_t                     INIT_ONCE
 #  define BSON_ONCE_INIT                  INIT_ONCE_STATIC_INIT
@@ -77,7 +67,8 @@ static BSON_INLINE int bson_thread_create(bson_thread_t *thread, void *(*cb)(voi
 #  define BSON_ONCE_RETURN                return true
 #endif
 
+
 BSON_END_DECLS
 
 
-#endif /* BSON_THREAD_H */
+#endif /* BSON_THREAD_PRIVATE_H */
