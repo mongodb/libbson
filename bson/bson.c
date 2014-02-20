@@ -24,9 +24,13 @@
 
 
 #ifndef BSON_MAX_RECURSION
-#  define BSON_MAX_RECURSION 100
+# define BSON_MAX_RECURSION 100
 #endif
 
+
+/*
+ * Structures.
+ */
 
 typedef struct
 {
@@ -37,33 +41,53 @@ typedef struct
 
 typedef struct
 {
-   uint32_t  count;
-   bool    keys;
-   uint32_t  depth;
+   uint32_t       count;
+   bool           keys;
+   uint32_t       depth;
    bson_string_t *str;
 } bson_json_state_t;
 
 
-static bool
-_bson_as_json_visit_array (const bson_iter_t *iter,
-                           const char        *key,
-                           const bson_t      *v_array,
-                           void              *data);
+/*
+ * Forward declarations.
+ */
+static bool _bson_as_json_visit_array    (const bson_iter_t *iter,
+                                          const char        *key,
+                                          const bson_t      *v_array,
+                                          void              *data);
+static bool _bson_as_json_visit_document (const bson_iter_t *iter,
+                                          const char        *key,
+                                          const bson_t      *v_document,
+                                          void              *data);
 
 
-static bool
-_bson_as_json_visit_document (const bson_iter_t *iter,
-                              const char        *key,
-                              const bson_t      *v_document,
-                              void              *data);
-
-
+/*
+ * Globals.
+ */
 static const uint8_t gZero;
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * _bson_impl_inline_grow --
+ *
+ *       Document growth implementation for documents that currently
+ *       contain stack based buffers. The document may be switched to
+ *       a malloc based buffer.
+ *
+ * Returns:
+ *       true if successful; otherwise false indicating INT_MAX overflow.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 static bool
-_bson_impl_inline_grow (bson_impl_inline_t *impl,
-                        uint32_t       size)
+_bson_impl_inline_grow (bson_impl_inline_t *impl, /* IN */
+                        uint32_t            size) /* IN */
 {
    bson_impl_alloc_t *alloc = (bson_impl_alloc_t *)impl;
    uint8_t *data;
@@ -100,9 +124,26 @@ _bson_impl_inline_grow (bson_impl_inline_t *impl,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * _bson_impl_alloc_grow --
+ *
+ *       Document growth implementation for documents containing malloc
+ *       based buffers.
+ *
+ * Returns:
+ *       true if successful; otherwise false indicating INT_MAX overflow.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 static bool
-_bson_impl_alloc_grow (bson_impl_alloc_t *impl,
-                       uint32_t      size)
+_bson_impl_alloc_grow (bson_impl_alloc_t *impl, /* IN */
+                       uint32_t           size) /* IN */
 {
    uint32_t req;
 
@@ -130,9 +171,26 @@ _bson_impl_alloc_grow (bson_impl_alloc_t *impl,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * _bson_grow --
+ *
+ *       Grows the bson_t structure to be large enough to contain @size
+ *       bytes.
+ *
+ * Returns:
+ *       true if successful, false if the size would overflow.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 static bool
-_bson_grow (bson_t        *bson,
-            uint32_t  size)
+_bson_grow (bson_t   *bson, /* IN */
+            uint32_t  size) /* IN */
 {
    BSON_ASSERT (bson);
    BSON_ASSERT (!(bson->flags & BSON_FLAG_RDONLY));
@@ -145,8 +203,25 @@ _bson_grow (bson_t        *bson,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * _bson_data --
+ *
+ *       A helper function to return the contents of the bson document
+ *       taking into account the polymorphic nature of bson_t.
+ *
+ * Returns:
+ *       A buffer which should not be modified or freed.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 static BSON_INLINE uint8_t *
-_bson_data (const bson_t *bson)
+_bson_data (const bson_t *bson) /* IN */
 {
    if ((bson->flags & BSON_FLAG_INLINE)) {
       return ((bson_impl_inline_t *)bson)->data;
@@ -157,8 +232,26 @@ _bson_data (const bson_t *bson)
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * _bson_encode_length --
+ *
+ *       Helper to encode the length of the bson_t in the first 4 bytes
+ *       of the bson document. Little endian format is used as specified
+ *       by bsonspec.
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 static BSON_INLINE void
-_bson_encode_length (bson_t *bson)
+_bson_encode_length (bson_t *bson) /* IN */
 {
 #if BSON_BYTE_ORDER == BSON_LITTLE_ENDIAN
    memcpy (_bson_data (bson), &bson->len, 4);
@@ -169,25 +262,39 @@ _bson_encode_length (bson_t *bson)
 }
 
 
-/**
- * bson_append_va:
- * @bson: A bson_t
- * @n_bytes: The number of bytes to append to the document.
- * @n_pairs: The number of length,buffer pairs.
- * @first_len: Length of first buffer.
- * @first_data: First buffer.
- * @args: va_list of additional tuples.
+/*
+ *--------------------------------------------------------------------------
  *
- * Appends the length,buffer pairs to the bson_t. @n_bytes is an optimization
- * to perform one array growth rather than many small growths.
+ * _bson_append_va --
+ *
+ *       Appends the length,buffer pairs to the bson_t. @n_bytes is an
+ *       optimization to perform one array growth rather than many small
+ *       growths.
+ *
+ *       @bson: A bson_t
+ *       @n_bytes: The number of bytes to append to the document.
+ *       @n_pairs: The number of length,buffer pairs.
+ *       @first_len: Length of first buffer.
+ *       @first_data: First buffer.
+ *       @args: va_list of additional tuples.
+ *
+ * Returns:
+ *       true if the bytes were appended successfully.
+ *       false if it bson would overflow INT_MAX.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
  */
+
 static BSON_INLINE bool
-_bson_append_va (bson_t             *bson,
-                 uint32_t       n_bytes,
-                 uint32_t       n_pairs,
-                 uint32_t       first_len,
-                 const uint8_t *first_data,
-                 va_list             args)
+_bson_append_va (bson_t        *bson,        /* IN */
+                 uint32_t       n_bytes,     /* IN */
+                 uint32_t       n_pairs,     /* IN */
+                 uint32_t       first_len,   /* IN */
+                 const uint8_t *first_data,  /* IN */
+                 va_list        args)        /* IN */
 {
    const uint8_t *data;
    uint32_t data_len;
@@ -229,26 +336,37 @@ _bson_append_va (bson_t             *bson,
 }
 
 
-/**
- * bson_append:
- * @bson: A bson_t.
- * @n_pairs: Number of length,buffer pairs.
- * @n_bytes: the total number of bytes being appended.
- * @first_len: Length of first buffer.
- * @first_data: First buffer.
+/*
+ *--------------------------------------------------------------------------
  *
- * Variadic function to append length,buffer pairs to a bson_t. If the
- * append would cause the bson_t to overflow a 32-bit length, it will return
- * false and no append will have occurred.
+ * _bson_append --
  *
- * Returns: true if successful; otherwise false.
+ *       Variadic function to append length,buffer pairs to a bson_t. If the
+ *       append would cause the bson_t to overflow a 32-bit length, it will
+ *       return false and no append will have occurred.
+ *
+ * Parameters:
+ *       @bson: A bson_t.
+ *       @n_pairs: Number of length,buffer pairs.
+ *       @n_bytes: the total number of bytes being appended.
+ *       @first_len: Length of first buffer.
+ *       @first_data: First buffer.
+ *
+ * Returns:
+ *       true if successful; otherwise false indicating INT_MAX overflow.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
  */
+
 static bool
-_bson_append (bson_t             *bson,
-              uint32_t       n_pairs,
-              uint32_t       n_bytes,
-              uint32_t       first_len,
-              const uint8_t *first_data,
+_bson_append (bson_t        *bson,        /* IN */
+              uint32_t       n_pairs,     /* IN */
+              uint32_t       n_bytes,     /* IN */
+              uint32_t       first_len,   /* IN */
+              const uint8_t *first_data,  /* IN */
               ...)
 {
    va_list args;
@@ -276,23 +394,47 @@ _bson_append (bson_t             *bson,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * _bson_append_bson_begin --
+ *
+ *       Begin appending a subdocument or subarray to the document using
+ *       the key provided by @key.
+ *
+ *       If @key_length is < 0, then strlen() will be called on @key
+ *       to determine the length.
+ *
+ *       @key_type MUST be either BSON_TYPE_DOCUMENT or BSON_TYPE_ARRAY.
+ *
+ * Returns:
+ *       true if successful; otherwise false indiciating INT_MAX overflow.
+ *
+ * Side effects:
+ *       @child is initialized if true is returned.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 static bool
-_bson_append_bson_begin (bson_t      *bson,
-                         const char  *key,
-                         int          key_length,
-                         bson_type_t  child_type,
-                         bson_t      *child)
+_bson_append_bson_begin (bson_t      *bson,        /* IN */
+                         const char  *key,         /* IN */
+                         int          key_length,  /* IN */
+                         bson_type_t  child_type,  /* IN */
+                         bson_t      *child)       /* OUT */
 {
    const uint8_t type = child_type;
    const uint8_t empty[5] = { 5 };
    bson_impl_alloc_t *aparent = (bson_impl_alloc_t *)bson;
    bson_impl_alloc_t *achild = (bson_impl_alloc_t *)child;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (!(bson->flags & BSON_FLAG_RDONLY), false);
-   bson_return_val_if_fail (!(bson->flags & BSON_FLAG_IN_CHILD), false);
-   bson_return_val_if_fail (key, false);
-   bson_return_val_if_fail (child, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (!(bson->flags & BSON_FLAG_RDONLY));
+   BSON_ASSERT (!(bson->flags & BSON_FLAG_IN_CHILD));
+   BSON_ASSERT (key);
+   BSON_ASSERT ((child_type == BSON_TYPE_DOCUMENT) ||
+                (child_type == BSON_TYPE_ARRAY));
+   BSON_ASSERT (child);
 
    if (key_length < 0) {
       key_length = (int)strlen (key);
@@ -355,13 +497,30 @@ _bson_append_bson_begin (bson_t      *bson,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * _bson_append_bson_end --
+ *
+ *       Complete a call to _bson_append_bson_begin.
+ *
+ * Returns:
+ *       true if successful; otherwise false indiciating INT_MAX overflow.
+ *
+ * Side effects:
+ *       @child is destroyed and no longer valid after calling this
+ *       function.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 static bool
-_bson_append_bson_end (bson_t *bson,
-                       bson_t *child)
+_bson_append_bson_end (bson_t *bson,   /* IN */
+                       bson_t *child)  /* IN */
 {
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail ((bson->flags & BSON_FLAG_IN_CHILD), false);
-   bson_return_val_if_fail (!(child->flags & BSON_FLAG_IN_CHILD), false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT ((bson->flags & BSON_FLAG_IN_CHILD));
+   BSON_ASSERT (!(child->flags & BSON_FLAG_IN_CHILD));
 
    /*
     * Unmark the IN_CHILD flag.
@@ -385,11 +544,36 @@ _bson_append_bson_end (bson_t *bson,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_append_array_begin --
+ *
+ *       Start appending a new array.
+ *
+ *       Use @child to append to the data area for the given field.
+ *
+ *       It is a programming error to call any other bson function on
+ *       @bson until bson_append_array_end() has been called. It is
+ *       valid to call bson_append*() functions on @child.
+ *
+ *       This function is useful to allow building nested documents using
+ *       a single buffer owned by the top-level bson document.
+ *
+ * Returns:
+ *       true if successful; otherwise false and @child is invalid.
+ *
+ * Side effects:
+ *       @child is initialized if true is returned.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 bool
-bson_append_array_begin (bson_t     *bson,
-                         const char *key,
-                         int         key_length,
-                         bson_t     *child)
+bson_append_array_begin (bson_t     *bson,         /* IN */
+                         const char *key,          /* IN */
+                         int         key_length,   /* IN */
+                         bson_t     *child)        /* IN */
 {
    bson_return_val_if_fail (bson, false);
    bson_return_val_if_fail (key, false);
@@ -400,9 +584,28 @@ bson_append_array_begin (bson_t     *bson,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_append_array_end --
+ *
+ *       Complete a call to bson_append_array_begin().
+ *
+ *       It is safe to append other fields to @bson after calling this
+ *       function.
+ *
+ * Returns:
+ *       true if successful; otherwise false indiciating INT_MAX overflow.
+ *
+ * Side effects:
+ *       @child is invalid after calling this function.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 bool
-bson_append_array_end (bson_t *bson,
-                       bson_t *child)
+bson_append_array_end (bson_t *bson,   /* IN */
+                       bson_t *child)  /* IN */
 {
    bson_return_val_if_fail (bson, false);
    bson_return_val_if_fail (child, false);
@@ -411,11 +614,35 @@ bson_append_array_end (bson_t *bson,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_append_document_begin --
+ *
+ *       Start appending a new document.
+ *
+ *       Use @child to append to the data area for the given field.
+ *
+ *       It is a programming error to call any other bson function on
+ *       @bson until bson_append_document_end() has been called. It is
+ *       valid to call bson_append*() functions on @child.
+ *
+ *       This function is useful to allow building nested documents using
+ *       a single buffer owned by the top-level bson document.
+ *
+ * Returns:
+ *       true if successful; otherwise false and @child is invalid.
+ *
+ * Side effects:
+ *       @child is initialized if true is returned.
+ *
+ *--------------------------------------------------------------------------
+ */
 bool
-bson_append_document_begin (bson_t     *bson,
-                            const char *key,
-                            int         key_length,
-                            bson_t     *child)
+bson_append_document_begin (bson_t     *bson,         /* IN */
+                            const char *key,          /* IN */
+                            int         key_length,   /* IN */
+                            bson_t     *child)        /* IN */
 {
    bson_return_val_if_fail (bson, false);
    bson_return_val_if_fail (key, false);
@@ -426,9 +653,28 @@ bson_append_document_begin (bson_t     *bson,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_append_document_end --
+ *
+ *       Complete a call to bson_append_document_begin().
+ *
+ *       It is safe to append new fields to @bson after calling this
+ *       function, if true is returned.
+ *
+ * Returns:
+ *       true if successful; otherwise false indicating INT_MAX overflow.
+ *
+ * Side effects:
+ *       @child is destroyed and invalid after calling this function.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 bool
-bson_append_document_end (bson_t *bson,
-                          bson_t *child)
+bson_append_document_end (bson_t *bson,   /* IN */
+                          bson_t *child)  /* IN */
 {
    bson_return_val_if_fail (bson, false);
    bson_return_val_if_fail (child, false);
@@ -437,11 +683,30 @@ bson_append_document_end (bson_t *bson,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_append_array --
+ *
+ *       Append an array to @bson.
+ *
+ *       Generally, bson_append_array_begin() will result in faster code
+ *       since few buffers need to be malloced.
+ *
+ * Returns:
+ *       true if successful; otherwise false indiciating INT_MAX overflow.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 bool
-bson_append_array (bson_t       *bson,
-                   const char   *key,
-                   int           key_length,
-                   const bson_t *array)
+bson_append_array (bson_t       *bson,       /* IN */
+                   const char   *key,        /* IN */
+                   int           key_length, /* IN */
+                   const bson_t *array)      /* IN */
 {
    static const uint8_t type = BSON_TYPE_ARRAY;
 
@@ -462,13 +727,36 @@ bson_append_array (bson_t       *bson,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_append_binary --
+ *
+ *       Append binary data to @bson. The field will have the
+ *       BSON_TYPE_BINARY type.
+ *
+ * Parameters:
+ *       @subtype: the BSON Binary Subtype. See bsonspec.org for more
+ *                 information.
+ *       @binary: a pointer to the raw binary data.
+ *       @length: the size of @binary in bytes.
+ *
+ * Returns:
+ *       true if successful; otherwise false.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 bool
-bson_append_binary (bson_t             *bson,
-                    const char         *key,
-                    int                 key_length,
-                    bson_subtype_t      subtype,
-                    const uint8_t *binary,
-                    uint32_t       length)
+bson_append_binary (bson_t         *bson,       /* IN */
+                    const char     *key,        /* IN */
+                    int             key_length, /* IN */
+                    bson_subtype_t  subtype,    /* IN */
+                    const uint8_t  *binary,     /* IN */
+                    uint32_t        length)     /* IN */
 {
    static const uint8_t type = BSON_TYPE_BINARY;
    uint32_t length_le;
@@ -513,11 +801,28 @@ bson_append_binary (bson_t             *bson,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_append_bool --
+ *
+ *       Append a new field to @bson with the name @key. The value is
+ *       a boolean indicated by @value.
+ *
+ * Returns:
+ *       true if succesful; otherwise false.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 bool
-bson_append_bool (bson_t     *bson,
-                  const char *key,
-                  int         key_length,
-                  bool value)
+bson_append_bool (bson_t     *bson,       /* IN */
+                  const char *key,        /* IN */
+                  int         key_length, /* IN */
+                  bool        value)      /* IN */
 {
    static const uint8_t type = BSON_TYPE_BOOL;
    uint8_t byte = !!value;
@@ -538,11 +843,33 @@ bson_append_bool (bson_t     *bson,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_append_code --
+ *
+ *       Append a new field to @bson containing javascript code.
+ *
+ *       @javascript MUST be a zero terminated UTF-8 string. It MUST NOT
+ *       containing embedded \0 characters.
+ *
+ * Returns:
+ *       true if successful; otherwise false.
+ *
+ * Side effects:
+ *       None.
+ *
+ * See also:
+ *       bson_append_code_with_scope().
+ *
+ *--------------------------------------------------------------------------
+ */
+
 bool
-bson_append_code (bson_t     *bson,
-                  const char *key,
-                  int         key_length,
-                  const char *javascript)
+bson_append_code (bson_t     *bson,       /* IN */
+                  const char *key,        /* IN */
+                  int         key_length, /* IN */
+                  const char *javascript) /* IN */
 {
    static const uint8_t type = BSON_TYPE_CODE;
    uint32_t length;
@@ -569,12 +896,29 @@ bson_append_code (bson_t     *bson,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_append_code_with_scope --
+ *
+ *       Append a new field to @bson containing javascript code with
+ *       supplied scope.
+ *
+ * Returns:
+ *       true if successful; otherwise false.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 bool
-bson_append_code_with_scope (bson_t       *bson,
-                             const char   *key,
-                             int           key_length,
-                             const char   *javascript,
-                             const bson_t *scope)
+bson_append_code_with_scope (bson_t       *bson,         /* IN */
+                             const char   *key,          /* IN */
+                             int           key_length,   /* IN */
+                             const char   *javascript,   /* IN */
+                             const bson_t *scope)        /* IN */
 {
    static const uint8_t type = BSON_TYPE_CODEWSCOPE;
    uint32_t codews_length_le;
@@ -612,11 +956,29 @@ bson_append_code_with_scope (bson_t       *bson,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_append_dbpointer --
+ *
+ *       This BSON data type is DEPRECATED.
+ *
+ *       Append a BSON dbpointer field to @bson.
+ *
+ * Returns:
+ *       true if successful; otherwise false.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 bool
-bson_append_dbpointer (bson_t           *bson,
-                       const char       *key,
-                       int               key_length,
-                       const char       *collection,
+bson_append_dbpointer (bson_t           *bson,       /* IN */
+                       const char       *key,        /* IN */
+                       int               key_length, /* IN */
+                       const char       *collection, /* IN */
                        const bson_oid_t *oid)
 {
    static const uint8_t type = BSON_TYPE_DBPOINTER;
@@ -646,11 +1008,33 @@ bson_append_dbpointer (bson_t           *bson,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_append_document --
+ *
+ *       Append a new field to @bson containing a BSON document.
+ *
+ *       In general, using bson_append_document_begin() results in faster
+ *       code and less memory fragmentation.
+ *
+ * Returns:
+ *       true if successful; otherwise false.
+ *
+ * Side effects:
+ *       None.
+ *
+ * See also:
+ *       bson_append_document_begin().
+ *
+ *--------------------------------------------------------------------------
+ */
+
 bool
-bson_append_document (bson_t       *bson,
-                      const char   *key,
-                      int           key_length,
-                      const bson_t *value)
+bson_append_document (bson_t       *bson,       /* IN */
+                      const char   *key,        /* IN */
+                      int           key_length, /* IN */
+                      const bson_t *value)      /* IN */
 {
    static const uint8_t type = BSON_TYPE_DOCUMENT;
 
