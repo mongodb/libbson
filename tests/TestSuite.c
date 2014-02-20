@@ -120,8 +120,6 @@ snprintf (char *str,
    va_list ap;
 
    va_start (ap, format);
-
-   r = TestSuite_vsnprintf (str, size, format, ap);
    if (size != 0) {
       r = _vsnprintf_s (str, size, _TRUNCATE, format, ap);
    }
