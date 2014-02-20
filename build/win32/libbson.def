@@ -51,6 +51,7 @@ bson_count_keys
 bson_destroy
 bson_equal
 bson_free
+bson_from_json
 bson_get_data
 bson_get_monotonic_time
 bson_gettimeofday
