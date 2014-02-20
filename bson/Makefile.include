@@ -83,7 +83,6 @@ libbson_1_0_la_CPPFLAGS = \
 
 
 libbson_1_0_la_LIBADD = \
-	$(CLOCK_LIB) \
 	$(PTHREAD_LIB) \
 	libyajl.la
 
