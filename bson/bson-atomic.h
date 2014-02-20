@@ -31,8 +31,8 @@ BSON_BEGIN_DECLS
 # define bson_atomic_int64_add(p, v) (__sync_add_and_fetch_8(p, v))
 # define bson_memory_barrier         __sync_synchronize
 #elif defined(_MSC_VER) || defined(_WIN32)
-# define bson_atomic_int_add(p, v)   (InterlockedAdd((long int *)(p), v))
-# define bson_atomic_int64_add(p, v) (InterlockedAdd64(p, v))
+# define bson_atomic_int_add(p, v)   (InterlockedExchangeAdd((long int *)(p), v))
+# define bson_atomic_int64_add(p, v) (InterlockedExchangeAdd64(p, v))
 # define bson_memory_barrier         MemoryBarrier
 #endif
 
