@@ -169,7 +169,7 @@
 #if defined(_MSC_VER)
 #  define BSON_INLINE __inline
 #else
-#  define BSON_INLINE inline
+#  define BSON_INLINE __inline__
 #endif
 
 
