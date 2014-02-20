@@ -86,11 +86,11 @@ static void
 test_oid (void)
 {
    bson_t bcon, expected;
+   bson_oid_t oid;
 
    bson_init (&bcon);
    bson_init (&expected);
 
-   bson_oid_t oid;
    bson_oid_init (&oid, NULL);
 
    bson_append_oid (&expected, "foo", -1, &oid);
@@ -192,11 +192,11 @@ static void
 test_dbpointer (void)
 {
    bson_t bcon, expected;
+   bson_oid_t oid;
 
    bson_init (&bcon);
    bson_init (&expected);
 
-   bson_oid_t oid;
    bson_oid_init (&oid, NULL);
 
    bson_append_dbpointer (&expected, "foo", -1, "collection", &oid);

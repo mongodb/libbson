@@ -89,8 +89,8 @@ bson_utf8_validate (const char *utf8,
 {
    uint8_t first_mask;
    uint8_t seq_length;
-   int i;
-   int j;
+   unsigned i;
+   unsigned j;
 
    bson_return_val_if_fail (utf8, false);
 

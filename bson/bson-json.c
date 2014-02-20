@@ -17,9 +17,9 @@
 #include "bson.h"
 #include "bson-json.h"
 #include "b64_pton.h"
-#include "yajl/yajl_parse.h"
-#include "yajl/yajl_parser.h"
-#include "yajl/yajl_bytestack.h"
+
+#include <yajl/yajl_parser.h>
+#include <yajl/yajl_bytestack.h>
 
 #define STACK_MAX 100
 #define BSON_JSON_DEFAULT_BUF_SIZE 1 << 14
@@ -337,8 +337,8 @@ _bson_json_read_integer (void     *_ctx,
    bs = bson->bson_state;
 
    if (rs == BSON_JSON_REGULAR) {
-      if (abs (val) <= INT32_MAX) {
-         bson_append_int32 (STACK_BSON_CHILD, key, len, val);
+      if (val <= INT32_MAX) {
+         bson_append_int32 (STACK_BSON_CHILD, key, len, (int)val);
       } else {
          bson_append_int64 (STACK_BSON_CHILD, key, len, val);
       }
@@ -351,11 +351,11 @@ _bson_json_read_integer (void     *_ctx,
          break;
       case BSON_JSON_LF_TIMESTAMP_T:
          bson->bson_type_data.timestamp.has_t = true;
-         bson->bson_type_data.timestamp.t = val;
+         bson->bson_type_data.timestamp.t = (uint32_t)val;
          break;
       case BSON_JSON_LF_TIMESTAMP_I:
          bson->bson_type_data.timestamp.has_i = true;
-         bson->bson_type_data.timestamp.i = val;
+         bson->bson_type_data.timestamp.i = (uint32_t)val;
          break;
       case BSON_JSON_LF_MINKEY:
          bson->bson_type_data.minkey.has_minkey = true;

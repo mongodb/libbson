@@ -1959,27 +1959,29 @@ _bson_as_json_visit_codewscope (const bson_iter_t *iter,
 
 
 static const bson_visitor_t bson_as_json_visitors = {
-   .visit_before     = _bson_as_json_visit_before,
-   .visit_double     = _bson_as_json_visit_double,
-   .visit_utf8       = _bson_as_json_visit_utf8,
-   .visit_document   = _bson_as_json_visit_document,
-   .visit_array      = _bson_as_json_visit_array,
-   .visit_binary     = _bson_as_json_visit_binary,
-   .visit_undefined  = _bson_as_json_visit_undefined,
-   .visit_oid        = _bson_as_json_visit_oid,
-   .visit_bool       = _bson_as_json_visit_bool,
-   .visit_date_time  = _bson_as_json_visit_date_time,
-   .visit_null       = _bson_as_json_visit_null,
-   .visit_regex      = _bson_as_json_visit_regex,
-   .visit_dbpointer  = _bson_as_json_visit_dbpointer,
-   .visit_code       = _bson_as_json_visit_code,
-   .visit_symbol     = _bson_as_json_visit_symbol,
-   .visit_codewscope = _bson_as_json_visit_codewscope,
-   .visit_int32      = _bson_as_json_visit_int32,
-   .visit_timestamp  = _bson_as_json_visit_timestamp,
-   .visit_int64      = _bson_as_json_visit_int64,
-   .visit_minkey     = _bson_as_json_visit_minkey,
-   .visit_maxkey     = _bson_as_json_visit_maxkey,
+   _bson_as_json_visit_before,
+   NULL, /* visit_after */
+   NULL, /* visit_corrupt */
+   _bson_as_json_visit_double,
+   _bson_as_json_visit_utf8,
+   _bson_as_json_visit_document,
+   _bson_as_json_visit_array,
+   _bson_as_json_visit_binary,
+   _bson_as_json_visit_undefined,
+   _bson_as_json_visit_oid,
+   _bson_as_json_visit_bool,
+   _bson_as_json_visit_date_time,
+   _bson_as_json_visit_null,
+   _bson_as_json_visit_regex,
+   _bson_as_json_visit_dbpointer,
+   _bson_as_json_visit_code,
+   _bson_as_json_visit_symbol,
+   _bson_as_json_visit_codewscope,
+   _bson_as_json_visit_int32,
+   _bson_as_json_visit_timestamp,
+   _bson_as_json_visit_int64,
+   _bson_as_json_visit_maxkey,
+   _bson_as_json_visit_minkey,
 };
 
 
@@ -2174,12 +2176,24 @@ _bson_iter_validate_document (const bson_iter_t *iter,
 
 
 static const bson_visitor_t bson_validate_funcs = {
-   .visit_before     = _bson_iter_validate_before,
-   .visit_corrupt    = _bson_iter_validate_corrupt,
-   .visit_utf8       = _bson_iter_validate_utf8,
-   .visit_document   = _bson_iter_validate_document,
-   .visit_array      = _bson_iter_validate_document,
-   .visit_codewscope = _bson_iter_validate_codewscope,
+   _bson_iter_validate_before,
+   NULL, /* visit_after */
+   _bson_iter_validate_corrupt,
+   NULL, /* visit_double */
+   _bson_iter_validate_utf8,
+   _bson_iter_validate_document,
+   _bson_iter_validate_document, /* visit_array */
+   NULL, /* visit_binary */
+   NULL, /* visit_undefined */
+   NULL, /* visit_oid */
+   NULL, /* visit_bool */
+   NULL, /* visit_date_time */
+   NULL, /* visit_null */
+   NULL, /* visit_regex */
+   NULL, /* visit_dbpoint */
+   NULL, /* visit_code */
+   NULL, /* visit_symbol */
+   _bson_iter_validate_codewscope,
 };
 
 

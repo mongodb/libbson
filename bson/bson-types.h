@@ -268,7 +268,7 @@ typedef struct
    uint32_t       d4;       /* The offset of the fourth data byte. */
    uint32_t       next_off; /* The offset of the next field. */
    uint32_t       err_off;  /* The offset of the error. */
-   char                padding[16];
+   char           padding[16];
 } bson_iter_t;
 
 

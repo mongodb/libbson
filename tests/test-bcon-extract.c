@@ -71,11 +71,12 @@ static void
 test_oid (void)
 {
    bson_oid_t oid;
+   bson_t *bcon;
    const bson_oid_t *ooid;
 
    bson_oid_init (&oid, NULL);
 
-   bson_t *bcon = BCON_NEW ("foo", BCON_OID (&oid));
+   bcon = BCON_NEW ("foo", BCON_OID (&oid));
 
    assert (BCON_EXTRACT (bcon, "foo", BCONE_OID (ooid)));
 
@@ -147,10 +148,11 @@ test_dbpointer (void)
    const char *collection;
    bson_oid_t oid;
    const bson_oid_t *ooid;
+   bson_t *bcon;
 
    bson_oid_init (&oid, NULL);
 
-   bson_t *bcon = BCON_NEW ("foo", BCON_DBPOINTER ("collection", &oid));
+   bcon = BCON_NEW ("foo", BCON_DBPOINTER ("collection", &oid));
 
    assert (BCON_EXTRACT (bcon, "foo", BCONE_DBPOINTER (collection, ooid)));
 

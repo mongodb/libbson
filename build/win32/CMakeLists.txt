@@ -52,6 +52,7 @@ configure_file (
 
 include_directories("${PROJECT_BINARY_DIR}/bson")
 include_directories("${SOURCE_DIR}/bson")
+include_directories("${SOURCE_DIR}")
 
 set (SOURCES
    ${SOURCE_DIR}/bson/bcon.c
@@ -60,6 +61,7 @@ set (SOURCES
    ${SOURCE_DIR}/bson/bson-context.c
    ${SOURCE_DIR}/bson/bson-error.c
    ${SOURCE_DIR}/bson/bson-iter.c
+   ${SOURCE_DIR}/bson/bson-json.c
    ${SOURCE_DIR}/bson/bson-keys.c
    ${SOURCE_DIR}/bson/bson-md5.c
    ${SOURCE_DIR}/bson/bson-memory.c

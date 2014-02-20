@@ -23,6 +23,7 @@
 #include <stdarg.h>
 #include <string.h>
 
+#include "bson-compat.h"
 #include "bson-string.h"
 #include "bson-memory.h"
 #include "bson-utf8.h"
