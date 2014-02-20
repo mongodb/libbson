@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 MongoDB Inc.
+ * Copyright 2014 MongoDB Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 
 #if !defined (BSON_INSIDE) && !defined (BSON_COMPILATION)
-#error "Only <bson.h> can be included directly."
+# error "Only <bson.h> can be included directly."
 #endif
 
 
@@ -24,6 +24,7 @@
 #define BSON_CLOCK_H
 
 
+#include "bson-compat.h"
 #include "bson-macros.h"
 #include "bson-types.h"
 
@@ -31,11 +32,12 @@
 BSON_BEGIN_DECLS
 
 
-int64_t
-bson_get_monotonic_time (void);
+int64_t bson_get_monotonic_time (void);
+int     bson_gettimeofday       (struct timeval  *tv,
+                                 struct timezone *tz);
 
-int
-bson_gettimeofday(struct timeval *tv, struct timezone *tz);
 
 BSON_END_DECLS
+
+
 #endif /* BSON_CLOCK_H */

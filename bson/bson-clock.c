@@ -15,101 +15,129 @@
  */
 
 
-#ifdef __APPLE__
-#include <mach/clock.h>
-#include <mach/mach.h>
+#ifdef HAVE_CONFIG_H
+# include <config.h>
 #endif
 
-#include "bson.h"
-#include <time.h>
+#ifdef __APPLE__
+# include <mach/clock.h>
+# include <mach/mach.h>
+#elif defined(HAVE_CLOCK_GETTIME)
+# include <time.h>
+#endif
 
-/**
- * bson_get_monotonic_time:
+#include "bson-compat.h"
+
+
+
+/*
+ *--------------------------------------------------------------------------
  *
- * Returns the monotonic system time, if available. A best effort is made to
- * use the monotonic clock. However, some systems may not support such a
- * feature.
+ * bson_gettimeofday --
  *
- * Returns: A monotonic clock in microseconds.
+ *       A wrapper around gettimeofday() with fallback support for Windows.
+ *
+ * Returns:
+ *       0 if successful.
+ *
+ * Side effects:
+ *       @tv and @tz are set.
+ *
+ *--------------------------------------------------------------------------
  */
+
+int
+bson_gettimeofday (struct timeval  *tv, /* OUT */
+                   struct timezone *tz) /* OUT */
+{
+#if defined(_WIN32)
+# if defined(_MSC_VER)
+#  define DELTA_EPOCH_IN_MICROSEC 11644473600000000Ui64
+# else
+#  define DELTA_EPOCH_IN_MICROSEC 11644473600000000ULL
+# endif
+  FILETIME ft;
+  uint64_t tmp = 0;
+
+   /*
+    * The const value is shamelessy stolen from
+    * http://www.boost.org/doc/libs/1_55_0/boost/chrono/detail/inlined/win/chrono.hpp
+    *
+    * File times are the number of 100 nanosecond intervals elapsed since
+    * 12:00 am Jan 1, 1601 UTC.  I haven't check the math particularly hard
+    *
+    * ...  good luck
+    */
+
+   if (tv) {
+      GetSystemTimeAsFileTime (&ft);
+
+      /* pull out of the filetime into a 64 bit uint */
+      tmp |= ft.dwHighDateTime;
+      tmp <<= 32;
+      tmp |= ft.dwLowDateTime;
+
+      /* convert from 100's of nanosecs to microsecs */
+      tmp /= 10;
+
+      /* adjust to unix epoch */
+      tmp -= DELTA_EPOCH_IN_MICROSEC;
+
+      tv->tv_sec = (long)(tmp / 1000000UL);
+      tv->tv_usec = (long)(tmp % 1000000UL);
+   }
+
+   BSON_ASSERT (NULL == tz);
+
+   return 0;
+#else
+   return gettimeofday (tv, tz);
+#endif
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_get_monotonic_time --
+ *
+ *       Returns the monotonic system time, if available. A best effort is
+ *       made to use the monotonic clock. However, some systems may not
+ *       support such a feature.
+ *
+ * Returns:
+ *       The monotonic clock in microseconds.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 int64_t
 bson_get_monotonic_time (void)
 {
-#if defined(CLOCK_MONOTONIC) && ! defined(BSON_OS_WIN32)
-   {
-      struct timespec ts;
-
-      clock_gettime (CLOCK_MONOTONIC, &ts);
-      return (ts.tv_sec * 1000000UL) + (ts.tv_nsec / 1000UL);
-   }
+#if defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
+   struct timespec ts;
+   clock_gettime (CLOCK_MONOTONIC, &ts);
+   return ((ts.tv_sec * 1000000UL) + (ts.tv_nsec / 1000UL));
 #elif defined(__APPLE__)
-   {
-      clock_serv_t cclock;
-      mach_timespec_t mts;
+   static mach_timebase_info_data_t info = { 0 };
+   static double ratio;
 
-      host_get_clock_service (mach_host_self (), SYSTEM_CLOCK, &cclock);
-      clock_get_time (cclock, &mts);
-      mach_port_deallocate (mach_task_self (), cclock);
-
-      return (mts.tv_sec * 1000000UL) + (mts.tv_nsec / 1000UL);
+   if (!info.denom) {
+      mach_timebase_info(&info);
+      ratio = info.numer / info.denom;
    }
+
+   return (mach_absolute_time() * ratio);
+#elif defined(_WIN32)
+   return GetTickCount64 ();
 #else
-   {
-      struct timeval tv;
+# warning "Monotonic clock is not yet supported on your platform."
+   struct timeval tv;
 
-      bson_gettimeofday (&tv, NULL);
-      return (tv.tv_sec * 1000000UL) + tv.tv_usec;
-   }
+   bson_gettimeofday (&tv, NULL);
+   return (tv.tv_sec * 1000000UL) + tv.tv_usec;
 #endif
 }
-
-
-/* The const value is shamelessy stolen from
- * http://www.boost.org/doc/libs/1_55_0/boost/chrono/detail/inlined/win/chrono.hpp
- *
- * File times are the number of 100 nanosecond intervals elapsed since 12:00 am
- * Jan 1, 1601 UTC.  I haven't check the math particularly hard
- *
- * ...  good luck
- */
-int
-bson_gettimeofday(struct timeval *tv, struct timezone *tz)
-{
-#ifdef BSON_OS_WIN32
-#ifdef _MSC_VER
-#define DELTA_EPOCH_IN_MICROSEC 11644473600000000Ui64
-#else
-#define DELTA_EPOCH_IN_MICROSEC 11644473600000000ULL
-#endif
-
-  FILETIME ft;
-  uint64_t tmp = 0;
- 
-  if (NULL != tv)
-  {
-    GetSystemTimeAsFileTime(&ft);
-
-    /* pull out of the filetime into a 64 bit uint */
-    tmp |= ft.dwHighDateTime;
-    tmp <<= 32;
-    tmp |= ft.dwLowDateTime;
-
-    /* convert from 100's of nanosecs to microsecs */
-    tmp /= 10; 
- 
-    /* adjust to unix epoch */
-    tmp -= DELTA_EPOCH_IN_MICROSEC;
-
-    tv->tv_sec = (long)(tmp / 1000000UL);
-    tv->tv_usec = (long)(tmp % 1000000UL);
-  }
- 
-  assert (NULL == tz);
- 
-  return 0;
-#else
-   return gettimeofday(tv, tz);
-#endif
-}
-
-
