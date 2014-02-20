@@ -538,7 +538,7 @@ _bson_json_read_map_key (void                *_ctx,
       if (len > 0 && val[0] == '$') {
          bson->read_state = BSON_JSON_IN_BSON_TYPE;
          bson->bson_type = 0;
-         memset (&bson->bson_type_data, sizeof bson->bson_type_data, 0);
+         memset (&bson->bson_type_data, 0, sizeof bson->bson_type_data);
       } else {
          bson->read_state = BSON_JSON_REGULAR;
          STACK_PUSH_DOC (bson_append_document_begin (STACK_BSON_PARENT,
