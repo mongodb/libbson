@@ -140,8 +140,11 @@ bson_memalign0 (size_t alignment, /* IN */
       abort ();
    }
 #else
-# warning "Platform is missing memalign()!"
-   mem = bson_malloc (size);
+# pragma message ("Platform is missing memalign()!")
+   mem = bson_malloc (alignment + size);
+   if (((size_t)mem % alignment) != 0) {
+      mem = (void *)((((intptr_t)mem / alignment) + 1) * alignment);
+   }
 #endif
 
    memset (mem, 0, size);
