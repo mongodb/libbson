@@ -120,18 +120,17 @@ main (int   argc,
       /*
        * Convert each incoming document to JSON and print to stdout.
        */
-      while ((b = bson_json_read(reader, b_out, &err))) {
+      while ((b = bson_json_reader_read (reader, b_out, &err))) {
          if (b < 0) {
             fprintf(stderr, "Error in json parsing:\n%s\n", err.message);
             abort();
          }
 
-         fwrite(bson_get_data(b_out), 1, b_out->len, stdout);
-
-         bson_reinit(b_out);
+         fwrite (bson_get_data(b_out), 1, b_out->len, stdout);
+         bson_destroy (b_out);
       }
 
-      bson_json_reader_destroy(reader);
+      bson_json_reader_destroy (reader);
    }
 
    return 0;

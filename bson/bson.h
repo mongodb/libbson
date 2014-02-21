@@ -154,6 +154,19 @@ bson_t *
 bson_new (void);
 
 
+bson_t *
+bson_new_from_json (const uint8_t *data,
+                    size_t         len,
+                    bson_error_t  *error);
+
+
+bool
+bson_init_from_json (bson_t        *bson,
+                     const uint8_t *data,
+                     size_t         len,
+                     bson_error_t  *error);
+
+
 /**
  * bson_init_static:
  * @b: A pointer to a bson_t.

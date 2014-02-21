@@ -266,21 +266,19 @@ _test_bson_json_read_compare (const char *json,
                               int         size,
                               ...)
 {
-   bson_error_t error;
+   bson_error_t error = { 0 };
    bson_json_reader_t *reader;
    va_list ap;
    int r;
-   bson_t bson;
    bson_t *compare;
-
-   bson_init (&bson);
+   bson_t bson;
 
    reader = bson_json_data_reader_new ((size == 1), size);
    bson_json_data_reader_ingest(reader, (uint8_t *)json, strlen(json));
 
    va_start (ap, size);
 
-   while ((r = bson_json_read (reader, &bson, &error))) {
+   while ((r = bson_json_reader_read (reader, &bson, &error))) {
       if (r == -1) {
          fprintf (stderr, "%s\n", error.message);
          abort ();
@@ -293,13 +291,10 @@ _test_bson_json_read_compare (const char *json,
       bson_eq_bson (&bson, compare);
 
       bson_destroy (compare);
-
-      bson_reinit (&bson);
+      bson_destroy (&bson);
    }
 
    va_end (ap);
-
-   bson_destroy (&bson);
 
    bson_json_reader_destroy (reader);
 }
@@ -354,7 +349,7 @@ test_bson_json_read(void)
    bson_t * first, *second, *third;
 
    bson_oid_init_from_string(&oid, "000000000000000000000000");
-   
+
    first = BCON_NEW(
       "foo", "bar",
       "bar", BCON_INT32(12341),
@@ -390,7 +385,7 @@ test_bson_json_error (const char              *json,
    bson_error_t error;
    bson_t * bson;
 
-   bson = bson_from_json((const uint8_t *)json, strlen(json), &error);
+   bson = bson_new_from_json ((const uint8_t *)json, strlen(json), &error);
 
    assert (! bson);
    assert (error.domain == domain);
@@ -435,17 +430,13 @@ test_bson_json_read_bad_cb(void)
    int r;
    bson_t bson;
 
-   bson_init (&bson);
-
    reader = bson_json_reader_new (NULL, &test_bson_json_read_bad_cb_helper, NULL, false, 0);
 
-   r = bson_json_read (reader, &bson, &error);
+   r = bson_json_reader_read (reader, &bson, &error);
 
    assert(r == -1);
    assert(error.domain = BSON_JSON_ERROR_READ);
    assert(error.code = BSON_JSON_ERROR_READ_CB_FAILURE);
-
-   bson_destroy (&bson);
 
    bson_json_reader_destroy (reader);
 }

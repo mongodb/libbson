@@ -116,14 +116,12 @@ main (int   argc,
       /*
        * Initialize a new reader for this file descriptor.
        */
-   reader = bson_reader_new_from_handle ((void *)&fd,
-                                         &_read_cb,
-                                         &_destroy_cb);
+      reader = bson_reader_new_from_handle ((void *)&fd, &_read_cb, &_destroy_cb);
 
       /*
        * Convert each incoming document to JSON and print to stdout.
        */
-      while ((b = bson_reader_read(reader, NULL))) {
+      while ((b = bson_reader_read (reader, NULL))) {
          str = bson_as_json(b, NULL);
          fprintf(stdout, "%s\n", str);
          bson_free(str);
@@ -132,7 +130,7 @@ main (int   argc,
       /*
        * Cleanup after our reader, which closes the file descriptor.
        */
-      bson_reader_destroy(reader);
+      bson_reader_destroy (reader);
    }
 
    return 0;
