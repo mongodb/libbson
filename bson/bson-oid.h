@@ -16,7 +16,7 @@
 
 
 #if !defined (BSON_INSIDE) && !defined (BSON_COMPILATION)
-#error "Only <bson.h> can be included directly."
+# error "Only <bson.h> can be included directly."
 #endif
 
 
@@ -34,57 +34,26 @@
 BSON_BEGIN_DECLS
 
 
-int
-bson_oid_compare (const bson_oid_t *oid1,
-                  const bson_oid_t *oid2);
-
-
-void
-bson_oid_copy (const bson_oid_t *src,
-               bson_oid_t       *dst);
-
-
-bool
-bson_oid_equal (const bson_oid_t *oid1,
-                const bson_oid_t *oid2);
-
-
-bool
-bson_oid_is_valid (const char *str,
-                   size_t      length);
-
-
-time_t
-bson_oid_get_time_t (const bson_oid_t *oid);
-
-
-uint32_t
-bson_oid_hash (const bson_oid_t *oid);
-
-
-void
-bson_oid_init (bson_oid_t     *oid,
-               bson_context_t *context);
-
-
-void
-bson_oid_init_from_data (bson_oid_t         *oid,
-                         const uint8_t *data);
-
-
-void
-bson_oid_init_from_string (bson_oid_t *oid,
-                           const char *str);
-
-
-void
-bson_oid_init_sequence (bson_oid_t     *oid,
-                        bson_context_t *context);
-
-
-void
-bson_oid_to_string (const bson_oid_t *oid,
-                    char              str[25]);
+int      bson_oid_compare          (const bson_oid_t *oid1,
+                                    const bson_oid_t *oid2);
+void     bson_oid_copy             (const bson_oid_t *src,
+                                    bson_oid_t       *dst);
+bool     bson_oid_equal            (const bson_oid_t *oid1,
+                                    const bson_oid_t *oid2);
+bool     bson_oid_is_valid         (const char       *str,
+                                    size_t            length);
+time_t   bson_oid_get_time_t       (const bson_oid_t *oid);
+uint32_t bson_oid_hash             (const bson_oid_t *oid);
+void     bson_oid_init             (bson_oid_t       *oid,
+                                    bson_context_t   *context);
+void     bson_oid_init_from_data   (bson_oid_t       *oid,
+                                    const uint8_t    *data);
+void     bson_oid_init_from_string (bson_oid_t       *oid,
+                                    const char       *str);
+void     bson_oid_init_sequence    (bson_oid_t       *oid,
+                                    bson_context_t   *context);
+void     bson_oid_to_string        (const bson_oid_t *oid,
+                                    char              str[25]);
 
 
 /**
