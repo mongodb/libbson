@@ -19,9 +19,9 @@ SYNOPSIS
    (bson_iter_type ((iter)) == BSON_TYPE_DOCUMENT)
 
 void
-bson_iter_document (const bson_iter_t   *iter,
-                    bson_uint32_t       *document_len,
-                    const bson_uint8_t **document);
+bson_iter_document (const bson_iter_t *iter,
+                    uint32_t          *document_len,
+                    const uint8_t    **document);
 -----------------------
 
 

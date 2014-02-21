@@ -15,7 +15,7 @@ SYNOPSIS
 -----------------------
 #include <bson.h>
 
-bson_int64_t
+int64_t
 bson_iter_date_time (const bson_iter_t *iter);
 
 time_t

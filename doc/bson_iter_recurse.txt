@@ -15,7 +15,7 @@ SYNOPSIS
 -----------------------
 #include <bson.h>
 
-bson_bool_t
+bool
 bson_iter_recurse (const bson_iter_t *iter,
                    bson_iter_t       *child);
 -----------------------

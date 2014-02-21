@@ -17,7 +17,7 @@ SYNOPSIS
 
 void
 bson_iter_overwrite_bool (bson_iter_t *iter,
-                          bson_bool_t  value);
+                          bool         value);
 -----------------------
 
 

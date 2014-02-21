@@ -17,7 +17,7 @@ SYNOPSIS
 
 bson_reader_t *
 bson_reader_new_from_fd (int         fd,
-                         bson_bool_t close_fd);
+                         bool close_fd);
 -----------------------
 
 

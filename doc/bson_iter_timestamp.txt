@@ -20,8 +20,8 @@ SYNOPSIS
 
 void
 bson_iter_timestamp (const bson_iter_t *iter,
-                     bson_uint32_t     *timestamp,
-                     bson_uint32_t     *increment);
+                     uint32_t          *timestamp,
+                     uint32_t          *increment);
 -----------------------
 
 

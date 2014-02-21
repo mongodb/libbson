@@ -23,13 +23,13 @@ SYNOPSIS
 
 const char *
 bson_iter_code (const bson_iter_t *iter,
-                bson_uint32_t     *length);
+                uint32_t          *length);
 
 const char *
-bson_iter_codewscope (const bson_iter_t   *iter,
-                      bson_uint32_t       *length,
-                      bson_uint32_t       *scope_len,
-                      const bson_uint8_t **scope);
+bson_iter_codewscope (const bson_iter_t *iter,
+                      uint32_t          *length,
+                      uint32_t          *scope_len,
+                      const uint8_t    **scope);
 -----------------------
 
 

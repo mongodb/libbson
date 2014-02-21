@@ -20,7 +20,7 @@ SYNOPSIS
 
 void
 bson_iter_dbpointer (const bson_iter_t *iter,
-                     bson_uint32_t     *collection_len,
+                     uint32_t          *collection_len,
                      const char       **collection,
                      const bson_oid_t **oid);
 -----------------------

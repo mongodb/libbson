@@ -15,11 +15,11 @@ SYNOPSIS
 -----------------------
 #include <bson.h>
 
-bson_bool_t
-bson_append_int32 (bson_t      *bson,
-                   const char  *key,
-                   int          key_length,
-                   bson_int32_t value);
+bool
+bson_append_int32 (bson_t     *bson,
+                   const char *key,
+                   int         key_length,
+                   int32_t     value);
 -----------------------
 
 

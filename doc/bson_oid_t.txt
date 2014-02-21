@@ -17,16 +17,16 @@ SYNOPSIS
 
 typedef struct
 {
-   bson_uint8_t bytes[12];
+   uint8_t bytes[12];
 } bson_oid_t;
 
 void
-bson_oid_init (bson_oid_t     *oid,
-               bson_context_t *context);
+bson_oid_init (bson_oid_t * oid,
+               bson_context_t * context);
 
 void
-bson_oid_init_from_data (bson_oid_t         *oid,
-                         const bson_uint8_t *data);
+bson_oid_init_from_data (bson_oid_t    *oid,
+                         const uint8_t *data);
 
 void
 bson_oid_init_from_string (bson_oid_t *oid,

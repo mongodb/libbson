@@ -15,7 +15,7 @@ SYNOPSIS
 -----------------------
 #include <bson.h>
 
-const bson_uint8_t *
+const uint8_t *
 bson_get_data (const bson_t *bson);
 -----------------------
 

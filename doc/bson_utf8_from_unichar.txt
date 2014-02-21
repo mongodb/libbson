@@ -18,7 +18,7 @@ SYNOPSIS
 void
 bson_utf8_from_unichar (bson_unichar_t unichar,
                         char           utf8[6],
-                        bson_uint32_t *len);
+                        uint32_t      *len);
 -----------------------
 
 

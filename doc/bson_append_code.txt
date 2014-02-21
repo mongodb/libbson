@@ -15,13 +15,13 @@ SYNOPSIS
 -----------------------
 #include <bson.h>
 
-bson_bool_t
+bool
 bson_append_code (bson_t     *bson,
                   const char *key,
                   int         key_length,
                   const char *javascript);
 
-bson_bool_t
+bool
 bson_append_code_with_scope (bson_t       *bson,
                              const char   *key,
                              int           key_length,

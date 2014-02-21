@@ -17,7 +17,7 @@ SYNOPSIS
 
 void
 bson_string_truncate (bson_string_t *string,
-                      bson_uint32_t  len);
+                      uint32_t       len);
 -----------------------
 
 

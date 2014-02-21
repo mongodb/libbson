@@ -17,7 +17,7 @@ SYNOPSIS
 
 const bson_t *
 bson_reader_read (bson_reader_t *reader,
-                  bson_bool_t   *reached_eof);
+                  bool          *reached_eof);
 -----------------------
 
 
@@ -39,7 +39,7 @@ EXAMPLE
 [source, c]
 -----------------------
 const bson_t *doc;
-bson_bool_t reached_eof = FALSE;
+bool reached_eof = false;
 
 while ((doc = bson_reader_read (reader, &reached_eof))) {
 	/* do something */

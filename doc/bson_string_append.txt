@@ -21,7 +21,7 @@ bson_string_append (bson_string_t *string,
 
 void
 bson_string_append_c (bson_string_t *string,
-                      char           str);
+                      char           c);
 
 void
 bson_string_append_printf (bson_string_t *string,

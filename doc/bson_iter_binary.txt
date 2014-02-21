@@ -19,10 +19,10 @@ SYNOPSIS
    (bson_iter_type ((iter)) == BSON_TYPE_BINARY)
 
 void
-bson_iter_binary (const bson_iter_t   *iter,
-                  bson_subtype_t      *subtype,
-                  bson_uint32_t       *binary_len,
-                  const bson_uint8_t **binary);
+bson_iter_binary (const bson_iter_t *iter,
+                  bson_subtype_t    *subtype,
+                  uint32_t          *binary_len,
+                  const uint8_t    **binary);
 -----------------------
 
 

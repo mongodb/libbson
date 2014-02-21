@@ -16,19 +16,19 @@ SYNOPSIS
 #include <bson.h>
 
 void
-bson_init (bson_t *b);
+bson_init (bson_t *bson);
 
-bson_bool_t
-bson_init_static (bson_t             *b,
-                  const bson_uint8_t *data,
-                  bson_uint32_t       length);
+bool
+bson_init_static (bson_t        *bson,
+                  const uint8_t *data,
+                  uint32_t       length);
 
 bson_t *
 bson_new (void);
 
 bson_t *
-bson_new_from_data (const bson_uint8_t *data,
-                    size_t              length);
+bson_new_from_data (const uint8_t *data,
+                    uint32_t       length);
 
 bson_t *
 bson_sized_new (size_t size);

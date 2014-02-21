@@ -11,7 +11,7 @@ Instead we have a single power-of-two growing allocation which serves as both th
 
 ```c
 bson_writer_t *writer;
-bson_uint8_t *buf = NULL;
+uint8_t *buf = NULL;
 size_t buflen = 0;
 size_t offset = 20 + strlen("db.collection") + 1;
 bson_t *doc;

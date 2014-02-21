@@ -16,8 +16,8 @@ SYNOPSIS
 #include <bson.h>
 
 bson_reader_t *
-bson_reader_new_from_data (const bson_uint8_t *data,
-                           size_t              length);
+bson_reader_new_from_data (const uint8_t *data,
+                           size_t         length);
 -----------------------
 
 

@@ -20,16 +20,16 @@ typedef struct
 	/*< private >*/
 } bson_iter_t;
 
-bson_bool_t
+bool
 bson_iter_init (bson_iter_t  *iter,
                 const bson_t *bson);
 
-bson_bool_t
+bool
 bson_iter_init_find (bson_iter_t  *iter,
                      const bson_t *bson,
                      const char   *key);
 
-bson_bool_t
+bool
 bson_iter_init_find_case (bson_iter_t  *iter,
                           const bson_t *bson,
                           const char   *key);

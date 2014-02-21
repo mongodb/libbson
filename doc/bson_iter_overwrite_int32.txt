@@ -17,7 +17,7 @@ SYNOPSIS
 
 void
 bson_iter_overwrite_int32 (bson_iter_t *iter,
-                           bson_int32_t value);
+                           int32_t      value);
 -----------------------
 
 

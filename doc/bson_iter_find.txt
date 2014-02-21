@@ -15,15 +15,15 @@ SYNOPSIS
 -----------------------
 #include <bson.h>
 
-bson_bool_t
+bool
 bson_iter_find (bson_iter_t *iter,
                 const char  *key);
 
-bson_bool_t
+bool
 bson_iter_find_case (bson_iter_t *iter,
                      const char  *key);
 
-bson_bool_t
+bool
 bson_iter_find_descendant (bson_iter_t *iter,
                            const char  *dotkey,
                            bson_iter_t *descendant);

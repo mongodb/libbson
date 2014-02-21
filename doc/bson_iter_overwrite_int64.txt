@@ -17,7 +17,7 @@ SYNOPSIS
 
 void
 bson_iter_overwrite_int64 (bson_iter_t *iter,
-                           bson_int64_t value);
+                           int64_t      value);
 -----------------------
 
 

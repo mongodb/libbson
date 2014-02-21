@@ -15,7 +15,7 @@ SYNOPSIS
 -----------------------
 #include <bson.h>
 
-bson_bool_t
+bool
 bson_concat (bson_t       *dst,
              const bson_t *src);
 -----------------------

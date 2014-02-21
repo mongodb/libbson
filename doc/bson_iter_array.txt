@@ -19,9 +19,9 @@ SYNOPSIS
    (bson_iter_type ((iter)) == BSON_TYPE_ARRAY)
 
 void
-bson_iter_array (const bson_iter_t   *iter,
-                 bson_uint32_t       *array_len,
-                 const bson_uint8_t **array);
+bson_iter_array (const bson_iter_t *iter,
+                 uint32_t          *array_len,
+                 const uint8_t    **array);
 -----------------------
 
 

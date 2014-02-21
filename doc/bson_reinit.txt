@@ -16,7 +16,7 @@ SYNOPSIS
 #include <bson.h>
 
 void
-bson_reinit (bson_t *b);
+bson_reinit (bson_t *bson);
 -----------------------
 
 

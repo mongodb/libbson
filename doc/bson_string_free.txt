@@ -17,7 +17,7 @@ SYNOPSIS
 
 char *
 bson_string_free (bson_string_t *string,
-                  bson_bool_t    free_segment);
+                  bool           free_segment);
 -----------------------
 
 

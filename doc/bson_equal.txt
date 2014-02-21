@@ -15,7 +15,7 @@ SYNOPSIS
 -----------------------
 #include <bson.h>
 
-bson_bool_t
+bool
 bson_equal (const bson_t *bson,
             const bson_t *other);
 -----------------------

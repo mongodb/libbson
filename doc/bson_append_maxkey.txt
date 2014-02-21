@@ -15,7 +15,7 @@ SYNOPSIS
 -----------------------
 #include <bson.h>
 
-bson_bool_t
+bool
 bson_append_maxkey (bson_t     *bson,
                     const char *key,
                     int         key_length);

@@ -26,13 +26,13 @@ typedef enum
    BSON_SUBTYPE_USER              = 0x80,
 } bson_subtype_t;
 
-bson_bool_t
-bson_append_binary (bson_t             *bson,
-                    const char         *key,
-                    int                 key_length,
-                    bson_subtype_t      subtype,
-                    const bson_uint8_t *binary,
-                    bson_uint32_t       length);
+bool
+bson_append_binary (bson_t        *bson,
+                    const char    *key,
+                    int            key_length,
+                    bson_subtype_t subtype,
+                    const uint8_t *binary,
+                    uint32_t       length);
 -----------------------
 
 

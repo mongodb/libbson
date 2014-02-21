@@ -15,12 +15,12 @@ SYNOPSIS
 -----------------------
 #include <bson.h>
 
-bson_bool_t
-bson_append_timestamp (bson_t       *bson,
-                       const char   *key,
-                       int           key_length,
-                       bson_uint32_t timestamp,
-                       bson_uint32_t increment);
+bool
+bson_append_timestamp (bson_t     *bson,
+                       const char *key,
+                       int         key_length,
+                       uint32_t    timestamp,
+                       uint32_t    increment);
 -----------------------
 
 

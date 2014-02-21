@@ -15,10 +15,10 @@ SYNOPSIS
 -----------------------
 #include <bson.h>
 
-bson_bool_t
+bool
 bson_utf8_validate (const char *utf8,
                     size_t      utf8_len,
-                    bson_bool_t allow_null);
+                    bool allow_null);
 -----------------------
 
 

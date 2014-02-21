@@ -15,19 +15,19 @@ SYNOPSIS
 -----------------------
 #include <bson.h>
 
-bson_bool_t
-bson_append_date_time (bson_t      *bson,
-                       const char  *key,
-                       int          key_length,
-                       bson_int64_t value);
+bool
+bson_append_date_time (bson_t     *bson,
+                       const char *key,
+                       int         key_length,
+                       int64_t     value);
 
-bson_bool_t
+bool
 bson_append_time_t (bson_t     *bson,
                     const char *key,
                     int         key_length,
                     time_t      value);
 
-bson_bool_t
+bool
 bson_append_timeval (bson_t         *bson,
                      const char     *key,
                      int             key_length,

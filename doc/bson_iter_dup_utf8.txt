@@ -17,7 +17,7 @@ SYNOPSIS
 
 char *
 bson_iter_dup_utf8 (const bson_iter_t *iter,
-                    bson_uint32_t     *length);
+                    uint32_t          *length);
 -----------------------
 
 

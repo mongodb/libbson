@@ -24,7 +24,7 @@ typedef enum
    BSON_VALIDATE_UTF8_ALLOW_NULL = (1 << 3),
 } bson_validate_flags_t;
 
-bson_bool_t
+bool
 bson_validate (const bson_t         *bson,
                bson_validate_flags_t flags,
                size_t               *offset);
