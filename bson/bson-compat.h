@@ -19,35 +19,45 @@
 #  error "Only <bson.h> can be included directly."
 #endif
 
-#include "bson-config.h"
+
 #ifndef BSON_COMPAT_H
 #define BSON_COMPAT_H
 
+
+#include "bson-config.h"
+
+
 #if BSON_OS == 1
-#  define BSON_OS_UNIX
+# define BSON_OS_UNIX
 #elif BSON_OS == 2
-#  define BSON_OS_WIN32
+# define BSON_OS_WIN32
 #else
-#  error Unknown operating system.
+# error "Unknown operating system."
 #endif
+
 
 #ifdef BSON_OS_WIN32
-#include <winsock2.h>
+# include <winsock2.h>
 #  ifndef WIN32_LEAN_AND_MEAN
-#    define WIN32_LEAN_AND_MEAN
-#    include <windows.h>
-#    undef  WIN32_LEAN_AND_MEAN
+#   define WIN32_LEAN_AND_MEAN
+#   include <windows.h>
+#   undef  WIN32_LEAN_AND_MEAN
 #  else
-#    include <windows.h>
-#  endif
+#   include <windows.h>
+# endif
 #include <direct.h>
 #include <io.h>
-#else
-#include <unistd.h>
-#include <sys/time.h>
 #endif
 
+
+#ifdef BSON_OS_UNIX
+# include <unistd.h>
+# include <sys/time.h>
+#endif
+
+
 #include "bson-macros.h"
+
 
 #include <errno.h>
 #include <ctype.h>
@@ -59,32 +69,37 @@
 #include <string.h>
 #include <time.h>
 
+
 BSON_BEGIN_DECLS
+
+
 #ifdef _MSC_VER
-#  include "bson-stdint-win32.h"
-   typedef SSIZE_T ssize_t;
-   typedef SIZE_T size_t;
-#  define PRIi32 "d"
-#  define PRId32 "d"
-#  define PRIu32 "u"
-#  define PRIi64 "I64i"
-#  define PRId64 "I64i"
-#  define PRIu64 "I64u"
+# include "bson-stdint-win32.h"
+  typedef SSIZE_T ssize_t;
+  typedef SIZE_T size_t;
+# define PRIi32 "d"
+# define PRId32 "d"
+# define PRIu32 "u"
+# define PRIi64 "I64i"
+# define PRId64 "I64i"
+# define PRIu64 "I64u"
 #else
-#  include <bson-stdint.h>
-#  include <inttypes.h>
+# include <bson-stdint.h>
+# include <inttypes.h>
 #endif
+
 
 #ifdef HAVE_STDBOOL_H
 # include <stdbool.h>
-#else
+#elif !defined(__bool_true_false_are_defined)
 # ifndef __cplusplus
-    typedef signed char bool;
-# define false 0
-# define true 1
+   typedef signed char bool;
+#  define false 0
+#  define true 1
 # endif
 # define __bool_true_false_are_defined 1
 #endif
+
 
 #if defined(__GNUC__)
 # if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
@@ -99,14 +114,18 @@ BSON_BEGIN_DECLS
 # define bson_sync_synchronize() MemoryBarrier()
 #endif
 
+
 #if !defined(va_copy) && defined(_MSC_VER)
-#define va_copy(dst,src) ((dst) = (src))
+# define va_copy(dst,src) ((dst) = (src))
 #endif
+
 
 #if !defined(va_copy) && defined(__GNUC__) && __GNUC__ < 3
-#define va_copy(dst,src) __va_copy(dst, src)
+# define va_copy(dst,src) __va_copy(dst, src)
 #endif
 
+
 BSON_END_DECLS
+
 
 #endif /* BSON_COMPAT_H */
