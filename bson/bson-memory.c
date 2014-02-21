@@ -16,7 +16,7 @@
 
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+# include "config.h"
 #endif
 
 #include <stdlib.h>
@@ -25,21 +25,32 @@
 #include "bson-memory.h"
 
 
-/**
- * bson_malloc:
- * @num_bytes: The number of bytes to allocate.
+/*
+ *--------------------------------------------------------------------------
  *
- * Allocates @num_bytes of memory and returns a pointer to it.
- * If malloc failed to allocate the memory, abort() is called.
+ * bson_malloc --
  *
- * Libbson does not try to handle OOM conditions as it is beyond
- * the scope of this library to handle so appropriately.
+ *       Allocates @num_bytes of memory and returns a pointer to it.  If
+ *       malloc failed to allocate the memory, abort() is called.
  *
- * Returns: A pointer if successful; otherwise abort() is called
- *   and this function will never return.
+ *       Libbson does not try to handle OOM conditions as it is beyond the
+ *       scope of this library to handle so appropriately.
+ *
+ * Parameters:
+ *       @num_bytes: The number of bytes to allocate.
+ *
+ * Returns:
+ *       A pointer if successful; otherwise abort() is called and this
+ *       function will never return.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
  */
+
 void *
-bson_malloc (size_t num_bytes)
+bson_malloc (size_t num_bytes) /* IN */
 {
    void *mem;
 
@@ -51,63 +62,85 @@ bson_malloc (size_t num_bytes)
 }
 
 
-/**
- * bson_malloc0:
- * @num_bytes: The number of bytes to allocate.
+/*
+ *--------------------------------------------------------------------------
  *
- * Like bson_malloc() except the memory is zeroed first. This is similar
- * to calloc() except that abort() is called in case of failure to allocate
- * memory.
+ * bson_malloc0 --
  *
- * Returns: A pointer if successful; otherwise abort() is called
- *   and this function will never return.
+ *       Like bson_malloc() except the memory is zeroed first. This is
+ *       similar to calloc() except that abort() is called in case of
+ *       failure to allocate memory.
+ *
+ * Parameters:
+ *       @num_bytes: The number of bytes to allocate.
+ *
+ * Returns:
+ *       A pointer if successful; otherwise abort() is called and this
+ *       function will never return.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
  */
-void *
-bson_malloc0 (size_t num_bytes)
-{
-   void *mem;
 
-   if (!(mem = calloc (1, num_bytes))) {
-      abort ();
+void *
+bson_malloc0 (size_t num_bytes) /* IN */
+{
+   void *mem = NULL;
+
+   if (BSON_LIKELY (num_bytes)) {
+      if (BSON_UNLIKELY (!(mem = calloc (1, num_bytes)))) {
+         abort ();
+      }
    }
 
    return mem;
 }
 
 
-/**
- * bson_memalign0:
- * @alignment: The alignment (such as 8 for 64-bit).
- * @size: The size of the allocation.
+/*
+ *--------------------------------------------------------------------------
  *
- * Like posix_memalign() except abort() is called in the case of
- * failure to allocate memory.
+ * bson_memalign0 --
  *
- * Returns: A pointer if successful; otherwise abort() is called
- *   and this function will never return.
+ *       Like posix_memalign() except abort() is called in the case of
+ *       failure to allocate memory.
+ *
+ * Parameters:
+ *       @alignment: The alignment (such as 8 for 64-bit).
+ *       @size: The size of the allocation.
+ *
+ * Returns:
+ *       A pointer if successful; otherwise abort() is called and this
+ *       function will never return.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
  */
+
 void *
-bson_memalign0 (size_t alignment,
-                size_t size)
+bson_memalign0 (size_t alignment, /* IN */
+                size_t size)      /* IN */
 {
    void *mem;
 
-#if HAVE_POSIX_MEMALIGN
-
+#if defined(HAVE_POSIX_MEMALIGN)
    if (0 != posix_memalign (&mem, alignment, size)) {
       perror ("posix_memalign() failure:");
       abort ();
    }
-
-#elif HAVE_MEMALIGN
+#elif defined(HAVE_MEMALIGN)
    mem = memalign (alignment, size);
 
    if (!mem) {
       perror ("memalign() failure:");
       abort ();
    }
-
 #else
+# warning "Platform is missing memalign()!"
    mem = bson_malloc (size);
 #endif
 
@@ -117,22 +150,35 @@ bson_memalign0 (size_t alignment,
 }
 
 
-/**
- * bson_realloc:
- * @mem: The memory to realloc, or NULL.
- * @num_bytes: The size of the new allocation or 0 to free.
+/*
+ *--------------------------------------------------------------------------
  *
- * This function behaves similar to realloc() except that if there
- * is a failure abort() is called.
+ * bson_realloc --
  *
- * Returns: The new allocation if successful; otherwise abort() is
- *   called and this function never returns.
+ *       This function behaves similar to realloc() except that if there is
+ *       a failure abort() is called.
+ *
+ * Parameters:
+ *       @mem: The memory to realloc, or NULL.
+ *       @num_bytes: The size of the new allocation or 0 to free.
+ *
+ * Returns:
+ *       The new allocation if successful; otherwise abort() is called and
+ *       this function never returns.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
  */
+
 void *
-bson_realloc (void  *mem,
-              size_t num_bytes)
+bson_realloc (void   *mem,        /* IN */
+              size_t  num_bytes)  /* IN */
 {
-   if (!(mem = realloc (mem, num_bytes))) {
+   mem = realloc (mem, num_bytes);
+
+   if (BSON_UNLIKELY (!mem)) {
       if (!num_bytes) {
          return mem;
       }
@@ -144,35 +190,62 @@ bson_realloc (void  *mem,
 }
 
 
-/**
- * bson_free:
- * @mem: An allocation to free.
+/*
+ *--------------------------------------------------------------------------
  *
- * Frees @mem using the underlying allocator.
+ * bson_free --
  *
- * Currently, this only calls free() directly, but that is subject to change.
+ *       Frees @mem using the underlying allocator.
+ *
+ *       Currently, this only calls free() directly, but that is subject to
+ *       change.
+ *
+ * Parameters:
+ *       @mem: An allocation to free.
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
  */
+
 void
-bson_free (void *mem)
+bson_free (void *mem) /* IN */
 {
    free (mem);
 }
 
 
-/**
- * bson_zero_free:
- * @mem: An allocation to free.
- * @size: The number of bytes in @mem.
+/*
+ *--------------------------------------------------------------------------
  *
- * Frees @mem using the underlying allocator. @size bytes of @mem will be
- * zeroed before freeing the memory. This is useful in scenarios where
- * @mem contains passwords or other sensitive information.
+ * bson_zero_free --
+ *
+ *       Frees @mem using the underlying allocator. @size bytes of @mem will
+ *       be zeroed before freeing the memory. This is useful in scenarios
+ *       where @mem contains passwords or other sensitive information.
+ *
+ * Parameters:
+ *       @mem: An allocation to free.
+ *       @size: The number of bytes in @mem.
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
  */
+
 void
-bson_zero_free (void  *mem,
-                size_t size)
+bson_zero_free (void  *mem,  /* IN */
+                size_t size) /* IN */
 {
-   if (mem) {
+   if (BSON_LIKELY (mem)) {
       memset (mem, 0, size);
       bson_free (mem);
    }
