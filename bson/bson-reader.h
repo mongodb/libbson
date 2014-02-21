@@ -16,7 +16,7 @@
 
 
 #if !defined (BSON_INSIDE) && !defined (BSON_COMPILATION)
-#error "Only <bson.h> can be included directly."
+# error "Only <bson.h> can be included directly."
 #endif
 
 
@@ -24,6 +24,7 @@
 #define BSON_READER_H
 
 
+#include "bson-compat.h"
 #include "bson-oid.h"
 #include "bson-types.h"
 
@@ -31,36 +32,49 @@
 BSON_BEGIN_DECLS
 
 
-bson_reader_t *
-bson_reader_new_from_handle (void                      *handle,
-                             bson_reader_read_func_t    rf,
-                             bson_reader_destroy_func_t df);
+/**
+ * bson_reader_read_func_t:
+ * @handle: The handle to read from.
+ * @buf: The buffer to read into.
+ * @count: The number of bytes to read.
+ *
+ * This function describes a read function that can be used to read from a file
+ * descriptor.
+ *
+ * Returns: -1 on failure and errno is set, otherwise the number of bytes read.
+ *    0 may be returned on end of stream.
+ */
+typedef ssize_t (*bson_reader_read_func_t) (void  *handle,
+                                            void  *buf,
+                                            size_t count);
+
+/**
+ * bson_reader_destroy_func_t:
+ * @handle: The handle to read from.
+ *
+ * This function describes a destroy function for a the handle passed in
+ * bson_reader_new_from_handle
+ *
+ * Returns: void
+ */
+typedef void (*bson_reader_destroy_func_t) (void *handle);
 
 
-bson_reader_t *
-bson_reader_new_from_data (const uint8_t *data,
-                           size_t              length);
-
-
-void
-bson_reader_destroy (bson_reader_t *reader);
-
-
-void
-bson_reader_set_read_func (bson_reader_t          *reader,
-                           bson_reader_read_func_t func);
-
-void
-bson_reader_set_destroy_func (bson_reader_t             *reader,
-                              bson_reader_destroy_func_t func);
-
-const bson_t *
-bson_reader_read (bson_reader_t *reader,
-                  bool   *reached_eof);
-
-
-off_t
-bson_reader_tell (bson_reader_t *reader);
+bson_reader_t *bson_reader_new_from_handle  (void                       *handle,
+                                             bson_reader_read_func_t     rf,
+                                             bson_reader_destroy_func_t  df);
+bson_reader_t *bson_reader_new_from_fd      (int                         fd,
+                                             bool                        close_on_destroy);
+bson_reader_t *bson_reader_new_from_data    (const uint8_t              *data,
+                                             size_t                      length);
+void           bson_reader_destroy          (bson_reader_t              *reader);
+void           bson_reader_set_read_func    (bson_reader_t              *reader,
+                                             bson_reader_read_func_t     func);
+void           bson_reader_set_destroy_func (bson_reader_t              *reader,
+                                             bson_reader_destroy_func_t  func);
+const bson_t  *bson_reader_read             (bson_reader_t              *reader,
+                                             bool                       *reached_eof);
+off_t          bson_reader_tell             (bson_reader_t              *reader);
 
 
 BSON_END_DECLS

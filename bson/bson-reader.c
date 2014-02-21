@@ -48,6 +48,13 @@ typedef struct
 
 typedef struct
 {
+   int fd;
+   bool do_close;
+} bson_reader_handle_fd_t;
+
+
+typedef struct
+{
    bson_reader_type_t type;
    const uint8_t     *data;
    size_t             length;
@@ -107,25 +114,34 @@ _bson_reader_handle_fill_buffer (bson_reader_handle_t *reader)
    bson_return_if_fail (reader->end <= reader->len);
 }
 
-/**
- * bson_reader_new_from_handle:
- * @handle : An opaque handle to read from
- * @rf     : A read function
- * @df     : A destructor for the handle - optional
+
+/*
+ *--------------------------------------------------------------------------
  *
- * Allocates and initializes a new bson_reader_t that will read BSON documents
- * into bson_t structures from an underlying handle.
+ * bson_reader_new_from_handle --
  *
- * If you would like the reader to destroy its handle on
- * bson_reader_destroy(), then specify a destroy function
+ *       Allocates and initializes a new bson_reader_t using the opaque
+ *       handle provided.
  *
- * Returns: (transfer full): A newly allocated bson_reader_t that should be
- *   freed with bson_reader_destroy().
+ * Parameters:
+ *       @handle: an opaque handle to use to read data.
+ *       @rf: a function to perform reads on @handle.
+ *       @df: a function to release @handle, or NULL.
+ *
+ * Returns:
+ *       A newly allocated bson_reader_t if successful, otherwise NULL.
+ *       Free the successful result with bson_reader_destroy().
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
  */
+
 bson_reader_t *
-bson_reader_new_from_handle (void                      *handle,
-                             bson_reader_read_func_t    rf,
-                             bson_reader_destroy_func_t df)
+bson_reader_new_from_handle (void                       *handle,
+                             bson_reader_read_func_t     rf,
+                             bson_reader_destroy_func_t  df)
 {
    bson_reader_handle_t *real;
 
@@ -148,6 +164,53 @@ bson_reader_new_from_handle (void                      *handle,
    _bson_reader_handle_fill_buffer (real);
 
    return (bson_reader_t *)real;
+}
+
+
+static void
+_bson_reader_handle_fd_destroy (void *handle) /* IN */
+{
+   bson_reader_handle_fd_t *fd = handle;
+
+   if (fd) {
+      if ((fd->fd != -1) && fd->do_close) {
+         close (fd->fd);
+      }
+      bson_free (fd);
+   }
+}
+
+
+static ssize_t
+_bson_reader_handle_fd_read (void   *handle, /* IN */
+                             void   *buf,    /* IN */
+                             size_t  len)    /* IN */
+{
+   bson_reader_handle_fd_t *fd = handle;
+
+   if (fd && (fd->fd != -1)) {
+      return read (fd->fd, buf, len);
+   }
+
+   return -1;
+}
+
+
+bson_reader_t *
+bson_reader_new_from_fd (int  fd,               /* IN */
+                         bool close_on_destroy) /* IN */
+{
+   bson_reader_handle_fd_t *handle;
+
+   BSON_ASSERT (fd != -1);
+
+   handle = bson_malloc0 (sizeof *handle);
+   handle->fd = fd;
+   handle->do_close = close_on_destroy;
+
+   return bson_reader_new_from_handle (handle,
+                                       _bson_reader_handle_fd_read,
+                                       _bson_reader_handle_fd_destroy);
 }
 
 

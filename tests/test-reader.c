@@ -115,8 +115,8 @@ test_reader_from_handle (void)
 {
    bson_reader_t *reader;
    const bson_t *b;
-   uint32_t i;
    bson_iter_t iter;
+   uint32_t i;
    bool eof;
    int fd;
 

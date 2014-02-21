@@ -34,34 +34,23 @@
 BSON_BEGIN_DECLS
 
 
-/**
- * bson_reader_read_func_t:
- * @handle: The handle to read from.
- * @buf: The buffer to read into.
- * @count: The number of bytes to read.
+/*
+ *--------------------------------------------------------------------------
  *
- * This function describes a read function that can be used to read from a file
- * descriptor.
+ * bson_unichar_t --
  *
- * Returns: -1 on failure and errno is set, otherwise the number of bytes read.
- *    0 may be returned on end of stream.
+ *       bson_unichar_t provides an unsigned 32-bit type for containing
+ *       unicode characters. When iterating UTF-8 sequences, this should
+ *       be used to avoid losing the high-bits of non-ascii characters.
+ *
+ * See also:
+ *       bson_string_append_unichar()
+ *
+ *--------------------------------------------------------------------------
  */
-typedef ssize_t (*bson_reader_read_func_t) (void  *handle,
-                                            void  *buf,
-                                            size_t count);
-
-/**
- * bson_reader_destroy_func_t:
- * @handle: The handle to read from.
- *
- * This function describes a destroy function for a the handle passed in
- * bson_reader_new_from_handle
- *
- * Returns: void
- */
-typedef void (*bson_reader_destroy_func_t) (void *handle);
 
 typedef uint32_t bson_unichar_t;
+
 
 /**
  * bson_context_flags_t:
