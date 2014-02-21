@@ -123,29 +123,42 @@ static const char * gUint32Strs[] = {
 };
 
 
-/**
- * uint32_to_string:
- * @value: A #uint32_t to convert to string.
- * @strptr: (out): A pointer to the resulting string.
- * @str: (out): Storage for a string made with snprintf.
- * @size: Size of @str.
+/*
+ *--------------------------------------------------------------------------
  *
- * Converts @value to a string.
+ * bson_uint32_to_string --
  *
- * If @value is from 0 to 1000, it will use a constant string in the data
- * section of the library.
+ *       Converts @value to a string.
  *
- * If not, a string will be formatted using @str and snprintf(). This is much
- * slower, of course and therefore we try to optimize it out.
+ *       If @value is from 0 to 1000, it will use a constant string in the
+ *       data section of the library.
  *
- * @strptr will always be set. It will either point to @str or a constant
- * string. You will want to use this as your key.
+ *       If not, a string will be formatted using @str and snprintf(). This
+ *       is much slower, of course and therefore we try to optimize it out.
+ *
+ *       @strptr will always be set. It will either point to @str or a
+ *       constant string. You will want to use this as your key.
+ *
+ * Parameters:
+ *       @value: A #uint32_t to convert to string.
+ *       @strptr: (out): A pointer to the resulting string.
+ *       @str: (out): Storage for a string made with snprintf.
+ *       @size: Size of @str.
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
  */
+
 size_t
-bson_uint32_to_string (uint32_t value,
-                       const char  **strptr,
-                       char         *str,
-                       size_t   size)
+bson_uint32_to_string (uint32_t     value,  /* IN */
+                       const char **strptr, /* OUT */
+                       char        *str,    /* IN */
+                       size_t       size)   /* IN */
 {
    size_t i;
 

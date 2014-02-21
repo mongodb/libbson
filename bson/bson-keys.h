@@ -26,11 +26,10 @@
 BSON_BEGIN_DECLS
 
 
-size_t
-bson_uint32_to_string (uint32_t value,
-                       const char  **strptr,
-                       char         *str,
-                       size_t        size);
+size_t bson_uint32_to_string (uint32_t     value,
+                              const char **strptr,
+                              char        *str,
+                              size_t       size);
 
 
 BSON_END_DECLS
