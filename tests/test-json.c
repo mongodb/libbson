@@ -271,7 +271,7 @@ _test_bson_json_read_compare (const char *json,
    va_list ap;
    int r;
    bson_t *compare;
-   bson_t bson;
+   bson_t bson = BSON_INITIALIZER;
 
    reader = bson_json_data_reader_new ((size == 1), size);
    bson_json_data_reader_ingest(reader, (uint8_t *)json, strlen(json));
@@ -291,12 +291,14 @@ _test_bson_json_read_compare (const char *json,
       bson_eq_bson (&bson, compare);
 
       bson_destroy (compare);
-      bson_destroy (&bson);
+
+      bson_reinit (&bson);
    }
 
    va_end (ap);
 
    bson_json_reader_destroy (reader);
+   bson_destroy (&bson);
 }
 
 static void
@@ -428,7 +430,7 @@ test_bson_json_read_bad_cb(void)
    bson_error_t error;
    bson_json_reader_t *reader;
    int r;
-   bson_t bson;
+   bson_t bson = BSON_INITIALIZER;
 
    reader = bson_json_reader_new (NULL, &test_bson_json_read_bad_cb_helper, NULL, false, 0);
 
@@ -439,6 +441,7 @@ test_bson_json_read_bad_cb(void)
    assert(error.code = BSON_JSON_ERROR_READ_CB_FAILURE);
 
    bson_json_reader_destroy (reader);
+   bson_destroy (&bson);
 }
 
 void

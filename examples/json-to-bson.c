@@ -127,10 +127,11 @@ main (int   argc,
          }
 
          fwrite (bson_get_data(b_out), 1, b_out->len, stdout);
-         bson_destroy (b_out);
+         bson_reinit (b_out);
       }
 
       bson_json_reader_destroy (reader);
+      bson_destroy (b_out);
    }
 
    return 0;

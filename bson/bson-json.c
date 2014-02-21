@@ -872,8 +872,10 @@ _bson_json_read_parse_error (bson_json_reader_t *reader, /* IN */
  *       Read the next json document from @reader and write its value
  *       into @bson. @bson will be allocated as part of this process.
  *
- *       @bson MUST NOT be initialized before calling this function as
- *       it will be initialized upon entry.
+ *       @bson MUST be initialized before calling this function as it
+ *       will not be initialized automatically. The reasoning for this
+ *       is so that you can chain together bson_json_reader_t with
+ *       other components like bson_writer_t.
  *
  * Returns:
  *       1 if successful and data was read.
@@ -881,7 +883,6 @@ _bson_json_read_parse_error (bson_json_reader_t *reader, /* IN */
  *       -1 if there was an error and @error is set.
  *
  * Side effects:
- *       @bson is initialized if the result is 1.
  *       @error may be set.
  *
  *--------------------------------------------------------------------------
@@ -889,7 +890,7 @@ _bson_json_read_parse_error (bson_json_reader_t *reader, /* IN */
 
 int
 bson_json_reader_read (bson_json_reader_t *reader, /* IN */
-                       bson_t             *bson,   /* OUT */
+                       bson_t             *bson,   /* IN */
                        bson_error_t       *error)  /* OUT */
 {
    bson_json_reader_producer_t *p;
@@ -904,8 +905,6 @@ bson_json_reader_read (bson_json_reader_t *reader, /* IN */
 
    p = &reader->producer;
    yh = reader->yh;
-
-   bson_init (bson);
 
    reader->bson.bson = bson;
    reader->bson.n = -1;
@@ -959,9 +958,6 @@ bson_json_reader_read (bson_json_reader_t *reader, /* IN */
    }
 
 cleanup:
-   if (ret != 1) {
-      bson_destroy (bson);
-   }
 
    return ret;
 }
@@ -1083,21 +1079,23 @@ bson_new_from_json (const uint8_t *data,  /* IN */
                     bson_error_t  *error) /* OUT */
 {
    bson_json_reader_t *reader;
-   bson_t bson;
+   bson_t *bson;
    int r;
 
    bson_return_val_if_fail (data, NULL);
 
+   bson = bson_new ();
    reader = bson_json_data_reader_new (false, BSON_JSON_DEFAULT_BUF_SIZE);
    bson_json_data_reader_ingest (reader, data, len);
-   r = bson_json_reader_read (reader, &bson, error);
+   r = bson_json_reader_read (reader, bson, error);
    bson_json_reader_destroy (reader);
 
-   if (r == 1) {
-      return bson_copy (&bson);
+   if (r != 1) {
+      bson_destroy (bson);
+      return NULL;
    }
 
-   return NULL;
+   return bson;
 }
 
 
@@ -1113,10 +1111,17 @@ bson_init_from_json (bson_t        *bson,  /* OUT */
    bson_return_val_if_fail (bson, NULL);
    bson_return_val_if_fail (data, NULL);
 
+   bson_init (bson);
+
    reader = bson_json_data_reader_new (false, BSON_JSON_DEFAULT_BUF_SIZE);
    bson_json_data_reader_ingest (reader, data, len);
    r = bson_json_reader_read (reader, bson, error);
    bson_json_reader_destroy (reader);
 
-   return (r == 1);
+   if (r != 1) {
+      bson_destroy (bson);
+      return false;
+   }
+
+   return true;
 }
