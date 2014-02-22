@@ -33,4 +33,14 @@
 #define BSON_OS @BSON_OS@
 
 
+/*
+ * Track if we have stdbool.h available from build time. This saves the need
+ * to save our config.h from build time.
+ */
+#define BSON_HAVE_STDBOOL_H @BSON_HAVE_STDBOOL_H@
+#if BSON_HAVE_STDBOOL_H != 1
+# undef BSON_HAVE_STDBOOL_H
+#endif
+
+
 #endif /* BSON_CONFIG_H */

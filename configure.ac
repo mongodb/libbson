@@ -135,7 +135,14 @@ dnl Check for Required Headers
 dnl **************************************************************************
 AC_CREATE_STDINT_H([bson/bson-stdint.h])
 
+# stdbool.h
 AC_HEADER_STDBOOL
+BSON_HAVE_STDBOOL_H=0
+if test "$ac_cv_header_stdbool_h" = "yes" ; then
+	BSON_HAVE_STDBOOL_H=1
+fi
+AC_SUBST([BSON_HAVE_STDBOOL_H])
+
 
 dnl **************************************************************************
 dnl Check for Python Support

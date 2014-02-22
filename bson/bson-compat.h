@@ -89,7 +89,7 @@ BSON_BEGIN_DECLS
 #endif
 
 
-#ifdef HAVE_STDBOOL_H
+#ifdef BSON_HAVE_STDBOOL_H
 # include <stdbool.h>
 #elif !defined(__bool_true_false_are_defined)
 # ifndef __cplusplus
