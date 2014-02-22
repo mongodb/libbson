@@ -24,7 +24,7 @@ AC_PREREQ([2.61])
 AC_INIT([libbson],[bson_version],[https://github.com/mongodb/libbson/issues])
 
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_MACRO_DIR([build/m4])
 
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES],
 	 [AC_SUBST([AM_DEFAULT_VERBOSITY], [1])])
