@@ -22,7 +22,11 @@
 #ifdef __APPLE__
 # include <mach/clock.h>
 # include <mach/mach.h>
-#elif defined(HAVE_CLOCK_GETTIME)
+# include <mach/mach_time.h>
+# include <sys/time.h>
+#endif
+
+#if defined(HAVE_CLOCK_GETTIME)
 # include <time.h>
 # include <sys/time.h>
 #endif
@@ -124,14 +128,14 @@ bson_get_monotonic_time (void)
    return ((ts.tv_sec * 1000000UL) + (ts.tv_nsec / 1000UL));
 #elif defined(__APPLE__)
    static mach_timebase_info_data_t info = { 0 };
-   static double ratio;
+   static double ratio = 0.0;
 
    if (!info.denom) {
-      mach_timebase_info(&info);
+      mach_timebase_info (&info);
       ratio = info.numer / info.denom;
    }
 
-   return (mach_absolute_time() * ratio);
+   return mach_absolute_time () * ratio;
 #elif defined(_WIN32)
    return GetTickCount64 ();
 #else
