@@ -501,7 +501,8 @@ TestSuite_PrintJsonHeader (TestSuite *suite, /* IN */
    }
 
    pagesize = sysconf (_SC_PAGE_SIZE);
-#  ifdef __linux__
+
+#  if defined(_SC_PHYS_PAGES)
    npages = sysconf (_SC_PHYS_PAGES);
 #  endif
 
