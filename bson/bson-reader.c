@@ -16,6 +16,7 @@
 
 #include "bson.h"
 
+#include <errno.h>
 #include <string.h>
 
 #include "bson-reader.h"
@@ -63,12 +64,30 @@ typedef struct
 } bson_reader_data_t;
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * _bson_reader_handle_fill_buffer --
+ *
+ *       Attempt to read as much as possible until the underlying buffer
+ *       in @reader is filled or we have reached end-of-stream or
+ *       read failure.
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 static void
-_bson_reader_handle_fill_buffer (bson_reader_handle_t *reader)
+_bson_reader_handle_fill_buffer (bson_reader_handle_t *reader) /* IN */
 {
    ssize_t ret;
 
-   bson_return_if_fail (reader);
+   BSON_ASSERT (reader);
 
    /*
     * Handle first read specially.
@@ -145,8 +164,8 @@ bson_reader_new_from_handle (void                       *handle,
 {
    bson_reader_handle_t *real;
 
-   assert(handle);
-   assert(rf);
+   bson_return_val_if_fail (handle, NULL);
+   bson_return_val_if_fail (rf, NULL);
 
    real = bson_malloc0 (sizeof *real);
    real->type = BSON_READER_HANDLE;
@@ -167,6 +186,23 @@ bson_reader_new_from_handle (void                       *handle,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * _bson_reader_handle_fd_destroy --
+ *
+ *       Cleanup allocations associated with state created in
+ *       bson_reader_new_from_fd().
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 static void
 _bson_reader_handle_fd_destroy (void *handle) /* IN */
 {
@@ -181,20 +217,69 @@ _bson_reader_handle_fd_destroy (void *handle) /* IN */
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * _bson_reader_handle_fd_read --
+ *
+ *       Perform read on opaque handle created in
+ *       bson_reader_new_from_fd().
+ *
+ *       The underlying file descriptor is read from the current position
+ *       using the bson_reader_handle_fd_t allocated.
+ *
+ * Returns:
+ *       -1 on failure.
+ *       0 on end of stream.
+ *       Greater than zero on success.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 static ssize_t
 _bson_reader_handle_fd_read (void   *handle, /* IN */
                              void   *buf,    /* IN */
                              size_t  len)    /* IN */
 {
+   ssize_t ret = -1;
+
    bson_reader_handle_fd_t *fd = handle;
 
    if (fd && (fd->fd != -1)) {
-      return read (fd->fd, buf, len);
+   again:
+      ret = read (fd->fd, buf, len);
+      if ((ret == -1) && (errno == EAGAIN)) {
+         goto again;
+      }
    }
 
-   return -1;
+   return ret;
 }
 
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_reader_new_from_fd --
+ *
+ *       Create a new bson_reader_t using the file-descriptor provided.
+ *
+ * Parameters:
+ *       @fd: a libc style file-descriptor.
+ *       @close_on_destroy: if close() should be called on @fd when
+ *          bson_reader_destroy() is called.
+ *
+ * Returns:
+ *       A newly allocated bson_reader_t on success; otherwise NULL.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
 
 bson_reader_t *
 bson_reader_new_from_fd (int  fd,               /* IN */
@@ -202,7 +287,7 @@ bson_reader_new_from_fd (int  fd,               /* IN */
 {
    bson_reader_handle_fd_t *handle;
 
-   BSON_ASSERT (fd != -1);
+   bson_return_val_if_fail (fd != -1, NULL);
 
    handle = bson_malloc0 (sizeof *handle);
    handle->fd = fd;
@@ -221,39 +306,86 @@ bson_reader_new_from_fd (int  fd,               /* IN */
  * Note that @reader must be initialized by bson_reader_init_from_handle(), or data
  * will be destroyed.
  */
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_reader_set_read_func --
+ *
+ *       Set the read func to be provided for @reader.
+ *
+ *       You probably want to use bson_reader_new_from_handle() or
+ *       bson_reader_new_from_fd() instead.
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 void
-bson_reader_set_read_func (bson_reader_t          *reader,
-                           bson_reader_read_func_t func)
+bson_reader_set_read_func (bson_reader_t          *reader, /* IN */
+                           bson_reader_read_func_t func)   /* IN */
 {
    bson_reader_handle_t *real = (bson_reader_handle_t *)reader;
 
-   assert(reader->type == BSON_READER_HANDLE);
+   bson_return_if_fail (reader->type == BSON_READER_HANDLE);
 
    real->read_func = func;
 }
 
 
-/**
- * bson_reader_set_destroy_func:
- * @reader: A bson_reader_t.
+/*
+ *--------------------------------------------------------------------------
  *
- * Note that @reader must be initialized by bson_reader_init_from_handle(), or data
- * will be destroyed.
+ * bson_reader_set_destroy_func --
+ *
+ *       Set the function to cleanup state when @reader is destroyed.
+ *
+ *       You probably want bson_reader_new_from_fd() or
+ *       bson_reader_new_from_handle() instead.
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
  */
+
 void
-bson_reader_set_destroy_func (bson_reader_t             *reader,
-                              bson_reader_destroy_func_t func)
+bson_reader_set_destroy_func (bson_reader_t             *reader, /* IN */
+                              bson_reader_destroy_func_t func)   /* IN */
 {
    bson_reader_handle_t *real = (bson_reader_handle_t *)reader;
 
-   assert(reader->type == BSON_READER_HANDLE);
+   bson_return_if_fail (reader->type == BSON_READER_HANDLE);
 
    real->destroy_func = func;
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * _bson_reader_handle_grow_buffer --
+ *
+ *       Grow the buffer to the next power of two.
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 static void
-_bson_reader_handle_grow_buffer (bson_reader_handle_t *reader)
+_bson_reader_handle_grow_buffer (bson_reader_handle_t *reader) /* IN */
 {
    size_t size;
 
@@ -265,8 +397,24 @@ _bson_reader_handle_grow_buffer (bson_reader_handle_t *reader)
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * _bson_reader_handle_tell --
+ *
+ *       Tell the current position within the underlying file-descriptor.
+ *
+ * Returns:
+ *       An off_t containing the current offset.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 static off_t
-_bson_reader_handle_tell (bson_reader_handle_t *reader)
+_bson_reader_handle_tell (bson_reader_handle_t *reader) /* IN */
 {
    off_t off;
 
@@ -280,9 +428,29 @@ _bson_reader_handle_tell (bson_reader_handle_t *reader)
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * _bson_reader_handle_read --
+ *
+ *       Read the next chunk of data from the underlying file descriptor
+ *       and return a bson_t which should not be modified.
+ *
+ *       There was a failure if NULL is returned and @reached_eof is
+ *       not set to true.
+ *
+ * Returns:
+ *       NULL on failure or end of stream.
+ *
+ * Side effects:
+ *       @reached_eof is set if non-NULL.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 static const bson_t *
-_bson_reader_handle_read (bson_reader_handle_t *reader,
-                      bool      *reached_eof)
+_bson_reader_handle_read (bson_reader_handle_t *reader,      /* IN */
+                          bool                 *reached_eof) /* IN */
 {
    uint32_t blen;
 
@@ -325,22 +493,35 @@ _bson_reader_handle_read (bson_reader_handle_t *reader,
 }
 
 
-/**
- * bson_reader_new_from_data:
- * @data: A buffer to read BSON documents from.
- * @length: The length of @data.
+/*
+ *--------------------------------------------------------------------------
  *
- * Allocates and initializes a new bson_reader_t that will the memory
- * provided as a stream of BSON documents.
+ * bson_reader_new_from_data --
  *
- * Returns: (transfer full): A newly allocated bson_reader_t that should be
- *   freed with bson_reader_destroy().
+ *       Allocates and initializes a new bson_reader_t that will the memory
+ *       provided as a stream of BSON documents.
+ *
+ * Parameters:
+ *       @data: A buffer to read BSON documents from.
+ *       @length: The length of @data.
+ *
+ * Returns:
+ *       A newly allocated bson_reader_t that should be freed with
+ *       bson_reader_destroy().
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
  */
+
 bson_reader_t *
-bson_reader_new_from_data (const uint8_t *data,
-                           size_t              length)
+bson_reader_new_from_data (const uint8_t *data,   /* IN */
+                           size_t         length) /* IN */
 {
    bson_reader_data_t *real;
+
+   bson_return_val_if_fail (data, NULL);
 
    real = bson_malloc0 (sizeof *real);
    real->type = BSON_READER_DATA;
@@ -352,9 +533,26 @@ bson_reader_new_from_data (const uint8_t *data,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * _bson_reader_data_read --
+ *
+ *       Read the next document from the underlying buffer.
+ *
+ * Returns:
+ *       NULL on failure or end of stream.
+ *       a bson_t which should not be modified.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 static const bson_t *
-_bson_reader_data_read (bson_reader_data_t *reader,
-                        bool        *reached_eof)
+_bson_reader_data_read (bson_reader_data_t *reader,      /* IN */
+                        bool               *reached_eof) /* IN */
 {
    uint32_t blen;
 
@@ -397,8 +595,24 @@ _bson_reader_data_read (bson_reader_data_t *reader,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * _bson_reader_data_tell --
+ *
+ *       Tell the current position in the underlying buffer.
+ *
+ * Returns:
+ *       An off_t of the current offset.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 static off_t
-_bson_reader_data_tell (bson_reader_data_t *reader)
+_bson_reader_data_tell (bson_reader_data_t *reader) /* IN */
 {
    bson_return_val_if_fail (reader, -1);
 
@@ -406,15 +620,25 @@ _bson_reader_data_tell (bson_reader_data_t *reader)
 }
 
 
-/**
- * bson_reader_destroy:
- * @reader: An initialized bson_reader_t.
+/*
+ *--------------------------------------------------------------------------
  *
- * Releases resources that were allocated during the use of a bson_reader_t.
- * This should be called after you have finished using the structure.
+ * bson_reader_destroy --
+ *
+ *       Release a bson_reader_t created with bson_reader_new_from_data(),
+ *       bson_reader_new_from_fd(), or bson_reader_new_from_handle().
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
  */
+
 void
-bson_reader_destroy (bson_reader_t *reader)
+bson_reader_destroy (bson_reader_t *reader) /* IN */
 {
    bson_return_if_fail (reader);
 
@@ -446,28 +670,37 @@ bson_reader_destroy (bson_reader_t *reader)
 }
 
 
-/**
- * bson_reader_read:
- * @reader: A bson_reader_t.
- * @reached_eof: A location for a bool.
+/*
+ *--------------------------------------------------------------------------
  *
- * Reads the next bson_t in the underlying memory or storage.  The resulting
- * bson_t should not be modified or freed. You may copy it and iterate over it.
- * Functions that take a const bson_t* are safe to use.
+ * bson_reader_read --
  *
- * This structure does not survive calls to bson_reader_read() or
- * bson_reader_destroy() as it uses memory allocated by the reader or
- * underlying storage/memory.
+ *       Reads the next bson_t in the underlying memory or storage.  The
+ *       resulting bson_t should not be modified or freed. You may copy it
+ *       and iterate over it.  Functions that take a const bson_t* are safe
+ *       to use.
  *
- * If NULL is returned then @reached_eof will be set to true if the end of the
- * file or buffer was reached. This indicates if there was an error parsing the
- * document stream.
+ *       This structure does not survive calls to bson_reader_read() or
+ *       bson_reader_destroy() as it uses memory allocated by the reader or
+ *       underlying storage/memory.
  *
- * Returns: A const bson_t that should not be modified or freed.
+ *       If NULL is returned then @reached_eof will be set to true if the
+ *       end of the file or buffer was reached. This indicates if there was
+ *       an error parsing the document stream.
+ *
+ * Returns:
+ *       A const bson_t that should not be modified or freed.
+ *       NULL on failure or end of stream.
+ *
+ * Side effects:
+ *       @reached_eof is set if non-NULL.
+ *
+ *--------------------------------------------------------------------------
  */
+
 const bson_t *
-bson_reader_read (bson_reader_t *reader,
-                  bool   *reached_eof)
+bson_reader_read (bson_reader_t *reader,      /* IN */
+                  bool          *reached_eof) /* OUT */
 {
    bson_return_val_if_fail (reader, NULL);
 
@@ -487,15 +720,25 @@ bson_reader_read (bson_reader_t *reader,
 }
 
 
-/**
- * bson_reader_tell:
- * @reader: A bson_reader_t.
+/*
+ *--------------------------------------------------------------------------
  *
- * Return the current position in the underlying reader. This will always
- * be at the beginning of a bson document or end of file.
+ * bson_reader_tell --
+ *
+ *       Return the current position in the underlying reader. This will
+ *       always be at the beginning of a bson document or end of file.
+ *
+ * Returns:
+ *       An off_t containing the current offset.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
  */
+
 off_t
-bson_reader_tell (bson_reader_t *reader)
+bson_reader_tell (bson_reader_t *reader) /* IN */
 {
    bson_return_val_if_fail (reader, -1);
 

@@ -32,32 +32,59 @@
 BSON_BEGIN_DECLS
 
 
-/**
- * bson_reader_read_func_t:
- * @handle: The handle to read from.
- * @buf: The buffer to read into.
- * @count: The number of bytes to read.
+/*
+ *--------------------------------------------------------------------------
  *
- * This function describes a read function that can be used to read from a file
- * descriptor.
+ * bson_reader_read_func_t --
  *
- * Returns: -1 on failure and errno is set, otherwise the number of bytes read.
- *    0 may be returned on end of stream.
+ *       This function is a callback used by bson_reader_t to read the
+ *       next chunk of data from the underlying opaque file descriptor.
+ *
+ *       This function is meant to operate similar to the read() function
+ *       as part of libc on UNIX-like systems.
+ *
+ * Parameters:
+ *       @handle: The handle to read from.
+ *       @buf: The buffer to read into.
+ *       @count: The number of bytes to read.
+ *
+ * Returns:
+ *       0 for end of stream.
+ *       -1 for read failure.
+ *       Greater than zero for number of bytes read into @buf.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
  */
-typedef ssize_t (*bson_reader_read_func_t) (void  *handle,
-                                            void  *buf,
-                                            size_t count);
 
-/**
- * bson_reader_destroy_func_t:
- * @handle: The handle to read from.
+typedef ssize_t (*bson_reader_read_func_t) (void  *handle, /* IN */
+                                            void  *buf,    /* IN */
+                                            size_t count); /* IN */
+
+
+/*
+ *--------------------------------------------------------------------------
  *
- * This function describes a destroy function for a the handle passed in
- * bson_reader_new_from_handle
+ * bson_reader_destroy_func_t --
  *
- * Returns: void
+ *       Destroy callback to release any resources associated with the
+ *       opaque handle.
+ *
+ * Parameters:
+ *       @handle: the handle provided to bson_reader_new_from_handle().
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
  */
-typedef void (*bson_reader_destroy_func_t) (void *handle);
+
+typedef void (*bson_reader_destroy_func_t) (void *handle); /* IN */
 
 
 bson_reader_t *bson_reader_new_from_handle  (void                       *handle,
