@@ -29,13 +29,13 @@
 #include <assert.h>
 #include <math.h>
 
-#define MAX_VALUE_TO_MULTIPLY ((LLONG_MAX / 10) + (LLONG_MAX % 10))
+#define MAX_VALUE_TO_MULTIPLY ((INT64_MAX / 10) + (INT64_MAX % 10))
 
  /* same semantics as strtol */
-long long
+int64_t
 yajl_parse_integer(const unsigned char *number, unsigned int length)
 {
-    long long ret  = 0;
+    int64_t ret  = 0;
     long sign = 1;
     const unsigned char *pos = number;
     if (*pos == '-') { pos++; sign = -1; }
@@ -44,16 +44,16 @@ yajl_parse_integer(const unsigned char *number, unsigned int length)
     while (pos < number + length) {
         if ( ret > MAX_VALUE_TO_MULTIPLY ) {
             errno = ERANGE;
-            return sign == 1 ? LLONG_MAX : LLONG_MIN;
+            return sign == 1 ? INT64_MAX : INT64_MIN;
         }
         ret *= 10;
-        if (LLONG_MAX - ret < (*pos - '0')) {
+        if (INT64_MAX - ret < (*pos - '0')) {
             errno = ERANGE;
-            return sign == 1 ? LLONG_MAX : LLONG_MIN;
+            return sign == 1 ? INT64_MAX : INT64_MIN;
         }
         if (*pos < '0' || *pos > '9') {
             errno = ERANGE;
-            return sign == 1 ? LLONG_MAX : LLONG_MIN;
+            return sign == 1 ? INT64_MAX : INT64_MIN;
         }
         ret += (*pos++ - '0');
     }
@@ -282,10 +282,10 @@ yajl_do_parse(yajl_handle hand, const unsigned char * jsonText,
                             _CC_CHK(hand->callbacks->yajl_number(
                                         hand->ctx,(const char *) buf, bufLen));
                         } else if (hand->callbacks->yajl_integer) {
-                            long long int i = 0;
+                            int64_t i = 0;
                             errno = 0;
                             i = yajl_parse_integer(buf, bufLen);
-                            if ((i == LLONG_MIN || i == LLONG_MAX) &&
+                            if ((i == INT64_MIN || i == INT64_MAX) &&
                                 errno == ERANGE)
                             {
                                 yajl_bs_set(hand->stateStack,
@@ -414,7 +414,7 @@ yajl_do_parse(yajl_handle hand, const unsigned char * jsonText,
                 default:
                     yajl_bs_set(hand->stateStack, yajl_state_parse_error);
                     hand->parseError =
-                        "invalid object key (must be a string)"; 
+                        "invalid object key (must be a string)";
                     goto around_again;
             }
         }

@@ -25,4 +25,7 @@ YAJL_C_FILES = \
 	yajl/yajl_gen.c
 
 libyajl_la_SOURCES = $(YAJL_H_FILES) $(YAJL_C_FILES)
-libyajl_la_CPPFLAGS = -I$(top_srcdir)/yajl
+libyajl_la_CPPFLAGS = \
+	-I$(top_srcdir)/bson \
+	-I$(top_srcdir)/yajl \
+	-DBSON_COMPILATION

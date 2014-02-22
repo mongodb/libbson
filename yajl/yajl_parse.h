@@ -19,6 +19,8 @@
  * Interface to YAJL's JSON stream parsing facilities.
  */
 
+#include "bson-compat.h"
+
 #include <yajl/yajl_common.h>
 
 #ifndef __YAJL_PARSE_H__
@@ -74,7 +76,7 @@ extern "C" {
     typedef struct {
         int (* yajl_null)(void * ctx);
         int (* yajl_boolean)(void * ctx, int boolVal);
-        int (* yajl_integer)(void * ctx, long long integerVal);
+        int (* yajl_integer)(void * ctx, int64_t integerVal);
         int (* yajl_double)(void * ctx, double doubleVal);
         /** A callback which passes the string representation of the number
          *  back to the client.  Will be used for all numbers when present */
@@ -101,7 +103,7 @@ extern "C" {
      *                    are encountered in the input text.  May be NULL,
      *                    which is only useful for validation.
      *  \param afs        memory allocation functions, may be NULL for to use
-     *                    C runtime library routines (malloc and friends) 
+     *                    C runtime library routines (malloc and friends)
      *  \param ctx        a context pointer that will be passed to callbacks.
      */
     YAJL_API yajl_handle yajl_alloc(const yajl_callbacks * callbacks,

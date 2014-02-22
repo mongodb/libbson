@@ -340,8 +340,8 @@ _bson_json_read_boolean (void *_ctx, /* IN */
 
 
 static int
-_bson_json_read_integer (void     *_ctx, /* IN */
-                         long long val)  /* IN */
+_bson_json_read_integer (void    *_ctx, /* IN */
+                         int64_t  val)  /* IN */
 {
    bson_json_read_state_t rs;
    bson_json_read_bson_state_t bs;

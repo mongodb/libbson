@@ -17,6 +17,8 @@
 #ifndef __YAJL_PARSER_H__
 #define __YAJL_PARSER_H__
 
+#include "bson-compat.h"
+
 #include "yajl_parse.h"
 #include "yajl_bytestack.h"
 #include "yajl_buf.h"
@@ -71,7 +73,7 @@ yajl_render_error_string(yajl_handle hand, const unsigned char * jsonText,
 
 /* A little built in integer parsing routine with the same semantics as strtol
  * that's unaffected by LOCALE. */
-long long
+int64_t
 yajl_parse_integer(const unsigned char *number, unsigned int length);
 
 
