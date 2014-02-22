@@ -29,8 +29,35 @@
 #include "bson-utf8.h"
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_string_new --
+ *
+ *       Create a new bson_string_t.
+ *
+ *       bson_string_t is a power-of-2 allocation growing string. Every
+ *       time data is appended the next power of two size is chosen for
+ *       the allocation. Pretty standard stuff.
+ *
+ *       It is UTF-8 aware through the use of bson_string_append_unichar().
+ *       The proper UTF-8 character sequence will be used.
+ *
+ * Parameters:
+ *       @str: a string to copy or NULL.
+ *
+ * Returns:
+ *       A newly allocated bson_string_t that should be freed with
+ *       bson_string_free().
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 bson_string_t *
-bson_string_new (const char *str)
+bson_string_new (const char *str) /* IN */
 {
    bson_string_t *ret;
 
@@ -57,9 +84,29 @@ bson_string_new (const char *str)
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_string_free --
+ *
+ *       Free the bson_string_t @string and related allocations.
+ *
+ *       If @free_segment is false, then the strings buffer will be
+ *       returned and is not freed. Otherwise, NULL is returned.
+ *
+ * Returns:
+ *       The string->str if free_segment is false.
+ *       Otherwise NULL.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 char *
-bson_string_free (bson_string_t *string,
-                  bool    free_segment)
+bson_string_free (bson_string_t *string,       /* IN */
+                  bool           free_segment) /* IN */
 {
    char *ret = NULL;
 

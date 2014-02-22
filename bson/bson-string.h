@@ -16,7 +16,7 @@
 
 
 #if !defined (BSON_INSIDE) && !defined (BSON_COMPILATION)
-#error "Only <bson.h> can be included directly."
+# error "Only <bson.h> can be included directly."
 #endif
 
 
@@ -35,95 +35,47 @@ BSON_BEGIN_DECLS
 
 typedef struct
 {
-   char          *str;
+   char     *str;
    uint32_t  len;
    uint32_t  alloc;
 } bson_string_t;
 
 
-bson_string_t *
-bson_string_new (const char *str);
-
-
-char *
-bson_string_free (bson_string_t *string,
-                  bool    free_segment);
-
-
-void
-bson_string_append (bson_string_t *string,
-                    const char    *str);
-
-
-void
-bson_string_append_c (bson_string_t *string,
-                      char           str);
-
-
-void
-bson_string_append_unichar (bson_string_t *string,
-                            bson_unichar_t unichar);
-
-
-void
-bson_string_append_printf (bson_string_t *string,
-                           const char    *format,
-                           ...)
-   BSON_GNUC_PRINTF (2, 3);
-
-
-void
-bson_string_truncate (bson_string_t *string,
-                      uint32_t  len);
-
-
-char *
-bson_strdup (const char *str);
-
-
-char *
-bson_strdup_printf (const char *format,
-                    ...)
-   BSON_GNUC_PRINTF (1, 2);
-
-
-char *
-bson_strdupv_printf (const char *format,
-                     va_list     args)
-   BSON_GNUC_PRINTF (1, 0);
-
-
-char *
-bson_strndup (const char *str,
-              size_t      n_bytes);
-
-void
-bson_strcpy_w_null (char       *dst,
-                    const char *src,
-                    size_t size);
-
-int
-bson_vsnprintf (char       *str,
-                size_t size,
-                const char *format,
-                va_list     ap)
-   BSON_GNUC_PRINTF (3, 0);
-
-int
-bson_snprintf (char       *str,
-               size_t      size,
-               const char *format,
-               ...)
-   BSON_GNUC_PRINTF (3, 4);
-
-
-void
-bson_strfreev (char **strv);
-
-
-size_t
-bson_strnlen (const char *s,
-              size_t      maxlen);
+bson_string_t *bson_string_new            (const char      *str);
+char          *bson_string_free           (bson_string_t   *string,
+                                           bool             free_segment);
+void           bson_string_append         (bson_string_t   *string,
+                                           const char      *str);
+void           bson_string_append_c       (bson_string_t   *string,
+                                           char             str);
+void           bson_string_append_unichar (bson_string_t   *string,
+                                           bson_unichar_t   unichar);
+void           bson_string_append_printf  (bson_string_t   *string,
+                                           const char      *format,
+                                           ...) BSON_GNUC_PRINTF (2, 3);
+void           bson_string_truncate       (bson_string_t  *string,
+                                           uint32_t        len);
+char          *bson_strdup                (const char     *str);
+char          *bson_strdup_printf         (const char     *format,
+                                           ...) BSON_GNUC_PRINTF (1, 2);
+char          *bson_strdupv_printf        (const char     *format,
+                                           va_list         args) BSON_GNUC_PRINTF (1, 0);
+char          *bson_strndup               (const char     *str,
+                                           size_t          n_bytes);
+void           bson_strcpy_w_null         (char           *dst,
+                                           const char     *src,
+                                           size_t          size);
+int            bson_vsnprintf             (char           *str,
+                                           size_t          size,
+                                           const char     *format,
+                                           va_list         ap) BSON_GNUC_PRINTF (3, 0);
+int           bson_snprintf               (char           *str,
+                                           size_t          size,
+                                           const char     *format,
+                                           ...) BSON_GNUC_PRINTF (3, 4);
+void          bson_strfreev               (char          **strv);
+size_t        bson_strnlen                (const char     *s,
+                                           size_t          maxlen);
 
 
 BSON_END_DECLS
