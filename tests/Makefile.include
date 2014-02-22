@@ -36,7 +36,7 @@ endif
 
 test: $(TEST_PROGS) $(PYTEST_DEPS)
 	@ for TEST_PROG in $(TEST_PROGS) ; do \
-		libtool --mode=execute $$VALGRIND ./$$TEST_PROG -F test.log; \
+		$(LIBTOOL) --mode=execute $$VALGRIND ./$$TEST_PROG -F test.log; \
 	done
 if HAVE_PYTHON
 	@ LD_LIBRARY_PATH=.libs DYLD_LIBRARY_PATH=.libs PYTHONPATH=.libs ./tests/test_cbson.py
