@@ -8,10 +8,53 @@ or perl.
 
 # Building
 
+## Dependencies
+
+### Fedora / RedHat Enterprise / CentOS
+
+```sh
+# yum install git automake autoconf libtool gcc
+```
+
+### Debian / Ubuntu
+
+```sh
+# apt-get install git-core automake autoconf libtool gcc
+```
+
+### FreeBSD
+
+```sh
+# pkg install git automake autoconf libtool gcc
+```
+
+### SmartOS
+
+```sh
+# pkgin install git automake autoconf libtool gcc47 gmake
+# export PATH=/opt/local/gcc47/bin:$PATH
+```
+
+### Windows Vista and Higher
+
+Builds on Windows Vista and Higher require cmake to build Visual Studio project files.
+Alternatively, you can use cygwin or mingw with the automake based build.
+
+```sh
+> cmake.exe build/win32
+> msbuild.exe ALL_BUILD.vcxproj
+```
+
+For the adventurous, you can cross-compile for Windows from Fedora easily using mingw.
+
+```sh
+$ ./configure --host=x86_64-w64-mingw32
+```
+
 ## From Git
 
 ```sh
-$ sudo yum install automake autoconf libtool make gcc
+$ cd libbson/
 $ ./autogen.sh --enable-silent-rules
 $ make
 $ sudo make install
