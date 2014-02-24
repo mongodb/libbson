@@ -25,13 +25,13 @@ apt-get install git-core automake autoconf libtool gcc
 ### FreeBSD
 
 ```sh
-pkg install git automake autoconf libtool gcc
+pkg install git automake autoconf libtool gcc pkgconf
 ```
 
 ### SmartOS
 
 ```sh
-pkgin install git automake autoconf libtool gcc47 gmake
+pkgin install git automake autoconf libtool gcc47 gmake pkg-config
 export PATH=/opt/local/gcc47/bin:$PATH
 ```
 
