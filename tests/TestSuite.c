@@ -41,6 +41,11 @@
 # include <windows.h>
 #endif
 
+#if defined(HAVE_CLOCK_GETTIME)
+# include <time.h>
+# include <sys/time.h>
+#endif
+
 #include "TestSuite.h"
 
 
@@ -141,7 +146,7 @@ snprintf (char *str,
 void
 _Clock_GetMonotonic (struct timespec *ts) /* OUT */
 {
-#if defined(HAVE_CLOCK_GETTIME)
+#if defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
    clock_gettime (CLOCK_MONOTONIC, ts);
 #elif defined(__APPLE__)
    static mach_timebase_info_data_t info = { 0 };
