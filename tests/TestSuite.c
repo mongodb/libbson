@@ -114,7 +114,7 @@ Thread_Create (Thread *thread,
 #endif
 
 
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(HAVE_SNPRINTF)
 static int
 snprintf (char *str,
           size_t size,
