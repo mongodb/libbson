@@ -102,60 +102,6 @@ bson_malloc0 (size_t num_bytes) /* IN */
 /*
  *--------------------------------------------------------------------------
  *
- * bson_memalign0 --
- *
- *       Like posix_memalign() except abort() is called in the case of
- *       failure to allocate memory.
- *
- * Parameters:
- *       @alignment: The alignment (such as 8 for 64-bit).
- *       @size: The size of the allocation.
- *
- * Returns:
- *       A pointer if successful; otherwise abort() is called and this
- *       function will never return.
- *
- * Side effects:
- *       None.
- *
- *--------------------------------------------------------------------------
- */
-
-void *
-bson_memalign0 (size_t alignment, /* IN */
-                size_t size)      /* IN */
-{
-   void *mem;
-
-#if defined(HAVE_POSIX_MEMALIGN)
-   if (0 != posix_memalign (&mem, alignment, size)) {
-      perror ("posix_memalign() failure:");
-      abort ();
-   }
-#elif defined(HAVE_MEMALIGN)
-   mem = memalign (alignment, size);
-
-   if (!mem) {
-      perror ("memalign() failure:");
-      abort ();
-   }
-#else
-# pragma message ("Platform is missing memalign()!")
-   mem = bson_malloc (alignment + size);
-   if (((size_t)mem % alignment) != 0) {
-      mem = (void *)((((intptr_t)mem / alignment) + 1) * alignment);
-   }
-#endif
-
-   memset (mem, 0, size);
-
-   return mem;
-}
-
-
-/*
- *--------------------------------------------------------------------------
- *
  * bson_realloc --
  *
  *       This function behaves similar to realloc() except that if there is
