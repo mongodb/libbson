@@ -23,10 +23,12 @@ TEST_BIG_ENDIAN(BSON_BIG_ENDIAN)
 
 if (MSVC)
    set (BSON_OS 2)
+   set (BSON_HAVE_STDBOOL_H 0)
 else ()
    find_package (Threads)
 
    set (BSON_OS 1)
+   set (BSON_HAVE_STDBOOL_H 0)
 endif ()
 
 if (BSON_BIG_ENDIAN)
