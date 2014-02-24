@@ -165,7 +165,7 @@ AM_CONDITIONAL([HAVE_PYTHON], [test "x$ax_python_header" != "xno"])
 dnl **************************************************************************
 dnl Check for necessary libraries.
 dnl **************************************************************************
-AC_CHECK_FUNCS(posix_memalign memalign strnlen)
+AC_CHECK_FUNCS(strnlen snprintf)
 
 AC_SEARCH_LIBS([clock_gettime], [rt], [
 	AC_DEFINE(HAVE_CLOCK_GETTIME, 1, [Have clock_gettime])
