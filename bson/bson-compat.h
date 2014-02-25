@@ -84,7 +84,7 @@ BSON_BEGIN_DECLS
 # define PRId64 "I64i"
 # define PRIu64 "I64u"
 #else
-# include <bson-stdint.h>
+# include "bson-stdint.h"
 # include <inttypes.h>
 #endif
 
