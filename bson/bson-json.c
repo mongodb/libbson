@@ -1100,10 +1100,10 @@ bson_new_from_json (const uint8_t *data,  /* IN */
 
 
 bool
-bson_init_from_json (bson_t        *bson,  /* OUT */
-                     const uint8_t *data,  /* IN */
-                     size_t         len,   /* IN */
-                     bson_error_t  *error) /* OUT */
+bson_init_from_json (bson_t       *bson,  /* OUT */
+                     const char   *data,  /* IN */
+                     ssize_t       len,   /* IN */
+                     bson_error_t *error) /* OUT */
 {
    bson_json_reader_t *reader;
    int r;
@@ -1111,10 +1111,14 @@ bson_init_from_json (bson_t        *bson,  /* OUT */
    bson_return_val_if_fail (bson, NULL);
    bson_return_val_if_fail (data, NULL);
 
+   if (len < 0) {
+      len = strlen (data);
+   }
+
    bson_init (bson);
 
    reader = bson_json_data_reader_new (false, BSON_JSON_DEFAULT_BUF_SIZE);
-   bson_json_data_reader_ingest (reader, data, len);
+   bson_json_data_reader_ingest (reader, (const uint8_t *)data, len);
    r = bson_json_reader_read (reader, bson, error);
    bson_json_reader_destroy (reader);
 

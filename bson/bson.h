@@ -162,8 +162,8 @@ bson_new_from_json (const uint8_t *data,
 
 bool
 bson_init_from_json (bson_t        *bson,
-                     const uint8_t *data,
-                     size_t         len,
+                     const char    *data,
+                     ssize_t        len,
                      bson_error_t  *error);
 
 
