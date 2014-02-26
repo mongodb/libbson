@@ -533,6 +533,24 @@ _bson_json_read_start_map (void *_ctx) /* IN */
 }
 
 
+static bool
+_is_known_key (const char *key)
+{
+   return ((0 == strcmp (key, "$regex")) ||
+           (0 == strcmp (key, "$options")) ||
+           (0 == strcmp (key, "$oid")) ||
+           (0 == strcmp (key, "$binary")) ||
+           (0 == strcmp (key, "$type")) ||
+           (0 == strcmp (key, "$date")) ||
+           (0 == strcmp (key, "$ref")) ||
+           (0 == strcmp (key, "$id")) ||
+           (0 == strcmp (key, "$undefined")) ||
+           (0 == strcmp (key, "$maxkey")) ||
+           (0 == strcmp (key, "$minkey")) ||
+           (0 == strcmp (key, "$timestamp")));
+}
+
+
 static int
 _bson_json_read_map_key (void          *_ctx, /* IN */
                          const uint8_t *val,  /* IN */
@@ -542,7 +560,7 @@ _bson_json_read_map_key (void          *_ctx, /* IN */
    bson_json_reader_bson_t *bson = &reader->bson;
 
    if (bson->read_state == BSON_JSON_IN_START_MAP) {
-      if (len > 0 && val[0] == '$') {
+      if (len > 0 && val[0] == '$' && _is_known_key ((const char *)val)) {
          bson->read_state = BSON_JSON_IN_BSON_TYPE;
          bson->bson_type = 0;
          memset (&bson->bson_type_data, 0, sizeof bson->bson_type_data);
