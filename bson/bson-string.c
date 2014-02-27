@@ -124,9 +124,25 @@ bson_string_free (bson_string_t *string,       /* IN */
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_string_append --
+ *
+ *       Append the UTF-8 string @str to @string.
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 void
-bson_string_append (bson_string_t *string,
-                    const char    *str)
+bson_string_append (bson_string_t *string, /* IN */
+                    const char    *str)    /* IN */
 {
    uint32_t len;
 
@@ -149,9 +165,28 @@ bson_string_append (bson_string_t *string,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_string_append_c --
+ *
+ *       Append the ASCII character @c to @string.
+ *
+ *       Do not use this if you are working with UTF-8 sequences,
+ *       use bson_string_append_unichar().
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 void
-bson_string_append_c (bson_string_t *string,
-                      char           c)
+bson_string_append_c (bson_string_t *string, /* IN */
+                      char           c)      /* IN */
 {
    char cc[2];
 
@@ -169,9 +204,25 @@ bson_string_append_c (bson_string_t *string,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_string_append_unichar --
+ *
+ *       Append the bson_unichar_t @unichar to the string @string.
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 void
-bson_string_append_unichar (bson_string_t *string,
-                            bson_unichar_t unichar)
+bson_string_append_unichar (bson_string_t  *string,  /* IN */
+                            bson_unichar_t  unichar) /* IN */
 {
    uint32_t len;
    char str [8];
@@ -187,6 +238,22 @@ bson_string_append_unichar (bson_string_t *string,
    }
 }
 
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_string_append_printf --
+ *
+ *       Format a string according to @format and append it to @string.
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
 
 void
 bson_string_append_printf (bson_string_t *string,
@@ -207,9 +274,28 @@ bson_string_append_printf (bson_string_t *string,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_string_truncate --
+ *
+ *       Truncate the string @string to @len bytes.
+ *
+ *       The underlying memory will be released via realloc() down to
+ *       the minimum required size specified by @len.
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 void
-bson_string_truncate (bson_string_t *string,
-                      uint32_t  len)
+bson_string_truncate (bson_string_t *string, /* IN */
+                      uint32_t       len)    /* IN */
 {
    uint32_t alloc;
 
@@ -234,33 +320,64 @@ bson_string_truncate (bson_string_t *string,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_strdup --
+ *
+ *       Portable strdup().
+ *
+ * Returns:
+ *       A newly allocated string that should be freed with bson_free().
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 char *
-bson_strdup (const char *str)
+bson_strdup (const char *str) /* IN */
 {
    long len;
-   char * out;
+   char *out;
 
    if (!str) {
       return NULL;
    }
 
-   len = (long)strlen(str);
+   len = (long)strlen (str);
+   out = bson_malloc (len + 1);
 
-   out = malloc(len + 1);
-
-   if (! out) {
-       return NULL;
+   if (!out) {
+      return NULL;
    }
 
-   memcpy(out, str, len + 1);
+   memcpy (out, str, len + 1);
 
    return out;
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_strdupv_printf --
+ *
+ *       Like bson_strdup_printf() but takes a va_list.
+ *
+ * Returns:
+ *       A newly allocated string that should be freed with bson_free().
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 char *
-bson_strdupv_printf (const char *format,
-                     va_list     args)
+bson_strdupv_printf (const char *format, /* IN */
+                     va_list     args)   /* IN */
 {
    va_list my_args;
    char *buf;
@@ -291,12 +408,31 @@ bson_strdupv_printf (const char *format,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_strdup_printf --
+ *
+ *       Convenience function that formats a string according to @format
+ *       and returns a copy of it.
+ *
+ * Returns:
+ *       A newly created string that should be freed with bson_free().
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 char *
-bson_strdup_printf (const char *format,
-                    ...)
+bson_strdup_printf (const char *format, /* IN */
+                    ...)                /* IN */
 {
    va_list args;
    char *ret;
+
+   bson_return_val_if_fail (format, NULL);
 
    va_start (args, format);
    ret = bson_strdupv_printf (format, args);
@@ -306,21 +442,57 @@ bson_strdup_printf (const char *format,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_strndup --
+ *
+ *       A portable strndup().
+ *
+ * Returns:
+ *       A newly allocated string that should be freed with bson_free().
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 char *
-bson_strndup (const char *str,
-              size_t      n_bytes)
+bson_strndup (const char *str,     /* IN */
+              size_t      n_bytes) /* IN */
 {
    char *ret;
 
-   ret = bson_malloc0 (n_bytes + 1);
+   bson_return_val_if_fail (str, NULL);
+
+   ret = bson_malloc (n_bytes + 1);
    memcpy (ret, str, n_bytes);
    ret[n_bytes] = '\0';
 
    return ret;
 }
 
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_strfreev --
+ *
+ *       Frees each string in a NULL terminated array of strings.
+ *       This also frees the underlying array.
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 void
-bson_strfreev (char **str)
+bson_strfreev (char **str) /* IN */
 {
    int i;
 
@@ -332,9 +504,25 @@ bson_strfreev (char **str)
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_strnlen --
+ *
+ *       A portable strnlen().
+ *
+ * Returns:
+ *       The length of @s up to @maxlen.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 size_t
-bson_strnlen (const char *s,
-              size_t      maxlen)
+bson_strnlen (const char *s,      /* IN */
+              size_t      maxlen) /* IN */
 {
 #ifdef HAVE_STRNLEN
    return strnlen (s, maxlen);
@@ -352,6 +540,25 @@ bson_strnlen (const char *s,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_strncpy --
+ *
+ *       A portable strncpy.
+ *
+ *       Copies @src into @dst, which must be @size bytes or larger.
+ *       The result is guaranteed to be \0 terminated.
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 void
 bson_strncpy (char       *dst,  /* IN */
               const char *src,  /* IN */
@@ -366,11 +573,33 @@ bson_strncpy (char       *dst,  /* IN */
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_vsnprintf --
+ *
+ *       A portable vsnprintf.
+ *
+ *       If more than @size bytes are required (exluding the null byte),
+ *       then @size bytes will be written to @string and the return value
+ *       is the number of bytes required.
+ *
+ *       This function will always return a NULL terminated string.
+ *
+ * Returns:
+ *       The number of bytes required for @format excluding the null byte.
+ *
+ * Side effects:
+ *       @str is initialized with the formatted string.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 int
-bson_vsnprintf (char       *str,
-                size_t      size,
-                const char *format,
-                va_list     ap)
+bson_vsnprintf (char       *str,    /* IN */
+                size_t      size,   /* IN */
+                const char *format, /* IN */
+                va_list     ap)     /* IN */
 {
 #ifdef BSON_OS_WIN32
    int r = -1;
@@ -398,10 +627,32 @@ bson_vsnprintf (char       *str,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_snprintf --
+ *
+ *       A portable snprintf.
+ *
+ *       If @format requires more than @size bytes, then @size bytes are
+ *       written and the result is the number of bytes required (excluding
+ *       the null byte).
+ *
+ *       This function will always return a NULL terminated string.
+ *
+ * Returns:
+ *       The number of bytes required for @format.
+ *
+ * Side effects:
+ *       @str is initialized.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 int
-bson_snprintf (char       *str,
-               size_t      size,
-               const char *format,
+bson_snprintf (char       *str,    /* IN */
+               size_t      size,   /* IN */
+               const char *format, /* IN */
                ...)
 {
    int r;
