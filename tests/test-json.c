@@ -316,12 +316,12 @@ test_bson_json_read(void)
         \"$oid\" : \"000000000000000000000000\" \n\
       }, \n\
       \"binary\" : { \n\
-        \"$binary\" : \"ZGVhZGJlZWY=\", \n\
-        \"$type\" : \"00\" \n\
+        \"$type\" : \"00\", \n\
+        \"$binary\" : \"ZGVhZGJlZWY=\" \n\
       }, \n\
       \"regex\" : { \n\
-        \"$options\" : \"ism\", \n\
-        \"$regex\" : \"foo|bar\" \n\
+        \"$regex\" : \"foo|bar\", \n\
+        \"$options\" : \"ism\" \n\
       }, \n\
       \"date\" : { \n\
         \"$date\" : 10000 \n\
@@ -334,10 +334,10 @@ test_bson_json_read(void)
         \"$undefined\" : true \n\
       }, \n\
       \"minkey\" : { \n\
-        \"$minkey\" : 1 \n\
+        \"$minKey\" : 1 \n\
       }, \n\
       \"maxkey\" : { \n\
-        \"$maxkey\" : 1 \n\
+        \"$maxKey\" : 1 \n\
       }, \n\
       \"timestamp\" : { \n\
         \"$timestamp\" : { \n\

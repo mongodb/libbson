@@ -2198,9 +2198,9 @@ _bson_as_json_visit_timestamp (const bson_iter_t *iter,
 {
    bson_json_state_t *state = data;
 
-   bson_string_append (state->str, "{ \"$timestamp\" : { \"t\": ");
+   bson_string_append (state->str, "{ \"$timestamp\" : { \"t\" : ");
    bson_string_append_printf (state->str, "%u", v_timestamp);
-   bson_string_append (state->str, ", \"i\": ");
+   bson_string_append (state->str, ", \"i\" : ");
    bson_string_append_printf (state->str, "%u", v_increment);
    bson_string_append (state->str, " } }");
 

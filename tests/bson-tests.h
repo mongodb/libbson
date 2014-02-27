@@ -47,27 +47,6 @@ BSON_BEGIN_DECLS
    } while (0)
 
 
-static BSON_INLINE void
-bson_eq_bson (bson_t *bson,
-              bson_t *expected)
-{
-   char *bson_json, *expected_json;
-   int unequal;
-
-   unequal = (expected->len != bson->len)
-             || memcmp (bson_get_data (expected), bson_get_data (
-                           bson), expected->len);
-
-   if (unequal) {
-      bson_json = bson_as_json (bson, NULL);
-      expected_json = bson_as_json (expected, NULL);
-
-      fprintf (stderr, "bson objects unequal: (%s) != (%s)", bson_json,
-               expected_json);
-      assert (0);
-   }
-}
-
 #ifdef BSON_OS_WIN32
 #include <share.h>
 static BSON_INLINE int
@@ -104,6 +83,55 @@ bson_read (int    fd,
 
 
 static BSON_INLINE void
+bson_eq_bson (bson_t *bson,
+              bson_t *expected)
+{
+   char *bson_json, *expected_json;
+   const uint8_t *bson_data = bson_get_data (bson);
+   const uint8_t *expected_data = bson_get_data (expected);
+   int unequal;
+   unsigned o;
+   int off = -1;
+
+   unequal = (expected->len != bson->len)
+             || memcmp (bson_get_data (expected), bson_get_data (
+                           bson), expected->len);
+
+   if (unequal) {
+      bson_json = bson_as_json (bson, NULL);
+      expected_json = bson_as_json (expected, NULL);
+
+      for (o = 0; o < bson->len && o < expected->len; o++) {
+         if (bson_data [o] != expected_data [o]) {
+            off = o;
+            break;
+         }
+      }
+
+      if (off == -1) {
+         off = MAX (expected->len, bson->len) - 1;
+      }
+
+      fprintf (stderr, "bson objects unequal (byte %u):\n(%s)\n(%s)\n",
+               off, bson_json, expected_json);
+
+      {
+         int fd1 = bson_open ("failure.bad.bson", O_RDWR | O_CREAT, 0640);
+         int fd2 = bson_open ("failure.expected.bson", O_RDWR | O_CREAT, 0640);
+         assert (fd1 != -1);
+         assert (fd2 != -1);
+         write (fd1, bson_data, bson->len);
+         write (fd2, expected_data, expected->len);
+         close (fd1);
+         close (fd2);
+      }
+
+      assert (0);
+   }
+}
+
+
+static BSON_INLINE void
 run_test (const char *name,
           void (*func) (void))
 {
@@ -130,6 +158,7 @@ run_test (const char *name,
    format = diff.tv_sec + (diff.tv_usec / 1000000.0);
    fprintf(stdout, " : %lf\n", format);
 }
+
 
 BSON_END_DECLS
 
