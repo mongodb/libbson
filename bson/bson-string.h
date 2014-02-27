@@ -69,12 +69,12 @@ int            bson_vsnprintf             (char           *str,
                                            size_t          size,
                                            const char     *format,
                                            va_list         ap) BSON_GNUC_PRINTF (3, 0);
-int           bson_snprintf               (char           *str,
+int            bson_snprintf              (char           *str,
                                            size_t          size,
                                            const char     *format,
                                            ...) BSON_GNUC_PRINTF (3, 4);
-void          bson_strfreev               (char          **strv);
-size_t        bson_strnlen                (const char     *s,
+void           bson_strfreev              (char          **strv);
+size_t         bson_strnlen               (const char     *s,
                                            size_t          maxlen);
 
 
