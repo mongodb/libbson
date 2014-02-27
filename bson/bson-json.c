@@ -213,7 +213,7 @@ struct _bson_json_reader_t
       return 0; \
    }
 #define HANDLE_OPTION(_key, _type, _state) \
-   (len == strlen (_key) && strncasecmp ((const char *)val, (_key), len) == 0) { \
+   (len == strlen (_key) && strncmp ((const char *)val, (_key), len) == 0) { \
       if (bson->known_bson_type && bson->bson_type != (_type)) { \
          _bson_json_read_set_error (reader, \
                                     "Invalid key %s.  Looking for values for %d", \
@@ -538,7 +538,7 @@ _is_known_key (const char *key)
 {
    bool ret;
 
-#define IS_KEY(k) (0 == strncasecmp (k, key, strlen(k) - 1))
+#define IS_KEY(k) (0 == strncmp (k, key, strlen(k) - 1))
 
    /*
     * For the LULZ, yajl includes the end " character as part of the key name.
@@ -552,7 +552,7 @@ _is_known_key (const char *key)
           IS_KEY ("$ref") ||
           IS_KEY ("$id") ||
           IS_KEY ("$undefined") ||
-          IS_KEY ("$maxkey") ||
+          IS_KEY ("$maxKey") ||
           IS_KEY ("$minKey") ||
           IS_KEY ("$timestamp"));
 
