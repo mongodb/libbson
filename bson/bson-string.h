@@ -62,7 +62,7 @@ char          *bson_strdupv_printf        (const char     *format,
                                            va_list         args) BSON_GNUC_PRINTF (1, 0);
 char          *bson_strndup               (const char     *str,
                                            size_t          n_bytes);
-void           bson_strcpy_w_null         (char           *dst,
+void           bson_strncpy               (char           *dst,
                                            const char     *src,
                                            size_t          size);
 int            bson_vsnprintf             (char           *str,

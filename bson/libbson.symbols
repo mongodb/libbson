@@ -130,7 +130,6 @@ bson_reinit
 bson_set_error
 bson_sized_new
 bson_snprintf
-bson_strcpy_w_null
 bson_strdup
 bson_strdup_printf
 bson_strdupv_printf
@@ -143,6 +142,7 @@ bson_string_append_unichar
 bson_string_free
 bson_string_new
 bson_string_truncate
+bson_strncpy
 bson_strndup
 bson_strnlen
 bson_uint32_to_string

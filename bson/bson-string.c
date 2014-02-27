@@ -353,9 +353,9 @@ bson_strnlen (const char *s,
 
 
 void
-bson_strcpy_w_null (char       *dst,
-                    const char *src,
-                    size_t size)
+bson_strncpy (char       *dst,  /* IN */
+              const char *src,  /* IN */
+              size_t      size) /* IN */
 {
 #ifdef _MSC_VER
    strcpy_s (dst, size, src);
