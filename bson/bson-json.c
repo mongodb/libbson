@@ -213,7 +213,7 @@ struct _bson_json_reader_t
       return 0; \
    }
 #define HANDLE_OPTION(_key, _type, _state) \
-   (len == strlen (_key) && memcmp (val, (_key), len) == 0) { \
+   (len == strlen (_key) && strncasecmp ((const char *)val, (_key), len) == 0) { \
       if (bson->known_bson_type && bson->bson_type != (_type)) { \
          _bson_json_read_set_error (reader, \
                                     "Invalid key %s.  Looking for values for %d", \
@@ -536,18 +536,29 @@ _bson_json_read_start_map (void *_ctx) /* IN */
 static bool
 _is_known_key (const char *key)
 {
-   return ((0 == strcmp (key, "$regex")) ||
-           (0 == strcmp (key, "$options")) ||
-           (0 == strcmp (key, "$oid")) ||
-           (0 == strcmp (key, "$binary")) ||
-           (0 == strcmp (key, "$type")) ||
-           (0 == strcmp (key, "$date")) ||
-           (0 == strcmp (key, "$ref")) ||
-           (0 == strcmp (key, "$id")) ||
-           (0 == strcmp (key, "$undefined")) ||
-           (0 == strcmp (key, "$maxkey")) ||
-           (0 == strcmp (key, "$minkey")) ||
-           (0 == strcmp (key, "$timestamp")));
+   bool ret;
+
+#define IS_KEY(k) (0 == strncasecmp (k, key, strlen(k) - 1))
+
+   /*
+    * For the LULZ, yajl includes the end " character as part of the key name.
+    */
+   ret = (IS_KEY ("$regex") ||
+          IS_KEY ("$options") ||
+          IS_KEY ("$oid") ||
+          IS_KEY ("$binary") ||
+          IS_KEY ("$type") ||
+          IS_KEY ("$date") ||
+          IS_KEY ("$ref") ||
+          IS_KEY ("$id") ||
+          IS_KEY ("$undefined") ||
+          IS_KEY ("$maxkey") ||
+          IS_KEY ("$minKey") ||
+          IS_KEY ("$timestamp"));
+
+#undef IS_KEY
+
+   return ret;
 }
 
 
@@ -584,8 +595,8 @@ _bson_json_read_map_key (void          *_ctx, /* IN */
       if HANDLE_OPTION ("$id", BSON_TYPE_DBPOINTER, BSON_JSON_LF_ID) else
       if HANDLE_OPTION ("$undefined", BSON_TYPE_UNDEFINED,
                         BSON_JSON_LF_UNDEFINED) else
-      if HANDLE_OPTION ("$minkey", BSON_TYPE_MINKEY, BSON_JSON_LF_MINKEY) else
-      if HANDLE_OPTION ("$maxkey", BSON_TYPE_MAXKEY, BSON_JSON_LF_MAXKEY) else
+      if HANDLE_OPTION ("$minKey", BSON_TYPE_MINKEY, BSON_JSON_LF_MINKEY) else
+      if HANDLE_OPTION ("$maxKey", BSON_TYPE_MAXKEY, BSON_JSON_LF_MAXKEY) else
       if (len == strlen ("$timestamp") &&
           memcmp (val, "$timestamp", len) == 0) {
          bson->bson_type = BSON_TYPE_TIMESTAMP;
