@@ -385,9 +385,15 @@ bson_vsnprintf (char       *str,
       r = _vscprintf (format, ap);
    }
 
+   str [size - 1] = '\0';
+
    return r;
 #else
-   return vsnprintf (str, size, format, ap);
+   int r;
+
+   r = vsnprintf (str, size, format, ap);
+   str [size - 1] = '\0';
+   return r;
 #endif
 }
 
