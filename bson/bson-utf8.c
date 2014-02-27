@@ -15,6 +15,10 @@
  */
 
 
+#if HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #include <string.h>
 
 #include "bson-memory.h"
@@ -22,10 +26,29 @@
 #include "bson-utf8.h"
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * _bson_utf8_get_sequence --
+ *
+ *       Determine the sequence length of the first UTF-8 character in
+ *       @utf8. The sequence length is stored in @seq_length and the mask
+ *       for the first character is stored in @first_mask.
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       @seq_length is set.
+ *       @first_mask is set.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 static BSON_INLINE void
-_bson_utf8_get_sequence (const char   *utf8,
-                         uint8_t *seq_length,
-                         uint8_t *first_mask)
+_bson_utf8_get_sequence (const char *utf8,       /* IN */
+                         uint8_t    *seq_length, /* OUT */
+                         uint8_t    *first_mask) /* OUT */
 {
    unsigned char c = *(const unsigned char *)utf8;
    uint8_t m;
@@ -67,25 +90,38 @@ _bson_utf8_get_sequence (const char   *utf8,
    *first_mask = m;
 }
 
-/**
- * bson_utf8_validate:
- * @utf8: A UTF-8 encoded string.
- * @utf8_len: The length of @utf8 in bytes.
- * @allow_null: If \0 is allowed within @utf8, exclusing trailing \0.
+
+/*
+ *--------------------------------------------------------------------------
  *
- * Validates that @utf8 is a valid UTF-8 string.
+ * bson_utf8_validate --
  *
- * If @allow_null is true, then \0 is allowed within @utf8_len bytes of @utf8.
- * Generally, this is bad practice since the main point of UTF-8 strings is
- * that they can be used with strlen() and friends. However, some languages
- * such as Python can send UTF-8 encoded strings with NUL's in them.
+ *       Validates that @utf8 is a valid UTF-8 string.
  *
- * Returns: true if @utf8 is valid UTF-8.
+ *       If @allow_null is true, then \0 is allowed within @utf8_len bytes
+ *       of @utf8.  Generally, this is bad practice since the main point of
+ *       UTF-8 strings is that they can be used with strlen() and friends.
+ *       However, some languages such as Python can send UTF-8 encoded
+ *       strings with NUL's in them.
+ *
+ * Parameters:
+ *       @utf8: A UTF-8 encoded string.
+ *       @utf8_len: The length of @utf8 in bytes.
+ *       @allow_null: If \0 is allowed within @utf8, exclusing trailing \0.
+ *
+ * Returns:
+ *       true if @utf8 is valid UTF-8. otherwise false.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
  */
+
 bool
-bson_utf8_validate (const char *utf8,
-                    size_t      utf8_len,
-                    bool allow_null)
+bson_utf8_validate (const char *utf8,       /* IN */
+                    size_t      utf8_len,   /* IN */
+                    bool        allow_null) /* IN */
 {
    uint8_t first_mask;
    uint8_t seq_length;
@@ -120,23 +156,35 @@ bson_utf8_validate (const char *utf8,
 }
 
 
-/**
- * bson_utf8_escape_for_json:
- * @utf8: A UTF-8 encoded string.
- * @utf8_len: The length of @utf8 in bytes or -1 if NUL terminated.
+/*
+ *--------------------------------------------------------------------------
  *
- * Allocates a new string matching @utf8 except that special characters
- * in JSON will be escaped. The resulting string is also UTF-8 encoded.
+ * bson_utf8_escape_for_json --
  *
- * Both " and \ characters will be escaped. Additionally, if a NUL byte
- * is found before @utf8_len bytes, it will be converted to the two byte
- * UTF-8 sequence.
+ *       Allocates a new string matching @utf8 except that special
+ *       characters in JSON will be escaped. The resulting string is also
+ *       UTF-8 encoded.
  *
- * Returns: A newly allocated string that should be freed with bson_free().
+ *       Both " and \ characters will be escaped. Additionally, if a NUL
+ *       byte is found before @utf8_len bytes, it will be converted to the
+ *       two byte UTF-8 sequence.
+ *
+ * Parameters:
+ *       @utf8: A UTF-8 encoded string.
+ *       @utf8_len: The length of @utf8 in bytes or -1 if NUL terminated.
+ *
+ * Returns:
+ *       A newly allocated string that should be freed with bson_free().
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
  */
+
 char *
-bson_utf8_escape_for_json (const char   *utf8,
-                           ssize_t       utf8_len)
+bson_utf8_escape_for_json (const char *utf8,     /* IN */
+                           ssize_t     utf8_len) /* IN */
 {
    bson_unichar_t c;
    bson_string_t *str;
@@ -191,16 +239,27 @@ bson_utf8_escape_for_json (const char   *utf8,
 }
 
 
-/**
- * bson_utf8_get_char:
- * @utf8: A string containing validated UTF-8.
+/*
+ *--------------------------------------------------------------------------
  *
- * Fetches the next UTF-8 character from the UTF-8 sequence.
+ * bson_utf8_get_char --
  *
- * Returns: A 32-bit bson_unichar_t reprsenting the multi-byte sequence.
+ *       Fetches the next UTF-8 character from the UTF-8 sequence.
+ *
+ * Parameters:
+ *       @utf8: A string containing validated UTF-8.
+ *
+ * Returns:
+ *       A 32-bit bson_unichar_t reprsenting the multi-byte sequence.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
  */
+
 bson_unichar_t
-bson_utf8_get_char (const char *utf8)
+bson_utf8_get_char (const char *utf8) /* IN */
 {
    bson_unichar_t c;
    uint8_t mask;
@@ -220,17 +279,28 @@ bson_utf8_get_char (const char *utf8)
 }
 
 
-/**
- * bson_utf8_next_char:
- * @utf8: A string containing validated UTF-8.
+/*
+ *--------------------------------------------------------------------------
  *
- * Returns an incremented pointer to the beginning of the next multi-byte
- * sequence in @utf8.
+ * bson_utf8_next_char --
  *
- * Returns: An incremented pointer in @utf8.
+ *       Returns an incremented pointer to the beginning of the next
+ *       multi-byte sequence in @utf8.
+ *
+ * Parameters:
+ *       @utf8: A string containing validated UTF-8.
+ *
+ * Returns:
+ *       An incremented pointer in @utf8.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
  */
+
 const char *
-bson_utf8_next_char (const char *utf8)
+bson_utf8_next_char (const char *utf8) /* IN */
 {
    uint8_t mask;
    uint8_t num;
@@ -243,20 +313,36 @@ bson_utf8_next_char (const char *utf8)
 }
 
 
-/**
- * bson_utf8_from_unichar:
- * @unichar: A bson_unichar_t.
- * @utf8: A location for the multi-byte sequence.
- * @len: A location for number of bytes stored in @utf8.
+/*
+ *--------------------------------------------------------------------------
  *
- * Converts the unichar to a sequence of utf8 bytes and stores those
- * in @utf8. The number of bytes in the sequence are stored in @len.
+ * bson_utf8_from_unichar --
+ *
+ *       Converts the unichar to a sequence of utf8 bytes and stores those
+ *       in @utf8. The number of bytes in the sequence are stored in @len.
+ *
+ * Parameters:
+ *       @unichar: A bson_unichar_t.
+ *       @utf8: A location for the multi-byte sequence.
+ *       @len: A location for number of bytes stored in @utf8.
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       @utf8 is set.
+ *       @len is set.
+ *
+ *--------------------------------------------------------------------------
  */
+
 void
-bson_utf8_from_unichar (bson_unichar_t unichar,
-                        char           utf8[BSON_ENSURE_ARRAY_PARAM_SIZE(6)],
-                        uint32_t *len)
+bson_utf8_from_unichar (
+      bson_unichar_t  unichar,                               /* IN */
+      char            utf8[BSON_ENSURE_ARRAY_PARAM_SIZE(6)], /* OUT */
+      uint32_t       *len)                                   /* OUT */
 {
+   bson_return_if_fail (utf8);
    bson_return_if_fail (len);
 
    if (unichar <= 0x7F) {
