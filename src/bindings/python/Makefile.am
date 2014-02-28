@@ -1,30 +1,28 @@
+if ENABLE_PYTHON
+
 pymoduledir = $(libdir)/python2.7/site-packages
 
 pymodule_LTLIBRARIES = cbson.la
 
-cbson_la_SOURCES =
-cbson_la_SOURCES += $(top_srcdir)/bindings/python/cbson.c
-cbson_la_SOURCES += $(top_srcdir)/bindings/python/cbson-dbref.c
-cbson_la_SOURCES += $(top_srcdir)/bindings/python/cbson-dbref.h
-cbson_la_SOURCES += $(top_srcdir)/bindings/python/cbson-oid.c
-cbson_la_SOURCES += $(top_srcdir)/bindings/python/cbson-oid.h
-cbson_la_SOURCES += $(top_srcdir)/bindings/python/cbson-util.c
-cbson_la_SOURCES += $(top_srcdir)/bindings/python/cbson-util.h
-cbson_la_SOURCES += $(top_srcdir)/bindings/python/time64.c
-cbson_la_SOURCES += $(top_srcdir)/bindings/python/time64.h
-cbson_la_SOURCES += $(top_srcdir)/bindings/python/time64_config.h
-cbson_la_SOURCES += $(top_srcdir)/bindings/python/time64_limits.h
+cbson_la_SOURCES = \
+	bindings/python/cbson.c \
+	bindings/python/cbson-dbref.c \
+	bindings/python/cbson-dbref.h \
+	bindings/python/cbson-oid.c \
+	bindings/python/cbson-oid.h \
+	bindings/python/cbson-util.c \
+	bindings/python/cbson-util.h \
+	bindings/python/time64.c \
+	bindings/python/time64.h \
+	bindings/python/time64_config.h \
+	bindings/python/time64_limits.h
 
+cbson_la_LIBADD = \
+	libbson-1.0.la \
+	-l$(PYTHON_LIB)
 
-cbson_la_LIBADD =
-cbson_la_LIBADD += libbson-1.0.la
-cbson_la_LIBADD += -l$(PYTHON_LIB)
+cbson_la_LDFLAGS = -module
 
+cbson_la_CPPFLAGS = -I$(PYTHON_INCLUDE_DIR)
 
-cbson_la_LDFLAGS =
-cbson_la_LDFLAGS += -module
-
-
-cbson_la_CPPFLAGS =
-cbson_la_CPPFLAGS += -I$(top_srcdir)
-cbson_la_CPPFLAGS += -I$(PYTHON_INCLUDE_DIR)
+endif
