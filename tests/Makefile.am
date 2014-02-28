@@ -25,7 +25,12 @@ test_libbson_SOURCES = \
 	tests/test-writer.c \
 	tests/test-bcon-basic.c \
 	tests/test-bcon-extract.c
-test_libbson_CPPFLAGS = -I$(top_srcdir)/bson -DBSON_COMPILATION
+
+test_libbson_CPPFLAGS = \
+	-I$(top_srcdir)/src \
+	-I$(top_srcdir)/src/bson \
+	-I$(top_builddir)/src/bson
+
 test_libbson_LDADD = libbson-1.0.la
 
 
