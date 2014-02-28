@@ -412,7 +412,7 @@ cbson_loads (PyObject *self,
 {
    const uint8_t *buffer;
    uint32_t buffer_length;
-   bson_reader_t reader;
+   bson_reader_t *reader;
    bson_iter_t iter;
    const bson_t *b;
    bool eof = false;
@@ -425,16 +425,16 @@ cbson_loads (PyObject *self,
 
    ret = PyList_New(0);
 
-   bson_reader_init_from_data(&reader, buffer, buffer_length);
+   reader = bson_reader_new_from_data(buffer, buffer_length);
 
-   if (!(b = bson_reader_read(&reader, &eof))) {
+   if (!(b = bson_reader_read(reader, &eof))) {
       PyErr_SetString(PyExc_ValueError, "Failed to parse buffer.");
       goto failure;
    }
 
    do {
       if (!bson_iter_init(&iter, b)) {
-         bson_reader_destroy(&reader);
+         bson_reader_destroy(reader);
          goto failure;
       }
       dict = PyDict_New();
@@ -443,9 +443,9 @@ cbson_loads (PyObject *self,
          PyList_Append(ret, dict);
          Py_DECREF(dict);
       }
-   } while ((b = bson_reader_read(&reader, &eof)));
+   } while ((b = bson_reader_read(reader, &eof)));
 
-   bson_reader_destroy(&reader);
+   bson_reader_destroy(reader);
 
    if (!eof) {
       PyErr_SetString(PyExc_ValueError, "Buffer contained invalid BSON.");
@@ -466,7 +466,7 @@ cbson_as_json (PyObject *self,
 {
    const uint8_t *buffer;
    uint32_t buffer_length;
-   bson_reader_t reader;
+   bson_reader_t *reader;
    const bson_t *b;
    PyObject *ret = NULL;
    size_t len = 0;
@@ -476,9 +476,9 @@ cbson_as_json (PyObject *self,
       return NULL;
    }
 
-   bson_reader_init_from_data(&reader, buffer, buffer_length);
-   b = bson_reader_read(&reader, NULL);
-   bson_reader_destroy(&reader);
+   reader = bson_reader_new_from_data(buffer, buffer_length);
+   b = bson_reader_read(reader, NULL);
+   bson_reader_destroy(reader);
 
    if (b) {
       str = bson_as_json(b, &len);
