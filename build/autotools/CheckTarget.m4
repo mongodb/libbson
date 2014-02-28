@@ -27,3 +27,5 @@ if test "$TARGET_OS" = "windows"; then
 else
     AC_DEFINE([BSON_OS], 1, [libbson compiling for unix])
 fi
+
+AC_SUBST([BSON_OS])

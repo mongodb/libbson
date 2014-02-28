@@ -6,3 +6,4 @@ else
     AC_DEFINE([BSON_BYTE_ORDER], 1234, [libbson is compiling for little-endian.])
     enable_bigendian=no
 fi
+AC_SUBST([BSON_BYTE_ORDER])

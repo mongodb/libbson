@@ -5,7 +5,7 @@ os_linux=no
 os_freebsd=no
 os_gnu=no
 
-case "$host_os" in
+case "$host" in
     *-mingw*|*-*-cygwin*)
         os_win32=yes
         TARGET_OS=windows

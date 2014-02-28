@@ -15,10 +15,6 @@
  */
 
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
 #include "bson-private.h"
 #include "bson-writer.h"
 

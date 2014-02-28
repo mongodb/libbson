@@ -15,10 +15,6 @@
  */
 
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
 #ifdef __APPLE__
 # include <mach/clock.h>
 # include <mach/mach.h>
@@ -26,12 +22,15 @@
 # include <sys/time.h>
 #endif
 
-#if defined(HAVE_CLOCK_GETTIME)
+
+#include "bson-config.h"
+#include "bson-compat.h"
+
+
+#if defined(BSON_HAVE_CLOCK_GETTIME)
 # include <time.h>
 # include <sys/time.h>
 #endif
-
-#include "bson-compat.h"
 
 
 
@@ -122,7 +121,7 @@ bson_gettimeofday (struct timeval  *tv, /* OUT */
 int64_t
 bson_get_monotonic_time (void)
 {
-#if defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
+#if defined(BSON_HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
    struct timespec ts;
    clock_gettime (CLOCK_MONOTONIC, &ts);
    return ((ts.tv_sec * 1000000UL) + (ts.tv_nsec / 1000UL));

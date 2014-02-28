@@ -6,7 +6,6 @@ AC_INIT([libbson],[bson_version],[https://github.com/mongodb/libbson/issues])
 AC_CONFIG_MACRO_DIR([build/autotools/m4])
 AC_CONFIG_AUX_DIR([build/autotools])
 AC_SUBST(ACLOCAL_AMFLAGS, "-I build/autotools")
-AC_CONFIG_HEADERS([config.h])
 
 BSON_MAJOR_VERSION=bson_major_version
 BSON_MINOR_VERSION=bson_minor_version

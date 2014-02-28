@@ -72,3 +72,4 @@ if test "$bson_cv_need_braces_on_pthread_once_init" = yes; then
     AC_DEFINE(BSON_PTHREAD_ONCE_INIT_NEEDS_BRACES, 1,
               [PTHREAD_ONCE_INIT needs braces])
 fi
+AC_SUBST([BSON_PTHREAD_ONCE_INIT_NEEDS_BRACES])

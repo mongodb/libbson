@@ -15,11 +15,8 @@
  */
 
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
 #include "bson.h"
+#include "bson-config.h"
 #include "bson-json.h"
 #include "b64_pton.h"
 
