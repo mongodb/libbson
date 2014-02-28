@@ -26,5 +26,5 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
 AC_LANG_POP([C])
 
 if test "$c_compiler" = "unknown"; then
-    AC_MSG_ERROR([Compiler GCC >= 4.4 or Clang >= 3.3 is required for C compilation])
+    AC_MSG_ERROR([Compiler GCC >= 4.1 or Clang >= 3.3 is required for C compilation])
 fi
