@@ -191,8 +191,21 @@ typedef union bcon_extract {
    int64_t *INT64;
 } bcon_extract_t;
 
-BSON_API char *BCON_MAGIC = "BCON_MAGIC";
-BSON_API char *BCONE_MAGIC = "BCONE_MAGIC";
+static const char *gBconMagic = "BCON_MAGIC";
+static const char *gBconeMagic = "BCONE_MAGIC";
+
+const char *
+bson_bcon_magic (void)
+{
+   return gBconMagic;
+}
+
+
+const char *
+bson_bcone_magic (void)
+{
+   return gBconeMagic;
+}
 
 static void
 _noop (void)

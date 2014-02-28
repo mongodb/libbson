@@ -1,6 +1,4 @@
 EXPORTS
-BCONE_MAGIC DATA
-BCON_MAGIC DATA
 bcon_append
 bcon_append_ctx
 bcon_append_ctx_init
@@ -39,6 +37,8 @@ bson_append_timeval
 bson_append_undefined
 bson_append_utf8
 bson_as_json
+bson_bcon_magic
+bson_bcone_magic
 bson_compare
 bson_concat
 bson_context_destroy

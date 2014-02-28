@@ -162,8 +162,8 @@ BCON_ENSURE_DECLARE (const_bson_iter_ptr, const bson_iter_t *)
 #define BCONE_ITER(_val) BCONE_MAGIC, BCON_TYPE_ITER, \
    BCON_ENSURE_STORAGE (bson_iter_ptr, (_val))
 
-extern BSON_API char * BCON_MAGIC;
-extern BSON_API char * BCONE_MAGIC;
+#define BCON_MAGIC  bson_bcon_magic()
+#define BCONE_MAGIC bson_bcone_magic()
 
 typedef enum
 {
@@ -273,5 +273,8 @@ bcon_new (void *unused,
 
 #define BCON_NEW(...) \
    bcon_new (NULL, __VA_ARGS__, NULL)
+
+const char *bson_bcon_magic  (void) BSON_GNUC_CONST;
+const char *bson_bcone_magic (void) BSON_GNUC_CONST;
 
 #endif
