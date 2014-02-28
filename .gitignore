@@ -8,6 +8,9 @@ bcon-speed
 bson-to-json
 bson-validate
 ChangeLog
+*.cmake
+CMakeFiles
+CMakeCache.txt
 compile
 config.*
 configure

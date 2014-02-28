@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 
 project (libbson)
 
+include(CheckFunctionExists)
+include(CheckIncludeFile)
 include(TestBigEndian)
 include(InstallRequiredSystemLibraries)
 
@@ -21,14 +23,22 @@ include (CPack)
 
 TEST_BIG_ENDIAN(BSON_BIG_ENDIAN)
 
+CHECK_FUNCTION_EXISTS(clock_gettime BSON_HAVE_CLOCK_GETTIME)
+CHECK_FUNCTION_EXISTS(strnlen BSON_HAVE_STRNLEN)
+CHECK_FUNCTION_EXISTS(snprintf BSON_HAVE_SNPRINTF)
+CHECK_INCLUDE_FILE(stdbool.h BSON_HAVE_STDBOOL_H)
+
+# These need proper checks like automake.
+set (BSON_WITH_OID32_PT 0)
+set (BSON_WITH_OID64_PT 0)
+set (BSON_PTHREAD_ONCE_INIT_NEEDS_BRACES 0)
+
 if (MSVC)
    set (BSON_OS 2)
-   set (BSON_HAVE_STDBOOL_H 0)
 else ()
    find_package (Threads)
 
    set (BSON_OS 1)
-   set (BSON_HAVE_STDBOOL_H 0)
 endif ()
 
 if (BSON_BIG_ENDIAN)
@@ -48,7 +58,7 @@ configure_file (
 )
 
 configure_file (
-   "${PROJECT_SOURCE_DIR}/src/bson/bson-stdint.h"
+   "${PROJECT_SOURCE_DIR}/bson/bson-stdint.h"
    "${PROJECT_BINARY_DIR}/src/bson/bson-stdint.h"
 )
 
