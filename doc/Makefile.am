@@ -152,16 +152,16 @@ SUFFIXES=.html .txt .xml .3 .7
 EXAMPLE_DIR = $(abs_top_srcdir)/examples
 
 .txt.html:
-	asciidoc -d manpage -b xhtml11 -f $(top_srcdir)/doc/asciidoc.conf \
+	$(ASCIIDOC) -d manpage -b xhtml11 -f $(top_srcdir)/doc/asciidoc.conf \
            -aexamples=$(EXAMPLE_DIR) -abson_version=@PACKAGE_VERSION@ -o$@ $<
 .txt.xml:
-	asciidoc -d manpage -b docbook -f $(top_srcdir)/doc/asciidoc.conf \
+	$(ASCIIDOC) -d manpage -b docbook -f $(top_srcdir)/doc/asciidoc.conf \
            -aexamples=$(EXAMPLE_DIR) -abson_version=@PACKAGE_VERSION@ \
 	   -abson_manname=$(*F) -o$@ $<
 .xml.3:
-	xmlto man -o $(top_srcdir)/doc $<
+	$(XMLTO) man -o $(top_srcdir)/doc $<
 .xml.7:
-	xmlto man -o $(top_srcdir)/doc $<
+	$(XMLTO) man -o $(top_srcdir)/doc $<
 
 CLEANFILES += $(MAN3) $(MAN7)
 endif
