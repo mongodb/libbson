@@ -29,7 +29,7 @@ test_libbson_CPPFLAGS = -I$(top_srcdir)/bson -DBSON_COMPILATION
 test_libbson_LDADD = libbson-1.0.la
 
 
-if HAVE_PYTHON
+if ENABLE_PYTHON
 PYTEST_DEPS = cbson.la
 endif
 
@@ -38,7 +38,7 @@ test: $(TEST_PROGS) $(PYTEST_DEPS)
 	@ for TEST_PROG in $(TEST_PROGS) ; do \
 		$(LIBTOOL) --mode=execute $$VALGRIND ./$$TEST_PROG -F test.log; \
 	done
-if HAVE_PYTHON
+if ENABLE_PYTHON
 	@ LD_LIBRARY_PATH=.libs DYLD_LIBRARY_PATH=.libs PYTHONPATH=.libs ./tests/test_cbson.py
 endif
 

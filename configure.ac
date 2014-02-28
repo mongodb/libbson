@@ -20,6 +20,8 @@ AC_SUBST(BSON_API_VERSION)
 AC_SUBST(BSON_VERSION)
 
 m4_include([build/autotools/SetupLibtool.m4])
+LT_INIT
+
 m4_include([build/autotools/CheckCompiler.m4])
 m4_include([build/autotools/CheckHeaders.m4])
 m4_include([build/autotools/CheckProgs.m4])
@@ -36,9 +38,9 @@ m4_include([build/autotools/SetupAutomake.m4])
 
 AC_CONFIG_FILES([
     Makefile
-    bson/bson-config.h
-    bson/bson-version.h
-    bson/libbson-1.0.pc
+    src/libbson-1.0.pc
+    src/bson/bson-config.h
+    src/bson/bson-version.h
 ])
 
 m4_include([build/autotools/PrintBuildConfiguration.m4])

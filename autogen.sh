@@ -8,8 +8,14 @@ test -z "$srcdir" && srcdir=.
 ORIGDIR=`pwd`
 cd "$srcdir" || exit 1
 
-ln -s README.md README
-ln -s LICENSE COPYING
+if [ ! -f README ]; then
+    ln -s README.md README
+fi
+
+if [ ! -f COPYING ]; then
+    ln -s LICENSE COPYING
+fi
+
 touch ChangeLog
 touch AUTHORS
 

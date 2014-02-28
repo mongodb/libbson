@@ -33,11 +33,12 @@ Build configuration:
   Use -Bsymbolic                                   : ${enable_Bsymbolic}
   Code coverage support                            : ${enable_coverage}
   Optimized memory allocator                       : ${enable_fast_malloc}
-  Big endian                                       : ${enable_bigendian}
   Cross Compiling                                  : ${enable_crosscompile}
+  Big endian                                       : ${enable_bigendian}
 
 Documentation:
-  Generate man pages                               : ${enable_manpages}
+  Generate man pages                               : ${bson_build_doc}
+  Install man pages                                : ${bson_install_man}
 
 Bindings:
   Python (experimental)                            : ${enable_python}

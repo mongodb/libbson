@@ -5,5 +5,5 @@ else
 	AC_DEFINE([BSON_HAVE_STDBOOL_H], 0, [libbson will use bson-stdbool.h])
 fi
 
-AC_CREATE_STDINT_H([bson/bson-stdint.h])
+AC_CREATE_STDINT_H([src/bson/bson-stdint.h])
 

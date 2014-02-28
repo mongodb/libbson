@@ -1,6 +1,4 @@
-noinst_LTLIBRARIES = libyajl.la
-
-YAJL_H_FILES = \
+libbson_1_0_la_SOURCES += \
 	yajl/api/yajl_tree.h \
 	yajl/api/yajl_parse.h \
 	yajl/api/yajl_gen.h \
@@ -11,9 +9,7 @@ YAJL_H_FILES = \
 	yajl/yajl_buf.h \
 	yajl/yajl_alloc.h \
 	yajl/yajl_bytestack.h \
-	yajl/yajl_lex.h
-
-YAJL_C_FILES = \
+	yajl/yajl_lex.h \
 	yajl/yajl_version.c \
 	yajl/yajl.c \
 	yajl/yajl_encode.c \
@@ -23,9 +19,3 @@ YAJL_C_FILES = \
 	yajl/yajl_tree.c \
 	yajl/yajl_alloc.c \
 	yajl/yajl_gen.c
-
-libyajl_la_SOURCES = $(YAJL_H_FILES) $(YAJL_C_FILES)
-libyajl_la_CPPFLAGS = \
-	-I$(top_srcdir)/bson \
-	-I$(top_srcdir)/yajl \
-	-DBSON_COMPILATION
