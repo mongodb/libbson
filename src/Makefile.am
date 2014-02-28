@@ -22,8 +22,8 @@ include src/yajl/Makefile.am
 include src/bindings/Makefile.am
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = $(top_builddir)/bson/libbson-1.0.pc
+pkgconfig_DATA = $(top_builddir)/src/libbson-1.0.pc
 
 EXTRA_DIST += \
-	libbson.symbols \
-	libbson-1.0.pc.in
+	src/libbson.symbols \
+	src/libbson-1.0.pc.in

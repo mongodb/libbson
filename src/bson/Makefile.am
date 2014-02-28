@@ -2,6 +2,7 @@ headerdir = $(prefix)/include/libbson-@BSON_API_VERSION@
 header_DATA = $(INST_H_FILES)
 
 INST_H_FILES += \
+	src/bson/bcon.h \
 	src/bson/bson.h \
 	src/bson/bson-atomic.h \
 	src/bson/bson-clock.h \
@@ -32,6 +33,7 @@ NOINST_H_FILES += \
 	src/bson/bson-thread-private.h
 
 libbson_1_0_la_SOURCES += \
+	src/bson/bcon.c \
 	src/bson/bson.c \
 	src/bson/bson-clock.c \
 	src/bson/bson-context.c \

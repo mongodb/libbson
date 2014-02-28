@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include "bson-config.h"
 
 #include <assert.h>
 #include <fcntl.h>
@@ -41,7 +38,7 @@
 # include <windows.h>
 #endif
 
-#if defined(HAVE_CLOCK_GETTIME)
+#if defined(BSON_HAVE_CLOCK_GETTIME)
 # include <time.h>
 # include <sys/time.h>
 #endif
@@ -146,7 +143,7 @@ snprintf (char *str,
 void
 _Clock_GetMonotonic (struct timespec *ts) /* OUT */
 {
-#if defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
+#if defined(BSON_HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
    clock_gettime (CLOCK_MONOTONIC, ts);
 #elif defined(__APPLE__)
    static mach_timebase_info_data_t info = { 0 };
