@@ -28,3 +28,5 @@ stamp-h1
 *.swp
 test.log
 test-libbson
+COPYING
+README
