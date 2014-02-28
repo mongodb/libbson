@@ -18,10 +18,10 @@ ACLOCAL_AMFLAGS = -I build/autotools/m4 ${ACLOCAL_FLAGS}
 DISTCHECK_CONFIGURE_FLAGS = --enable-silent-rules
 
 bsondocdir = ${docdir}
-bsondoc_DATA =
-bsondoc_DATA += COPYING
-bsondoc_DATA += NEWS
-bsondoc_DATA += README
+bsondoc_DATA = \
+	COPYING \
+	NEWS \
+	README
 
 EXTRA_DIST += $(bsondoc_DATA)
 

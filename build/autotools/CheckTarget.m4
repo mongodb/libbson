@@ -22,10 +22,8 @@ if test "x$host" != "x$target"; then
     esac
 fi
 
-if test "$TARGET_OS" = "windows"; then
-    AC_DEFINE([BSON_OS], 2, [libbson compiling for windows])
-else
-    AC_DEFINE([BSON_OS], 1, [libbson compiling for unix])
-fi
 
-AC_SUBST([BSON_OS])
+AC_SUBST(BSON_OS, 1)
+if test "$TARGET_OS" = "windows"; then
+    AC_SUBST(BSON_OS, 2)
+fi
