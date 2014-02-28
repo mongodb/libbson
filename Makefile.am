@@ -2,17 +2,17 @@ EXTRA_DIST =
 CLEANFILES =
 DISTCLEANFILES =
 
-include yajl/Makefile.include
-include bson/Makefile.include
-include tests/Makefile.include
-include examples/Makefile.include
-include doc/Makefile.include
+include yajl/Makefile.am
+include bson/Makefile.am
+include tests/Makefile.am
+include examples/Makefile.am
+include doc/Makefile.am
 
 if HAVE_PYTHON
-include bindings/python/Makefile.include
+include bindings/python/Makefile.am
 endif
 
-ACLOCAL_AMFLAGS = -I build/m4 ${ACLOCAL_FLAGS}
+ACLOCAL_AMFLAGS = -I build/autotools/m4 ${ACLOCAL_FLAGS}
 DISTCHECK_CONFIGURE_FLAGS = --enable-silent-rules
 
 bsondocdir = ${docdir}
