@@ -15,3 +15,9 @@ fi
 
 AC_PROG_INSTALL
 
+AC_ARG_VAR([XMLTO], [Path to xmlto command])
+AC_PATH_PROG([XMLTO], [xmlto])
+AC_ARG_VAR([ASCIIDOC], [Path to asciidoc command])
+AC_PATH_PROG([ASCIIDOC], [asciidoc])
+
+BSON_CHECK_DOC_BUILD

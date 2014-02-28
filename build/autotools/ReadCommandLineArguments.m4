@@ -66,3 +66,28 @@ AC_ARG_ENABLE(debug_symbols,
          fi
     ])
 AC_MSG_RESULT([$enable_debug_symbols])
+
+AC_ARG_ENABLE([Bsymbolic],
+              [AS_HELP_STRING([--disable-Bsymbolic],
+                              [Avoid linking with -Bsymbolic])],
+              [],
+              [
+                saved_LDFLAGS="${LDFLAGS}"
+                AC_MSG_CHECKING([for -Bsymbolic-functions linker flag])
+                LDFLAGS=-Wl,-Bsymbolic-functions
+                AC_TRY_LINK([], [int main (void) { return 0; }],
+                            [
+                              AC_MSG_RESULT([yes])
+                              enable_Bsymbolic=yes
+                            ],
+                            [
+                              AC_MSG_RESULT([no])
+                              enable_Bsymbolic=no
+                            ])
+                LDFLAGS="${saved_LDFLAGS}"
+              ])
+
+AS_IF([test "x$enable_Bsymbolic" = "xyes"], [BSON_LINK_FLAGS=-Wl[,]-Bsymbolic-functions])
+BSON_LT_LDFLAGS="$BSON_LT_LDFLAGS $BSON_LINK_FLAGS"
+
+AC_SUBST(BSON_LT_LDFLAGS)
