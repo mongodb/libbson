@@ -37,6 +37,11 @@ dist-hook:
 	else                                                            \
 	  echo A git checkout is required to generate a ChangeLog >&2;  \
 	fi
+	@if test -d "$(srcdir)/.git"; then                              \
+          (cd "$(srcdir)" &&                                            \
+	   $(top_srcdir)/missing --run git log --raw|grep "^Author: "|sort|uniq -c) > AUTHORS.tmp \
+           && mv -f AUTHORS.tmp $(top_distdir)/AUTHORS                  \
+	fi
 
 uninstall-local:
 	-rm -r $(bsondocdir)

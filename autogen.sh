@@ -11,6 +11,7 @@ cd "$srcdir" || exit 1
 ln -s README.md README
 ln -s LICENSE COPYING
 touch ChangeLog
+touch AUTHORS
 
 if test -z `which autoreconf`; then
     echo "Error: autoreconf not found, please install it."
