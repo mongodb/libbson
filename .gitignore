@@ -24,6 +24,7 @@ json-to-bson
 *.la
 .libs
 libtool
+libbson-1.0.so*
 *.lo
 ltmain.sh
 Makefile
