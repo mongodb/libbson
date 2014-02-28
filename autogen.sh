@@ -8,6 +8,8 @@ test -z "$srcdir" && srcdir=.
 ORIGDIR=`pwd`
 cd "$srcdir" || exit 1
 
+ln -s README.md README
+
 if test -z `which autoreconf`; then
     echo "Error: autoreconf not found, please install it."
     exit 1
