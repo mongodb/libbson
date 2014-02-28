@@ -8,12 +8,12 @@ include(InstallRequiredSystemLibraries)
 set (SOURCE_DIR "${PROJECT_SOURCE_DIR}/../..")
 
 set (BSON_MAJOR_VERSION 0)
-set (BSON_MINOR_VERSION 4)
-set (BSON_MICRO_VERSION 1)
+set (BSON_MINOR_VERSION 5)
+set (BSON_MICRO_VERSION 0)
 set (BSON_API_VERSION 1.0)
-set (BSON_VERSION 0.4.1)
+set (BSON_VERSION 0.5.0)
 
-set (CPACK_RESOURCE_FILE_LICENSE "${SOURCE_DIR}/COPYING")
+set (CPACK_RESOURCE_FILE_LICENSE "${SOURCE_DIR}/LICENSE")
 set (CPACK_PACKAGE_VERSION_MAJOR ${BSON_MAJOR_VERSION})
 set (CPACK_PACKAGE_VERSION_MINOR ${BSON_MINOR_VERSION})
 
@@ -38,75 +38,75 @@ else ()
 endif ()
 
 configure_file (
-   "${SOURCE_DIR}/bson/bson-config.h.in"
-   "${PROJECT_BINARY_DIR}/bson/bson-config.h"
+   "${SOURCE_DIR}/src/bson/bson-config.h.in"
+   "${PROJECT_BINARY_DIR}/src/bson/bson-config.h"
 )
 
 configure_file (
-   "${SOURCE_DIR}/bson/bson-version.h.in"
-   "${PROJECT_BINARY_DIR}/bson/bson-version.h"
+   "${SOURCE_DIR}/src/bson/bson-version.h.in"
+   "${PROJECT_BINARY_DIR}/src/bson/bson-version.h"
 )
 
 configure_file (
-   "${PROJECT_SOURCE_DIR}/bson/bson-stdint.h"
-   "${PROJECT_BINARY_DIR}/bson/bson-stdint.h"
+   "${PROJECT_SOURCE_DIR}/src/bson/bson-stdint.h"
+   "${PROJECT_BINARY_DIR}/src/bson/bson-stdint.h"
 )
 
-include_directories("${PROJECT_BINARY_DIR}/bson")
-include_directories("${SOURCE_DIR}/bson")
-include_directories("${SOURCE_DIR}")
+include_directories("${PROJECT_BINARY_DIR}/src/bson")
+include_directories("${SOURCE_DIR}/src/bson")
+include_directories("${SOURCE_DIR}/src")
 
 set (SOURCES
-   ${SOURCE_DIR}/bson/bcon.c
-   ${SOURCE_DIR}/bson/bson.c
-   ${SOURCE_DIR}/bson/bson-clock.c
-   ${SOURCE_DIR}/bson/bson-context.c
-   ${SOURCE_DIR}/bson/bson-error.c
-   ${SOURCE_DIR}/bson/bson-iter.c
-   ${SOURCE_DIR}/bson/bson-json.c
-   ${SOURCE_DIR}/bson/bson-keys.c
-   ${SOURCE_DIR}/bson/bson-md5.c
-   ${SOURCE_DIR}/bson/bson-memory.c
-   ${SOURCE_DIR}/bson/bson-oid.c
-   ${SOURCE_DIR}/bson/bson-reader.c
-   ${SOURCE_DIR}/bson/bson-string.c
-   ${SOURCE_DIR}/bson/bson-utf8.c
-   ${SOURCE_DIR}/bson/bson-writer.c
-   ${SOURCE_DIR}/yajl/yajl_alloc.c
-   ${SOURCE_DIR}/yajl/yajl_buf.c
-   ${SOURCE_DIR}/yajl/yajl.c
-   ${SOURCE_DIR}/yajl/yajl_encode.c
-   ${SOURCE_DIR}/yajl/yajl_gen.c
-   ${SOURCE_DIR}/yajl/yajl_lex.c
-   ${SOURCE_DIR}/yajl/yajl_parser.c
-   ${SOURCE_DIR}/yajl/yajl_tree.c
-   ${SOURCE_DIR}/yajl/yajl_version.c
+   ${SOURCE_DIR}/src/bson/bcon.c
+   ${SOURCE_DIR}/src/bson/bson.c
+   ${SOURCE_DIR}/src/bson/bson-clock.c
+   ${SOURCE_DIR}/src/bson/bson-context.c
+   ${SOURCE_DIR}/src/bson/bson-error.c
+   ${SOURCE_DIR}/src/bson/bson-iter.c
+   ${SOURCE_DIR}/src/bson/bson-json.c
+   ${SOURCE_DIR}/src/bson/bson-keys.c
+   ${SOURCE_DIR}/src/bson/bson-md5.c
+   ${SOURCE_DIR}/src/bson/bson-memory.c
+   ${SOURCE_DIR}/src/bson/bson-oid.c
+   ${SOURCE_DIR}/src/bson/bson-reader.c
+   ${SOURCE_DIR}/src/bson/bson-string.c
+   ${SOURCE_DIR}/src/bson/bson-utf8.c
+   ${SOURCE_DIR}/src/bson/bson-writer.c
+   ${SOURCE_DIR}/src/yajl/yajl_alloc.c
+   ${SOURCE_DIR}/src/yajl/yajl_buf.c
+   ${SOURCE_DIR}/src/yajl/yajl.c
+   ${SOURCE_DIR}/src/yajl/yajl_encode.c
+   ${SOURCE_DIR}/src/yajl/yajl_gen.c
+   ${SOURCE_DIR}/src/yajl/yajl_lex.c
+   ${SOURCE_DIR}/src/yajl/yajl_parser.c
+   ${SOURCE_DIR}/src/yajl/yajl_tree.c
+   ${SOURCE_DIR}/src/yajl/yajl_version.c
 )
 
 set (HEADERS
-   ${PROJECT_BINARY_DIR}/bson/bson-config.h
-   ${PROJECT_BINARY_DIR}/bson/bson-stdint.h
-   ${PROJECT_BINARY_DIR}/bson/bson-version.h
-   ${SOURCE_DIR}/bson/bcon.h
-   ${SOURCE_DIR}/bson/bson-atomic.h
-   ${SOURCE_DIR}/bson/bson-clock.h
-   ${SOURCE_DIR}/bson/bson-compat.h
-   ${SOURCE_DIR}/bson/bson-context.h
-   ${SOURCE_DIR}/bson/bson-endian.h
-   ${SOURCE_DIR}/bson/bson-error.h
-   ${SOURCE_DIR}/bson/bson.h
-   ${SOURCE_DIR}/bson/bson-iter.h
-   ${SOURCE_DIR}/bson/bson-keys.h
-   ${SOURCE_DIR}/bson/bson-macros.h
-   ${SOURCE_DIR}/bson/bson-md5.h
-   ${SOURCE_DIR}/bson/bson-memory.h
-   ${SOURCE_DIR}/bson/bson-oid.h
-   ${SOURCE_DIR}/bson/bson-reader.h
-   ${SOURCE_DIR}/bson/bson-stdint-win32.h
-   ${SOURCE_DIR}/bson/bson-string.h
-   ${SOURCE_DIR}/bson/bson-types.h
-   ${SOURCE_DIR}/bson/bson-utf8.h
-   ${SOURCE_DIR}/bson/bson-writer.h
+   ${PROJECT_BINARY_DIR}/src/bson/bson-config.h
+   ${PROJECT_BINARY_DIR}/src/bson/bson-stdint.h
+   ${PROJECT_BINARY_DIR}/src/bson/bson-version.h
+   ${SOURCE_DIR}/src/bson/bcon.h
+   ${SOURCE_DIR}/src/bson/bson-atomic.h
+   ${SOURCE_DIR}/src/bson/bson-clock.h
+   ${SOURCE_DIR}/src/bson/bson-compat.h
+   ${SOURCE_DIR}/src/bson/bson-context.h
+   ${SOURCE_DIR}/src/bson/bson-endian.h
+   ${SOURCE_DIR}/src/bson/bson-error.h
+   ${SOURCE_DIR}/src/bson/bson.h
+   ${SOURCE_DIR}/src/bson/bson-iter.h
+   ${SOURCE_DIR}/src/bson/bson-keys.h
+   ${SOURCE_DIR}/src/bson/bson-macros.h
+   ${SOURCE_DIR}/src/bson/bson-md5.h
+   ${SOURCE_DIR}/src/bson/bson-memory.h
+   ${SOURCE_DIR}/src/bson/bson-oid.h
+   ${SOURCE_DIR}/src/bson/bson-reader.h
+   ${SOURCE_DIR}/src/bson/bson-stdint-win32.h
+   ${SOURCE_DIR}/src/bson/bson-string.h
+   ${SOURCE_DIR}/src/bson/bson-types.h
+   ${SOURCE_DIR}/src/bson/bson-utf8.h
+   ${SOURCE_DIR}/src/bson/bson-writer.h
 )
 
 if (MSVC)
