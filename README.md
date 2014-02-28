@@ -43,7 +43,7 @@ Alternatively, you can use cygwin or mingw with the automake based build.
 ```sh
 git clone git://github.com/mongodb/libbson.git
 cd libbson
-cmake.exe build\win32
+cmake.exe build\cmake
 msbuild.exe ALL_BUILD.vcxproj
 ```
 
