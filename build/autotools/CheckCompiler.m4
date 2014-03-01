@@ -1,6 +1,3 @@
-AC_PROG_CC
-AC_PROG_CXX
-
 # If CFLAGS and CXXFLAGS are unset, default to empty.
 # This is to tell automake not to include '-g' if C{XX,}FLAGS is not set.
 # For more info - http://www.gnu.org/software/automake/manual/autoconf.html#C_002b_002b-Compiler
@@ -10,6 +7,9 @@ fi
 if test -z "$CFLAGS"; then
     CFLAGS=""
 fi
+
+AC_PROG_CC
+AC_PROG_CXX
 
 # Check that an appropriate C compiler is available.
 c_compiler="unknown"
