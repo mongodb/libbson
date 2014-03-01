@@ -1,4 +1,5 @@
 AC_PROG_CC
+AC_PROG_CXX
 
 # If CFLAGS and CXXFLAGS are unset, default to empty.
 # This is to tell automake not to include '-g' if C{XX,}FLAGS is not set.
@@ -28,3 +29,4 @@ AC_LANG_POP([C])
 if test "$c_compiler" = "unknown"; then
     AC_MSG_ERROR([Compiler GCC >= 4.1 or Clang >= 3.3 is required for C compilation])
 fi
+

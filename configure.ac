@@ -18,6 +18,13 @@ AC_SUBST(BSON_MICRO_VERSION)
 AC_SUBST(BSON_API_VERSION)
 AC_SUBST(BSON_VERSION)
 
+m4_include([build/autotools/CheckCompiler.m4])
+m4_include([build/autotools/CheckHeaders.m4])
+m4_include([build/autotools/CheckProgs.m4])
+m4_include([build/autotools/CheckHost.m4])
+m4_include([build/autotools/CheckTarget.m4])
+m4_include([build/autotools/Endian.m4])
+
 m4_include([build/autotools/SetupLibtool.m4])
 LT_INIT
 BSON_LT_CURRENT=lt_current
@@ -26,14 +33,9 @@ BSON_LT_AGE=lt_age
 BSON_LT_VERSION="$BSON_LT_CURRENT:$BSON_LT_REVISION:$BSON_LT_AGE"
 BSON_LT_LDFLAGS="-version-info $BSON_LT_VERSION"
 
-m4_include([build/autotools/CheckCompiler.m4])
-m4_include([build/autotools/CheckHeaders.m4])
-m4_include([build/autotools/CheckProgs.m4])
-m4_include([build/autotools/CheckHost.m4])
-m4_include([build/autotools/CheckTarget.m4])
-m4_include([build/autotools/Endian.m4])
 m4_include([build/autotools/ReadCommandLineArguments.m4])
 m4_include([build/autotools/FindDependencies.m4])
+m4_include([build/autotools/AutoHarden.m4])
 m4_include([build/autotools/Python.m4])
 
 # We would put AM_INIT_AUTOMAKE into SetupAutomake.m4, but seems to cause autoconf errors.

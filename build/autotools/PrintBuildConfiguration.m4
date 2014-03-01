@@ -29,6 +29,7 @@ Build configuration:
   Enable debugging (slow)                          : ${enable_debug}
   Compile with debug symbols (slow)                : ${enable_debug_symbols}
   Enable GCC build optimization                    : ${enable_optimizations}
+  Enable automatic binary hardening                : ${enable_hardening}
   Use -Bsymbolic                                   : ${enable_Bsymbolic}
   Code coverage support                            : ${enable_coverage}
   Cross Compiling                                  : ${enable_crosscompile}
