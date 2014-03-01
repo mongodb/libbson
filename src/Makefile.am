@@ -9,12 +9,15 @@ libbson_1_0_la_CFLAGS = \
 	-I$(top_srcdir)/src/bson \
 	-I$(top_srcdir)/src/yajl \
 	-I$(top_builddir)/src/bson
+
 libbson_1_0_la_SOURCES =
+
 libbson_1_0_la_LDFLAGS = \
 	$(OPTIMIZE_LDFLAGS) \
 	-no-undefined \
 	-export-symbols-regex "^(bson_|bcon_)" \
 	-rpath $(libdir)
+
 libbson_1_0_la_LIBADD = \
 	$(PTHREAD_LIB)
 if OS_WIN32
