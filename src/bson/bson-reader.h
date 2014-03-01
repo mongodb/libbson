@@ -32,6 +32,9 @@
 BSON_BEGIN_DECLS
 
 
+#define BSON_ERROR_READER_BADFD 1
+
+
 /*
  *--------------------------------------------------------------------------
  *
@@ -92,6 +95,8 @@ bson_reader_t *bson_reader_new_from_handle  (void                       *handle,
                                              bson_reader_destroy_func_t  df);
 bson_reader_t *bson_reader_new_from_fd      (int                         fd,
                                              bool                        close_on_destroy);
+bson_reader_t *bson_reader_new_from_file    (const char                 *path,
+                                             bson_error_t               *error);
 bson_reader_t *bson_reader_new_from_data    (const uint8_t              *data,
                                              size_t                      length);
 void           bson_reader_destroy          (bson_reader_t              *reader);

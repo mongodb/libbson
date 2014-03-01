@@ -17,7 +17,14 @@
 #include "bson.h"
 
 #include <errno.h>
+#include <fcntl.h>
+#if BSON_OS == BSON_OS_WIN32
+# include <io.h>
+#endif
+#include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "bson-reader.h"
 #include "bson-memory.h"
@@ -250,7 +257,11 @@ _bson_reader_handle_fd_read (void   *handle, /* IN */
 
    if (fd && (fd->fd != -1)) {
    again:
+#if BSON_OS == BSON_OS_WIN32
+      ret = _read (fd->fd, buf, (unsigned int)len);
+#else
       ret = read (fd->fd, buf, len);
+#endif
       if ((ret == -1) && (errno == EAGAIN)) {
          goto again;
       }
@@ -753,4 +764,52 @@ bson_reader_tell (bson_reader_t *reader) /* IN */
       fprintf (stderr, "No such reader type: %02x\n", reader->type);
       return -1;
    }
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_reader_new_from_file --
+ *
+ *       A convenience function to open a file containing sequential
+ *       bson documents and read them using bson_reader_t.
+ *
+ * Returns:
+ *       A new bson_reader_t if successful, otherwise NULL and
+ *       @error is set. Free the non-NULL result with
+ *       bson_reader_destroy().
+ *
+ * Side effects:
+ *       @error may be set.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+bson_reader_t *
+bson_reader_new_from_file (const char   *path,  /* IN */
+                           bson_error_t *error) /* OUT */
+{
+   bson_reader_t *reader;
+   char errmsg[32];
+   int fd;
+
+   bson_return_val_if_fail (path, NULL);
+
+#if BSON_OS == BSON_OS_WIN32
+   fd = _open (path, (_O_RDONLY | _O_BINARY));
+#else
+   fd = open (path, O_RDONLY);
+#endif
+
+   if (fd == -1) {
+      bson_strerror_r (errno, errmsg, sizeof errmsg);
+      bson_set_error (error,
+                      BSON_ERROR_READER,
+                      BSON_ERROR_READER_BADFD,
+                      "%s", errmsg);
+      return NULL;
+   }
+
+   return bson_reader_new_from_fd (fd, true);
 }
