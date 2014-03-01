@@ -251,9 +251,8 @@ _bson_reader_handle_fd_read (void   *handle, /* IN */
                              void   *buf,    /* IN */
                              size_t  len)    /* IN */
 {
-   ssize_t ret = -1;
-
    bson_reader_handle_fd_t *fd = handle;
+   ssize_t ret = -1;
 
    if (fd && (fd->fd != -1)) {
    again:

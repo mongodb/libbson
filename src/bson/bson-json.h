@@ -47,20 +47,24 @@ typedef ssize_t (*bson_json_reader_cb) (void    *handle,
 typedef void    (*bson_json_destroy_cb)(void    *handle);
 
 
-bson_json_reader_t  *bson_json_reader_new        (void                 *data,
-                                                  bson_json_reader_cb   cb,
-                                                  bson_json_destroy_cb  dcb,
-                                                  bool                  allow_multiple,
-                                                  size_t                buf_size);
-void                bson_json_reader_destroy     (bson_json_reader_t   *reader);
-int                 bson_json_reader_read        (bson_json_reader_t   *reader,
-                                                  bson_t               *bson,
-                                                  bson_error_t         *error);
-bson_json_reader_t *bson_json_data_reader_new    (bool                  allow_multiple,
-                                                  size_t                size);
-void                bson_json_data_reader_ingest (bson_json_reader_t   *reader,
-                                                  const uint8_t        *data,
-                                                  size_t                len);
+bson_json_reader_t  *bson_json_reader_new          (void                 *data,
+                                                    bson_json_reader_cb   cb,
+                                                    bson_json_destroy_cb  dcb,
+                                                    bool                  allow_multiple,
+                                                    size_t                buf_size);
+bson_json_reader_t *bson_json_reader_new_from_fd   (int                   fd,
+                                                    bool                  close_on_destroy);
+bson_json_reader_t *bson_json_reader_new_from_file (const char           *filename,
+                                                    bson_error_t         *error);
+void                bson_json_reader_destroy       (bson_json_reader_t   *reader);
+int                 bson_json_reader_read          (bson_json_reader_t   *reader,
+                                                    bson_t               *bson,
+                                                    bson_error_t         *error);
+bson_json_reader_t *bson_json_data_reader_new      (bool                  allow_multiple,
+                                                    size_t                size);
+void                bson_json_data_reader_ingest   (bson_json_reader_t   *reader,
+                                                    const uint8_t        *data,
+                                                    size_t                len);
 
 
 BSON_END_DECLS

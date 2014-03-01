@@ -15,6 +15,11 @@
  */
 
 
+#include <errno.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #include "bson.h"
 #include "bson-config.h"
 #include "bson-json.h"
@@ -22,6 +27,10 @@
 
 #include <yajl/yajl_parser.h>
 #include <yajl/yajl_bytestack.h>
+
+#ifdef BSON_OS_WIN32
+# include <io.h>
+#endif
 
 
 #define STACK_MAX 100
@@ -152,6 +161,13 @@ struct _bson_json_reader_t
    yajl_handle                  yh;
    bson_error_t                *error;
 };
+
+
+typedef struct
+{
+   int fd;
+   bool do_close;
+} bson_json_reader_handle_fd_t;
 
 
 #define STACK_ELE(_delta, _name) (bson->stack[(_delta) + bson->n]._name)
@@ -1155,4 +1171,91 @@ bson_init_from_json (bson_t       *bson,  /* OUT */
    }
 
    return true;
+}
+
+
+static void
+_bson_json_reader_handle_fd_destroy (void *handle) /* IN */
+{
+   bson_json_reader_handle_fd_t *fd = handle;
+
+   if (fd) {
+      if ((fd->fd != -1) && fd->do_close) {
+         close (fd->fd);
+      }
+      bson_free (fd);
+   }
+}
+
+
+static ssize_t
+_bson_json_reader_handle_fd_read (void    *handle, /* IN */
+                                  uint8_t *buf,    /* IN */
+                                  size_t   len)   /* IN */
+{
+   bson_json_reader_handle_fd_t *fd = handle;
+   ssize_t ret = -1;
+
+   if (fd && (fd->fd != -1)) {
+   again:
+#ifdef BSON_OS_WIN32
+      ret = _read (fd->fd, buf, (unsigned int)len);
+#else
+      ret = read (fd->fd, buf, len);
+#endif
+      if ((ret == -1) && (errno == EAGAIN)) {
+         goto again;
+      }
+   }
+
+   return ret;
+}
+
+
+bson_json_reader_t *
+bson_json_reader_new_from_fd (int fd,                /* IN */
+                              bool close_on_destroy) /* IN */
+{
+   bson_json_reader_handle_fd_t *handle;
+
+   bson_return_val_if_fail (fd != -1, NULL);
+
+   handle = bson_malloc0 (sizeof *handle);
+   handle->fd = fd;
+   handle->do_close = close_on_destroy;
+
+   return bson_json_reader_new (handle,
+                                _bson_json_reader_handle_fd_read,
+                                _bson_json_reader_handle_fd_destroy,
+                                true,
+                                BSON_JSON_DEFAULT_BUF_SIZE);
+}
+
+
+bson_json_reader_t *
+bson_json_reader_new_from_file (const char   *path,  /* IN */
+                                bson_error_t *error) /* OUT */
+{
+   bson_json_reader_t *reader;
+   char errmsg[32];
+   int fd;
+
+   bson_return_val_if_fail (path, NULL);
+
+#ifdef BSON_OS_WIN32
+   fd = _open (path, (_O_RDONLY | _O_BINARY));
+#else
+   fd = open (path, O_RDONLY);
+#endif
+
+   if (fd == -1) {
+      bson_strerror_r (errno, errmsg, sizeof errmsg);
+      bson_set_error (error,
+                      BSON_ERROR_READER,
+                      BSON_ERROR_READER_BADFD,
+                      "%s", errmsg);
+      return NULL;
+   }
+
+   return bson_json_reader_new_from_fd (fd, true);
 }

@@ -97,6 +97,8 @@ bson_json_data_reader_ingest
 bson_json_data_reader_new
 bson_json_reader_destroy
 bson_json_reader_new
+bson_json_reader_new_from_fd
+bson_json_reader_new_from_file
 bson_json_reader_read
 bson_malloc
 bson_malloc0
