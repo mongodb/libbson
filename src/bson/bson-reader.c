@@ -18,7 +18,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#if BSON_OS == BSON_OS_WIN32
+#ifdef BSON_OS_WIN32
 # include <io.h>
 #endif
 #include <stdlib.h>
@@ -257,7 +257,7 @@ _bson_reader_handle_fd_read (void   *handle, /* IN */
 
    if (fd && (fd->fd != -1)) {
    again:
-#if BSON_OS == BSON_OS_WIN32
+#ifdef BSON_OS_WIN32
       ret = _read (fd->fd, buf, (unsigned int)len);
 #else
       ret = read (fd->fd, buf, len);
@@ -796,7 +796,7 @@ bson_reader_new_from_file (const char   *path,  /* IN */
 
    bson_return_val_if_fail (path, NULL);
 
-#if BSON_OS == BSON_OS_WIN32
+#ifdef BSON_OS_WIN32
    fd = _open (path, (_O_RDONLY | _O_BINARY));
 #else
    fd = open (path, O_RDONLY);
