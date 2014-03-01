@@ -43,7 +43,7 @@ Alternatively, you can use cygwin or mingw with the automake based build.
 ```sh
 git clone git://github.com/mongodb/libbson.git
 cd libbson
-cmake.exe build\cmake
+cmake.exe .
 msbuild.exe ALL_BUILD.vcxproj
 ```
 
@@ -76,6 +76,24 @@ tar xzf libbson-$ver.tar.gz
 ./configure --enable-silent-rules
 make
 sudo make install
+```
+
+# Optimizations
+
+You may want to enable optimizations in libbson.
+You can do this during configure with:
+
+```sh
+./configure --enable-optimizations
+```
+
+# Hardening
+
+You may want to enable stack protector and other binary hardening features.
+You can do this with:
+
+```sh
+./configure --enable-hardening
 ```
 
 
