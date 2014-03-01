@@ -1,9 +1,9 @@
 libbson_1_0_la_SOURCES += \
-	src/yajl/api/yajl_tree.h \
-	src/yajl/api/yajl_parse.h \
-	src/yajl/api/yajl_gen.h \
-	src/yajl/api/yajl_common.h \
-	src/yajl/api/yajl_version.h \
+	src/yajl/yajl_tree.h \
+	src/yajl/yajl_parse.h \
+	src/yajl/yajl_gen.h \
+	src/yajl/yajl_common.h \
+	src/yajl/yajl_version.h \
 	src/yajl/yajl_parser.h \
 	src/yajl/yajl_encode.h \
 	src/yajl/yajl_buf.h \
