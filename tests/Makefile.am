@@ -29,7 +29,8 @@ test_libbson_SOURCES = \
 test_libbson_CPPFLAGS = \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/bson \
-	-I$(top_builddir)/src/bson
+	-I$(top_builddir)/src/bson \
+	-DBSON_COMPILATION
 
 test_libbson_LDADD = libbson-1.0.la
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "bson-config.h"
+#include "bson-compat.h"
 
 #include <assert.h>
 #include <fcntl.h>
@@ -95,7 +95,7 @@
 #endif
 
 
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 struct timespec
 {
    time_t tv_sec;
@@ -194,22 +194,20 @@ TestSuite_SeedRand (TestSuite *suite, /* IN */
                     Test *test)       /* IN */
 {
    int seed;
-   int fd;
-   int n_read;
 
-   fd = open ("/dev/urandom", O_RDONLY);
+#ifndef BSON_OS_WIN32
+   int fd = open ("/dev/urandom", O_RDONLY);
+   int n_read;
    if (fd != -1) {
       n_read = read (fd, &seed, 4);
       assert (n_read == 4);
-   } else {
-      seed = time (NULL) * (int)getpid ();
-   }
-
-   if (fd != -1) {
       close (fd);
+      test->seed = seed;
+      return;
    }
+#endif
 
-   test->seed = seed;
+   test->seed = time (NULL) * (int)getpid ();
 }
 
 
