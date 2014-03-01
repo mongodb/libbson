@@ -23,7 +23,7 @@ if test -z `which autoreconf`; then
     echo "Error: autoreconf not found, please install it."
     exit 1
 fi
-autoreconf --verbose --install -I build/autotools $ACLOCAL_FLAGS|| exit $?
+autoreconf --force --verbose --install -I build/autotools $ACLOCAL_FLAGS|| exit $?
 rm -rf autom4te.cache
 
 cd "$ORIGDIR" || exit 1
