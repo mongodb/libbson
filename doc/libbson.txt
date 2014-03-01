@@ -98,4 +98,4 @@ linkbson:bson_writer_t[3]
 AUTHORS
 -------
 
-This page was written by MongoDB Inc.
+This page was written by MongoDB, Inc.
