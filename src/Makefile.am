@@ -10,7 +10,9 @@ libbson_1_0_la_CFLAGS = \
 	-I$(top_srcdir)/src/yajl \
 	-I$(top_builddir)/src/bson
 
-libbson_1_0_la_SOURCES =
+libbson_1_0_la_SOURCES = \
+	$(INST_H_FILES) \
+	$(NOINST_H_FILES)
 
 libbson_1_0_la_LDFLAGS = \
 	$(OPTIMIZE_LDFLAGS) \
