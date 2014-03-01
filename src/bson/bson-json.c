@@ -1135,8 +1135,8 @@ bson_init_from_json (bson_t       *bson,  /* OUT */
    bson_json_reader_t *reader;
    int r;
 
-   bson_return_val_if_fail (bson, NULL);
-   bson_return_val_if_fail (data, NULL);
+   bson_return_val_if_fail (bson, false);
+   bson_return_val_if_fail (data, false);
 
    if (len < 0) {
       len = strlen (data);

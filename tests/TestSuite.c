@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "bson-compat.h"
+#include <bson.h>
 
 #include <assert.h>
 #include <fcntl.h>
