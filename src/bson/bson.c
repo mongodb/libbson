@@ -15,10 +15,10 @@
  */
 
 
-#include "bson.h"
 #include <stdarg.h>
 
 #include "b64_ntop.h"
+#include "bson.h"
 #include "bson-private.h"
 #include "bson-string.h"
 
@@ -31,7 +31,6 @@
 /*
  * Structures.
  */
-
 typedef struct
 {
    bson_validate_flags_t flags;

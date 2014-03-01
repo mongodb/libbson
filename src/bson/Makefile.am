@@ -28,9 +28,12 @@ INST_H_FILES += src/bson/bson-stdint-win32.h
 endif
 
 NOINST_H_FILES += \
+	src/bson/b64_ntop.h \
+	src/bson/b64_pton.h \
 	src/bson/bson-private.h \
 	src/bson/bson-context-private.h \
 	src/bson/bson-thread-private.h
+
 
 libbson_1_0_la_SOURCES += \
 	src/bson/bcon.c \
