@@ -48,37 +48,13 @@ BSON_BEGIN_DECLS
 
 
 #ifdef BSON_OS_WIN32
-#include <share.h>
-static BSON_INLINE int
-bson_open (const char *filename,
-           int         flags)
-{
-   int fd;
-   errno_t err;
-
-   err = _sopen_s (&fd, filename, flags | _O_BINARY, _SH_DENYNO,
-                   _S_IREAD | _S_IWRITE);
-
-   if (err) {
-      errno = err;
-      return -1;
-   }
-
-   return fd;
-}
-
-static BSON_INLINE ssize_t
-bson_read (int    fd,
-           void  *buf,
-           size_t count)
-{
-   return (ssize_t)_read (fd, buf, (int)count);
-}
-#define bson_close _close
+# define bson_open(f,fl,...) _open((f),(fl)|_O_BINARY,##__VA_ARGS__)
+# define bson_close _close
+# define bson_read(f,b,c) ((ssize_t)_read((f), (b), (int)(c)))
 #else
-#define bson_open open
-#define bson_read read
-#define bson_close close
+# define bson_open open
+# define bson_read read
+# define bson_close close
 #endif
 
 
