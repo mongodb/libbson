@@ -41,5 +41,5 @@ Documentation:
   Install man pages                                : ${bson_install_man}
 
 Bindings:
-  Python (experimental)                            : ${enable_python}
+  Python (experimental)                            : ${ax_python_header}
 "

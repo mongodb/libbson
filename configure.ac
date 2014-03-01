@@ -34,6 +34,7 @@ m4_include([build/autotools/CheckTarget.m4])
 m4_include([build/autotools/Endian.m4])
 m4_include([build/autotools/ReadCommandLineArguments.m4])
 m4_include([build/autotools/FindDependencies.m4])
+m4_include([build/autotools/Python.m4])
 
 # We would put AM_INIT_AUTOMAKE into SetupAutomake.m4, but seems to cause autoconf errors.
 AM_INIT_AUTOMAKE([foreign subdir-objects dist-xz no-dist-gzip tar-ustar])
