@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 MongoDB Inc.
+ * Copyright 2013-2014 MongoDB, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,24 @@
  * limitations under the License.
  */
 
+
 #include <bson.h>
 #include <bcon.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+/*
+ * This is a test for comparing the performance of BCON to regular
+ * bson_append*() function calls.
+ *
+ * Maybe run the following a few times to get an idea of the performance
+ * implications of using BCON. Generally, it's fast enough to be very
+ * useful and result in easier to read BSON code.
+ *
+ * time ./bcon-speed 100000 y
+ * time ./bcon-speed 100000 n
+ */
+
 
 int
 main (int   argc,
@@ -26,6 +42,15 @@ main (int   argc,
    int bcon;
    bson_t bson, foo, bar, baz;
    bson_init(&bson);
+
+   if (argc != 3) {
+      fprintf (stderr, "usage: bcon-speed NUM_ITERATIONS [y|n]\n"
+                       "\n"
+                       "  y = perform speed tests with bcon\n"
+                       "  n = perform speed tests with bson_append\n"
+                       "\n");
+      return EXIT_FAILURE;
+   }
 
    assert(argc == 3);
 
