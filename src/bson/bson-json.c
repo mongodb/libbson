@@ -240,7 +240,7 @@ _bson_json_read_set_error (bson_json_reader_t *reader, /* IN */
    BSON_ASSERT (fmt);
 
    if (reader->error) {
-      reader->error->domain = BSON_JSON_ERROR_READ;
+      reader->error->domain = BSON_ERROR_JSON;
       reader->error->code = BSON_JSON_ERROR_READ_INVALID_PARAM;
       va_start (ap, fmt);
       bson_vsnprintf (reader->error->message, sizeof reader->error->message,
@@ -872,7 +872,8 @@ _bson_json_read_parse_error (bson_json_reader_t *reader, /* IN */
       if (error) {
          str = yajl_get_error (yh, 1, p->buf + p->bytes_parsed,
                                p->bytes_read - p->bytes_parsed);
-         bson_set_error (error, BSON_JSON_ERROR_READ,
+         bson_set_error (error,
+                         BSON_ERROR_JSON,
                          BSON_JSON_ERROR_READ_CORRUPT_JS,
                          "%s", str);
          yajl_free_error (yh, str);
@@ -954,7 +955,7 @@ bson_json_reader_read (bson_json_reader_t *reader, /* IN */
       if (r < 0) {
          if (error) {
             bson_set_error (error,
-                            BSON_JSON_ERROR_READ,
+                            BSON_ERROR_JSON,
                             BSON_JSON_ERROR_READ_CB_FAILURE,
                             "reader cb failed");
          }

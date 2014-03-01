@@ -381,7 +381,7 @@ test_bson_json_read(void)
 
 static void
 test_bson_json_error (const char              *json,
-                      bson_json_error_domain_t domain,
+                      int                      domain,
                       bson_json_error_code_t   code)
 {
    bson_error_t error;
@@ -403,7 +403,7 @@ test_bson_json_read_missing_complex(void)
       }\n\
    }";
 
-   test_bson_json_error (json, BSON_JSON_ERROR_READ,
+   test_bson_json_error (json, BSON_ERROR_JSON,
                          BSON_JSON_ERROR_READ_INVALID_PARAM);
 }
 
@@ -414,7 +414,7 @@ test_bson_json_read_invalid_json(void)
       \"foo\" : { \n\
    }";
 
-   test_bson_json_error (json, BSON_JSON_ERROR_READ,
+   test_bson_json_error (json, BSON_ERROR_JSON,
                          BSON_JSON_ERROR_READ_CORRUPT_JS);
 }
 
@@ -437,7 +437,7 @@ test_bson_json_read_bad_cb(void)
    r = bson_json_reader_read (reader, &bson, &error);
 
    assert(r == -1);
-   assert(error.domain = BSON_JSON_ERROR_READ);
+   assert(error.domain = BSON_ERROR_JSON);
    assert(error.code = BSON_JSON_ERROR_READ_CB_FAILURE);
 
    bson_json_reader_destroy (reader);

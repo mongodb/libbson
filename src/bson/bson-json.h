@@ -35,12 +35,6 @@ typedef struct _bson_json_reader_t bson_json_reader_t;
 
 typedef enum
 {
-   BSON_JSON_ERROR_READ = 1,
-} bson_json_error_domain_t;
-
-
-typedef enum
-{
    BSON_JSON_ERROR_READ_CORRUPT_JS = 1,
    BSON_JSON_ERROR_READ_INVALID_PARAM,
    BSON_JSON_ERROR_READ_CB_FAILURE,
