@@ -22,56 +22,7 @@
 
 
 #include <bson.h>
-#include <errno.h>
-#include <fcntl.h>
 #include <stdio.h>
-
-#ifdef BSON_OS_WIN32
-#include <share.h>
-int
-bson_open (const char *filename,
-           int         flags)
-{
-   int fd;
-   errno_t err;
-
-   err = _sopen_s (&fd, filename, flags | _O_BINARY, _SH_DENYNO,
-                   _S_IREAD | _S_IWRITE);
-
-   if (err) {
-      errno = err;
-      return -1;
-   }
-
-   return fd;
-}
-
-ssize_t
-bson_read (int    fd,
-           void  *buf,
-           size_t count)
-{
-   return (ssize_t)_read (fd, buf, (int)count);
-}
-
-#define bson_close _close
-#else
-#define bson_open open
-#define bson_read read
-#define bson_close close
-#endif
-
-static ssize_t
-_read_cb(void * handle, void * buf, size_t len)
-{
-   return bson_read(*(int *)handle, buf, len);
-}
-
-static void
-_destroy_cb(void * handle)
-{
-   bson_close(*(int *)handle);
-}
 
 
 int
@@ -80,6 +31,7 @@ main (int   argc,
 {
    bson_reader_t *reader;
    const bson_t *b;
+   bson_error_t error;
    const char *filename;
    char *str;
    int fd;
@@ -100,23 +52,13 @@ main (int   argc,
       filename = argv[i];
 
       /*
-       * Open the filename provided in command line arguments.
-       */
-      if (0 == strcmp(filename, "-")) {
-         fd = 0;
-      } else {
-         errno = 0;
-         fd = bson_open(filename, O_RDONLY);
-         if (! (-1 != fd)) {
-            fprintf(stderr, "Failed to open %s: %s\n", filename, strerror(errno));
-            continue;
-         }
-      }
-
-      /*
        * Initialize a new reader for this file descriptor.
        */
-      reader = bson_reader_new_from_handle ((void *)&fd, &_read_cb, &_destroy_cb);
+      if (!(reader = bson_reader_new_from_file (filename, &error))) {
+         fprintf (stderr, "Failed to open \"%s\": %s\n",
+                  filename, error.message);
+         continue;
+      }
 
       /*
        * Convert each incoming document to JSON and print to stdout.
