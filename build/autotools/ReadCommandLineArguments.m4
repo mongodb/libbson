@@ -4,19 +4,6 @@ AC_ARG_ENABLE(debug,
     [],[enable_debug="no"])
 AC_MSG_RESULT([$enable_debug])
 
-AC_MSG_CHECKING([whether to enable developer mode])
-AC_ARG_ENABLE(developer-mode,
-    AC_HELP_STRING([--enable-developer-mode], [development-oriented build (strict flags and builds testing harness) [default=no (yes for debug builds)]]),
-    [enable_developer_mode=$enableval],
-    [
-        if test "$enable_debug" = "yes"; then
-            enable_developer_mode="yes"
-        else
-            enable_developer_mode="no"
-        fi
-    ])
-AC_MSG_RESULT([$enable_developer_mode])
-
 AC_MSG_CHECKING([whether to enable optimized builds])
 AC_ARG_ENABLE(optimizations, 
     AC_HELP_STRING([--enable-optimizations], [turn on build-time optimizations [default=yes]]),
@@ -36,17 +23,6 @@ AC_ARG_ENABLE(coverage,
     [],
     [enable_coverage="no"])
 AC_MSG_RESULT([$enable_coverage])
-
-AC_MSG_CHECKING([whether to enable optimized memory allocator])
-AC_ARG_ENABLE(fast_malloc, 
-    AC_HELP_STRING([--enable-fast-malloc], [enable optimized memory allocator default=yes, default=no for debug builds]),
-    [],
-    [if test "$enable_debug" = "yes"; then
-         enable_fast_malloc="no";
-     else
-         enable_fast_malloc="yes";
-     fi])
-AC_MSG_RESULT([$enable_fast_malloc])
 
 AC_MSG_CHECKING([whether to enable debug symbols])
 AC_ARG_ENABLE(debug_symbols,

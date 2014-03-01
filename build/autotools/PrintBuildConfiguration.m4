@@ -28,11 +28,9 @@ libbson was configured with the following options:
 Build configuration:
   Enable debugging (slow)                          : ${enable_debug}
   Compile with debug symbols (slow)                : ${enable_debug_symbols}
-  Developer mode                                   : ${enable_developer_mode}
   Enable GCC build optimization                    : ${enable_optimizations}
   Use -Bsymbolic                                   : ${enable_Bsymbolic}
   Code coverage support                            : ${enable_coverage}
-  Optimized memory allocator                       : ${enable_fast_malloc}
   Cross Compiling                                  : ${enable_crosscompile}
   Big endian                                       : ${enable_bigendian}
 
