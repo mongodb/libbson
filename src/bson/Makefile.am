@@ -50,8 +50,8 @@ libbson_1_0_la_SOURCES += \
 	src/bson/bson-writer.c
 
 EXTRA_DIST += \
-	bson/bson-config.h.in \
-	bson/bson-version.h.in
+	src/bson/bson-config.h.in \
+	src/bson/bson-version.h.in
 
 DISTCLEANFILES += \
-	bson/bson-stdint.h
+	src/bson/bson-stdint.h
