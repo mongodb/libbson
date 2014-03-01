@@ -34,7 +34,6 @@ main (int   argc,
    bson_error_t error;
    const char *filename;
    char *str;
-   int fd;
    int i;
 
    /*
