@@ -52,6 +52,7 @@ elif test "$ac_stdint_h" = "inttypes.h" ; then
  AC_MSG_RESULT("(are you sure you want them in ./inttypes.h?)")
 else
  AC_MSG_RESULT("(putting them into $ac_stdint_h)")
+ mkdir -p $(dirname "$ac_stdint_h")
 fi
 
 inttype_headers=`echo inttypes.h sys/inttypes.h sys/inttypes.h $2 \
