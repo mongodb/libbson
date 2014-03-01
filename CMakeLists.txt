@@ -120,7 +120,7 @@ set (HEADERS
 )
 
 if (MSVC)
-   set(BSON_SHARED_SOURCES ${SOURCES} ${PROJECT_SOURCE_DIR}/libbson.def)
+   set(BSON_SHARED_SOURCES ${SOURCES} ${PROJECT_SOURCE_DIR}/build/cmake/libbson.def)
 else()
    set(BSON_SHARED_SOURCES ${SOURCES})
 endif()
