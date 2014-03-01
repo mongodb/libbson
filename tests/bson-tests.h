@@ -120,8 +120,8 @@ bson_eq_bson (bson_t *bson,
          int fd2 = bson_open ("failure.expected.bson", O_RDWR | O_CREAT, 0640);
          assert (fd1 != -1);
          assert (fd2 != -1);
-         write (fd1, bson_data, bson->len);
-         write (fd2, expected_data, expected->len);
+         assert (bson->len == write (fd1, bson_data, bson->len));
+         assert (expected->len == write (fd2, expected_data, expected->len));
          close (fd1);
          close (fd2);
       }
