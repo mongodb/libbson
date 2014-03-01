@@ -17,6 +17,9 @@ libbson_1_0_la_LDFLAGS = \
 	-rpath $(libdir)
 libbson_1_0_la_LIBADD = \
 	$(PTHREAD_LIB)
+if OS_WIN32
+libbson_1_0_la_LIBADD += -lws2_32
+endif
 
 if !ENABLE_DEBUG
 libbson_1_0_la_CFLAGS += \
