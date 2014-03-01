@@ -4,13 +4,14 @@ INST_H_FILES =
 NOINST_H_FILES =
 
 libbson_1_0_la_CFLAGS = \
+	$(OPTIMIZE_CFLAGS) \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/bson \
 	-I$(top_srcdir)/src/yajl \
 	-I$(top_builddir)/src/bson
 libbson_1_0_la_SOURCES =
 libbson_1_0_la_LDFLAGS = \
-	$(BSON_LT_LDFLAGS) \
+	$(OPTIMIZE_LDFLAGS) \
 	-no-undefined \
 	-export-symbols-regex "^(bson_|bcon_)" \
 	-rpath $(libdir)
