@@ -30,3 +30,6 @@ if test "$c_compiler" = "unknown"; then
     AC_MSG_ERROR([Compiler GCC >= 4.1 or Clang >= 3.3 is required for C compilation])
 fi
 
+AC_C_CONST
+AC_C_INLINE
+AC_C_TYPEOF
