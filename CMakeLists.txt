@@ -7,7 +7,7 @@ include(CheckIncludeFile)
 include(TestBigEndian)
 include(InstallRequiredSystemLibraries)
 
-set (SOURCE_DIR "${PROJECT_SOURCE_DIR}/../..")
+set (SOURCE_DIR "${PROJECT_SOURCE_DIR}/")
 
 set (BSON_MAJOR_VERSION 0)
 set (BSON_MINOR_VERSION 5)
@@ -58,7 +58,7 @@ configure_file (
 )
 
 configure_file (
-   "${PROJECT_SOURCE_DIR}/bson/bson-stdint.h"
+   "${PROJECT_SOURCE_DIR}/build/cmake/bson/bson-stdint.h"
    "${PROJECT_BINARY_DIR}/src/bson/bson-stdint.h"
 )
 
