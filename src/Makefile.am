@@ -17,6 +17,12 @@ libbson_1_0_la_LDFLAGS = \
 libbson_1_0_la_LIBADD = \
 	$(PTHREAD_LIB)
 
+if !ENABLE_DEBUG
+libbson_1_0_la_CFLAGS += \
+	-DBSON_DISABLE_ASSERT \
+	-DBSON_DISABLE_CHECKS
+endif
+
 include src/bson/Makefile.am
 include src/yajl/Makefile.am
 include src/bindings/Makefile.am
