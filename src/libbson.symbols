@@ -120,6 +120,7 @@ bson_oid_to_string
 bson_reader_destroy
 bson_reader_new_from_data
 bson_reader_new_from_fd
+bson_reader_new_from_file
 bson_reader_new_from_handle
 bson_reader_read
 bson_reader_set_read_func
