@@ -2,12 +2,18 @@ EXTRA_DIST =
 CLEANFILES =
 DISTCLEANFILES =
 
+libbson_srcdir = $(top_srcdir)
+libbson_builddir = $(top_builddir)
+
 AM_CPPFLAGS = \
 	-DBSON_COMPILATION \
 	-D_BSD_SOURCE \
 	-D_GNUC_SOURCE
 
 include src/Makefile.am
+include src/bson/Makefile.am
+include src/yajl/Makefile.am
+include src/bindings/python/Makefile.am
 include tests/Makefile.am
 include examples/Makefile.am
 include doc/Makefile.am
