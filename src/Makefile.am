@@ -1,7 +1,7 @@
-lib_LTLIBRARIES = libbson-1.0.la
+lib_LTLIBRARIES += libbson-1.0.la
 
-INST_H_FILES =
-NOINST_H_FILES =
+BSON_INST_H_FILES =
+BSON_NOINST_H_FILES =
 
 libbson_1_0_la_CPPFLAGS = \
 	-DBSON_COMPILATION \
@@ -37,8 +37,8 @@ libbson_1_0_la_CPPFLAGS += \
 	-DBSON_DISABLE_CHECKS
 endif
 
-pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = $(libbson_builddir)/src/libbson-1.0.pc
+bsonpkgconfigdir = $(libdir)/pkgconfig
+bsonpkgconfig_DATA = $(libbson_builddir)/src/libbson-1.0.pc
 
 EXTRA_DIST += \
 	$(libbson_srcdir)/src/libbson.symbols \

@@ -2,6 +2,10 @@ EXTRA_DIST =
 CLEANFILES =
 DISTCLEANFILES =
 
+bin_PROGRAMS =
+lib_LTLIBRARIES =
+noinst_PROGRAMS =
+
 libbson_srcdir = $(top_srcdir)
 libbson_builddir = $(top_builddir)
 
