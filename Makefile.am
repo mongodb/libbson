@@ -13,7 +13,7 @@ include examples/Makefile.am
 include doc/Makefile.am
 
 ACLOCAL_AMFLAGS = -I build/autotools/m4 ${ACLOCAL_FLAGS}
-DISTCHECK_CONFIGURE_FLAGS = --enable-silent-rules
+DISTCHECK_CONFIGURE_FLAGS = --enable-silent-rules --enable-hardening --enable-optimizations
 
 bsondocdir = ${docdir}
 bsondoc_DATA = \
