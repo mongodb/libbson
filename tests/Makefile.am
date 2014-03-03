@@ -1,4 +1,4 @@
-noinst_PROGRAMS += test-libbson
+noinst_PROGRAMS = test-libbson
 TEST_PROGS = test-libbson
 
 
