@@ -19,6 +19,7 @@ libbson_1_0_la_SOURCES = \
 
 libbson_1_0_la_LDFLAGS = \
 	$(OPTIMIZE_LDFLAGS) \
+	$(BSON_LT_LDFLAGS) \
 	-no-undefined \
 	-export-symbols-regex "^(bson_|bcon_)" \
 	-rpath $(libdir)
