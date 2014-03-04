@@ -151,6 +151,7 @@ typedef struct
    size_t                buf_size;
    size_t                bytes_read;
    size_t                bytes_parsed;
+   bool                  all_whitespace;
 } bson_json_reader_producer_t;
 
 
@@ -237,6 +238,21 @@ typedef struct
       bson->bson_state = (_state); \
    }
 
+
+static bool
+_bson_json_all_whitespace (const char *utf8)
+{
+   bool all_whitespace = true;
+
+   for (; *utf8; utf8 = bson_utf8_next_char (utf8)) {
+      if (!isspace (bson_utf8_get_char (utf8))) {
+         all_whitespace = false;
+         break;
+      }
+   }
+
+   return all_whitespace;
+}
 
 static void
 _bson_json_read_set_error (bson_json_reader_t *reader,
@@ -884,6 +900,8 @@ _bson_json_read_parse_error (bson_json_reader_t *reader, /* IN */
       } else {
          r = -1;
       }
+   } else if (p->all_whitespace) {
+      r = 0;
    } else {
       if (error) {
          str = yajl_get_error (yh, 1, p->buf + p->bytes_parsed,
@@ -953,6 +971,7 @@ bson_json_reader_read (bson_json_reader_t *reader, /* IN */
    reader->bson.n = -1;
    reader->bson.read_state = BSON_JSON_REGULAR;
    reader->error = error;
+   reader->producer.all_whitespace = true;
 
    for (;; ) {
       if (!read_something &&
@@ -960,11 +979,12 @@ bson_json_reader_read (bson_json_reader_t *reader, /* IN */
           (p->bytes_read > p->bytes_parsed)) {
          r = p->bytes_read - p->bytes_parsed;
       } else {
-         r = p->cb (p->data, p->buf, p->buf_size);
+         r = p->cb (p->data, p->buf, p->buf_size - 1);
 
          if (r) {
             p->bytes_read = r;
             p->bytes_parsed = 0;
+            p->buf[r] = '\0';
          }
       }
 
@@ -981,6 +1001,11 @@ bson_json_reader_read (bson_json_reader_t *reader, /* IN */
          break;
       } else {
          read_something = true;
+
+         if (p->all_whitespace) {
+            p->all_whitespace = _bson_json_all_whitespace (
+               (char *)(p->buf + p->bytes_parsed));
+         }
 
          ys = yajl_parse (yh, p->buf + p->bytes_parsed, r);
 
@@ -1236,7 +1261,6 @@ bson_json_reader_t *
 bson_json_reader_new_from_file (const char   *path,  /* IN */
                                 bson_error_t *error) /* OUT */
 {
-   bson_json_reader_t *reader;
    char errmsg[32];
    int fd;
 
