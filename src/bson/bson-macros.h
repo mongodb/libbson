@@ -55,7 +55,7 @@
 
 #ifndef MIN
 #  ifdef __cplusplus
-#    define MIN(a, b) std::min(a, b)
+#    define MIN(a, b) ( (std::min)(a, b) )
 #  elif defined(_MSC_VER)
 #    define MIN(a, b) ((a) < (b) ? (a) : (b))
 #  else
@@ -70,7 +70,7 @@
 
 #ifndef MAX
 #  ifdef __cplusplus
-#    define MAX(a, b) std::max(a, b)
+#    define MAX(a, b) ( (std::max)(a, b) )
 #  elif defined(_MSC_VER)
 #    define MAX(a, b) ((a) > (b) ? (a) : (b))
 #  else

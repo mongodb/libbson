@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 #if !defined (BSON_INSIDE) && !defined (BSON_COMPILATION)
 #  error "Only <bson.h> can be included directly."
 #endif
@@ -75,8 +74,12 @@ BSON_BEGIN_DECLS
 
 #ifdef _MSC_VER
 # include "bson-stdint-win32.h"
+
+# ifndef __cplusplus
   typedef SSIZE_T ssize_t;
   typedef SIZE_T size_t;
+#endif
+
 # define PRIi32 "d"
 # define PRId32 "d"
 # define PRIu32 "u"
