@@ -2,13 +2,15 @@
 OPTIMIZE_CFLAGS=""
 OPTIMIZE_LDFLAGS=""
 AS_IF([test "$enable_optimizations" != "no"], [
-    # Only enable -flto on GCC.
-    AS_IF([test "$c_compiler" = "gcc"], [
-        check_cc_cxx_flag([-flto], [OPTIMIZE_CFLAGS="$OPTIMIZE_CFLAGS -flto"])
-        check_link_flag([-flto], [OPTIMIZE_LDFLAGS="$OPTIMIZE_LDFLAGS -flto"])
-    ])
     check_link_flag([-Wl,-Bsymbolic], [OPTIMIZE_LDFLAGS="$OPTIMIZE_LDFLAGS -Wl,-Bsymbolic"])
 ])
+dnl AS_IF([test "$enable_optimizations" != "no"], [
+dnl     # Only enable -flto on GCC.
+dnl     AS_IF([test "$c_compiler" = "gcc"], [
+dnl         check_cc_cxx_flag([-flto], [OPTIMIZE_CFLAGS="$OPTIMIZE_CFLAGS -flto"])
+dnl         check_link_flag([-flto], [OPTIMIZE_LDFLAGS="$OPTIMIZE_LDFLAGS -flto"])
+dnl     ])
+dnl ])
 AC_SUBST(OPTIMIZE_CFLAGS)
 AC_SUBST(OPTIMIZE_LDFLAGS)
 
