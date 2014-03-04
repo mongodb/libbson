@@ -18,6 +18,7 @@ COPYING
 depcomp
 .deps
 .dirstamp
+*.exe
 INSTALL
 install-sh
 json-to-bson
