@@ -981,7 +981,7 @@ bson_json_reader_read (bson_json_reader_t *reader, /* IN */
       } else {
          r = p->cb (p->data, p->buf, p->buf_size - 1);
 
-         if (r) {
+         if (r > 0) {
             p->bytes_read = r;
             p->bytes_parsed = 0;
             p->buf[r] = '\0';
