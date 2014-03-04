@@ -37,6 +37,12 @@
 
 
 #ifdef BSON_OS_WIN32
+# if defined(_WIN32_WINNT) && (_WIN32_WINNT < 0x0600)
+#  undef _WIN32_WINNT
+# endif
+# ifndef _WIN32_WINNT
+#  define _WIN32_WINNT 0x0600
+# endif
 # include <winsock2.h>
 #  ifndef WIN32_LEAN_AND_MEAN
 #   define WIN32_LEAN_AND_MEAN
