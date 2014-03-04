@@ -7,6 +7,7 @@ INST_H_FILES += \
 	src/bson/bson-atomic.h \
 	src/bson/bson-clock.h \
 	src/bson/bson-compat.h \
+	src/bson/bson-config.h \
 	src/bson/bson-context.h \
 	src/bson/bson-endian.h \
 	src/bson/bson-error.h \
@@ -21,10 +22,13 @@ INST_H_FILES += \
 	src/bson/bson-string.h \
 	src/bson/bson-types.h \
 	src/bson/bson-utf8.h \
+	src/bson/bson-version.h \
 	src/bson/bson-writer.h
 
 if OS_WIN32
 INST_H_FILES += src/bson/bson-stdint-win32.h
+else
+INST_H_FILES += src/bson/bson-stdint.h
 endif
 
 NOINST_H_FILES += \
