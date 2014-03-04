@@ -2,11 +2,6 @@ EXTRA_DIST =
 CLEANFILES =
 DISTCLEANFILES =
 
-AM_CPPFLAGS = \
-	-DBSON_COMPILATION \
-	-D_BSD_SOURCE \
-	-D_GNUC_SOURCE
-
 include src/Makefile.am
 include tests/Makefile.am
 include examples/Makefile.am
