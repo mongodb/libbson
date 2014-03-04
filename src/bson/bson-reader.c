@@ -789,7 +789,6 @@ bson_reader_t *
 bson_reader_new_from_file (const char   *path,  /* IN */
                            bson_error_t *error) /* OUT */
 {
-   bson_reader_t *reader;
    char errmsg[32];
    int fd;
 
