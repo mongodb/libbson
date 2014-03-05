@@ -28,6 +28,13 @@ set (BSON_WITH_OID32_PT 0)
 set (BSON_WITH_OID64_PT 0)
 set (BSON_PTHREAD_ONCE_INIT_NEEDS_BRACES 0)
 
+#librt needed on linux for clock_gettime
+find_library(RT_LIBRARY rt)
+if (RT_LIBRARY)
+   #set required libraries for CHECK_FUNCTION_EXISTS
+   set(CMAKE_REQUIRED_LIBRARIES ${RT_LIBRARY})
+endif()
+
 if (MSVC)
    set (BSON_OS 2)
    set (BSON_HAVE_CLOCK_GETTIME 0)
@@ -139,6 +146,11 @@ set_target_properties(bson_static PROPERTIES VERSION ${BSON_VERSION} SOVERSION $
 
 set_target_properties(bson_shared PROPERTIES OUTPUT_NAME "bson-${BSON_API_VERSION}" PREFIX "lib")
 set_target_properties(bson_static PROPERTIES OUTPUT_NAME "bson-static-${BSON_API_VERSION}")
+
+if (RT_LIBRARY)
+    target_link_libraries (bson_shared ${RT_LIBRARY})
+    target_link_libraries (bson_static ${RT_LIBRARY})
+endif()
 
 if (UNIX)
     target_link_libraries (bson_shared ${CMAKE_THREAD_LIBS_INIT})
