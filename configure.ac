@@ -36,6 +36,7 @@ BSON_LT_LDFLAGS="-version-info $BSON_LT_VERSION"
 m4_include([build/autotools/ReadCommandLineArguments.m4])
 m4_include([build/autotools/FindDependencies.m4])
 m4_include([build/autotools/AutoHarden.m4])
+m4_include([build/autotools/MaintainerFlags.m4])
 m4_include([build/autotools/Optimizations.m4])
 m4_include([build/autotools/Python.m4])
 

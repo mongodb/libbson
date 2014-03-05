@@ -43,3 +43,10 @@ AC_ARG_ENABLE(debug_symbols,
     ])
 AC_MSG_RESULT([$enable_debug_symbols])
 
+# use strict compiler flags only on development releases
+m4_define([maintainer_flags_default], [m4_if(m4_eval(bson_minor_version % 2), [1], [yes], [no])])
+AC_ARG_ENABLE([maintainer-flags],
+              [AS_HELP_STRING([--enable-maintainer-flags=@<:@no/yes@:>@],
+                              [Use strict compiler flags @<:@default=]maintainer_flags_default[@:>@])],
+              [],
+              [enable_maintainer_flags=maintainer_flags_default])
