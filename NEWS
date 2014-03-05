@@ -1,3 +1,56 @@
+Libbson 0.6.0
+=============
+
+Many changes have gone into this release!
+
+TL;DR
+
+ * C99 types (from C89).
+ * JSON parsing.
+ * Lots of Operating System support, including Windows.
+ * Parallel Test Suite.
+ * Revamped build system.
+ * A couple ABI breaks.
+
+First off, 0.6.0 has gone through a significant amount of build system cleanup.
+This should simplify using libbson as a submodule for those that wish to do so.
+For example, the mongo-c-driver now does this using autotools.
+
+Windows Vista and higher is now supported as a build target through the use of
+cmake. See README.md for the instructions. Other platforms should continue to
+use autotools.
+
+The test suite has been improved and more tests added. We now generate random
+seeds on every run to help catch more errors with additional fuzzing passes.
+By default, the test suite will run all tests in parallel with subprocesses.
+This should speed up execution of `make test' for contributors.
+
+bson_string_t went through an ABI break to support power-of-two growth.
+
+JSON parsing has been added through the bson_json_reader_t type. You can also
+now use bson_init_from_json() for a simplified interface.
+
+Types were revamped to appear to be using C99 types. If C99 types are
+available, they will be used. If not, they will be emulated. This means you
+can just go on using uint64_t and similar. We even use bool now.
+
+Many functions have been made portable to deal with inconsistencies with Win32.
+
+This release has been tested on the following operating systems:
+
+ * RedHat Enterprise 5, 6, and 7 beta.
+ * CentOS 6.5
+ * Ubuntu 12.04 LTS
+ * Fedora 20
+ * Windows 7
+ * FreeBSD 10
+ * DragonFly BSD
+ * Solaris 11
+ * SmartOS
+ * mingw64
+
+Thanks again and enjoy using libbson!
+
 Libbson 0.4.0
 =============
 
