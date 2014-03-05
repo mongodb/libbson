@@ -109,6 +109,7 @@ set (HEADERS
    ${SOURCE_DIR}/src/bson/bson-error.h
    ${SOURCE_DIR}/src/bson/bson.h
    ${SOURCE_DIR}/src/bson/bson-iter.h
+   ${SOURCE_DIR}/src/bson/bson-json.h
    ${SOURCE_DIR}/src/bson/bson-keys.h
    ${SOURCE_DIR}/src/bson/bson-macros.h
    ${SOURCE_DIR}/src/bson/bson-md5.h
