@@ -198,3 +198,16 @@ install(
   FILES ${HEADERS}
   DESTINATION "include/libbson-${BSON_API_VERSION}"
 )
+
+set(VERSION "${BSON_VERSION}")
+set(prefix "${CMAKE_INSTALL_PREFIX}")
+set(libdir "\${prefix}/lib")
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/libbson-1.0.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/libbson-1.0.pc
+@ONLY)
+
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/libbson-1.0.pc
+    DESTINATION lib/pkgconfig
+)
