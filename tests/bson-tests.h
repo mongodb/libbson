@@ -58,53 +58,44 @@ BSON_BEGIN_DECLS
 #endif
 
 
-static BSON_INLINE void
-bson_eq_bson (bson_t *bson,
-              bson_t *expected)
-{
-   char *bson_json, *expected_json;
-   const uint8_t *bson_data = bson_get_data (bson);
-   const uint8_t *expected_data = bson_get_data (expected);
-   int unequal;
-   unsigned o;
-   int off = -1;
-
-   unequal = (expected->len != bson->len)
-             || memcmp (bson_get_data (expected), bson_get_data (
-                           bson), expected->len);
-
-   if (unequal) {
-      bson_json = bson_as_json (bson, NULL);
-      expected_json = bson_as_json (expected, NULL);
-
-      for (o = 0; o < bson->len && o < expected->len; o++) {
-         if (bson_data [o] != expected_data [o]) {
-            off = o;
-            break;
-         }
-      }
-
-      if (off == -1) {
-         off = MAX (expected->len, bson->len) - 1;
-      }
-
-      fprintf (stderr, "bson objects unequal (byte %u):\n(%s)\n(%s)\n",
-               off, bson_json, expected_json);
-
-      {
-         int fd1 = bson_open ("failure.bad.bson", O_RDWR | O_CREAT, 0640);
-         int fd2 = bson_open ("failure.expected.bson", O_RDWR | O_CREAT, 0640);
-         assert (fd1 != -1);
-         assert (fd2 != -1);
-         assert (bson->len == write (fd1, bson_data, bson->len));
-         assert (expected->len == write (fd2, expected_data, expected->len));
-         close (fd1);
-         close (fd2);
-      }
-
-      assert (0);
-   }
-}
+#define bson_eq_bson(bson,expected) \
+   do { \
+      char *bson_json, *expected_json; \
+      const uint8_t *bson_data = bson_get_data ((bson)); \
+      const uint8_t *expected_data = bson_get_data ((expected)); \
+      int unequal; \
+      unsigned o; \
+      int off = -1; \
+      unequal = ((expected)->len != (bson)->len) \
+                || memcmp (bson_get_data ((expected)), bson_get_data ( \
+                              (bson)), (expected)->len); \
+      if (unequal) { \
+         bson_json = bson_as_json (bson, NULL); \
+         expected_json = bson_as_json ((expected), NULL); \
+         for (o = 0; o < (bson)->len && o < (expected)->len; o++) { \
+            if (bson_data [o] != expected_data [o]) { \
+               off = o; \
+               break; \
+            } \
+         } \
+         if (off == -1) { \
+            off = MAX ((expected)->len, (bson)->len) - 1; \
+         } \
+         fprintf (stderr, "bson objects unequal (byte %u):\n(%s)\n(%s)\n", \
+                  off, bson_json, expected_json); \
+         { \
+            int fd1 = bson_open ("failure.bad.bson", O_RDWR | O_CREAT, 0640); \
+            int fd2 = bson_open ("failure.expected.bson", O_RDWR | O_CREAT, 0640); \
+            assert (fd1 != -1); \
+            assert (fd2 != -1); \
+            assert ((bson)->len == write (fd1, bson_data, (bson)->len)); \
+            assert ((expected)->len == write (fd2, expected_data, (expected)->len)); \
+            close (fd1); \
+            close (fd2); \
+         } \
+         assert (0); \
+      } \
+   } while (0)
 
 
 static BSON_INLINE void
