@@ -34,7 +34,6 @@ main (int   argc,
    bson_error_t error;
    const char *filename;
    bson_t *b_out;
-   int fd;
    int i;
    int b;
 
@@ -58,7 +57,6 @@ main (int   argc,
        * Open the filename provided in command line arguments.
        */
       if (0 == strcmp (filename, "-")) {
-         fd = 0;
          reader = bson_json_reader_new_from_fd (STDIN_FILENO, false);
       } else {
          if (!(reader = bson_json_reader_new_from_file (filename, &error))) {
