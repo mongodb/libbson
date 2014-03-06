@@ -25,15 +25,7 @@
 
 
 #include "bson-config.h"
-
-
-#if BSON_OS == 1
-# define BSON_OS_UNIX
-#elif BSON_OS == 2
-# define BSON_OS_WIN32
-#else
-# error "Unknown operating system."
-#endif
+#include "bson-macros.h"
 
 
 #ifdef BSON_OS_WIN32

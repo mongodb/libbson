@@ -34,6 +34,15 @@
 #include "bson-config.h"
 
 
+#if BSON_OS == 1
+# define BSON_OS_UNIX
+#elif BSON_OS == 2
+# define BSON_OS_WIN32
+#else
+# error "Unknown operating system."
+#endif
+
+
 #ifdef __cplusplus
 #  define BSON_BEGIN_DECLS extern "C" {
 #  define BSON_END_DECLS   }
@@ -125,7 +134,7 @@
 #endif
 
 
-#if defined(__GNUC__) && (__GNUC__ >= 4) && ! defined(BSON_OS_WIN32)
+#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(_WIN32)
 #  define BSON_GNUC_NULL_TERMINATED __attribute__((sentinel))
 #  define BSON_GNUC_INTERNAL __attribute__((visibility ("hidden")))
 #else
