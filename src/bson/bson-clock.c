@@ -136,6 +136,7 @@ bson_get_monotonic_time (void)
 
    return mach_absolute_time () * ratio;
 #elif defined(_WIN32)
+   /* Despite it's name, this is in milliseconds! */
    int64_t ticks = GetTickCount64 ();
    return (ticks * 1000L);
 #else
