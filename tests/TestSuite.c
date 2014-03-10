@@ -193,21 +193,22 @@ static void
 TestSuite_SeedRand (TestSuite *suite, /* IN */
                     Test *test)       /* IN */
 {
-   int seed;
-
 #ifndef BSON_OS_WIN32
    int fd = open ("/dev/urandom", O_RDONLY);
    int n_read;
+   unsigned seed;
    if (fd != -1) {
       n_read = read (fd, &seed, 4);
       assert (n_read == 4);
       close (fd);
       test->seed = seed;
       return;
+   } else {
+      test->seed = (unsigned)time (NULL) * (unsigned)getpid ();
    }
+#else
+   test->seed = (unsigned)time (NULL);
 #endif
-
-   test->seed = time (NULL) * (int)getpid ();
 }
 
 
@@ -240,7 +241,13 @@ TestSuite_Init (TestSuite *suite,
          }
          filename = argv [++i];
          if (0 != strcmp ("-", filename)) {
+#ifdef _WIN32
+            if (0 != fopen_s (&suite->outfile, filename, "w")) {
+               suite->outfile = NULL;
+            }
+#else
             suite->outfile = fopen (filename, "w");
+#endif
             if (!suite->outfile) {
                fprintf (stderr, "Failed to open log file: %s\n", filename);
             }

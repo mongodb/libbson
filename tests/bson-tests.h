@@ -48,13 +48,30 @@ BSON_BEGIN_DECLS
 
 
 #ifdef BSON_OS_WIN32
-# define bson_open(f,fl,...) _open((f),(fl)|_O_BINARY,##__VA_ARGS__)
+#include <stdarg.h>
+#include <share.h>
+static __inline int
+bson_open (const char *filename,
+           int flags,
+           ...)
+{
+   int fd = -1;
+   int mode = 0;
+
+   if (_sopen_s (&fd, filename, flags|_O_BINARY, _SH_DENYNO, _S_IREAD | _S_IWRITE) == NO_ERROR) {
+      return fd;
+   }
+
+   return -1;
+}
 # define bson_close _close
 # define bson_read(f,b,c) ((ssize_t)_read((f), (b), (int)(c)))
+# define bson_write _write
 #else
 # define bson_open open
 # define bson_read read
 # define bson_close close
+# define bson_write write
 #endif
 
 
@@ -88,10 +105,10 @@ BSON_BEGIN_DECLS
             int fd2 = bson_open ("failure.expected.bson", O_RDWR | O_CREAT, 0640); \
             assert (fd1 != -1); \
             assert (fd2 != -1); \
-            assert ((bson)->len == write (fd1, bson_data, (bson)->len)); \
-            assert ((expected)->len == write (fd2, expected_data, (expected)->len)); \
-            close (fd1); \
-            close (fd2); \
+            assert ((bson)->len == bson_write (fd1, bson_data, (bson)->len)); \
+            assert ((expected)->len == bson_write (fd2, expected_data, (expected)->len)); \
+            bson_close (fd1); \
+            bson_close (fd2); \
          } \
          assert (0); \
       } \

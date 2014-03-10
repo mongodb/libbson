@@ -20,6 +20,7 @@
 #include <fcntl.h>
 #ifdef BSON_OS_WIN32
 # include <io.h>
+# include <share.h>
 #endif
 #include <stdlib.h>
 #include <string.h>
@@ -217,7 +218,11 @@ _bson_reader_handle_fd_destroy (void *handle) /* IN */
 
    if (fd) {
       if ((fd->fd != -1) && fd->do_close) {
+#ifdef _WIN32
+         _close (fd->fd);
+#else
          close (fd->fd);
+#endif
       }
       bson_free (fd);
    }
@@ -795,7 +800,9 @@ bson_reader_new_from_file (const char   *path,  /* IN */
    bson_return_val_if_fail (path, NULL);
 
 #ifdef BSON_OS_WIN32
-   fd = _open (path, (_O_RDONLY | _O_BINARY));
+   if (_sopen_s (&fd, path, (_O_RDONLY | _O_BINARY), _SH_DENYNO, 0) != 0) {
+      fd = -1;
+   }
 #else
    fd = open (path, O_RDONLY);
 #endif
