@@ -74,8 +74,11 @@ BSON_BEGIN_DECLS
 #ifdef _MSC_VER
 # include "bson-stdint-win32.h"
 # ifndef __cplusplus
-  typedef SSIZE_T ssize_t;
-  typedef SIZE_T size_t;
+   /* benign redefinition of type */
+#  pragma warning (disable :4142)
+    typedef SSIZE_T ssize_t;
+    typedef SIZE_T size_t;
+#  pragma warning (default :4142)
 # endif
 # define PRIi32 "d"
 # define PRId32 "d"
