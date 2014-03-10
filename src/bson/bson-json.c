@@ -30,6 +30,7 @@
 
 #ifdef BSON_OS_WIN32
 # include <io.h>
+# include <share.h>
 #endif
 
 
@@ -486,10 +487,18 @@ _bson_json_read_string (void                *_ctx, /* IN */
       case BSON_JSON_LF_TYPE:
          bson->bson_type_data.binary.has_subtype = true;
 
-         if (sscanf (val_w_null, "%02x",
+#ifdef _WIN32
+# define SSCANF sscanf_s
+#else
+# define SSCANF sscanf
+#endif
+
+         if (SSCANF (val_w_null, "%02x",
                      &bson->bson_type_data.binary.type) != 1) {
             goto BAD_PARSE;
          }
+
+#undef SSCANF
 
          break;
       case BSON_JSON_LF_BINARY: {
@@ -1206,7 +1215,11 @@ _bson_json_reader_handle_fd_destroy (void *handle) /* IN */
 
    if (fd) {
       if ((fd->fd != -1) && fd->do_close) {
+#ifdef _WIN32
+		 _close(fd->fd);
+#else
          close (fd->fd);
+#endif
       }
       bson_free (fd);
    }
@@ -1262,12 +1275,12 @@ bson_json_reader_new_from_file (const char   *path,  /* IN */
                                 bson_error_t *error) /* OUT */
 {
    char errmsg[32];
-   int fd;
+   int fd = -1;
 
    bson_return_val_if_fail (path, NULL);
 
 #ifdef BSON_OS_WIN32
-   fd = _open (path, (_O_RDONLY | _O_BINARY));
+   fd = _sopen_s (&fd, path, (_O_RDONLY | _O_BINARY), _SH_DENYNO, _S_IREAD);
 #else
    fd = open (path, O_RDONLY);
 #endif
