@@ -1,4 +1,4 @@
-# libbson
+# Libbson
 
 libbson is a library providing useful routines related to building, parsing,
 and iterating BSON documents.  It is a useful base for those wanting to write
@@ -6,14 +6,14 @@ high-performance C extensions to higher level languages such as python, ruby,
 or perl.
 
 
-# Building
+## Building
 
 Libbson tries to support a variety of operation systems and architectures.
 The following are known to work. If your platform is not listed here, it may
 still work, we simply haven't tested it. If you would like us to add your
 platform here, we would be happy to hear from you.
 
-## Supported Operating Systems
+### Supported Operating Systems
 
  * RHEL/CentOS 5, 6, 7beta
  * SLES 11 SP3
@@ -24,41 +24,41 @@ platform here, we would be happy to hear from you.
  * FreeBSD 10
  * Windows Vista, 7, 8
 
-## Supported Architectures
+### Supported Architectures
 
  * x86
  * x86_64/amd64
  * SPARC
  * ARM
 
-## Dependencies
+### Dependencies
 
-### Fedora / RedHat Enterprise / CentOS
+#### Fedora / RedHat Enterprise / CentOS
 
 ```sh
 yum install git automake autoconf libtool gcc
 ```
 
-### Debian / Ubuntu
+#### Debian / Ubuntu
 
 ```sh
 apt-get install git-core automake autoconf libtool gcc
 ```
 
-### FreeBSD
+#### FreeBSD
 
 ```sh
 pkg install git automake autoconf libtool gcc pkgconf
 ```
 
-### SmartOS
+#### SmartOS
 
 ```sh
 pkgin install git automake autoconf libtool gcc47 gmake pkg-config
 export PATH=/opt/local/gcc47/bin:$PATH
 ```
 
-### Windows Vista and Higher
+#### Windows Vista and Higher
 
 Builds on Windows Vista and Higher require cmake to build Visual Studio project files.
 Alternatively, you can use cygwin or mingw with the automake based build.
@@ -78,7 +78,7 @@ sudo yum install mingw64-gcc automake autoconf libtool
 ./configure --host=x86_64-w64-mingw32
 ```
 
-## From Git
+### From Git
 
 ```sh
 $ git clone git://github.com/mongodb/libbson.git
@@ -94,7 +94,7 @@ You can run the unit tests with
 make test
 ```
 
-## From Tarball
+### From Tarball
 
 ```sh
 tar xzf libbson-$ver.tar.gz
@@ -103,7 +103,7 @@ make
 sudo make install
 ```
 
-# Configuration Options
+## Configuration Options
 
 You may be interested in the following options for `./configure`.
 These are not availble when using the alternate CMake build system.
@@ -135,12 +135,12 @@ To get the include path and libraries appropriate for your system.
 gcc my_program.c $(pkg-config --cflags --libs libbson-1.0)
 ```
 
-# Examples
+## Examples
 
 See the `examples/` directory for how to use the libbson library in your
 application.
 
-# Documentation
+## Documentation
 
 See the `doc/` directory for documentation on individual types.
 
