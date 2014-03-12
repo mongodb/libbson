@@ -81,11 +81,11 @@ sudo yum install mingw64-gcc automake autoconf libtool
 ### From Git
 
 ```sh
-$ git clone git://github.com/mongodb/libbson.git
-$ cd libbson/
-$ ./autogen.sh
-$ make
-$ sudo make install
+git clone git://github.com/mongodb/libbson.git
+cd libbson/
+./autogen.sh
+make
+sudo make install
 ```
 
 You can run the unit tests with
