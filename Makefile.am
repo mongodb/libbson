@@ -7,6 +7,9 @@ include tests/Makefile.am
 include examples/Makefile.am
 include doc/Makefile.am
 
+# for various extra dist
+include build/cmake/Makefile.am
+
 ACLOCAL_AMFLAGS = -I build/autotools/m4 ${ACLOCAL_FLAGS}
 DISTCHECK_CONFIGURE_FLAGS = --enable-silent-rules --enable-hardening --enable-optimizations
 
@@ -17,6 +20,8 @@ bsondoc_DATA = \
 	README
 
 EXTRA_DIST += $(bsondoc_DATA)
+
+EXTRA_DIST += CMakeLists.txt
 
 dist-hook:
 	@if test -d "$(srcdir)/.git"; then                              \
