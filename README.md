@@ -22,6 +22,11 @@ platform here, we would be happy to hear from you.
  * FreeBSD 10
  * Windows Vista, 7, 8
 
+ * x86
+ * x86_64/amd64
+ * SPARC
+ * ARM
+
 ## Dependencies
 
 ### Fedora / RedHat Enterprise / CentOS
