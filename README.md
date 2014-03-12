@@ -43,13 +43,15 @@ Alternatively, you can use cygwin or mingw with the automake based build.
 ```sh
 git clone git://github.com/mongodb/libbson.git
 cd libbson
-cmake.exe .
+cmake.exe -G "Visual Studio 10 Win64" "-DCMAKE_INSTALL_PREFIX=C:\install\path"
 msbuild.exe ALL_BUILD.vcxproj
+msbuild.exe INSTALL.vcxproj
 ```
 
 For the adventurous, you can cross-compile for Windows from Fedora easily using mingw.
 
 ```sh
+sudo yum install mingw64-gcc automake autoconf libtool
 ./configure --host=x86_64-w64-mingw32
 ```
 
@@ -73,29 +75,28 @@ make test
 
 ```sh
 tar xzf libbson-$ver.tar.gz
-./configure --enable-silent-rules
+./configure
 make
 sudo make install
 ```
 
-# Optimizations
+# Configuration Options
 
-You may want to enable optimizations in libbson.
-You can do this during configure with:
+You may be interested in the following options for `./configure`.
+These are not availble when using the alternate CMake build system.
 
-```sh
-./configure --enable-optimizations
 ```
+--help                    Show all possible help options.
+                          There are many more than those displayed here.
 
-# Hardening
-
-You may want to enable stack protector and other binary hardening features.
-You can do this with:
-
-```sh
-./configure --enable-hardening
+--enable-optimizations    Enable various compile and link optimizations.
+--enable-debug            Enable debugging features.
+--enable-debug-symbols    Link with debug symbols in tact.
+--enable-hardening        Enable stack protector and other hardening features.
+--enable-silent-rules     Force silent rules like the Linux kernel.
+--enable-coverage         Compile with gcov support.
+--enable-static           Build static archives (.a).
 ```
-
 
 # Developing using libbson
 
