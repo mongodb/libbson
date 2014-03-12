@@ -13,6 +13,8 @@ The following are known to work. If your platform is not listed here, it may
 still work, we simply haven't tested it. If you would like us to add your
 platform here, we would be happy to hear from you.
 
+## Supported Operating Systems
+
  * RHEL/CentOS 5, 6, 7beta
  * SLES 11 SP3
  * Ubuntu 12.04 LTS
@@ -21,6 +23,8 @@ platform here, we would be happy to hear from you.
  * Solaris
  * FreeBSD 10
  * Windows Vista, 7, 8
+
+## Supported Architectures
 
  * x86
  * x86_64/amd64
