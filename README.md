@@ -8,6 +8,20 @@ or perl.
 
 # Building
 
+Libbson tries to support a variety of operation systems and architectures.
+The following are known to work. If your platform is not listed here, it may
+still work, we simply haven't tested it. If you would like us to add your
+platform here, we would be happy to hear from you.
+
+ * RHEL/CentOS 5, 6, 7beta
+ * SLES 11 SP3
+ * Ubuntu 12.04 LTS
+ * Debian 7
+ * SmartOS
+ * Solaris
+ * FreeBSD 10
+ * Windows Vista, 7, 8
+
 ## Dependencies
 
 ### Fedora / RedHat Enterprise / CentOS
