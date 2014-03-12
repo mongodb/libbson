@@ -1,3 +1,21 @@
+Libbson 0.6.2
+=============
+
+A new Libbson release is already here as a follow up to the 0.6.0 release.
+
+This release includes a few build and installation fixes. In particular,
+
+ * Windows build fixes
+ * CMake build fixes
+ * C++ build fixes.
+
+The monotonic clock is now more accurately calculated on Windows as well.
+If you'd like to build on Windows, check out the section in README.md for
+information on how to do so.
+
+Happy hacking!
+
+
 Libbson 0.6.0
 =============
 
