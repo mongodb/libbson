@@ -51,6 +51,8 @@ endif
 
 EXTRA_DIST += \
 	tests/bson-tests.h \
+	tests/binary/binary_deprecated.bson \
+	tests/binary/codewscope.bson \
 	tests/binary/dollarquery.bson \
 	tests/binary/dotkey.bson \
 	tests/binary/dotquery.bson \
