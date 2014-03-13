@@ -70,6 +70,24 @@ BSON_BEGIN_DECLS
 
 
 /**
+ * bson_clear:
+ *
+ * Easily free a bson document and set it to NULL. Use like:
+ *
+ * bson_t *doc = bson_new();
+ * bson_clear (&doc);
+ * assert (doc == NULL);
+ */
+#define bson_clear(bptr) \
+   do { \
+      if (*(bptr)) { \
+         bson_destroy (*(bptr)); \
+         *(bptr) = NULL; \
+      } \
+   } while (0)
+
+
+/**
  * BSON_MAX_SIZE:
  *
  * The maximum size in bytes of a BSON document.
