@@ -22,6 +22,11 @@
 #include "TestSuite.h"
 
 
+#ifndef BINARY_DIR
+# define BINARY_DIR "tests/binary"
+#endif
+
+
 static void
 test_reader_from_data (void)
 {
@@ -120,7 +125,7 @@ test_reader_from_handle (void)
    bool eof;
    int fd;
 
-   fd  = bson_open("tests/binary/stream.bson", O_RDONLY);
+   fd  = bson_open(BINARY_DIR"/stream.bson", O_RDONLY);
    assert(-1 != fd);
 
    reader = bson_reader_new_from_handle ((void *)&fd,
@@ -153,7 +158,7 @@ test_reader_tell (void)
    bool eof;
    int fd;
 
-   fd  = bson_open("tests/binary/stream.bson", O_RDONLY);
+   fd  = bson_open(BINARY_DIR"/stream.bson", O_RDONLY);
    assert(-1 != fd);
 
    reader = bson_reader_new_from_handle ((void *)&fd,
@@ -192,7 +197,7 @@ test_reader_from_handle_corrupt (void)
    bool eof;
    int fd;
 
-   fd  = bson_open("tests/binary/stream_corrupt.bson", O_RDONLY);
+   fd  = bson_open(BINARY_DIR"/stream_corrupt.bson", O_RDONLY);
    assert(-1 != fd);
 
    reader = bson_reader_new_from_handle ((void *)&fd,
@@ -220,7 +225,7 @@ test_reader_grow_buffer (void)
    bool eof = false;
    int fd;
 
-   fd  = bson_open("tests/binary/readergrow.bson", O_RDONLY);
+   fd  = bson_open(BINARY_DIR"/readergrow.bson", O_RDONLY);
    assert(-1 != fd);
 
    reader = bson_reader_new_from_handle ((void *)&fd,

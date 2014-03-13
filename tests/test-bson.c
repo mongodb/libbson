@@ -26,6 +26,10 @@
 #include "bson-tests.h"
 #include "TestSuite.h"
 
+#ifndef BINARY_DIR
+# define BINARY_DIR "tests/binary"
+#endif
+
 
 static bson_t *
 get_bson (const char *filename)
@@ -36,7 +40,7 @@ get_bson (const char *filename)
    char real_filename[256];
    int fd;
 
-   bson_snprintf(real_filename, sizeof real_filename, "tests/binary/%s", filename);
+   bson_snprintf(real_filename, sizeof real_filename, BINARY_DIR"/%s", filename);
    real_filename[sizeof real_filename - 1] = '\0';
 
    if (-1 == (fd = bson_open(real_filename, O_RDONLY))) {

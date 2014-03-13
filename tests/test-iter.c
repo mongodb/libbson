@@ -23,6 +23,10 @@
 #include "bson-tests.h"
 #include "TestSuite.h"
 
+#ifndef BINARY_DIR
+# define BINARY_DIR "tests/binary"
+#endif
+
 
 #define FUZZ_N_PASSES 100000
 
@@ -125,10 +129,10 @@ test_bson_iter_overflow (void)
    bson_iter_t iter;
    bson_t *b;
 
-   b = get_bson("tests/binary/overflow1.bson");
+   b = get_bson(BINARY_DIR"/overflow1.bson");
    assert(!b);
 
-   b = get_bson("tests/binary/overflow2.bson");
+   b = get_bson(BINARY_DIR"/overflow2.bson");
    assert(b);
    assert(bson_iter_init(&iter, b));
    assert(!bson_iter_next(&iter));
@@ -145,7 +149,7 @@ test_bson_iter_binary_deprecated (void)
    bson_iter_t iter;
    bson_t * b;
 
-   b = get_bson("tests/binary/binary_deprecated.bson");
+   b = get_bson(BINARY_DIR"/binary_deprecated.bson");
    assert(b);
 
    assert(bson_iter_init(&iter, b));
@@ -164,7 +168,7 @@ test_bson_iter_trailing_null (void)
    bson_iter_t iter;
    bson_t *b;
 
-   b = get_bson("tests/binary/trailingnull.bson");
+   b = get_bson(BINARY_DIR"/trailingnull.bson");
    assert(b);
    assert(bson_iter_init(&iter, b));
    assert(!bson_iter_next(&iter));
@@ -440,7 +444,7 @@ test_bson_iter_find_descendant (void)
    bson_iter_t desc;
    bson_t *b;
 
-   b = get_bson("tests/binary/dotkey.bson");
+   b = get_bson(BINARY_DIR"/dotkey.bson");
    assert(bson_iter_init(&iter, b));
    assert(bson_iter_find_descendant(&iter, "a.b.c.0", &desc));
    assert(BSON_ITER_HOLDS_INT32(&desc));

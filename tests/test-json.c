@@ -7,6 +7,10 @@
 #include "bson-tests.h"
 #include "TestSuite.h"
 
+#ifndef BINARY_DIR
+# define BINARY_DIR "tests/binary"
+#endif
+
 static void
 test_bson_as_json (void)
 {
@@ -155,7 +159,7 @@ test_bson_as_json_stack_overflow (void)
 
    buf = bson_malloc0(buflen);
 
-   fd = bson_open("tests/binary/stackoverflow.bson", O_RDONLY);
+   fd = bson_open(BINARY_DIR"/stackoverflow.bson", O_RDONLY);
    BSON_ASSERT(-1 != fd);
 
    r = bson_read(fd, buf, buflen);
@@ -188,7 +192,7 @@ test_bson_corrupt (void)
 
    buf = bson_malloc0(buflen);
 
-   fd = bson_open("tests/binary/test55.bson", O_RDONLY);
+   fd = bson_open(BINARY_DIR"/test55.bson", O_RDONLY);
    BSON_ASSERT(-1 != fd);
 
    r = bson_read(fd, buf, buflen);
@@ -216,7 +220,7 @@ test_bson_corrupt_utf8 (void)
 
    buf = bson_malloc0(buflen);
 
-   fd = bson_open("tests/binary/test56.bson", O_RDONLY);
+   fd = bson_open(BINARY_DIR"/test56.bson", O_RDONLY);
    BSON_ASSERT(-1 != fd);
 
    r = bson_read(fd, buf, buflen);
@@ -245,7 +249,7 @@ test_bson_corrupt_binary (void)
 
    buf = bson_malloc0(buflen);
 
-   fd = bson_open("tests/binary/test57.bson", O_RDONLY);
+   fd = bson_open(BINARY_DIR"/test57.bson", O_RDONLY);
    BSON_ASSERT(-1 != fd);
 
    r = bson_read(fd, buf, buflen);
