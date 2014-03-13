@@ -47,7 +47,7 @@ if ENABLE_PYTHON
 	@ LD_LIBRARY_PATH=.libs DYLD_LIBRARY_PATH=.libs PYTHONPATH=.libs ./tests/test_cbson.py
 endif
 if OS_LINUX
-	$(top_srcdir)/tests/abicheck.sh "$(top_srcdir)/src/libbson.symbols"
+	@ $(srcdir)/tests/abicheck.sh "$(srcdir)/src/libbson.symbols"
 endif
 
 
