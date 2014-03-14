@@ -18,8 +18,15 @@ cbson_la_SOURCES = \
 	src/bindings/python/time64_limits.h
 
 cbson_la_LIBADD = \
-	libbson-1.0.la \
+	libbson.la \
+	libyajl.la \
 	-l$(PYTHON_LIB)
+
+cbson_la_CFLAGS = \
+	-I$(top_srcdir)/src/bson \
+	-I$(top_builddir)/src/bson \
+	$(OPTIMIZE_CFLAGS) \
+	$(MAINTAINER_CFLAGS)
 
 cbson_la_LDFLAGS = -module
 

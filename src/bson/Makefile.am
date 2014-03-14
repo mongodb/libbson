@@ -1,7 +1,9 @@
+noinst_LTLIBRARIES += libbson.la
+
 headerdir = $(prefix)/include/libbson-@BSON_API_VERSION@
 header_DATA = $(INST_H_FILES)
 
-INST_H_FILES += \
+INST_H_FILES = \
 	src/bson/bcon.h \
 	src/bson/bson.h \
 	src/bson/bson-atomic.h \
@@ -31,7 +33,7 @@ else
 INST_H_FILES += src/bson/bson-stdint.h
 endif
 
-NOINST_H_FILES += \
+NOINST_H_FILES = \
 	src/bson/b64_ntop.h \
 	src/bson/b64_pton.h \
 	src/bson/bson-private.h \
@@ -39,7 +41,26 @@ NOINST_H_FILES += \
 	src/bson/bson-thread-private.h
 
 
-libbson_1_0_la_SOURCES += \
+libbson_la_CPPFLAGS = \
+	-DBSON_COMPILATION \
+	-I$(top_srcdir)/src \
+	-I$(top_srcdir)/src/bson \
+	-I$(top_srcdir)/src/yajl \
+	-I$(top_builddir)/src/bson
+
+if !ENABLE_DEBUG
+libbson_la_CPPFLAGS += \
+	-DBSON_DISABLE_ASSERT \
+	-DBSON_DISABLE_CHECKS
+endif
+
+libbson_la_CFLAGS = \
+	$(MAINTAINER_CFLAGS) \
+	$(OPTIMIZE_LDFLAGS)
+
+libbson_la_SOURCES = \
+	$(INST_H_FILES) \
+	$(NOINST_H_FILES) \
 	src/bson/bcon.c \
 	src/bson/bson.c \
 	src/bson/bson-clock.c \
@@ -55,6 +76,14 @@ libbson_1_0_la_SOURCES += \
 	src/bson/bson-string.c \
 	src/bson/bson-utf8.c \
 	src/bson/bson-writer.c
+
+libbson_la_LIBADD =
+
+if !OS_WIN32
+libbson_la_LIBADD += $(PTHREAD_LIB)
+else
+libbson_la_LIBADD += -lws2_32
+endif
 
 EXTRA_DIST += \
 	src/bson/bson-config.h.in \

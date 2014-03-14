@@ -19,7 +19,7 @@
 #define CBSON_UTIL_H
 
 
-#include <bson/bson.h>
+#include <bson.h>
 
 #ifdef _POSIX_C_SOURCE
 #undef _POSIX_C_SOURCE

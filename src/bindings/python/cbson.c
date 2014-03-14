@@ -18,7 +18,7 @@
 #include <Python.h>
 #include <datetime.h>
 
-#include <bson/bson.h>
+#include <bson.h>
 
 #include "cbson-dbref.h"
 #include "cbson-oid.h"
