@@ -119,6 +119,23 @@ def bson_decode_with_id():
 def cbson_decode_with_id():
     cbson.loads(DOC_WITH_ID)
 
+
+import bson.json_util
+
+def bson_to_json():
+    bson.json_util.dumps(bson.BSON(_25X_BSON).decode())
+
+def cbson_to_json():
+    cbson.as_json(_25X_BSON)
+
+_from_json_doc = bson.json_util.dumps(bson.BSON(_25X_BSON).decode())
+
+def bson_from_json():
+    return bson.json_util.loads(_from_json_doc)
+
+def cbson_from_json():
+    return cbson.from_json(_from_json_doc)
+
 if __name__ == '__main__':
     compare_modules('Generate ObjectId', bson_generate_object_id, cbson_generate_object_id, number=10000)
     compare_modules('Generate ObjectId (threaded)', bson_generate_object_id, cbson_generate_object_id, number=10000, thread_count=N_THREADS)
@@ -129,3 +146,5 @@ if __name__ == '__main__':
     compare_modules('Decode Datetime BSON', bson_decode_datetime_bson, cbson_decode_datetime_bson, number=10000)
     compare_modules('Decode Datetime BSON (threaded)', bson_decode_datetime_bson, cbson_decode_datetime_bson, number=10000, thread_count=N_THREADS)
     compare_modules('Decode BSON w/ _id', bson_decode_with_id, cbson_decode_with_id, number=10000)
+    compare_modules('to_json', bson_to_json, cbson_to_json, number=10000)
+    compare_modules('from_json', bson_from_json, cbson_from_json, number=10000)

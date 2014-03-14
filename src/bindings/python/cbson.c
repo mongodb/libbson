@@ -493,6 +493,37 @@ cbson_as_json (PyObject *self,
 
 
 static PyObject *
+cbson_from_json (PyObject *self,
+                 PyObject *args)
+{
+   bson_t b;
+   const uint8_t *buffer;
+   bson_error_t error;
+   PyObject *ret = NULL;
+#ifdef PY_SSIZE_T_CLEAN
+   ssize_t buffer_length;
+#else
+   int buffer_length;
+#endif
+
+   if (!PyArg_ParseTuple (args, "s#", &buffer, &buffer_length)) {
+      return NULL;
+   }
+
+   if (!bson_init_from_json (&b, buffer, buffer_length, &error)) {
+      PyErr_SetString (PyExc_ValueError, "Failed to parse JSON document.");
+      return NULL;
+   }
+
+   ret = PyString_FromStringAndSize (bson_get_data (&b), b.len);
+
+   bson_destroy (&b);
+
+   return ret;
+}
+
+
+static PyObject *
 cbson_dumps (PyObject *self,
              PyObject *args)
 {
@@ -605,6 +636,7 @@ static PyMethodDef cbson_methods[] = {
    { "dumps", cbson_dumps, METH_VARARGS, "Encode a document to BSON." },
    { "loads", cbson_loads, METH_VARARGS, "Decode a document from BSON." },
    { "as_json", cbson_as_json, METH_VARARGS, "Encode a BSON document as MongoDB Extended JSON." },
+   { "from_json", cbson_from_json, METH_VARARGS, "Decode a BSON document from MongoDB Extended JSON." },
    { NULL }
 };
 
