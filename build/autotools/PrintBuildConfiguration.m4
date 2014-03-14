@@ -33,6 +33,7 @@ Build configuration:
   Code coverage support                            : ${enable_coverage}
   Cross Compiling                                  : ${enable_crosscompile}
   Big endian                                       : ${enable_bigendian}
+  Link Time Optimization (experimental)            : ${enable_lto}
 
 Documentation:
   Generate man pages                               : ${bson_build_doc}

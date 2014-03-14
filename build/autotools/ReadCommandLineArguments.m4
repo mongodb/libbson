@@ -17,6 +17,11 @@ AC_ARG_ENABLE(optimizations,
     ])
 AC_MSG_RESULT([$enable_optimizations])
 
+AC_ARG_ENABLE(lto,
+              AC_HELP_STRING([--enable-lto], [turn on link time optimizations [default=no]]),
+              [enable_lto=$enableval],
+              [enable_lto=no])
+
 AC_MSG_CHECKING([whether to enable code coverage support])
 AC_ARG_ENABLE(coverage,
     AC_HELP_STRING([--enable-coverage], [enable code coverage support [default=no]]),
