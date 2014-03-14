@@ -2,6 +2,11 @@ EXTRA_DIST =
 CLEANFILES =
 DISTCLEANFILES =
 
+bin_PROGRAMS = 
+lib_LTLIBRARIES =
+noinst_LTLIBRARIES =
+noinst_PROGRAMS =
+
 include src/Makefile.am
 include tests/Makefile.am
 include examples/Makefile.am

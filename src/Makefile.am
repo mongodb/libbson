@@ -1,4 +1,4 @@
-lib_LTLIBRARIES = libbson-1.0.la
+lib_LTLIBRARIES += libbson-1.0.la
 
 INST_H_FILES =
 NOINST_H_FILES =
@@ -11,6 +11,7 @@ libbson_1_0_la_CPPFLAGS = \
 	-I$(top_builddir)/src/bson
 
 libbson_1_0_la_CFLAGS = \
+	$(MAINTAINER_CFLAGS) \
 	$(OPTIMIZE_CFLAGS)
 
 libbson_1_0_la_SOURCES = \
@@ -24,7 +25,7 @@ libbson_1_0_la_LDFLAGS = \
 	-export-symbols-regex "^(bson_|bcon_)" \
 	-rpath $(libdir)
 
-libbson_1_0_la_LIBADD =
+libbson_1_0_la_LIBADD = libyajl.la
 if !OS_WIN32
 libbson_1_0_la_LIBADD += $(PTHREAD_LIB)
 else

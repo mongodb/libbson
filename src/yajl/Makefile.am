@@ -1,4 +1,6 @@
-libbson_1_0_la_SOURCES += \
+noinst_LTLIBRARIES += libyajl.la
+
+libyajl_la_SOURCES = \
 	src/yajl/yajl_tree.h \
 	src/yajl/yajl_parse.h \
 	src/yajl/yajl_gen.h \
@@ -19,3 +21,9 @@ libbson_1_0_la_SOURCES += \
 	src/yajl/yajl_tree.c \
 	src/yajl/yajl_alloc.c \
 	src/yajl/yajl_gen.c
+
+libyajl_la_CFLAGS = \
+	-I$(top_srcdir)/src \
+	-I$(top_srcdir)/src/bson \
+	-DBSON_COMPILATION
+libyajl_la_LIBADD = 
