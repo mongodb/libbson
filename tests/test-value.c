@@ -29,6 +29,7 @@ test_value_basic (void)
    bson_value_t copy;
    bson_iter_t iter;
    bson_oid_t oid;
+   bson_t other = BSON_INITIALIZER;
    bson_t *doc;
    bson_t sub = BSON_INITIALIZER;
    bool r;
@@ -68,6 +69,10 @@ test_value_basic (void)
       assert (value);
 
       bson_value_copy (value, &copy);
+
+      r = bson_append_value (&other, bson_iter_key (&iter), -1, &copy);
+      assert (r);
+
       bson_value_destroy (&copy);
    }
 
@@ -75,6 +80,7 @@ test_value_basic (void)
    assert (!r);
 
    bson_destroy (doc);
+   bson_destroy (&other);
 }
 
 

@@ -159,6 +159,9 @@ BSON_BEGIN_DECLS
 #define BSON_APPEND_UNDEFINED(b,key) \
       bson_append_undefined (b, key, (int) strlen (key))
 
+#define BSON_APPEND_VALUE(b,key,val) \
+      bson_append_value (b, key, (int) strlen (key), (val))
+
 
 /**
  * bson_new:
@@ -415,6 +418,13 @@ bson_validate (const bson_t         *bson,
 char *
 bson_as_json (const bson_t *bson,
               size_t       *length);
+
+
+bool
+bson_append_value (bson_t             *bson,
+                   const char         *key,
+                   int                 key_length,
+                   const bson_value_t *value);
 
 
 /**
