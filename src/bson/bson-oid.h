@@ -29,6 +29,7 @@
 #include "bson-context.h"
 #include "bson-macros.h"
 #include "bson-types.h"
+#include "bson-endian.h"
 
 
 BSON_BEGIN_DECLS
