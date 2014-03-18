@@ -233,6 +233,75 @@ typedef enum
 } bson_subtype_t;
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_value_t --
+ *
+ *       A boxed type to contain various bson_type_t types.
+ *
+ * See also:
+ *       bson_value_copy()
+ *       bson_value_destroy()
+ *
+ *--------------------------------------------------------------------------
+ */
+
+typedef struct _bson_value_t
+{
+   bson_type_t           value_type;
+   union {
+      bson_oid_t         v_oid;
+      int64_t            v_int64;
+      int32_t            v_int32;
+      int8_t             v_int8;
+      double             v_double;
+      bool               v_bool;
+      int64_t            v_datetime;
+      struct {
+         uint32_t        timestamp;
+         uint32_t        increment;
+      } v_timestamp;
+      struct {
+         int32_t         len;
+         char           *str;
+      } v_utf8;
+      struct {
+         int32_t         data_len;
+         uint8_t        *data;
+      } v_doc;
+      struct {
+         int32_t         data_len;
+         uint8_t        *data;
+         bson_subtype_t  subtype;
+      } v_binary;
+      struct {
+         char           *regex;
+         char           *options;
+      } v_regex;
+      struct {
+         char           *collection;
+         int32_t         collection_len;
+         bson_oid_t      oid;
+      } v_dbpointer;
+      struct {
+         int32_t         code_len;
+         char           *code;
+      } v_code;
+      struct {
+         int32_t         code_len;
+         char           *code;
+         int32_t         scope_len;
+         uint8_t        *scope_data;
+      } v_codewscope;
+      struct {
+         int32_t         len;
+         char           *symbol;
+      } v_symbol;
+   } value;
+} bson_value_t;
+
+
 /**
  * bson_iter_t:
  *
@@ -244,6 +313,7 @@ typedef enum
  * This structure is safe to discard on the stack. No cleanup is necessary
  * after using it.
  */
+BSON_ALIGNED_BEGIN (128)
 typedef struct
 {
    const uint8_t *raw;      /* The raw buffer being iterated. */
@@ -257,8 +327,9 @@ typedef struct
    uint32_t       d4;       /* The offset of the fourth data byte. */
    uint32_t       next_off; /* The offset of the next field. */
    uint32_t       err_off;  /* The offset of the error. */
-   char           padding[16];
-} bson_iter_t;
+   bson_value_t   value;    /* Internal value for various state. */
+} bson_iter_t
+BSON_ALIGNED_END (128);
 
 
 /**

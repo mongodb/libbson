@@ -24,6 +24,7 @@ INST_H_FILES = \
 	src/bson/bson-string.h \
 	src/bson/bson-types.h \
 	src/bson/bson-utf8.h \
+	src/bson/bson-value.h \
 	src/bson/bson-version.h \
 	src/bson/bson-writer.h
 
@@ -75,6 +76,7 @@ libbson_la_SOURCES = \
 	src/bson/bson-reader.c \
 	src/bson/bson-string.c \
 	src/bson/bson-utf8.c \
+	src/bson/bson-value.c \
 	src/bson/bson-writer.c
 
 libbson_la_LIBADD =

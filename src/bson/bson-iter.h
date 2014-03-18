@@ -94,6 +94,10 @@ BSON_BEGIN_DECLS
    (bson_iter_type ((iter)) == BSON_TYPE_MINKEY)
 
 
+const bson_value_t *
+bson_iter_value (bson_iter_t *iter);
+
+
 /**
  * bson_iter_utf8_len_unsafe:
  * @iter: a bson_iter_t.
