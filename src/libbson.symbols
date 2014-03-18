@@ -35,6 +35,7 @@ bson_append_time_t
 bson_append_timeval
 bson_append_undefined
 bson_append_utf8
+bson_append_value
 bson_as_json
 bson_bcon_magic
 bson_bcone_magic
@@ -92,6 +93,7 @@ bson_iter_time_t
 bson_iter_timeval
 bson_iter_type
 bson_iter_utf8
+bson_iter_value
 bson_iter_visit_all
 bson_json_data_reader_ingest
 bson_json_data_reader_new
@@ -155,6 +157,8 @@ bson_utf8_get_char
 bson_utf8_next_char
 bson_utf8_validate
 bson_validate
+bson_value_copy
+bson_value_destroy
 bson_vsnprintf
 bson_writer_begin
 bson_writer_destroy
