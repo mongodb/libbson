@@ -461,7 +461,7 @@ yajl_val yajl_tree_get(yajl_val n, const char ** path, yajl_type type)
 
         if (n->type != yajl_t_object) return NULL;
         len = n->u.object.len;
-        for (i = 0; i < len; i++) {
+        for (i = 0; i < (unsigned int)len; i++) {
             if (!strcmp(*path, n->u.object.keys[i])) {
                 n = n->u.object.values[i];
                 break;
