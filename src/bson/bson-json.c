@@ -295,7 +295,7 @@ _bson_json_buf_ensure (bson_json_buf_t *buf, /* IN */
    if (buf->n_bytes < len) {
       bson_free (buf->buf);
 
-      buf->n_bytes = bson_next_power_of_two (len);
+      buf->n_bytes = bson_next_power_of_two ((uint32_t)len);
       buf->buf = bson_malloc (buf->n_bytes);
    }
 }
@@ -459,7 +459,7 @@ _bson_json_read_string (void                *_ctx, /* IN */
    bs = bson->bson_state;
 
    if (rs == BSON_JSON_REGULAR) {
-      bson_append_utf8 (STACK_BSON_CHILD, key, (int)len, (const char *)val, vlen);
+      bson_append_utf8 (STACK_BSON_CHILD, key, (int)len, (const char *)val, (int)vlen);
    } else if (rs == BSON_JSON_IN_BSON_TYPE || rs ==
               BSON_JSON_IN_BSON_TYPE_TIMESTAMP_VALUES) {
       const char *val_w_null;
@@ -677,7 +677,7 @@ _bson_json_read_append_binary (bson_json_reader_t      *reader, /* IN */
       return bson_append_binary (STACK_BSON_CHILD, bson->key, (int)bson->key_buf.len,
                                  bson->bson_type_data.binary.type,
                                  bson->bson_type_buf[0].buf,
-                                 bson->bson_type_buf[0].len);
+                                 (uint32_t)bson->bson_type_buf[0].len);
    }
 
    return 0;
@@ -855,7 +855,7 @@ _bson_json_read_start_array (void *_ctx) /* IN */
    BASIC_YAJL_CB_PREAMBLE;
    BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL ("[");
 
-   STACK_PUSH_ARRAY (bson_append_array_begin (STACK_BSON_PARENT, key, len,
+   STACK_PUSH_ARRAY (bson_append_array_begin (STACK_BSON_PARENT, key, (int)len,
                                               STACK_BSON_CHILD));
 
    return 1;

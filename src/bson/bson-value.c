@@ -18,6 +18,7 @@
 #include "bson-memory.h"
 #include "bson-string.h"
 #include "bson-value.h"
+#include "bson-oid.h"
 
 
 void
