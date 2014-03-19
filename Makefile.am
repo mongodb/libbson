@@ -16,7 +16,7 @@ include doc/Makefile.am
 include build/cmake/Makefile.am
 
 ACLOCAL_AMFLAGS = -I build/autotools/m4 ${ACLOCAL_FLAGS}
-DISTCHECK_CONFIGURE_FLAGS = --enable-silent-rules --enable-hardening --enable-optimizations
+DISTCHECK_CONFIGURE_FLAGS = --enable-maintainer-flags --enable-silent-rules --enable-hardening --enable-optimizations
 
 bsondocdir = ${docdir}
 bsondoc_DATA = \
