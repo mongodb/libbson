@@ -263,15 +263,15 @@ typedef struct _bson_value_t
          uint32_t        increment;
       } v_timestamp;
       struct {
-         int32_t         len;
+         uint32_t        len;
          char           *str;
       } v_utf8;
       struct {
-         int32_t         data_len;
+         uint32_t        data_len;
          uint8_t        *data;
       } v_doc;
       struct {
-         int32_t         data_len;
+         uint32_t        data_len;
          uint8_t        *data;
          bson_subtype_t  subtype;
       } v_binary;
@@ -281,21 +281,21 @@ typedef struct _bson_value_t
       } v_regex;
       struct {
          char           *collection;
-         int32_t         collection_len;
+         uint32_t        collection_len;
          bson_oid_t      oid;
       } v_dbpointer;
       struct {
-         int32_t         code_len;
+         uint32_t        code_len;
          char           *code;
       } v_code;
       struct {
-         int32_t         code_len;
+         uint32_t        code_len;
          char           *code;
-         int32_t         scope_len;
+         uint32_t        scope_len;
          uint8_t        *scope_data;
       } v_codewscope;
       struct {
-         int32_t         len;
+         uint32_t        len;
          char           *symbol;
       } v_symbol;
    } value;
