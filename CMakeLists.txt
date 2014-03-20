@@ -180,6 +180,7 @@ add_executable(test-libbson
    ${SOURCE_DIR}/tests/test-reader.c
    ${SOURCE_DIR}/tests/test-string.c
    ${SOURCE_DIR}/tests/test-utf8.c
+   ${SOURCE_DIR}/tests/test-value.c
    ${SOURCE_DIR}/tests/test-writer.c
    ${SOURCE_DIR}/tests/test-bcon-basic.c
    ${SOURCE_DIR}/tests/test-bcon-extract.c
