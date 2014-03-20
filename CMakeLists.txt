@@ -91,6 +91,7 @@ set (SOURCES
    ${SOURCE_DIR}/src/bson/bson-reader.c
    ${SOURCE_DIR}/src/bson/bson-string.c
    ${SOURCE_DIR}/src/bson/bson-utf8.c
+   ${SOURCE_DIR}/src/bson/bson-value.c
    ${SOURCE_DIR}/src/bson/bson-writer.c
    ${SOURCE_DIR}/src/yajl/yajl_alloc.c
    ${SOURCE_DIR}/src/yajl/yajl_buf.c
@@ -127,6 +128,7 @@ set (HEADERS
    ${SOURCE_DIR}/src/bson/bson-string.h
    ${SOURCE_DIR}/src/bson/bson-types.h
    ${SOURCE_DIR}/src/bson/bson-utf8.h
+   ${SOURCE_DIR}/src/bson/bson-value.h
    ${SOURCE_DIR}/src/bson/bson-writer.h
 )
 
