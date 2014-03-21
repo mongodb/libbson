@@ -93,6 +93,9 @@ BSON_BEGIN_DECLS
 #define BSON_ITER_HOLDS_MINKEY(iter) \
    (bson_iter_type ((iter)) == BSON_TYPE_MINKEY)
 
+#define BSON_ITER_IS_KEY(iter, key) \
+   (0 == strcmp ((key), bson_iter_key ((iter))))
+
 
 const bson_value_t *
 bson_iter_value (bson_iter_t *iter);
