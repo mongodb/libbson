@@ -510,12 +510,12 @@ cbson_from_json (PyObject *self,
       return NULL;
    }
 
-   if (!bson_init_from_json (&b, buffer, buffer_length, &error)) {
+   if (!bson_init_from_json (&b, (char *)buffer, buffer_length, &error)) {
       PyErr_SetString (PyExc_ValueError, "Failed to parse JSON document.");
       return NULL;
    }
 
-   ret = PyString_FromStringAndSize (bson_get_data (&b), b.len);
+   ret = PyString_FromStringAndSize ((char *)bson_get_data (&b), b.len);
 
    bson_destroy (&b);
 
