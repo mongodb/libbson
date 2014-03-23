@@ -30,7 +30,7 @@ bson_iter_timeval (const bson_iter_t *iter,
 DESCRIPTION
 -----------
 
-The _bson_iter_date_time()_ function shall return the number of microseconds since the UNIX epoch, as contained in the BSON_TYPE_DATE_TIME element.
+The _bson_iter_date_time()_ function shall return the number of miliseconds since the UNIX epoch, as contained in the BSON_TYPE_DATE_TIME element.
 
 The _bson_iter_time_t()_ function shall return the number of seconds since the UNIX epoch, as contained in the BSON_TYPE_DATE_TIME element.
 
