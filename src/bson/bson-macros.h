@@ -218,4 +218,19 @@
 #define BSON_TYPEOF typeof
 #endif
 
+
+#if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1)
+# define BSON_GNUC_DEPRECATED __attribute__((__deprecated__))
+#else
+# define BSON_GNUC_DEPRECATED
+#endif
+
+
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 5)
+# define BSON_GNUC_DEPRECATED_FOR(f) __attribute__((deprecated("Use " #f " instead")))
+#else
+# define BSON_GNUC_DEPRECATED_FOR(f) BSON_GNUC_DEPRECATED
+#endif
+
+
 #endif /* BSON_MACROS_H */
