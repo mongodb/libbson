@@ -122,6 +122,11 @@ void *
 bson_realloc (void   *mem,        /* IN */
               size_t  num_bytes)  /* IN */
 {
+    if (num_bytes == 0) {
+       bson_free(mem);
+       return NULL;
+    }
+
    mem = realloc (mem, num_bytes);
 
    if (BSON_UNLIKELY (!mem)) {
