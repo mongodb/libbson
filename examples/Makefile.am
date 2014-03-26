@@ -35,5 +35,5 @@ json_to_bson_LDADD = libbson-1.0.la
 noinst_PROGRAMS += bson-metrics
 bson_metrics_SOURCES = examples/bson-metrics.c
 bson_metrics_CPPFLAGS = $(EXAMPLE_CFLAGS)
-bson_metrics_LDADD = libbson-1.0.la
+bson_metrics_LDADD = -lm libbson-1.0.la
 
