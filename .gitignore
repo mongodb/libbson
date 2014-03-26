@@ -5,6 +5,7 @@ AUTHORS
 autom4te.cache
 bcon-col-view
 bcon-speed
+bson-metrics
 bson-to-json
 bson-validate
 ChangeLog
