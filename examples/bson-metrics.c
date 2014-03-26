@@ -25,7 +25,8 @@
 
 #define MAX_RECURSION 100
 
-double dtimeofday()
+static double
+dtimeofday (void)
 {
     struct timeval timeval;
     bson_gettimeofday(&timeval, 0);
@@ -74,7 +75,9 @@ static bson_metrics_state_t state = {
    }
 };
 
-static int compar_bson_type_metrics(const void *a, const void *b)
+static int
+compar_bson_type_metrics (const void *a,
+                          const void *b)
 {
     return (((bson_type_metrics_t*)b)->count - ((bson_type_metrics_t*)a)->count);
 }
@@ -82,21 +85,21 @@ static int compar_bson_type_metrics(const void *a, const void *b)
 /*
  * Forward declarations.
  */
-static bool bson_metrics_visit_array    (const bson_iter_t *iter,
-                                          const char        *key,
-                                          const bson_t      *v_array,
-                                          void              *data);
+static bool bson_metrics_visit_array (const bson_iter_t *iter,
+                                      const char        *key,
+                                      const bson_t      *v_array,
+                                      void              *data);
 static bool bson_metrics_visit_document (const bson_iter_t *iter,
-                                          const char        *key,
-                                          const bson_t      *v_document,
-                                          void              *data);
+                                         const char        *key,
+                                         const bson_t      *v_document,
+                                         void              *data);
 
 static bool
 bson_metrics_visit_utf8 (const bson_iter_t *iter,
-                          const char        *key,
-                          size_t             v_utf8_len,
-                          const char        *v_utf8,
-                          void              *data)
+                         const char        *key,
+                         size_t             v_utf8_len,
+                         const char        *v_utf8,
+                         void              *data)
 {
    bson_metrics_state_t *state = data;
    state->utf8_size_tally += v_utf8_len;
@@ -106,8 +109,8 @@ bson_metrics_visit_utf8 (const bson_iter_t *iter,
 
 static bool
 bson_metrics_visit_before (const bson_iter_t *iter,
-                            const char        *key,
-                            void              *data)
+                           const char        *key,
+                           void              *data)
 {
    bson_metrics_state_t *state = data;
    bson_type_t btype;
@@ -147,9 +150,9 @@ static const bson_visitor_t bson_metrics_visitors = {
 
 static bool
 bson_metrics_visit_document (const bson_iter_t *iter,
-                              const char        *key,
-                              const bson_t      *v_document,
-                              void              *data)
+                             const char        *key,
+                             const bson_t      *v_document,
+                             void              *data)
 {
    bson_metrics_state_t *state = data;
    bson_iter_t child;
@@ -170,9 +173,9 @@ bson_metrics_visit_document (const bson_iter_t *iter,
 
 static bool
 bson_metrics_visit_array (const bson_iter_t *iter,
-                           const char        *key,
-                           const bson_t      *v_array,
-                           void              *data)
+                          const char        *key,
+                          const bson_t      *v_array,
+                          void              *data)
 {
    bson_metrics_state_t *state = data;
    bson_iter_t child;
