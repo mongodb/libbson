@@ -23,6 +23,8 @@
 #include <stdio.h>
 #include <math.h>
 
+#define MAX_RECURSION 100
+
 double dtimeofday()
 {
     struct timeval timeval;
@@ -42,11 +44,12 @@ typedef struct
    uint64_t element_count;
    uint64_t key_size_tally;
    uint64_t utf8_size_tally;
+   uint32_t depth;
    bson_type_metrics_t bson_type_metrics[256];
 } bson_metrics_state_t;
 
 static bson_metrics_state_t state = {
-   0L, 0L, 0L, 0L,
+   0L, 0L, 0L, 0L, 0L,
    {
        { /* BSON_TYPE_EOD        = 0x00 */ 0L, "End of document" },
        { /* BSON_TYPE_DOUBLE     = 0x01 */ 0L, "Floating point" },
@@ -148,10 +151,18 @@ bson_metrics_visit_document (const bson_iter_t *iter,
                               const bson_t      *v_document,
                               void              *data)
 {
+   bson_metrics_state_t *state = data;
    bson_iter_t child;
 
+   if (state->depth >= MAX_RECURSION) {
+      fprintf (stderr, "Invalid document, max recursion reached.\n");
+      return true;
+   }
+
    if (bson_iter_init (&child, v_document)) {
+      state->depth++;
       bson_iter_visit_all (&child, &bson_metrics_visitors, data);
+      state->depth--;
    }
 
    return false;
@@ -163,10 +174,18 @@ bson_metrics_visit_array (const bson_iter_t *iter,
                            const bson_t      *v_array,
                            void              *data)
 {
+   bson_metrics_state_t *state = data;
    bson_iter_t child;
 
+   if (state->depth >= MAX_RECURSION) {
+      fprintf (stderr, "Invalid document, max recursion reached.\n");
+      return true;
+   }
+
    if (bson_iter_init (&child, v_array)) {
+      state->depth++;
       bson_iter_visit_all (&child, &bson_metrics_visitors, data);
+      state->depth--;
    }
 
    return false;
