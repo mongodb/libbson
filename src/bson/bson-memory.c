@@ -122,22 +122,23 @@ void *
 bson_realloc (void   *mem,        /* IN */
               size_t  num_bytes)  /* IN */
 {
-    if (num_bytes == 0) {
-       bson_free(mem);
-       return NULL;
-    }
+   /*
+    * Not all platforms are guaranteed to free() the memory if a call to
+    * realloc() with a size of zero occurs. Windows, Linux, and FreeBSD do,
+    * however, OS X does not.
+    */
+   if (BSON_UNLIKELY (num_bytes == 0)) {
+      bson_free (mem);
+      return NULL;
+   }
 
-#ifdef APPLE
+#ifdef __APPLE__
    mem = reallocf (mem, num_bytes);
 #else
    mem = realloc (mem, num_bytes);
 #endif
 
    if (BSON_UNLIKELY (!mem)) {
-      if (!num_bytes) {
-         return mem;
-      }
-
       abort ();
    }
 
