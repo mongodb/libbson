@@ -127,7 +127,11 @@ bson_realloc (void   *mem,        /* IN */
        return NULL;
     }
 
+#ifdef APPLE
+   mem = reallocf (mem, num_bytes);
+#else
    mem = realloc (mem, num_bytes);
+#endif
 
    if (BSON_UNLIKELY (!mem)) {
       if (!num_bytes) {
