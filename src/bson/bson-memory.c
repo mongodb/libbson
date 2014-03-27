@@ -149,6 +149,39 @@ bson_realloc (void   *mem,        /* IN */
 /*
  *--------------------------------------------------------------------------
  *
+ * bson_realloc_ctx --
+ *
+ *       This wraps bson_realloc and provides a compatible api for similar
+ *       functions with a context
+ *
+ * Parameters:
+ *       @mem: The memory to realloc, or NULL.
+ *       @num_bytes: The size of the new allocation or 0 to free.
+ *       @ctx: Ignored
+ *
+ * Returns:
+ *       The new allocation if successful; otherwise abort() is called and
+ *       this function never returns.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+
+void *
+bson_realloc_ctx (void   *mem,        /* IN */
+                  size_t  num_bytes,  /* IN */
+                  void   *ctx)        /* IN */
+{
+   return bson_realloc(mem, num_bytes);
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
  * bson_free --
  *
  *       Frees @mem using the underlying allocator.

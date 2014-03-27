@@ -90,6 +90,7 @@ MAN3 = \
 	doc/bson_reader_set_read_func.3 \
 	doc/bson_reader_tell.3 \
 	doc/bson_realloc.3 \
+	doc/bson_realloc_ctx.3 \
 	doc/bson_reinit.3 \
 	doc/bson_sized_new.3 \
 	doc/bson_strdup.3 \

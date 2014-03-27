@@ -22,6 +22,42 @@
 #include "TestSuite.h"
 
 
+static void *
+test_bson_writer_custom_realloc_helper (void  *mem,
+                                        size_t num_bytes,
+                                        void  *ctx)
+{
+   int * x = (int *)ctx;
+
+   *x = *x + 1;
+   return bson_realloc(mem, num_bytes);
+}
+
+static void
+test_bson_writer_custom_realloc (void)
+{
+   bson_writer_t *writer;
+   uint8_t *buf = bson_malloc(0);
+   size_t buflen = 0;
+   bson_t *b;
+   int x = 0;
+
+   writer = bson_writer_new(&buf, &buflen, 0, test_bson_writer_custom_realloc_helper, &x);
+
+   assert(bson_writer_begin(writer, &b));
+
+   assert(bson_append_utf8(b, "hello", -1, "world", -1));
+
+   bson_writer_end(writer);
+
+   bson_writer_destroy(writer);
+
+   assert_cmpint(x, >, 0);
+
+   bson_free(buf);
+}
+
+
 static void
 test_bson_writer_shared_buffer (void)
 {
@@ -37,7 +73,7 @@ test_bson_writer_shared_buffer (void)
    int j = 0;
    int n_docs = 10000;
 
-   writer = bson_writer_new(&buf, &buflen, 0, bson_realloc);
+   writer = bson_writer_new(&buf, &buflen, 0, bson_realloc_ctx, NULL);
 
    for (i = 0; i < n_docs; i++) {
       assert(bson_writer_begin(writer, &b));
@@ -79,7 +115,7 @@ test_bson_writer_empty_sequence (void)
    int r;
    int i;
 
-   writer = bson_writer_new(&buf, &len, 0, bson_realloc);
+   writer = bson_writer_new(&buf, &len, 0, bson_realloc_ctx, NULL);
    for (i = 0; i < 5; i++) {
       assert(bson_writer_begin(writer, &b));
       bson_writer_end(writer);
@@ -102,7 +138,7 @@ test_bson_writer_null_realloc (void)
    int r;
    int i;
 
-   writer = bson_writer_new(&buf, &buflen, 0, NULL);
+   writer = bson_writer_new(&buf, &buflen, 0, NULL, NULL);
    for (i=0; i<6; i++) {
       assert(bson_writer_begin(writer, &b));
       bson_writer_end(writer);
@@ -128,7 +164,7 @@ test_bson_writer_null_realloc_2 (void)
    int r;
    int i;
 
-   writer = bson_writer_new(&buf, &buflen, 0, NULL);
+   writer = bson_writer_new(&buf, &buflen, 0, NULL, NULL);
    for (i=0; i<5; i++) {
       assert(bson_writer_begin(writer, &b));
       bson_writer_end(writer);
@@ -148,6 +184,7 @@ test_bson_writer_null_realloc_2 (void)
 void
 test_writer_install (TestSuite *suite)
 {
+   TestSuite_Add (suite, "/bson/writer/custom_realloc", test_bson_writer_custom_realloc);
    TestSuite_Add (suite, "/bson/writer/shared_buffer", test_bson_writer_shared_buffer);
    TestSuite_Add (suite, "/bson/writer/empty_sequence", test_bson_writer_empty_sequence);
    TestSuite_Add (suite, "/bson/writer/null_realloc", test_bson_writer_null_realloc);

@@ -114,7 +114,8 @@ _bson_impl_inline_grow (bson_impl_inline_t *impl, /* IN */
       alloc->offset = 0;
       alloc->alloc = data;
       alloc->alloclen = req;
-      alloc->realloc = bson_realloc;
+      alloc->realloc = bson_realloc_ctx;
+      alloc->realloc_func_ctx = NULL;
 
       return true;
    }
@@ -161,7 +162,7 @@ _bson_impl_alloc_grow (bson_impl_alloc_t *impl, /* IN */
    req = bson_next_power_of_two (req);
 
    if ((int32_t)req <= INT32_MAX && impl->realloc) {
-      *impl->buf = impl->realloc (*impl->buf, req);
+      *impl->buf = impl->realloc (*impl->buf, req, impl->realloc_func_ctx);
       *impl->buflen = req;
       return true;
    }
@@ -491,6 +492,7 @@ _bson_append_bson_begin (bson_t      *bson,        /* IN */
    achild->alloc = NULL;
    achild->alloclen = 0;
    achild->realloc = aparent->realloc;
+   achild->realloc_func_ctx = aparent->realloc_func_ctx;
 
    return true;
 }
@@ -1824,6 +1826,7 @@ bson_init_static (bson_t             *bson,
    impl->alloc = (uint8_t *)data;
    impl->alloclen = length;
    impl->realloc = NULL;
+   impl->realloc_func_ctx = NULL;
 
    return true;
 }
@@ -1881,7 +1884,8 @@ bson_sized_new (size_t size)
       impl_a->alloc[2] = 0;
       impl_a->alloc[3] = 0;
       impl_a->alloc[4] = 0;
-      impl_a->realloc = bson_realloc;
+      impl_a->realloc = bson_realloc_ctx;
+      impl_a->realloc_func_ctx = NULL;
    }
 
    return b;
@@ -1961,7 +1965,8 @@ bson_copy_to (const bson_t *src,
    adst->offset = 0;
    adst->alloc = bson_malloc (len);
    adst->alloclen = len;
-   adst->realloc = bson_realloc;
+   adst->realloc = bson_realloc_ctx;
+   adst->realloc_func_ctx = NULL;
    memcpy (adst->alloc, data, src->len);
 }
 

@@ -26,6 +26,7 @@ struct _bson_writer_t
    size_t             *buflen;
    size_t              offset;
    bson_realloc_func   realloc_func;
+   void               *realloc_func_ctx;
    bson_t              b;
 };
 
@@ -58,10 +59,11 @@ struct _bson_writer_t
  */
 
 bson_writer_t *
-bson_writer_new (uint8_t           **buf,          /* IN */
-                 size_t             *buflen,       /* IN */
-                 size_t              offset,       /* IN */
-                 bson_realloc_func   realloc_func) /* IN */
+bson_writer_new (uint8_t           **buf,              /* IN */
+                 size_t             *buflen,           /* IN */
+                 size_t              offset,           /* IN */
+                 bson_realloc_func   realloc_func,     /* IN */
+                 void               *realloc_func_ctx) /* IN */
 {
    bson_writer_t *writer;
 
@@ -70,6 +72,7 @@ bson_writer_new (uint8_t           **buf,          /* IN */
    writer->buflen = buflen;
    writer->offset = offset;
    writer->realloc_func = realloc_func;
+   writer->realloc_func_ctx = realloc_func_ctx;
    writer->ready = true;
 
    return writer;
@@ -178,6 +181,7 @@ bson_writer_begin (bson_writer_t  *writer, /* IN */
    b->alloc = NULL;
    b->alloclen = 0;
    b->realloc = writer->realloc_func;
+   b->realloc_func_ctx = writer->realloc_func_ctx;
 
    while ((writer->offset + writer->b.len) > *writer->buflen) {
       if (!writer->realloc_func) {
@@ -195,7 +199,7 @@ bson_writer_begin (bson_writer_t  *writer, /* IN */
    }
 
    if (grown) {
-      *writer->buf = writer->realloc_func (*writer->buf, *writer->buflen);
+      *writer->buf = writer->realloc_func (*writer->buf, *writer->buflen, writer->realloc_func_ctx);
    }
 
    memset ((*writer->buf) + writer->offset + 1, 0, 5);

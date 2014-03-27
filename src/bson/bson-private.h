@@ -65,6 +65,7 @@ typedef struct
    uint8_t *alloc;          /* buffer that we own. */
    size_t alloclen;              /* length of buffer that we own. */
    bson_realloc_func realloc;    /* our realloc implementation */
+   void *realloc_func_ctx;    /* context for our realloc func */
 } bson_impl_alloc_t
 BSON_ALIGNED_END (128);
 
