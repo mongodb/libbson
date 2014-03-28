@@ -259,19 +259,19 @@ main (int   argc,
       printf("\n  {\n");
       printf("    \"file\": \"%s\",\n", filename);
       printf("    \"secs\": %.2f,\n", dtime_delta);
-      printf("    \"docs_per_sec\": %llu,\n", (uint64_t)round(state.doc_count/dtime_delta));
-      printf("    \"docs\": %llu,\n", state.doc_count);
-      printf("    \"elements\": %llu,\n", state.element_count);
-      printf("    \"elements_per_doc\": %llu,\n", (uint64_t)round((double)state.element_count/(double)MAX(state.doc_count, 1)));
-      printf("    \"aggregates\": %llu,\n", aggregate_count);
-      printf("    \"aggregates_per_doc\": %llu,\n", (uint64_t)round((double)aggregate_count/(double)MAX(state.doc_count, 1)));
-      printf("    \"degree\": %llu,\n", (uint64_t)round((double)state.element_count/((double)MAX(state.doc_count + aggregate_count, 1))));
-      printf("    \"key_size_average\": %llu,\n", (uint64_t)round((double)state.key_size_tally/(double)MAX(state.element_count, 1)));
-      printf("    \"string_size_average\": %llu,\n", (uint64_t)round((double)state.utf8_size_tally/(double)MAX(state.bson_type_metrics[BSON_TYPE_UTF8].count, 1)));
+      printf("    \"docs_per_sec\": %"PRIu64",\n", (uint64_t)round(state.doc_count/dtime_delta));
+      printf("    \"docs\": %"PRIu64",\n", state.doc_count);
+      printf("    \"elements\": %"PRIu64",\n", state.element_count);
+      printf("    \"elements_per_doc\": %"PRIu64",\n", (uint64_t)round((double)state.element_count/(double)MAX(state.doc_count, 1)));
+      printf("    \"aggregates\": %"PRIu64",\n", aggregate_count);
+      printf("    \"aggregates_per_doc\": %"PRIu64",\n", (uint64_t)round((double)aggregate_count/(double)MAX(state.doc_count, 1)));
+      printf("    \"degree\": %"PRIu64",\n", (uint64_t)round((double)state.element_count/((double)MAX(state.doc_count + aggregate_count, 1))));
+      printf("    \"key_size_average\": %"PRIu64",\n", (uint64_t)round((double)state.key_size_tally/(double)MAX(state.element_count, 1)));
+      printf("    \"string_size_average\": %"PRIu64",\n", (uint64_t)round((double)state.utf8_size_tally/(double)MAX(state.bson_type_metrics[BSON_TYPE_UTF8].count, 1)));
       printf("    \"percent_by_type\": {\n");
       for (j = 0; state.bson_type_metrics[j].count > 0; j++) {
         bson_type_metrics_t bson_type_metrics = state.bson_type_metrics[j];
-        printf("      \"%s\": %llu,\n", bson_type_metrics.description, (uint64_t)round((double)bson_type_metrics.count*100.0/(double)MAX(state.element_count, 1)));
+        printf("      \"%s\": %"PRIu64",\n", bson_type_metrics.description, (uint64_t)round((double)bson_type_metrics.count*100.0/(double)MAX(state.element_count, 1)));
       }
       printf("    }\n");
       printf("  }");
