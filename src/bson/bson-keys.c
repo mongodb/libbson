@@ -173,5 +173,7 @@ bson_uint32_to_string (uint32_t     value,  /* IN */
       }
    }
 
+   *strptr = str;
+
    return bson_snprintf (str, size, "%u", value);
 }
