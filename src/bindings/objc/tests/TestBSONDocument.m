@@ -167,27 +167,6 @@
     XCTAssertThrows([document appendTimestamp:str forKey:@"testKey"]);
 }
 
-- (void) testAppendObject {
-    BSONDocument *document = [BSONDocument document];
-    NSError *error = nil;
-    
-    XCTAssertTrue([document appendObject:@"test string" forKey:@"testKey" error:&error]);
-    XCTAssertNil(error);
-    XCTAssertTrue([document appendObject:[NSDate date] forKey:@"testKey" error:&error]);
-    XCTAssertNil(error);
-    XCTAssertTrue([document appendObject:[NSData data] forKey:@"testKey" error:&error]);
-    XCTAssertNil(error);
-
-    XCTAssertTrue([document appendObject:[NSNumber numberWithBool:YES] forKey:@"testKey" error:&error]);
-    XCTAssertNil(error);
-    XCTAssertTrue([document appendObject:[NSNumber numberWithDouble:2.5] forKey:@"testKey" error:&error]);
-    XCTAssertNil(error);
-    XCTAssertTrue([document appendObject:[NSNumber numberWithInt:42] forKey:@"testKey" error:&error]);
-    XCTAssertNil(error);
-    XCTAssertTrue([document appendObject:[NSNumber numberWithInteger:42] forKey:@"testKey" error:&error]);
-    XCTAssertNil(error);
-}
-
 - (void) testIsEmpty {
     BSONDocument *document = [BSONDocument document];
     XCTAssertTrue(document.isEmpty);

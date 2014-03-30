@@ -18,6 +18,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "bson.h"
 
 #define bson_raise_if_string_too_long(str, message) \
     if (str.length > INT_MAX) [NSException raise:NSInvalidArgumentException format:message];
@@ -40,4 +41,13 @@ static inline NSComparisonResult bson_NSComparisonResultFromQsort (int result) {
         return NSOrderedSame;
     else
         return NSOrderedDescending;
+}
+
+static inline NSString * NSStringWithJSONFromBSON(bson_t * bson) {
+    size_t length = 0;
+    char * json = bson_as_json(bson, &length);
+    return [[NSString alloc] initWithBytesNoCopy:json
+                                          length:length
+                                        encoding:NSUTF8StringEncoding
+                                    freeWhenDone:YES];
 }

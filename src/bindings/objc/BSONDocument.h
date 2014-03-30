@@ -11,7 +11,6 @@
 
 @interface BSONDocument : NSObject
 
-
 /**
  Creates an empty BSON document.
  */
@@ -79,8 +78,8 @@
 - (BOOL) appendTimestamp:(BSONTimestamp *) value forKey:(NSString *) key;
 - (BOOL) appendUndefinedForKey:(NSString *) key;
 
-- (BOOL) appendObject:(id) value forKey:(NSString *) key error:(NSError **) error;
-
 + (NSUInteger) maximumCapacity;
+
+@property (assign) BOOL destroyOnDealloc;
 
 @end

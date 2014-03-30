@@ -27,6 +27,12 @@
 		9EB7BC4B18E8A71400229ED0 /* BSONDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E45CFF918E659A000289DBA /* BSONDocument.m */; };
 		9EB7BC4C18E8A71400229ED0 /* BSONSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EB7BC2318E7116500229ED0 /* BSONSerialization.m */; };
 		9EB7BC4D18E8A75C00229ED0 /* BSON_OrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EB7BC2718E71B7400229ED0 /* BSON_OrderedDictionary.m */; };
+		9EB7BC4F18E8CF6A00229ED0 /* TestBSONSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EB7BC4E18E8CF6A00229ED0 /* TestBSONSerializer.m */; };
+		9EB7BC5018E8CF6A00229ED0 /* TestBSONSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EB7BC4E18E8CF6A00229ED0 /* TestBSONSerializer.m */; };
+		9EB7BC5318E8CFA300229ED0 /* BSONSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EB7BC5218E8CFA300229ED0 /* BSONSerializer.m */; };
+		9EB7BC5418E8CFA300229ED0 /* BSONSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EB7BC5218E8CFA300229ED0 /* BSONSerializer.m */; };
+		9EB7BC5718E8D81000229ED0 /* BSONDeserializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EB7BC5618E8D81000229ED0 /* BSONDeserializer.m */; };
+		9EB7BC5818E8D81000229ED0 /* BSONDeserializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EB7BC5618E8D81000229ED0 /* BSONDeserializer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +70,11 @@
 		9EB7BC3B18E8A6EE00229ED0 /* libbson tests (iOS)-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "libbson tests (iOS)-Info.plist"; sourceTree = "<group>"; };
 		9EB7BC3D18E8A6EE00229ED0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		9EB7BC4118E8A6EE00229ED0 /* libbson tests (iOS)-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "libbson tests (iOS)-Prefix.pch"; sourceTree = "<group>"; };
+		9EB7BC4E18E8CF6A00229ED0 /* TestBSONSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestBSONSerializer.m; sourceTree = "<group>"; };
+		9EB7BC5118E8CFA300229ED0 /* BSONSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BSONSerializer.h; sourceTree = "<group>"; };
+		9EB7BC5218E8CFA300229ED0 /* BSONSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BSONSerializer.m; sourceTree = "<group>"; };
+		9EB7BC5518E8D81000229ED0 /* BSONDeserializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BSONDeserializer.h; sourceTree = "<group>"; };
+		9EB7BC5618E8D81000229ED0 /* BSONDeserializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BSONDeserializer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +133,7 @@
 			isa = PBXGroup;
 			children = (
 				9EB7BC2918E7309100229ED0 /* TestBSONDocument.m */,
+				9EB7BC4E18E8CF6A00229ED0 /* TestBSONSerializer.m */,
 				9E45CFF118E6587600289DBA /* TestBSONSerialization.m */,
 				9E45CFEC18E6587600289DBA /* Supporting Files */,
 			);
@@ -148,10 +160,14 @@
 				9EB7BC2E18E8A20C00229ED0 /* ObjCBSON.m */,
 				9E45CFFE18E66A6000289DBA /* BSONTypes.h */,
 				9E45CFFF18E66A6000289DBA /* BSONTypes.m */,
-				9E45CFF818E659A000289DBA /* BSONDocument.h */,
-				9E45CFF918E659A000289DBA /* BSONDocument.m */,
 				9EB7BC2218E7116500229ED0 /* BSONSerialization.h */,
 				9EB7BC2318E7116500229ED0 /* BSONSerialization.m */,
+				9EB7BC5118E8CFA300229ED0 /* BSONSerializer.h */,
+				9EB7BC5218E8CFA300229ED0 /* BSONSerializer.m */,
+				9EB7BC5518E8D81000229ED0 /* BSONDeserializer.h */,
+				9EB7BC5618E8D81000229ED0 /* BSONDeserializer.m */,
+				9E45CFF818E659A000289DBA /* BSONDocument.h */,
+				9E45CFF918E659A000289DBA /* BSONDocument.m */,
 				9E45D00118E66E8E00289DBA /* BSON_Helper.h */,
 			);
 			name = BSON;
@@ -282,7 +298,10 @@
 				9E45D00018E66A6000289DBA /* BSONTypes.m in Sources */,
 				9E45CFFA18E659A000289DBA /* BSONDocument.m in Sources */,
 				9EB7BC2418E7116500229ED0 /* BSONSerialization.m in Sources */,
+				9EB7BC4F18E8CF6A00229ED0 /* TestBSONSerializer.m in Sources */,
+				9EB7BC5718E8D81000229ED0 /* BSONDeserializer.m in Sources */,
 				9E45CFF218E6587600289DBA /* TestBSONSerialization.m in Sources */,
+				9EB7BC5318E8CFA300229ED0 /* BSONSerializer.m in Sources */,
 				9EB7BC2F18E8A20C00229ED0 /* ObjCBSON.m in Sources */,
 				9EB7BC2A18E7309100229ED0 /* TestBSONDocument.m in Sources */,
 				9EB7BC2818E71B7400229ED0 /* BSON_OrderedDictionary.m in Sources */,
@@ -296,7 +315,10 @@
 				9EB7BC4D18E8A75C00229ED0 /* BSON_OrderedDictionary.m in Sources */,
 				9EB7BC4B18E8A71400229ED0 /* BSONDocument.m in Sources */,
 				9EB7BC4818E8A71000229ED0 /* TestBSONDocument.m in Sources */,
+				9EB7BC5018E8CF6A00229ED0 /* TestBSONSerializer.m in Sources */,
+				9EB7BC5818E8D81000229ED0 /* BSONDeserializer.m in Sources */,
 				9EB7BC4A18E8A71400229ED0 /* BSONTypes.m in Sources */,
+				9EB7BC5418E8CFA300229ED0 /* BSONSerializer.m in Sources */,
 				9EB7BC4718E8A70D00229ED0 /* TestBSONSerialization.m in Sources */,
 				9EB7BC4C18E8A71400229ED0 /* BSONSerialization.m in Sources */,
 				9EB7BC4918E8A71400229ED0 /* ObjCBSON.m in Sources */,
@@ -520,6 +542,7 @@
 				9EB7BC4518E8A6EE00229ED0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
