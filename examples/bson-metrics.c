@@ -43,6 +43,7 @@ typedef struct
 {
    uint64_t doc_count;
    uint64_t element_count;
+   uint64_t doc_size_max;
    uint64_t key_size_tally;
    uint64_t utf8_size_tally;
    uint32_t depth;
@@ -50,7 +51,7 @@ typedef struct
 } bson_metrics_state_t;
 
 static bson_metrics_state_t state = {
-   0L, 0L, 0L, 0L, 0L,
+   0L, 0L, 0L, 0L, 0L, 0L,
    {
        { /* BSON_TYPE_EOD        = 0x00 */ 0L, "End of document" },
        { /* BSON_TYPE_DOUBLE     = 0x01 */ 0L, "Floating point" },
@@ -219,6 +220,7 @@ main (int   argc,
    int i, j;
    double dtime_before, dtime_after, dtime_delta;
    uint64_t aggregate_count;
+   off_t mark;
 
    /*
     * Print program usage if no arguments are provided.
@@ -246,8 +248,12 @@ main (int   argc,
       }
 
       dtime_before = dtimeofday();
+      mark = 0;
       while ((b = bson_reader_read (reader, NULL))) {
-         bson_metrics(b, NULL, &state);
+        off_t pos = bson_reader_tell(reader);
+        state.doc_size_max = MAX(pos - mark, state.doc_size_max);
+        mark = pos;
+        bson_metrics(b, NULL, &state);
       }
       dtime_after = dtimeofday();
       dtime_delta = MAX(dtime_after - dtime_before, 0.000001);
@@ -266,6 +272,8 @@ main (int   argc,
       printf("    \"aggregates\": %"PRIu64",\n", aggregate_count);
       printf("    \"aggregates_per_doc\": %"PRIu64",\n", (uint64_t)round((double)aggregate_count/(double)MAX(state.doc_count, 1)));
       printf("    \"degree\": %"PRIu64",\n", (uint64_t)round((double)state.element_count/((double)MAX(state.doc_count + aggregate_count, 1))));
+      printf("    \"doc_size_max\": %"PRIu64",\n", state.doc_size_max);
+      printf("    \"doc_size_average\": %"PRIu64",\n", (uint64_t)round((double)bson_reader_tell(reader)/(double)MAX(state.doc_count, 1)));
       printf("    \"key_size_average\": %"PRIu64",\n", (uint64_t)round((double)state.key_size_tally/(double)MAX(state.element_count, 1)));
       printf("    \"string_size_average\": %"PRIu64",\n", (uint64_t)round((double)state.utf8_size_tally/(double)MAX(state.bson_type_metrics[BSON_TYPE_UTF8].count, 1)));
       printf("    \"percent_by_type\": {\n");
