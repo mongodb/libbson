@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>78D6085E-BA35-4BF7-8F80-6EA7120FC4BE</string>
+	<key>IDESourceControlProjectName</key>
+	<string>libbson</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>257FB5D8-4245-4689-AEE8-65534DF62EA9</key>
+		<string>ssh://github.com/paulmelnikow/libbson.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>src/bindings/objc/libbson/libbson.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>257FB5D8-4245-4689-AEE8-65534DF62EA9</key>
+		<string>../../../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>ssh://github.com/paulmelnikow/libbson.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>257FB5D8-4245-4689-AEE8-65534DF62EA9</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>257FB5D8-4245-4689-AEE8-65534DF62EA9</string>
+			<key>IDESourceControlWCCName</key>
+			<string>libbson</string>
+		</dict>
+	</array>
+</dict>
+</plist>
