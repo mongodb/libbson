@@ -37,3 +37,5 @@ stamp-h1
 *.swp
 test-libbson
 test.log
+.DS_Store
+xcuserdata
