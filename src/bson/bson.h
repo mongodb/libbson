@@ -99,6 +99,9 @@ BSON_BEGIN_DECLS
 #define BSON_APPEND_ARRAY(b,key,val) \
       bson_append_array (b, key, (int)strlen (key), val)
 
+#define BSON_APPEND_ARRAY_BEGIN(b,key,child) \
+      bson_append_array_begin (b, key, (int)strlen (key), child)
+
 #define BSON_APPEND_BINARY(b,key,subtype,val,len) \
       bson_append_binary (b, key, (int) strlen (key), subtype, val, len)
 
@@ -110,6 +113,12 @@ BSON_BEGIN_DECLS
 
 #define BSON_APPEND_CODE_WITH_SCOPE(b,key,val,scope) \
       bson_append_code_with_scope (b, key, (int) strlen (key), val, scope)
+
+#define BSON_APPEND_DBPOINTER(b,key,coll,oid) \
+      bson_append_dbpointer (b, key, (int) strlen (key), coll, oid)
+
+#define BSON_APPEND_DOCUMENT_BEGIN(b,key,child) \
+      bson_append_document_begin (b, key, (int)strlen (key), child)
 
 #define BSON_APPEND_DOUBLE(b,key,val) \
       bson_append_double (b, key, (int) strlen (key), val)
