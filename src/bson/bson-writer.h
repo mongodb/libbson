@@ -42,7 +42,8 @@ typedef struct _bson_writer_t bson_writer_t;
 bson_writer_t *bson_writer_new        (uint8_t           **buf,
                                        size_t             *buflen,
                                        size_t              offset,
-                                       bson_realloc_func   realloc_func);
+                                       bson_realloc_func   realloc_func,
+                                       void               *realloc_func_ctx);
 void           bson_writer_destroy    (bson_writer_t      *writer);
 size_t         bson_writer_get_length (bson_writer_t      *writer);
 bool           bson_writer_begin      (bson_writer_t      *writer,
