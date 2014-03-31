@@ -17,7 +17,7 @@
 @interface BSONSerializer : NSObject
 
 + (instancetype) serializer;
-+ (instancetype) serializerWithNativeDocument:(bson_t *) nativeDocument destroyOnDealloc:(BOOL) destroyOnDealloc;
++ (instancetype) serializerWithNativeDocument:(bson_t *) nativeDocument;
 
 - (bson_t *) nativeValue;
 - (BOOL) appendObject:(id) value forKey:(NSString *) key error:(NSError **) error;

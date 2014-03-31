@@ -13,7 +13,8 @@
 
 @interface BSONDocument (Module)
 - (const bson_t *) nativeValue;
-- (id) initWithNativeValue:(bson_t *) bson destroyOnDealloc:(BOOL) destroyOnDealloc;
+- (id) initWithNativeValue:(bson_t *) bson;
+- (void) invalidate;
 @end
 
 @implementation BSONSerializer
@@ -29,8 +30,8 @@
     return [[self alloc] initWithDocument:[BSONDocument document]];
 }
 
-+ (instancetype) serializerWithNativeDocument:(bson_t *) nativeDocument destroyOnDealloc:(BOOL) destroyOnDealloc {
-    BSONDocument *document = [[BSONDocument alloc] initWithNativeValue:nativeDocument destroyOnDealloc:destroyOnDealloc];
++ (instancetype) serializerWithNativeDocument:(bson_t *) nativeDocument {
+    BSONDocument *document = [[BSONDocument alloc] initWithNativeValue:nativeDocument];
     return [[self alloc] initWithDocument:document];
 }
 
@@ -98,7 +99,7 @@
 
     bson_t child;
     bson_append_document_begin(self.nativeValue, utf8, (int)strlen(utf8), &child);
-    BSONSerializer *childSerializer = [BSONSerializer serializerWithNativeDocument:&child destroyOnDealloc:NO];
+    BSONSerializer *childSerializer = [BSONSerializer serializerWithNativeDocument:&child];
 
     BOOL success = YES;
     for (NSString *key in dictionary.allKeys) {
@@ -110,6 +111,7 @@
     }
     
     bson_append_document_end(self.nativeValue, &child);
+    [childSerializer.document invalidate];
     return success;
 }
 
@@ -119,7 +121,7 @@
 
     bson_t child;
     bson_append_array_begin(self.nativeValue, utf8, (int)strlen(utf8), &child);
-    BSONSerializer *childSerializer = [BSONSerializer serializerWithNativeDocument:&child destroyOnDealloc:NO];
+    BSONSerializer *childSerializer = [BSONSerializer serializerWithNativeDocument:&child];
     
     BOOL success = YES;
     for (NSUInteger i = 0; i < array.count; ++i) {
@@ -132,6 +134,7 @@
     }
     
     bson_append_array_end(self.nativeValue, &child);
+    [childSerializer.document invalidate];
     return success;
 }
 

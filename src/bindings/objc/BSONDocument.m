@@ -19,7 +19,7 @@
 
 @interface BSONDocument (Module)
 - (const bson_t *) nativeValue;
-- (id) initWithNativeValue:(bson_t *) bson destroyOnDealloc:(BOOL) destroyOnDealloc;
+- (id) initWithNativeValue:(bson_t *) bson;
 @end
 
 @interface BSONObjectID (Module)
@@ -39,7 +39,6 @@
 
 - (id) init {
     if (self = [super init]) {
-        self.destroyOnDealloc = YES;
         self._bson = bson_new();
     }
     return self;
@@ -49,7 +48,6 @@
     if (bytes > UINT32_MAX)
         return self = nil;
     if (self = [super init]) {
-        self.destroyOnDealloc = YES;
         self._bson = bson_sized_new(bytes);
     }
     return self;
@@ -68,15 +66,13 @@
             bson_destroy(self._bson);
             return self = nil;
         }
-        self.destroyOnDealloc = YES;
     }
     return self;
 }
 
-- (id) initWithNativeValue:(bson_t *) bson destroyOnDealloc:(BOOL) destroyOnDealloc {
+- (id) initWithNativeValue:(bson_t *) bson {
     if (bson == NULL) return self = nil;
     if (self = [super init]) {
-        self.destroyOnDealloc = destroyOnDealloc;
         self._bson = bson;
     }
     return self;
@@ -99,17 +95,21 @@
 }
 
 - (void) dealloc {
-    if (self.destroyOnDealloc) {
+    if (self._bson != NULL) {
         bson_destroy(self._bson);
         self._bson = NULL;
     }
+}
+
+- (void) invalidate {
+    self._bson = NULL;
 }
 
 #pragma mark -
 
 - (instancetype) copy {
     bson_t *bson = bson_copy(self.nativeValue);
-    return [[self.class alloc] initWithNativeValue:bson destroyOnDealloc:YES];
+    return [[self.class alloc] initWithNativeValue:bson];
 }
 
 - (void) reinit {

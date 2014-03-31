@@ -80,6 +80,4 @@
 
 + (NSUInteger) maximumCapacity;
 
-@property (assign) BOOL destroyOnDealloc;
-
 @end

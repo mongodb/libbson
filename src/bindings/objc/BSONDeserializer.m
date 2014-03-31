@@ -13,7 +13,7 @@
 
 @interface BSONDocument (Module)
 - (const bson_t *) nativeValue;
-- (id) initWithNativeValue:(bson_t *) bson destroyOnDealloc:(BOOL) destroyOnDealloc;
+- (id) initWithNativeValue:(bson_t *) bson;
 @end
 
 @interface BSONObjectID (Module)
