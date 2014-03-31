@@ -50,6 +50,7 @@ bson_copy_to
 bson_copy_to_excluding
 bson_count_keys
 bson_destroy
+bson_destroy_with_steal
 bson_equal
 bson_free
 bson_get_data

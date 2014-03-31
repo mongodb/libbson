@@ -329,6 +329,31 @@ bson_destroy (bson_t *bson);
 
 
 /**
+ * bson_destroy_with_steal:
+ * @bson: A #bson_t.
+ * @steal: If ownership of the data buffer should be transfered to caller.
+ * @length: (out): location for the length of the buffer.
+ *
+ * Destroys @bson similar to calling bson_destroy() except that the underlying
+ * buffer will be returned and ownership transfered to the caller if @steal
+ * is non-zero.
+ *
+ * If length is non-NULL, the length of @bson will be stored in @length.
+ *
+ * It is a programming error to call this function with any bson that has
+ * been initialized static, or is being used to create a subdocument with
+ * functions such as bson_append_document_begin() or bson_append_array_begin().
+ *
+ * Returns: a buffer owned by the caller if @steal is true. Otherwise NULL.
+ *    If there was an error, NULL is returned.
+ */
+uint8_t *
+bson_destroy_with_steal (bson_t   *bson,
+                         bool      steal,
+                         uint32_t *length);
+
+
+/**
  * bson_get_data:
  * @bson: A bson_t.
  *
