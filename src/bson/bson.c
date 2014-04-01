@@ -2064,32 +2064,32 @@ bson_destroy_with_steal (bson_t   *bson,
    uint8_t *ret = NULL;
 
    bson_return_val_if_fail (bson, NULL);
-   bson_return_val_if_fail (!(bson->flags & BSON_FLAG_CHILD), NULL);
-   bson_return_val_if_fail (!(bson->flags & BSON_FLAG_IN_CHILD), NULL);
-   bson_return_val_if_fail (!(bson->flags & BSON_FLAG_RDONLY), NULL);
 
    if (length) {
       *length = bson->len;
    }
 
-   if (steal) {
-      if ((bson->flags & (BSON_FLAG_CHILD |
-                          BSON_FLAG_IN_CHILD |
-                          BSON_FLAG_RDONLY))) {
-         /* Do nothing */
-      } else if ((bson->flags & BSON_FLAG_INLINE)) {
-         bson_impl_inline_t *inl;
+   if (!steal) {
+      bson_destroy (bson);
+      return NULL;
+   }
 
-         inl = (bson_impl_inline_t *)bson;
-         ret = bson_malloc (bson->len);
-         memcpy (ret, inl->data, bson->len);
-      } else {
-         bson_impl_alloc_t *alloc;
+   if ((bson->flags & (BSON_FLAG_CHILD |
+                       BSON_FLAG_IN_CHILD |
+                       BSON_FLAG_RDONLY))) {
+      /* Do nothing */
+   } else if ((bson->flags & BSON_FLAG_INLINE)) {
+      bson_impl_inline_t *inl;
 
-         alloc = (bson_impl_alloc_t *)bson;
-         ret = *alloc->buf;
-         *alloc->buf = NULL;
-      }
+      inl = (bson_impl_inline_t *)bson;
+      ret = bson_malloc (bson->len);
+      memcpy (ret, inl->data, bson->len);
+   } else {
+      bson_impl_alloc_t *alloc;
+
+      alloc = (bson_impl_alloc_t *)bson;
+      ret = *alloc->buf;
+      *alloc->buf = NULL;
    }
 
    bson_destroy (bson);
