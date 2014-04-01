@@ -2073,7 +2073,11 @@ bson_destroy_with_steal (bson_t   *bson,
    }
 
    if (steal) {
-      if ((bson->flags & BSON_FLAG_INLINE)) {
+      if ((bson->flags & (BSON_FLAG_CHILD |
+                          BSON_FLAG_IN_CHILD |
+                          BSON_FLAG_RDONLY))) {
+         /* Do nothing */
+      } else if ((bson->flags & BSON_FLAG_INLINE)) {
          bson_impl_inline_t *inl;
 
          inl = (bson_impl_inline_t *)bson;
