@@ -264,6 +264,26 @@ bson_new_from_data (const uint8_t *data,
 
 
 /**
+ * bson_new_from_buffer:
+ * @buf: A pointer to a buffer containing a serialized bson document.  Or null
+ * @buf_len: The length of the buffer in bytes.
+ * @realloc_fun: a realloc like function
+ * @realloc_fun_ctx: a context for the realloc function
+ *
+ * Creates a new bson_t structure using the data provided. @buf should contain
+ * a bson document, or null pointer should be passed for new allocations.
+ *
+ * Returns: A newly allocate bson_t that should be freed with bson_destroy().
+ *          The underlying buffer will be used and not be freed in destroy.
+ */
+bson_t *
+bson_new_from_buffer (uint8_t           **buf,
+                      size_t             *buf_len,
+                      bson_realloc_func   realloc_func,
+                      void               *realloc_func_ctx);
+
+
+/**
  * bson_sized_new:
  * @size: A size_t containing the number of bytes to allocate.
  *
