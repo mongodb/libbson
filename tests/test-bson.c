@@ -834,6 +834,45 @@ test_bson_init_static (void)
 
 
 static void
+test_bson_new_from_buffer (void)
+{
+   bson_t * b;
+   uint8_t * buf = bson_malloc0(5);
+   size_t len = 5;
+   uint32_t len_le = BSON_UINT32_TO_LE(5);
+
+   memcpy(buf, &len_le, 4);
+
+   b = bson_new_from_buffer(&buf, &len, bson_realloc_ctx, NULL);
+
+   assert(b->flags & BSON_FLAG_NO_FREE);
+   assert(len == 5);
+   assert(b->len == 5);
+
+   bson_append_utf8(b, "hello", -1, "world", -1);
+
+   assert(len == 32);
+   assert(b->len == 22);
+
+   bson_destroy(b);
+
+   bson_free(buf);
+
+   buf = NULL;
+   len = 0;
+
+   b = bson_new_from_buffer(&buf, &len, bson_realloc_ctx, NULL);
+
+   assert(b->flags & BSON_FLAG_NO_FREE);
+   assert(len == 5);
+   assert(b->len == 5);
+
+   bson_destroy(b);
+   bson_free(buf);
+}
+
+
+static void
 test_bson_utf8_key (void)
 {
    uint32_t length;
@@ -1290,6 +1329,7 @@ void
 test_bson_install (TestSuite *suite)
 {
    TestSuite_Add (suite, "/bson/new", test_bson_new);
+   TestSuite_Add (suite, "/bson/new_from_buffer", test_bson_new_from_buffer);
    TestSuite_Add (suite, "/bson/init", test_bson_init);
    TestSuite_Add (suite, "/bson/init_static", test_bson_init_static);
    TestSuite_Add (suite, "/bson/basic", test_bson_alloc);

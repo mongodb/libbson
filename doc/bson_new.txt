@@ -31,6 +31,12 @@ bson_new_from_data (const uint8_t *data,
                     uint32_t       length);
 
 bson_t *
+bson_new_from_buffer (uint8_t          **buf,
+                      size_t            *buf_len,
+                      bson_realloc_fun   realloc_func,
+                      void              *realloc_func_ctx);
+
+bson_t *
 bson_sized_new (size_t size);
 -----------------------
 
@@ -51,6 +57,12 @@ should be freed with `bson_destroy()` when it is no longer in use.
 The _bson_new_from_data()_ function shall create a new `bson_t` on the heap and
 copy the contents of `data`. This may be helpful when working with language
 bindings but is generally expected to be slower.
+
+The _bson_new_from_buffer()_ function shall create a new `bson_t` on the heap
+taking ownership of the contents of `buf`.  If a `realloc_func` is passed, this
+will be used to manage growth of this buffer.  This may be helpful when working
+with language bindings but responsibility for the buffer lies with the caller.
+_bson_destroy()_ does not free `buf`.
 
 The _bson_sized_new()_ function shall create a new `bson_t` on the heap with a
 preallocated buffer. This is useful if you have a good idea of the size of the
