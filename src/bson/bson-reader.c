@@ -467,9 +467,13 @@ static const bson_t *
 _bson_reader_handle_read (bson_reader_handle_t *reader,      /* IN */
                           bool                 *reached_eof) /* IN */
 {
-   uint32_t blen;
+   int32_t blen;
 
    bson_return_val_if_fail (reader, NULL);
+
+   if (reached_eof) {
+      *reached_eof = false;
+   }
 
    while (!reader->done) {
       if ((reader->end - reader->offset) < 4) {
@@ -479,6 +483,10 @@ _bson_reader_handle_read (bson_reader_handle_t *reader,      /* IN */
 
       memcpy (&blen, &reader->data[reader->offset], sizeof blen);
       blen = BSON_UINT32_FROM_LE (blen);
+
+      if (blen < 5) {
+         return NULL;
+      }
 
       if (blen > (reader->end - reader->offset)) {
          if (blen > reader->len) {
@@ -569,7 +577,7 @@ static const bson_t *
 _bson_reader_data_read (bson_reader_data_t *reader,      /* IN */
                         bool               *reached_eof) /* IN */
 {
-   uint32_t blen;
+   int32_t blen;
 
    bson_return_val_if_fail (reader, NULL);
 
@@ -581,25 +589,26 @@ _bson_reader_data_read (bson_reader_data_t *reader,      /* IN */
       memcpy (&blen, &reader->data[reader->offset], sizeof blen);
       blen = BSON_UINT32_FROM_LE (blen);
 
-      if ((blen + reader->offset) <= reader->length) {
-         if (!bson_init_static (&reader->inline_bson,
-                                &reader->data[reader->offset],
-                                blen)) {
-            if (reached_eof) {
-               *reached_eof = false;
-            }
-
-            return NULL;
-         }
-
-         reader->offset += blen;
-
-         if (reached_eof) {
-            *reached_eof = (reader->offset == reader->length);
-         }
-
-         return &reader->inline_bson;
+      if (blen < 5) {
+         return NULL;
       }
+
+      if (blen > (reader->length - reader->offset)) {
+         return NULL;
+      }
+
+      if (!bson_init_static (&reader->inline_bson,
+                             &reader->data[reader->offset], blen)) {
+         return NULL;
+      }
+
+      reader->offset += blen;
+
+      if (reached_eof) {
+         *reached_eof = (reader->offset == reader->length);
+      }
+
+      return &reader->inline_bson;
    }
 
    if (reached_eof) {
