@@ -133,6 +133,7 @@ bson_reader_set_read_func
 bson_reader_set_destroy_func
 bson_reader_tell
 bson_realloc
+bson_realloc_ctx
 bson_reinit
 bson_set_error
 bson_sized_new
