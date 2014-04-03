@@ -1581,6 +1581,7 @@ bson_append_date_time (bson_t      *bson,
                        int64_t value)
 {
    static const uint8_t type = BSON_TYPE_DATE_TIME;
+   uint64_t value_le;
 
    bson_return_val_if_fail (bson, false);
    bson_return_val_if_fail (key, false);
@@ -1590,12 +1591,14 @@ bson_append_date_time (bson_t      *bson,
       key_length =(int)strlen (key);
    }
 
+   value_le = BSON_UINT64_TO_LE (value);
+
    return _bson_append (bson, 4,
                         (1 + key_length + 1 + 8),
                         1, &type,
                         key_length, key,
                         1, &gZero,
-                        8, &value);
+                        8, &value_le);
 }
 
 
@@ -1611,8 +1614,8 @@ bson_append_timeval (bson_t         *bson,
    bson_return_val_if_fail (key, false);
    bson_return_val_if_fail (value, false);
 
-   unix_msec = BSON_UINT64_TO_LE ((((uint64_t)value->tv_sec) * 1000UL) +
-                                  (value->tv_usec / 1000UL));
+   unix_msec = (((uint64_t)value->tv_sec) * 1000UL) +
+                                  (value->tv_usec / 1000UL);
    return bson_append_date_time (bson, key, key_length, unix_msec);
 }
 
