@@ -1,3 +1,40 @@
+Libbson 0.6.6
+=============
+
+Another release for your hacking pleasure!
+
+First off, note that there are two ABI breaks as part of this release. We
+felt they were important as they will help us stablize towards a 1.0 release.
+It is recommended that you recompile against this version of libbson.
+
+Lots of small fixes went into this release to help get things building better
+on various platforms. Windows support should be improved and many warnings have
+been cleaned up.
+
+The signature of bson_realloc_func has changed to allow for context to be
+provided. This should help in situations where a pointer to the memory pool is
+required.
+
+bson_destroy_with_steal() has been added so that you can steal a buffer instead
+of freeing it when bson_destroy() is called.
+
+bson_new_from_buffer() has been added so that you can provide your own realloc
+function to manage the underlying buffer. This will be useful for bindings that
+want to integrate their memory manager for bson documents.
+
+bson_value_t is a new container type that can hold any bson type.
+
+I'd like to thank everyone who contributed to this release.
+
+    Gary Murakami
+    Jason Carey
+    Jose Sebastian Battig
+    Máximo Cuadros
+    Paul Melnikow
+    Stefan Kaes
+
+Happy hacking!
+
 Libbson 0.6.4
 =============
 
