@@ -1924,6 +1924,50 @@ bson_new_from_data (const uint8_t *data,
 
 
 bson_t *
+bson_new_from_buffer (uint8_t           **buf,
+                      size_t             *buf_len,
+                      bson_realloc_func   realloc_func,
+                      void               *realloc_func_ctx)
+{
+   bson_t * bson = bson_malloc0(sizeof *bson);
+   bson_impl_alloc_t *impl = (bson_impl_alloc_t *)bson;
+   uint32_t len_le, length;
+
+   bson_return_val_if_fail(buf, NULL);
+   bson_return_val_if_fail(buf_len, NULL);
+
+   if (! *buf) {
+      length = 5;
+      len_le = BSON_UINT32_TO_LE(length);
+      *buf_len = 5;
+      *buf = realloc_func(*buf, *buf_len, realloc_func_ctx);
+      memcpy (*buf, &len_le, 4);
+      memset (*buf + 4, 0, *buf_len - 4);
+   } else {
+      if ((*buf_len < 5) || (*buf_len > INT_MAX)) {
+         return NULL;
+      }
+
+      memcpy (&len_le, *buf, 4);
+      length = BSON_UINT32_FROM_LE(len_le);
+   }
+
+   if ((*buf)[length - 1]) {
+      return NULL;
+   }
+
+   impl->flags = BSON_FLAG_NO_FREE;
+   impl->len = length;
+   impl->buf = buf;
+   impl->buflen = buf_len;
+   impl->realloc = realloc_func;
+   impl->realloc_func_ctx = realloc_func_ctx;
+
+   return bson;
+}
+
+
+bson_t *
 bson_copy (const bson_t *bson)
 {
    const uint8_t *data;

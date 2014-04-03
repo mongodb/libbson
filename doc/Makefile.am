@@ -76,6 +76,8 @@ MAN3 = \
 	doc/bson_malloc0.3 \
 	doc/bson_malloc.3 \
 	doc/bson_new.3 \
+	doc/bson_new_from_buffer.3 \
+	doc/bson_new_from_data.3 \
 	doc/bson_oid_compare.3 \
 	doc/bson_oid_copy.3 \
 	doc/bson_oid_equal.3 \
