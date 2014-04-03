@@ -1929,22 +1929,31 @@ bson_new_from_buffer (uint8_t           **buf,
                       bson_realloc_func   realloc_func,
                       void               *realloc_func_ctx)
 {
-   bson_t * bson = bson_malloc0(sizeof *bson);
-   bson_impl_alloc_t *impl = (bson_impl_alloc_t *)bson;
-   uint32_t len_le, length;
+   bson_impl_alloc_t *impl;
+   uint32_t len_le;
+   uint32_t length;
+   bson_t *bson;
 
-   bson_return_val_if_fail(buf, NULL);
-   bson_return_val_if_fail(buf_len, NULL);
+   bson_return_val_if_fail (buf, NULL);
+   bson_return_val_if_fail (buf_len, NULL);
 
-   if (! *buf) {
+   if (!realloc_func) {
+      realloc_func = bson_realloc_ctx;
+   }
+
+   bson = bson_malloc0 (sizeof *bson);
+   impl = (bson_impl_alloc_t *)bson;
+
+   if (!*buf) {
       length = 5;
-      len_le = BSON_UINT32_TO_LE(length);
+      len_le = BSON_UINT32_TO_LE (length);
       *buf_len = 5;
-      *buf = realloc_func(*buf, *buf_len, realloc_func_ctx);
+      *buf = realloc_func (*buf, *buf_len, realloc_func_ctx);
       memcpy (*buf, &len_le, 4);
-      memset (*buf + 4, 0, *buf_len - 4);
+      (*buf) [4] = '\0';
    } else {
       if ((*buf_len < 5) || (*buf_len > INT_MAX)) {
+         bson_free (bson);
          return NULL;
       }
 
@@ -1953,6 +1962,7 @@ bson_new_from_buffer (uint8_t           **buf,
    }
 
    if ((*buf)[length - 1]) {
+      bson_free (bson);
       return NULL;
    }
 
