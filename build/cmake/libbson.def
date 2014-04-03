@@ -110,6 +110,7 @@ bson_md5_init
 bson_md5_finish
 bson_md5_append
 bson_new
+bson_new_from_buffer
 bson_new_from_data
 bson_new_from_json
 bson_oid_compare
