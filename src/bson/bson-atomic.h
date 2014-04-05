@@ -26,19 +26,30 @@
 BSON_BEGIN_DECLS
 
 
-#if defined(__sun)
-# include <atomic.h>
-# define bson_atomic_int_add(p, v)   (atomic_add_int_nv(p, v))
-# define bson_atomic_int64_add(p, v) (atomic_add_64_nv(p, v))
-# define bson_memory_barrier         __machine_rw_barrier
-#elif defined(__GNUC__)
-# define bson_atomic_int_add(p, v)   (__sync_add_and_fetch(p, v))
-# define bson_atomic_int64_add(p, v) (__sync_add_and_fetch_8(p, v))
-# define bson_memory_barrier         __sync_synchronize
-#elif defined(_MSC_VER) || defined(_WIN32)
+#if defined(__GNUC__)
+# if __GNUC__ >= 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
+#  define bson_atomic_int_add(p,v)   __sync_add_and_fetch(p,v)
+#  define bson_atomic_int64_add(p,v) __sync_add_and_fetch_8(p,v)
+#  define bson_memory_barrier()      __sync_synchronize()
+# elif defined(__sun)
+#  include <atomic.h>
+#  define bson_memory_barrier()      __asm__ volatile ("":::"memory")
+#  define bson_atomic_int_add(p,v)   atomic_add_int_nv(p,v)
+#  define bson_atomic_int64_add(p,v) atomic_add_64_nv(p,v)
+# else
+#  error "Unsupported GCC, missing atomics."
+# endif
+#elif defined(_WIN32)
 # define bson_atomic_int_add(p, v)   (InterlockedExchangeAdd((long int *)(p), v))
 # define bson_atomic_int64_add(p, v) (InterlockedExchangeAdd64(p, v))
 # define bson_memory_barrier         MemoryBarrier
+#elif defined(__sun)
+# include <atomic.h>
+# define bson_memory_barrier()       __machine_rw_barrier()
+# define bson_atomic_int_add(p,v)    atomic_add_int_nv(p,v)
+# define bson_atomic_int64_add(p,v)  atomic_add_64_nv(p,v)
+#else
+# error "Unsupported Compiler, please add atomic's support."
 #endif
 
 
