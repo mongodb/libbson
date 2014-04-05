@@ -219,6 +219,10 @@ yajl_gen_integer(yajl_gen g, long long int number)
 # endif
 #endif
 
+#if defined(__sun) && defined(__GNUC__) && __GNUC__ < 4
+# define isinf !finite
+#endif
+
 yajl_gen_status
 yajl_gen_double(yajl_gen g, double number)
 {
