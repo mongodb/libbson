@@ -26,7 +26,12 @@
 BSON_BEGIN_DECLS
 
 
-#if defined(__GNUC__)
+#if defined(__sun)
+# include <atomic.h>
+# define bson_atomic_int_add(p, v)   (atomic_add_int_nv(p, v))
+# define bson_atomic_int64_add(p, v) (atomic_add_64_nv(p, v))
+# define bson_memory_barrier         __machine_rw_barrier
+#elif defined(__GNUC__)
 # define bson_atomic_int_add(p, v)   (__sync_add_and_fetch(p, v))
 # define bson_atomic_int64_add(p, v) (__sync_add_and_fetch_8(p, v))
 # define bson_memory_barrier         __sync_synchronize
