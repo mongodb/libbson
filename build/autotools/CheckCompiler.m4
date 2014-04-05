@@ -15,7 +15,7 @@ AC_PROG_CXX
 c_compiler="unknown"
 AC_LANG_PUSH([C])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
-#if !(defined(__GNUC__) && !defined(__clang__) && !defined(__INTEL_COMPILER) && __GNUC__ >= 4 && __GNUC_MINOR__ >= 1)
+#if !(defined(__GNUC__) && !defined(__clang__) && !defined(__INTEL_COMPILER) && __GNUC__ >= 3 && __GNUC_MINOR__ >= 4)
 #error Not a supported GCC compiler
 #endif
 ])], [c_compiler="gcc"], [])
@@ -27,7 +27,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
 AC_LANG_POP([C])
 
 if test "$c_compiler" = "unknown"; then
-    AC_MSG_ERROR([Compiler GCC >= 4.1 or Clang >= 3.3 is required for C compilation])
+    AC_MSG_ERROR([Compiler GCC >= 3.4 or Clang >= 3.3 is required for C compilation])
 fi
 
 AC_C_CONST
