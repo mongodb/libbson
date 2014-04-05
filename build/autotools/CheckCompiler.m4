@@ -15,7 +15,7 @@ AC_PROG_CXX
 c_compiler="unknown"
 AC_LANG_PUSH([C])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
-#if !(defined(__GNUC__) && !defined(__clang__) && !defined(__INTEL_COMPILER) && __GNUC__ >= 3 && __GNUC_MINOR__ >= 4)
+#if !(defined(__GNUC__) && !defined(__clang__) && !defined(__INTEL_COMPILER) && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)))
 #error Not a supported GCC compiler
 #endif
 ])], [c_compiler="gcc"], [])
