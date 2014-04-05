@@ -321,10 +321,8 @@ _bson_context_get_oid_seq64_threadsafe (bson_context_t *context, /* IN */
    bson_mutex_lock (&context->_m64);
    seq = context->seq64++;
    bson_mutex_unlock (&context->_m64);
-#elif defined BSON_OS_WIN32
-   uint64_t seq = InterlockedIncrement64 ((int64_t *)&context->seq64);
 #else
-   uint64_t seq = __sync_fetch_and_add_8 (&context->seq64, 1);
+   uint64_t seq = bson_atomic_int64_add (&context->seq64, 1);
 #endif
 
    seq = BSON_UINT64_TO_BE (seq);
