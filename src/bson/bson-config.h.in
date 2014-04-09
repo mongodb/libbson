@@ -59,24 +59,4 @@
 #endif
 
 
-/*
- * Define to 1 if 32-bit atomics are not available and pthreads should be
- * used to emulate them.
- */
-#define BSON_WITH_OID32_PT @BSON_WITH_OID32_PT@
-#if BSON_WITH_OID32_PT != 1
-# undef BSON_WITH_OID32_PT
-#endif
-
-
-/*
- * Define to 1 if 64-bit atomics are not available and pthreads should be
- * used to emulate them.
- */
-#define BSON_WITH_OID64_PT @BSON_WITH_OID64_PT@
-#if BSON_WITH_OID64_PT != 1
-# undef BSON_WITH_OID64_PT
-#endif
-
-
 #endif /* BSON_CONFIG_H */
