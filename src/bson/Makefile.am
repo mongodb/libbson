@@ -57,7 +57,8 @@ endif
 
 libbson_la_CFLAGS = \
 	$(MAINTAINER_CFLAGS) \
-	$(OPTIMIZE_LDFLAGS)
+	$(OPTIMIZE_CFLAGS) \
+	$(PTHREAD_CFLAGS)
 
 libbson_la_SOURCES = \
 	$(INST_H_FILES) \
@@ -83,7 +84,7 @@ libbson_la_SOURCES = \
 libbson_la_LIBADD =
 
 if !OS_WIN32
-libbson_la_LIBADD += $(PTHREAD_LIB)
+libbson_la_LIBADD += $(PTHREAD_LIBS)
 else
 libbson_la_LIBADD += -lws2_32
 endif

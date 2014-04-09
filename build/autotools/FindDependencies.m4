@@ -10,12 +10,12 @@ AC_CHECK_FUNC(snprintf, [AC_SUBST(BSON_HAVE_SNPRINTF, 1)])
 AC_SUBST(BSON_HAVE_CLOCK_GETTIME, 0)
 AC_SEARCH_LIBS([clock_gettime], [rt], [AC_SUBST(BSON_HAVE_CLOCK_GETTIME, 1)])
 
-# Determine if we use -pthreads or -pthread (GCC).
-AS_IF([test "$c_compiler" = "gcc"],
-      [AS_IF([test "$os_solaris" = "yes"],
-             [pthread_flag="-pthreads"],
-             [pthread_flag="-pthread"])])
 
+# Check for pthreads. We might need to make this better to handle mingw,
+# but I actually think it is okay to just check for it even though we will
+# use win32 primatives.
+AX_PTHREAD([],
+           [AC_MSG_ERROR([libbson requires pthreads on non-Windows platforms.])])
 # Check if we need to use a mutex due to no atomics support.
 AC_SUBST(BSON_WITH_OID32_PT, 0)
 AC_SUBST(BSON_WITH_OID64_PT, 0)

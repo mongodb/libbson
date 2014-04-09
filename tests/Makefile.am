@@ -26,10 +26,13 @@ test_libbson_CPPFLAGS = \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/bson \
 	-I$(top_builddir)/src/bson \
+	$(PTHREAD_CFLAGS) \
 	-DBSON_COMPILATION \
 	-DBINARY_DIR="\"$(top_srcdir)/tests/binary\""
 
-test_libbson_LDADD = libbson-1.0.la
+test_libbson_LDADD = \
+	$(PTHREAD_LIBS) \
+	libbson-1.0.la
 
 
 if ENABLE_PYTHON
