@@ -79,6 +79,7 @@ include_directories("${SOURCE_DIR}/src")
 set (SOURCES
    ${SOURCE_DIR}/src/bson/bcon.c
    ${SOURCE_DIR}/src/bson/bson.c
+   ${SOURCE_DIR}/src/bson/bson-atomic.c
    ${SOURCE_DIR}/src/bson/bson-clock.c
    ${SOURCE_DIR}/src/bson/bson-context.c
    ${SOURCE_DIR}/src/bson/bson-error.c

@@ -64,6 +64,7 @@ libbson_la_SOURCES = \
 	$(NOINST_H_FILES) \
 	src/bson/bcon.c \
 	src/bson/bson.c \
+	src/bson/bson-atomic.c \
 	src/bson/bson-clock.c \
 	src/bson/bson-context.c \
 	src/bson/bson-error.c \
