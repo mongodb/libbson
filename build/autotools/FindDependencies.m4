@@ -10,11 +10,11 @@ AC_CHECK_FUNC(snprintf, [AC_SUBST(BSON_HAVE_SNPRINTF, 1)])
 AC_SUBST(BSON_HAVE_CLOCK_GETTIME, 0)
 AC_SEARCH_LIBS([clock_gettime], [rt], [AC_SUBST(BSON_HAVE_CLOCK_GETTIME, 1)])
 
-if test "$os_solaris" = "yes"; then
-    pthread_flag="-pthreads"
-else
-    pthread_flag="-pthread"
-fi
+# Determine if we use -pthreads or -pthread (GCC).
+AS_IF([test "$c_compiler" = "gcc"],
+      [AS_IF([test "$os_solaris" = "yes"],
+             [pthread_flag="-pthreads"],
+             [pthread_flag="-pthread"])])
 
 # Check if we need to use a mutex due to no atomics support.
 AC_SUBST(BSON_WITH_OID32_PT, 0)
