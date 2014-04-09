@@ -67,12 +67,14 @@
 #    define MIN(a, b) ( (std::min)(a, b) )
 #  elif defined(_MSC_VER)
 #    define MIN(a, b) ((a) < (b) ? (a) : (b))
-#  else
+#  elif defined(__GNUC__)
 #    define MIN(a, b) ({     \
                           __typeof__ (a)_a = (a); \
                           __typeof__ (b)_b = (b); \
                           _a < _b ? _a : _b;   \
                        })
+#  else
+#    define MIN(a,b) (((a) < (b)) ? (a) : (b))
 #  endif
 #endif
 
@@ -82,12 +84,14 @@
 #    define MAX(a, b) ( (std::max)(a, b) )
 #  elif defined(_MSC_VER)
 #    define MAX(a, b) ((a) > (b) ? (a) : (b))
-#  else
+#  elif defined(__GNUC__)
 #    define MAX(a, b) ({     \
                           __typeof__ (a)_a = (a); \
                           __typeof__ (b)_b = (b); \
                           _a > _b ? _a : _b;   \
                        })
+#  else
+#    define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #  endif
 #endif
 
