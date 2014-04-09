@@ -31,6 +31,13 @@ platform here, we would be happy to hear from you.
  * SPARC
  * ARM
 
+### Supported Compilers
+
+ * GCC 4.1 and newer
+ * Clang 3.3 and newer
+ * Visual Studio (MSVC) 2010 and newer
+ * Oracle Solaris Studio (5.7 and newer, Solaris 10)
+
 ### Dependencies
 
 #### Fedora / RedHat Enterprise / CentOS
