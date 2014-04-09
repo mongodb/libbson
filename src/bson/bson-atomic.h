@@ -39,8 +39,8 @@ BSON_BEGIN_DECLS
 #else
 # warning "Unsupported Compiler/OS combination, please add support for atomics in bson-atomic.h. Using Mutex to emulate atomics."
 # define __BSON_NEED_ATOMICS 1
-  int     bson_atomic_int_add   (int *p, int n);
-  int64_t bson_atomic_int64_add (int64_t *p, int64_t n);
+  int     bson_atomic_int_add   (volatile int *p, int n);
+  int64_t bson_atomic_int64_add (volatile int64_t *p, int64_t n);
 #endif
 
 

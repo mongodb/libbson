@@ -44,8 +44,8 @@ static pthread_mutex_t gSync64 = PTHREAD_MUTEX_INITIALIZER;
 
 
 int
-bson_atomic_int_add (int *p,
-                     int  n)
+bson_atomic_int_add (volatile int *p,
+                     int           n)
 {
    int ret;
 
@@ -59,8 +59,8 @@ bson_atomic_int_add (int *p,
 
 
 int64_t
-bson_atomic_int64_add (int64_t *p,
-                       int64_t  n)
+bson_atomic_int64_add (volatile int64_t *p,
+                       int64_t           n)
 {
    int64_t ret;
 
