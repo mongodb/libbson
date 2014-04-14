@@ -1,3 +1,25 @@
+Libbson 0.6.8
+=============
+
+Quickly following up on the 0.6.6 release is 0.6.8. This release contains
+a couple of bugfixes and more support for older architectures.
+
+On big-endian systems, bson_append_date_time() was not properly converting
+to little-endian. This is now fixed.
+
+We've added support for Sun Pro C Compiler on Solaris 10 and 11. This includes
+support for SPARC systems as well as x86_64. In particular, intrinsics were
+added for the Solaris/SPARC/SunProC combination. If you are running SunProC
+on a non-Solaris platform, a fallback path will be used which is slower than
+native support for atomics. Additionally, bson_gettimeofday() does not fully
+support timezones under SunProC as struct timezone is not defined.
+
+Libbson will now check for GLibc 2.19 to remove various warnings with both
+_GNU_SOURCE and _BSD_SOURCE defined.
+
+Happy Hacking!
+
+
 Libbson 0.6.6
 =============
 
