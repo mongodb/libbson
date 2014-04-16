@@ -222,7 +222,7 @@ test_bson_iter_fuzz (void)
          case BSON_TYPE_DOCUMENT:
             {
                const uint8_t *child = NULL;
-               uint32_t child_len = -1;
+               uint32_t child_len = 0;
 
                bson_iter_document(&iter, &child_len, &child);
                assert(child);

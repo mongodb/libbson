@@ -115,7 +115,7 @@ test_bson_string_append_printf (void)
 static void
 test_bson_string_append_unichar (void)
 {
-   static const char test1[] = {0xe2, 0x82, 0xac, 0};
+   static const unsigned char test1[] = {0xe2, 0x82, 0xac, 0};
    bson_string_t *str;
    char *s;
 
@@ -123,7 +123,7 @@ test_bson_string_append_unichar (void)
    bson_string_append_unichar(str, 0x20AC);
    s = bson_string_free(str, false);
    assert(s);
-   assert(!strcmp(s, test1));
+   assert(!strcmp(s, (const char *)test1));
    bson_free(s);
 }
 
