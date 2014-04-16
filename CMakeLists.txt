@@ -49,6 +49,8 @@ else ()
    CHECK_INCLUDE_FILE(stdbool.h BSON_HAVE_STDBOOL_H)
 endif ()
 
+set (BSON_HAVE_ATOMIC_64_ADD_AND_FETCH 1)
+
 if (BSON_BIG_ENDIAN)
    set (BSON_BYTE_ORDER 4321)
 else ()
