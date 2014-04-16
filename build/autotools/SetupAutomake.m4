@@ -24,3 +24,6 @@ AM_CONDITIONAL([ENABLE_STDBOOL],[test "$enable_stdbool" = "yes"])
 
 # Should we use pthreads
 AM_CONDITIONAL([ENABLE_PTHREADS], test "$enable_pthreads" = "yes")
+
+# Can we run the abicheck?
+AM_CONDITIONAL([CAN_ABI_CHECK], [test "os_linux" = "yes" && test "$have_sync_add_and_fetch_8" = "yes"])
