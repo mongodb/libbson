@@ -25,17 +25,17 @@
 static void
 test_bson_utf8_validate (void)
 {
-   static const char test1[] = {0xe2, 0x82, 0xac, ' ', 0xe2, 0x82, 0xac, ' ', 0xe2, 0x82, 0xac, 0};
+   static const unsigned char test1[] = {0xe2, 0x82, 0xac, ' ', 0xe2, 0x82, 0xac, ' ', 0xe2, 0x82, 0xac, 0};
 
    assert(bson_utf8_validate("asdf", 4, false));
    assert(bson_utf8_validate("asdf", 4, true));
    assert(bson_utf8_validate("asdf", 5, true));
    assert(!bson_utf8_validate("asdf", 5, false));
 
-   assert(bson_utf8_validate(test1, 11, true));
-   assert(bson_utf8_validate(test1, 11, false));
-   assert(bson_utf8_validate(test1, 12, true));
-   assert(!bson_utf8_validate(test1, 12, false));
+   assert(bson_utf8_validate((const char *)test1, 11, true));
+   assert(bson_utf8_validate((const char *)test1, 11, false));
+   assert(bson_utf8_validate((const char *)test1, 12, true));
+   assert(!bson_utf8_validate((const char *)test1, 12, false));
 }
 
 
@@ -66,7 +66,7 @@ static void
 test_bson_utf8_get_char (void)
 {
    static const char *test1 = "asdf";
-   static const char test2[] = {0xe2, 0x82, 0xac, ' ', 0xe2, 0x82, 0xac, ' ', 0xe2, 0x82, 0xac, 0};
+   static const unsigned char test2[] = {0xe2, 0x82, 0xac, ' ', 0xe2, 0x82, 0xac, ' ', 0xe2, 0x82, 0xac, 0};
    const char *c;
 
    c = test1;
@@ -80,10 +80,10 @@ test_bson_utf8_get_char (void)
    c = bson_utf8_next_char(c);
    assert(!*c);
 
-   c = test2;
+   c = (const char *)test2;
    assert(bson_utf8_get_char(c) == 0x20AC);
    c = bson_utf8_next_char(c);
-   assert(c == test2 + 3);
+   assert(c == (const char *)test2 + 3);
    assert(bson_utf8_get_char(c) == ' ');
    c = bson_utf8_next_char(c);
    assert(bson_utf8_get_char(c) == 0x20AC);
@@ -100,8 +100,8 @@ static void
 test_bson_utf8_from_unichar (void)
 {
    static const char test1[] = {'a'};
-   static const char test2[] = {0xc3, 0xbf};
-   static const char test3[] = {0xe2, 0x82, 0xac};
+   static const unsigned char test2[] = {0xc3, 0xbf};
+   static const unsigned char test3[] = {0xe2, 0x82, 0xac};
    uint32_t len;
    char str[6];
 
@@ -157,11 +157,11 @@ test_bson_utf8_from_unichar (void)
 
    bson_utf8_from_unichar(0xFF, str, &len);
    assert(len == 2);
-   assert(!memcmp(test2, str, 2));
+   assert(!memcmp((const char *)test2, str, 2));
 
    bson_utf8_from_unichar(0x20AC, str, &len);
    assert(len == 3);
-   assert(!memcmp(test3, str, 3));
+   assert(!memcmp((const char *)test3, str, 3));
 }
 
 

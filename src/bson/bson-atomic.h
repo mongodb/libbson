@@ -29,8 +29,8 @@ BSON_BEGIN_DECLS
 
 #if defined(__sun) && defined(__SVR4)
 # include <atomic.h>
-# define bson_atomic_int_add(p,v)   atomic_add_int_nv(p,v)
-# define bson_atomic_int64_add(p,v) atomic_add_64_nv(p,v)
+# define bson_atomic_int_add(p,v)   atomic_add_int_nv((volatile uint_t *)p,v)
+# define bson_atomic_int64_add(p,v) atomic_add_64_nv((volatile uint64_t *)p,v)
 #elif defined(_WIN32)
 # define bson_atomic_int_add(p, v)   (InterlockedExchangeAdd((long int *)(p), v))
 # define bson_atomic_int64_add(p, v) (InterlockedExchangeAdd64(p, v))

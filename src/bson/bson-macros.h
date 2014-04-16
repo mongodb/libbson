@@ -104,6 +104,9 @@
 #if defined(_MSC_VER)
 #  define BSON_ALIGNED_BEGIN(_N) __declspec (align (_N))
 #  define BSON_ALIGNED_END(_N)
+#elif defined(__SUNPRO_C)
+#  define BSON_ALIGNED_BEGIN(_N)
+#  define BSON_ALIGNED_END(_N)
 #else
 #  define BSON_ALIGNED_BEGIN(_N)
 #  define BSON_ALIGNED_END(_N) __attribute__((aligned (_N)))
