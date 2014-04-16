@@ -24,6 +24,10 @@
 #define BSON_ENDIAN_H
 
 
+#if defined(__sun)
+# include <sys/byteorder.h>
+#endif
+
 #include "bson-config.h"
 #include "bson-macros.h"
 #include "bson-compat.h"
@@ -164,7 +168,11 @@ __bson_double_swap_slow (double v) /* IN */
 }
 
 
-#if defined (__GNUC__) && (__GNUC__ >= 4)
+#if defined(__sun)
+# define BSON_UINT16_SWAP_LE_BE(v) BSWAP_16((uint16_t)v)
+# define BSON_UINT32_SWAP_LE_BE(v) BSWAP_32((uint32_t)v)
+# define BSON_UINT64_SWAP_LE_BE(v) BSWAP_64((uint64_t)v)
+#elif defined(__GNUC__) && (__GNUC__ >= 4)
 # if __GNUC__ >= 4 && defined (__GNUC_MINOR__) && __GNUC_MINOR__ >= 3
 #  define BSON_UINT32_SWAP_LE_BE(v) __builtin_bswap32 ((uint32_t)v)
 #  define BSON_UINT64_SWAP_LE_BE(v) __builtin_bswap64 ((uint64_t)v)
@@ -176,17 +184,17 @@ __bson_double_swap_slow (double v) /* IN */
 
 
 #ifndef BSON_UINT16_SWAP_LE_BE
-# define BSON_UINT16_SWAP_LE_BE(v) __bson_uint16_swap_slow (v)
+# define BSON_UINT16_SWAP_LE_BE(v) __bson_uint16_swap_slow ((uint16_t)v)
 #endif
 
 
 #ifndef BSON_UINT32_SWAP_LE_BE
-# define BSON_UINT32_SWAP_LE_BE(v) __bson_uint32_swap_slow (v)
+# define BSON_UINT32_SWAP_LE_BE(v) __bson_uint32_swap_slow ((uint32_t)v)
 #endif
 
 
 #ifndef BSON_UINT64_SWAP_LE_BE
-# define BSON_UINT64_SWAP_LE_BE(v) __bson_uint64_swap_slow (v)
+# define BSON_UINT64_SWAP_LE_BE(v) __bson_uint64_swap_slow ((uint64_t)v)
 #endif
 
 
