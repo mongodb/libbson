@@ -40,9 +40,9 @@ bson_memory_barrier (void)
 #ifdef __BSON_NEED_ATOMIC_32
 #include <pthread.h>
 static pthread_mutex_t gSync32 = PTHREAD_MUTEX_INITIALIZER;
-int
-bson_atomic_int_add (volatile int *p,
-                     int           n)
+int32_t
+bson_atomic_int_add (volatile int32_t *p,
+                     int32_t           n)
 {
    int ret;
 

@@ -29,15 +29,15 @@ BSON_BEGIN_DECLS
 
 #if defined(__sun) && defined(__SVR4)
 # include <atomic.h>
-# define bson_atomic_int_add(p,v)   atomic_add_int_nv((volatile uint_t *)p,v)
-# define bson_atomic_int64_add(p,v) atomic_add_64_nv((volatile uint64_t *)p,v)
+# define bson_atomic_int_add(p,v)   atomic_add_32_nv((volatile uint32_t *)p, (v))
+# define bson_atomic_int64_add(p,v) atomic_add_64_nv((volatile uint64_t *)p, (v))
 #elif defined(_WIN32)
-# define bson_atomic_int_add(p, v)   (InterlockedExchangeAdd((long int *)(p), v))
-# define bson_atomic_int64_add(p, v) (InterlockedExchangeAdd64(p, v))
+# define bson_atomic_int_add(p, v)   (InterlockedExchangeAdd((volatile LONG *)(p), (LONG)(v)))
+# define bson_atomic_int64_add(p, v) (InterlockedExchangeAdd64((volatile LONGLONG *)(p), (LONGLONG)(v)))
 #elif defined(__GNUC__) && ((__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 1)))
-# define bson_atomic_int_add(p,v)   __sync_add_and_fetch(p,v)
+# define bson_atomic_int_add(p,v)   __sync_add_and_fetch((p),(v))
 # if BSON_HAVE_ATOMIC_64_ADD_AND_FETCH
-#  define bson_atomic_int64_add(p,v) __sync_add_and_fetch((int64_t*)(p),(int64_t)(v))
+#  define bson_atomic_int64_add(p,v) __sync_add_and_fetch((volatile int64_t*)(p),(int64_t)(v))
 # else
 #  define __BSON_NEED_ATOMIC_64 1
 # endif
@@ -49,10 +49,8 @@ BSON_BEGIN_DECLS
 
 
 #ifdef __BSON_NEED_ATOMIC_32
-  int bson_atomic_int_add   (volatile int *p, int n);
+  int32_t bson_atomic_int_add   (volatile int32_t *p, int32_t n);
 #endif
-
-
 #ifdef __BSON_NEED_ATOMIC_64
   int64_t bson_atomic_int64_add (volatile int64_t *p, int64_t n);
 #endif
