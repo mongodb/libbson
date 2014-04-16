@@ -50,7 +50,7 @@ typedef struct
    bson_type_metrics_t bson_type_metrics[256];
 } bson_metrics_state_t;
 
-static bson_metrics_state_t state = {
+static bson_metrics_state_t initial_state = {
    0L, 0L, 0L, 0L, 0L, 0L,
    {
        { /* BSON_TYPE_EOD        = 0x00 */ 0L, "End of document" },
@@ -75,6 +75,8 @@ static bson_metrics_state_t state = {
        { 0L, NULL }
    }
 };
+
+static bson_metrics_state_t state;
 
 static int
 compar_bson_type_metrics (const void *a,
@@ -247,6 +249,7 @@ main (int   argc,
          continue;
       }
 
+      state = initial_state;
       dtime_before = dtimeofday();
       mark = 0;
       while ((b = bson_reader_read (reader, NULL))) {
