@@ -19,6 +19,7 @@
 #define BSON_ATOMIC_H
 
 
+#include "bson-config.h"
 #include "bson-compat.h"
 #include "bson-macros.h"
 
@@ -35,11 +36,24 @@ BSON_BEGIN_DECLS
 # define bson_atomic_int64_add(p, v) (InterlockedExchangeAdd64(p, v))
 #elif defined(__GNUC__) && ((__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 1)))
 # define bson_atomic_int_add(p,v)   __sync_add_and_fetch(p,v)
-# define bson_atomic_int64_add(p,v) __sync_add_and_fetch_8(p,v)
+# if BSON_HAVE_ATOMIC_64_ADD_AND_FETCH
+#  define bson_atomic_int64_add(p,v) __sync_add_and_fetch_8(p,v)
+# else
+#  define __BSON_NEED_ATOMIC_64 1
+# endif
 #else
 # warning "Unsupported Compiler/OS combination, please add support for atomics in bson-atomic.h. Using Mutex to emulate atomics."
-# define __BSON_NEED_ATOMICS 1
-  int     bson_atomic_int_add   (volatile int *p, int n);
+# define __BSON_NEED_ATOMIC_32 1
+# define __BSON_NEED_ATOMIC_64 1
+#endif
+
+
+#ifdef __BSON_NEED_ATOMIC_32
+  int bson_atomic_int_add   (volatile int *p, int n);
+#endif
+
+
+#ifdef __BSON_NEED_ATOMIC_64
   int64_t bson_atomic_int64_add (volatile int64_t *p, int64_t n);
 #endif
 

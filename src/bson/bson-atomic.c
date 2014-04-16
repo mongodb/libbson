@@ -15,6 +15,8 @@
  */
 
 
+#include <pthread.h>
+
 #include "bson-atomic.h"
 
 
@@ -26,8 +28,8 @@
 
 
 #ifdef __BSON_NEED_BARRIER
-#include <pthread.h>
 static pthread_mutex_t gBarrier = PTHREAD_MUTEX_INITIALIZER;
+
 void
 bson_memory_barrier (void)
 {
@@ -37,11 +39,8 @@ bson_memory_barrier (void)
 #endif
 
 
-#ifdef __BSON_NEED_ATOMICS
-#include <pthread.h>
+#ifdef __BSON_NEED_ATOMIC_32
 static pthread_mutex_t gSync32 = PTHREAD_MUTEX_INITIALIZER;
-static pthread_mutex_t gSync64 = PTHREAD_MUTEX_INITIALIZER;
-
 
 int
 bson_atomic_int_add (volatile int *p,
@@ -56,7 +55,11 @@ bson_atomic_int_add (volatile int *p,
 
    return ret;
 }
+#endif
 
+
+#ifdef __BSON_NEED_ATOMIC_64
+static pthread_mutex_t gSync64 = PTHREAD_MUTEX_INITIALIZER;
 
 int64_t
 bson_atomic_int64_add (volatile int64_t *p,
