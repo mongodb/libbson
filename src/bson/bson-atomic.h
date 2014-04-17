@@ -36,7 +36,7 @@ BSON_BEGIN_DECLS
 # define bson_atomic_int64_add(p, v) (InterlockedAdd64((volatile LONGLONG *)(p), (LONGLONG)(v)))
 #elif defined(__GNUC__) && ((__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 1)))
 # define bson_atomic_int_add(p,v)   __sync_add_and_fetch((p),(v))
-# if BSON_HAVE_ATOMIC_64_ADD_AND_FETCH
+# if defined(BSON_HAVE_ATOMIC_64_ADD_AND_FETCH)
 #  define bson_atomic_int64_add(p,v) __sync_add_and_fetch((volatile int64_t*)(p),(int64_t)(v))
 # else
 #  define __BSON_NEED_ATOMIC_64 1
