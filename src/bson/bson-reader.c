@@ -488,8 +488,8 @@ _bson_reader_handle_read (bson_reader_handle_t *reader,      /* IN */
          return NULL;
       }
 
-      if (blen > (int32_t )(reader->end - reader->offset)) {
-         if (blen > (int32_t )reader->len) {
+      if (blen > (int32_t)(reader->end - reader->offset)) {
+         if (blen > (int32_t)reader->len) {
             _bson_reader_handle_grow_buffer (reader);
          }
 
@@ -593,7 +593,7 @@ _bson_reader_data_read (bson_reader_data_t *reader,      /* IN */
          return NULL;
       }
 
-      if (blen > (int32_t )(reader->length - reader->offset)) {
+      if (blen > (int32_t)(reader->length - reader->offset)) {
          return NULL;
       }
 
