@@ -467,7 +467,7 @@ static const bson_t *
 _bson_reader_handle_read (bson_reader_handle_t *reader,      /* IN */
                           bool                 *reached_eof) /* IN */
 {
-   int32_t blen;
+   size_t blen;
 
    bson_return_val_if_fail (reader, NULL);
 
@@ -499,7 +499,7 @@ _bson_reader_handle_read (bson_reader_handle_t *reader,      /* IN */
 
       if (!bson_init_static (&reader->inline_bson,
                              &reader->data[reader->offset],
-                             blen)) {
+                             (uint32_t)blen)) {
          return NULL;
       }
 
@@ -577,7 +577,7 @@ static const bson_t *
 _bson_reader_data_read (bson_reader_data_t *reader,      /* IN */
                         bool               *reached_eof) /* IN */
 {
-   int32_t blen;
+   size_t blen;
 
    bson_return_val_if_fail (reader, NULL);
 
@@ -598,7 +598,7 @@ _bson_reader_data_read (bson_reader_data_t *reader,      /* IN */
       }
 
       if (!bson_init_static (&reader->inline_bson,
-                             &reader->data[reader->offset], blen)) {
+                             &reader->data[reader->offset], (uint32_t)blen)) {
          return NULL;
       }
 
