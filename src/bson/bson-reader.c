@@ -488,8 +488,8 @@ _bson_reader_handle_read (bson_reader_handle_t *reader,      /* IN */
          return NULL;
       }
 
-      if (blen > (reader->end - reader->offset)) {
-         if (blen > reader->len) {
+      if (blen > (int32_t)(reader->end - reader->offset)) {
+         if (blen > (int32_t)reader->len) {
             _bson_reader_handle_grow_buffer (reader);
          }
 
@@ -499,7 +499,7 @@ _bson_reader_handle_read (bson_reader_handle_t *reader,      /* IN */
 
       if (!bson_init_static (&reader->inline_bson,
                              &reader->data[reader->offset],
-                             blen)) {
+                             (uint32_t)blen)) {
          return NULL;
       }
 
@@ -546,7 +546,7 @@ bson_reader_new_from_data (const uint8_t *data,   /* IN */
 
    bson_return_val_if_fail (data, NULL);
 
-   real = bson_malloc0 (sizeof *real);
+   real = (bson_reader_data_t*)bson_malloc0 (sizeof *real);
    real->type = BSON_READER_DATA;
    real->data = data;
    real->length = length;
@@ -593,12 +593,12 @@ _bson_reader_data_read (bson_reader_data_t *reader,      /* IN */
          return NULL;
       }
 
-      if (blen > (reader->length - reader->offset)) {
+      if (blen > (int32_t)(reader->length - reader->offset)) {
          return NULL;
       }
 
       if (!bson_init_static (&reader->inline_bson,
-                             &reader->data[reader->offset], blen)) {
+                             &reader->data[reader->offset], (uint32_t)blen)) {
          return NULL;
       }
 
