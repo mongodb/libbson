@@ -32,7 +32,7 @@ void
 bson_memory_barrier (void)
 {
    pthread_mutex_lock (&gBarrier);
-   pthread_mutex_unlock (&gBarrer);
+   pthread_mutex_unlock (&gBarrier);
 }
 #endif
 
