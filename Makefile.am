@@ -41,3 +41,7 @@ dist-hook:
 
 uninstall-local:
 	-rm -r $(bsondocdir)
+
+rpm: dist-gzip
+	cp libbson-$(BSON_VERSION).tar.gz ~/rpmbuild/SOURCES/
+	rpmbuild -bb build/rpm/libbson.spec
