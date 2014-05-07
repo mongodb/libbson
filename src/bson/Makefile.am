@@ -1,7 +1,9 @@
 noinst_LTLIBRARIES += libbson.la
 
 headerdir = $(prefix)/include/libbson-@BSON_API_VERSION@
-header_DATA = $(INST_H_FILES)
+header_DATA = \
+	$(INST_H_FILES) \
+	src/bson/bson-config.h
 
 INST_H_FILES = \
 	src/bson/bcon.h \
@@ -9,7 +11,6 @@ INST_H_FILES = \
 	src/bson/bson-atomic.h \
 	src/bson/bson-clock.h \
 	src/bson/bson-compat.h \
-	src/bson/bson-config.h \
 	src/bson/bson-context.h \
 	src/bson/bson-endian.h \
 	src/bson/bson-error.h \
