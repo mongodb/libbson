@@ -393,8 +393,8 @@ bson_context_new (bson_context_flags_t flags) /* IN */
     * and pid xored together. I welcome better solutions if at all necessary.
     */
    bson_gettimeofday (&tv, NULL);
-   seed[0] = tv.tv_sec;
-   seed[1] = tv.tv_usec;
+   seed[0] = (unsigned int)tv.tv_sec;
+   seed[1] = (unsigned int)tv.tv_usec;
    seed[2] = _bson_getpid ();
    real_seed = seed[0] ^ seed[1] ^ seed[2];
 
