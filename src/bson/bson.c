@@ -1585,7 +1585,6 @@ bson_append_date_time (bson_t      *bson,
 
    bson_return_val_if_fail (bson, false);
    bson_return_val_if_fail (key, false);
-   bson_return_val_if_fail (value, false);
 
    if (key_length < 0) {
       key_length =(int)strlen (key);
