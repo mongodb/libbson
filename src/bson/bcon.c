@@ -454,7 +454,7 @@ _bcon_extract_single (const bson_iter_t *iter,
  *          appropriate recursion token
  *       II. If not, just call it a UTF8 token and pass that back
  */
-bcon_type_t
+static bcon_type_t
 _bcon_append_tokenize (va_list       *ap,
                        bcon_append_t *u)
 {
@@ -584,7 +584,7 @@ _bcon_append_tokenize (va_list       *ap,
  *          appropriate recursion token
  *       II. If not, just call it a UTF8 token and pass that back
  */
-bcon_type_t
+static bcon_type_t
 _bcon_extract_tokenize (va_list        *ap,
                         bcon_extract_t *u)
 {
