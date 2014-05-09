@@ -242,6 +242,11 @@ bcon_append_ctx_init (bcon_append_ctx_t *ctx);
 void
 bcon_extract_ctx_init (bcon_extract_ctx_t *ctx);
 
+void
+bcon_extract_ctx (bson_t             *bson,
+                  bcon_extract_ctx_t *ctx,
+                  ...) BSON_GNUC_NULL_TERMINATED;
+
 bool
 bcon_extract_ctx_va (bson_t             *bson,
                      bcon_extract_ctx_t *ctx,
