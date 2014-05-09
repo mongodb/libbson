@@ -32,6 +32,7 @@
 # include <sys/time.h>
 #endif
 
+#include "bson-clock.h"
 
 
 /*
