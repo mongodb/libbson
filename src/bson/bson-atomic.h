@@ -28,13 +28,20 @@ BSON_BEGIN_DECLS
 
 
 #if defined(__sun) && defined(__SVR4)
+  /* Solaris */
 # include <atomic.h>
 # define bson_atomic_int_add(p,v)   atomic_add_32_nv((volatile uint32_t *)p, (v))
 # define bson_atomic_int64_add(p,v) atomic_add_64_nv((volatile uint64_t *)p, (v))
 #elif defined(_WIN32)
+  /* MSVC/MinGW */
 # define bson_atomic_int_add(p, v)   (InterlockedExchangeAdd((volatile LONG *)(p), (LONG)(v)) + (LONG)(v))
 # define bson_atomic_int64_add(p, v) (InterlockedExchangeAdd64((volatile LONGLONG *)(p), (LONGLONG)(v)) + (LONGLONG)(v))
+#elif defined(__xlC__)
+  /* XL C Compiler (IBM) */
+# define bson_atomic_int_add(p,v)    __sync_add_and_fetch((p),(v))
+# define bson_atomic_int64_add(p,v)  __sync_add_and_fetch((volatile int64_t*)(p),(int64_t)(v))
 #elif defined(__GNUC__) && ((__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 1)))
+  /* Recent GCC toolchain */
 # define bson_atomic_int_add(p,v)   __sync_add_and_fetch((p),(v))
 # if defined(BSON_HAVE_ATOMIC_64_ADD_AND_FETCH)
 #  define bson_atomic_int64_add(p,v) __sync_add_and_fetch((volatile int64_t*)(p),(int64_t)(v))
@@ -68,6 +75,8 @@ BSON_BEGIN_DECLS
 # define bson_memory_barrier() __machine_rw_barrier()
 #elif defined(_WIN32)
 # define bson_memory_barrier() MemoryBarrier()
+#elif defined(__xlC__)
+# define __sync()
 #else
 # define __BSON_NEED_BARRIER 1
 # warning "Unknown compiler, using lock for compiler barrier."
