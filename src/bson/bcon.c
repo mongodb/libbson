@@ -150,8 +150,8 @@ typedef union bcon_extract {
    struct
    {
       bson_subtype_t      *subtype;
-      const uint8_t **binary;
-      uint32_t       *length;
+      const uint8_t      **binary;
+      uint32_t            *length;
    } BIN;
 
    const bson_oid_t **OID;
