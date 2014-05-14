@@ -740,7 +740,7 @@ bson_iter_binary (const bson_iter_t  *iter,        /* IN */
       *subtype = (bson_subtype_t) *(iter->raw + iter->d2);
 
       if (binary) {
-         memcpy (binary_len, (iter->raw + iter->d1), 4);
+         memcpy (binary_len, (iter->raw + iter->d1), sizeof (*binary_len));
          *binary_len = BSON_UINT32_FROM_LE (*binary_len);
          *binary = iter->raw + iter->d3;
 
@@ -1207,11 +1207,11 @@ bson_iter_codewscope (const bson_iter_t  *iter,      /* IN */
 
    if (ITER_TYPE (iter) == BSON_TYPE_CODEWSCOPE) {
       if (length) {
-         memcpy (&len, iter->raw + iter->d2, 4);
+         memcpy (&len, iter->raw + iter->d2, sizeof (len));
          *length = BSON_UINT32_FROM_LE (len) - 1;
       }
 
-      memcpy (&len, iter->raw + iter->d4, 4);
+      memcpy (&len, iter->raw + iter->d4, sizeof (len));
       *scope_len = BSON_UINT32_FROM_LE (len);
       *scope = iter->raw + iter->d4;
       return (const char *)(iter->raw + iter->d3);
@@ -1552,7 +1552,7 @@ bson_iter_document (const bson_iter_t  *iter,         /* IN */
    *document_len = 0;
 
    if (ITER_TYPE (iter) == BSON_TYPE_DOCUMENT) {
-      memcpy (document_len, (iter->raw + iter->d1), 4);
+      memcpy (document_len, (iter->raw + iter->d1), sizeof (*document_len));
       *document_len = BSON_UINT32_FROM_LE (*document_len);
       *document = (iter->raw + iter->d1);
    }
@@ -1614,7 +1614,7 @@ bson_iter_array (const bson_iter_t  *iter,      /* IN */
    *array_len = 0;
 
    if (ITER_TYPE (iter) == BSON_TYPE_ARRAY) {
-      memcpy (array_len, (iter->raw + iter->d1), 4);
+      memcpy (array_len, (iter->raw + iter->d1), sizeof (*array_len));
       *array_len = BSON_UINT32_FROM_LE (*array_len);
       *array = (iter->raw + iter->d1);
    }
