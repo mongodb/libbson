@@ -463,7 +463,7 @@ fill_data_fields:
          }
 
          iter->d2 = o + 4;
-         memcpy (&l, iter->raw + iter->d1, 4);
+         memcpy (&l, iter->raw + iter->d1, sizeof (l));
          l = BSON_UINT32_FROM_LE (l);
 
          if (l > (len - (o + 4))) {
@@ -503,7 +503,7 @@ fill_data_fields:
          iter->d2 = o + 4;
          iter->d3 = o + 5;
 
-         memcpy (&l, iter->raw + iter->d1, 4);
+         memcpy (&l, iter->raw + iter->d1, sizeof (l));
          l = BSON_UINT32_FROM_LE (l);
 
          if (l >= (len - o)) {
@@ -533,7 +533,7 @@ fill_data_fields:
             goto mark_invalid;
          }
 
-         memcpy (&l, iter->raw + iter->d1, 4);
+         memcpy (&l, iter->raw + iter->d1, sizeof (l));
          l = BSON_UINT32_FROM_LE (l);
 
          if ((l > len) || (l > (len - o))) {
@@ -593,7 +593,7 @@ fill_data_fields:
          }
 
          iter->d2 = o + 4;
-         memcpy (&l, iter->raw + iter->d1, 4);
+         memcpy (&l, iter->raw + iter->d1, sizeof (l));
          l = BSON_UINT32_FROM_LE (l);
 
          if ((l > len) || (l > (len - o))) {
@@ -618,7 +618,7 @@ fill_data_fields:
          iter->d2 = o + 4;
          iter->d3 = o + 8;
 
-         memcpy (&l, iter->raw + iter->d1, 4);
+         memcpy (&l, iter->raw + iter->d1, sizeof (l));
          l = BSON_UINT32_FROM_LE (l);
 
          if ((l < 14) || (l >= (len - o))) {
@@ -633,7 +633,7 @@ fill_data_fields:
             goto mark_invalid;
          }
 
-         memcpy (&l, iter->raw + iter->d2, 4);
+         memcpy (&l, iter->raw + iter->d2, sizeof (l));
          l = BSON_UINT32_FROM_LE (l);
 
          if (l >= (len - o - 4 - 4)) {
@@ -647,7 +647,7 @@ fill_data_fields:
          }
 
          iter->d4 = o + 4 + 4 + l;
-         memcpy (&doclen, iter->raw + iter->d4, 4);
+         memcpy (&doclen, iter->raw + iter->d4, sizeof (doclen));
          doclen = BSON_UINT32_FROM_LE (doclen);
 
          if ((o + 4 + 4 + l + doclen) != iter->next_off) {
@@ -1287,7 +1287,7 @@ bson_iter_dbpointer (const bson_iter_t  *iter,           /* IN */
 
    if (ITER_TYPE (iter) == BSON_TYPE_DBPOINTER) {
       if (collection_len) {
-         memcpy (collection_len, (iter->raw + iter->d1), 4);
+         memcpy (collection_len, (iter->raw + iter->d1), sizeof (*collection_len));
          *collection_len = BSON_UINT32_FROM_LE (*collection_len);
 
          if ((*collection_len) > 0) {
@@ -1444,7 +1444,7 @@ bson_iter_timestamp (const bson_iter_t *iter,      /* IN */
    bson_return_if_fail (iter);
 
    if (ITER_TYPE (iter) == BSON_TYPE_TIMESTAMP) {
-      memcpy (&encoded, iter->raw + iter->d1, 8);
+      memcpy (&encoded, iter->raw + iter->d1, sizeof (encoded));
       encoded = BSON_UINT64_FROM_LE (encoded);
       ret_timestamp = (encoded >> 32) & 0xFFFFFFFF;
       ret_increment = encoded & 0xFFFFFFFF;
@@ -1985,7 +1985,7 @@ bson_iter_overwrite_int32 (bson_iter_t *iter,  /* IN */
 #if BSON_BYTE_ORDER != BSON_LITTLE_ENDIAN
       value = BSON_UINT32_TO_LE (value);
 #endif
-      memcpy ((void *)(iter->raw + iter->d1), &value, 4);
+      memcpy ((void *)(iter->raw + iter->d1), &value, sizeof (value));
    }
 }
 
@@ -2017,7 +2017,7 @@ bson_iter_overwrite_int64 (bson_iter_t *iter,   /* IN */
 #if BSON_BYTE_ORDER != BSON_LITTLE_ENDIAN
       value = BSON_UINT64_TO_LE (value);
 #endif
-      memcpy ((void *)(iter->raw + iter->d1), &value, 8);
+      memcpy ((void *)(iter->raw + iter->d1), &value, sizeof (value));
    }
 }
 
@@ -2047,7 +2047,7 @@ bson_iter_overwrite_double (bson_iter_t *iter,  /* IN */
 
    if (ITER_TYPE (iter) == BSON_TYPE_DOUBLE) {
       value = BSON_DOUBLE_TO_LE (value);
-      memcpy ((void *)(iter->raw + iter->d1), &value, 8);
+      memcpy ((void *)(iter->raw + iter->d1), &value, sizeof (value));
    }
 }
 

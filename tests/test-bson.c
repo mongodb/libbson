@@ -841,7 +841,7 @@ test_bson_new_from_buffer (void)
    size_t len = 5;
    uint32_t len_le = BSON_UINT32_TO_LE(5);
 
-   memcpy(buf, &len_le, 4);
+   memcpy(buf, &len_le, sizeof (len_le));
 
    b = bson_new_from_buffer(&buf, &len, bson_realloc_ctx, NULL);
 

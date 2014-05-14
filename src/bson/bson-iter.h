@@ -193,7 +193,7 @@ bson_iter_double_unsafe (const bson_iter_t *iter)
 {
    double val;
 
-   memcpy (&val, iter->raw + iter->d1, 8);
+   memcpy (&val, iter->raw + iter->d1, sizeof (val));
    return BSON_DOUBLE_FROM_LE (val);
 }
 
@@ -232,7 +232,7 @@ bson_iter_int32_unsafe (const bson_iter_t *iter)
 {
    int32_t val;
 
-   memcpy (&val, iter->raw + iter->d1, 4);
+   memcpy (&val, iter->raw + iter->d1, sizeof (val));
    return BSON_UINT32_FROM_LE (val);
 }
 
@@ -258,7 +258,7 @@ bson_iter_int64_unsafe (const bson_iter_t *iter)
 {
    int64_t val;
 
-   memcpy (&val, iter->raw + iter->d1, 8);
+   memcpy (&val, iter->raw + iter->d1, sizeof (val));
    return BSON_UINT64_FROM_LE (val);
 }
 

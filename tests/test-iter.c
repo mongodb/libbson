@@ -192,11 +192,11 @@ test_bson_iter_fuzz (void)
 
    for (pass = 0; pass < FUZZ_N_PASSES; pass++) {
       data = bson_malloc0(len);
-      memcpy(data, &len_le, 4);
+      memcpy(data, &len_le, sizeof (len_le));
 
       for (i = 4; i < len; i += 4) {
          r = rand();
-         memcpy(&data[i], &r, 4);
+         memcpy(&data[i], &r, sizeof (r));
       }
 
       if (!(b = bson_new_from_data(data, len))) {
@@ -229,7 +229,7 @@ test_bson_iter_fuzz (void)
                assert(child_len >= 5);
                assert((iter.off + child_len) < b->len);
                assert(child_len < (uint32_t)-1);
-               memcpy(&child_len, child, 4);
+               memcpy(&child_len, child, sizeof (child_len));
                child_len = BSON_UINT32_FROM_LE(child_len);
                assert(child_len >= 5);
             }
