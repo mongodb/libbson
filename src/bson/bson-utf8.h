@@ -35,12 +35,12 @@ bool            bson_utf8_validate        (const char     *utf8,
                                            size_t          utf8_len,
                                            bool            allow_null);
 char           *bson_utf8_escape_for_json (const char     *utf8,
-                                           ssize_t         utf8_len);
+                                           size_t          utf8_len);
 bson_unichar_t  bson_utf8_get_char        (const char     *utf8);
 const char     *bson_utf8_next_char       (const char     *utf8);
 void            bson_utf8_from_unichar    (bson_unichar_t  unichar,
                                            char            utf8[6],
-                                           uint32_t       *len);
+                                           size_t         *len);
 
 
 BSON_END_DECLS

@@ -295,7 +295,7 @@ _bson_json_buf_ensure (bson_json_buf_t *buf, /* IN */
    if (buf->n_bytes < len) {
       bson_free (buf->buf);
 
-      buf->n_bytes = bson_next_power_of_two ((uint32_t)len);
+      buf->n_bytes = bson_next_power_of_two (len);
       buf->buf = bson_malloc (buf->n_bytes);
    }
 }
@@ -1179,7 +1179,7 @@ bson_new_from_json (const uint8_t *data,  /* IN */
 bool
 bson_init_from_json (bson_t       *bson,  /* OUT */
                      const char   *data,  /* IN */
-                     ssize_t       len,   /* IN */
+                     size_t       len,    /* IN */
                      bson_error_t *error) /* OUT */
 {
    bson_json_reader_t *reader;
@@ -1188,7 +1188,7 @@ bson_init_from_json (bson_t       *bson,  /* OUT */
    bson_return_val_if_fail (bson, false);
    bson_return_val_if_fail (data, false);
 
-   if (len < 0) {
+   if (len == SIZE_T_MAX) {
       len = strlen (data);
    }
 
@@ -1229,7 +1229,7 @@ _bson_json_reader_handle_fd_destroy (void *handle) /* IN */
 static ssize_t
 _bson_json_reader_handle_fd_read (void    *handle, /* IN */
                                   uint8_t *buf,    /* IN */
-                                  size_t   len)   /* IN */
+                                  size_t   len)    /* IN */
 {
    bson_json_reader_handle_fd_t *fd = handle;
    ssize_t ret = -1;
