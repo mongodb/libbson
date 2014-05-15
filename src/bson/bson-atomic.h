@@ -40,7 +40,7 @@ BSON_BEGIN_DECLS
   /* XL C Compiler (IBM) */
 # define bson_atomic_int_add(p,v)    __sync_add_and_fetch((p),(v))
 # define bson_atomic_int64_add(p,v)  __sync_add_and_fetch((volatile int64_t*)(p),(int64_t)(v))
-#elif defined(__GNUC__) && ((__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 1)))
+#elif BSON_GNUC_CHECK_VERSION(4, 1)
   /* Recent GCC toolchain */
 # define bson_atomic_int_add(p,v)   __sync_add_and_fetch((p),(v))
 # if defined(BSON_HAVE_ATOMIC_64_ADD_AND_FETCH)
@@ -63,8 +63,10 @@ BSON_BEGIN_DECLS
 #endif
 
 
-#if defined(__GNUC__)
-# if __GNUC__ >= 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
+#if defined(_WIN32)
+# define bson_memory_barrier() MemoryBarrier()
+#elif defined(__GNUC__)
+# if BSON_GNUC_CHECK_VERSION(4, 1)
 #  define bson_memory_barrier() __sync_synchronize()
 # else
 #  warning "GCC Pre-4.1 discovered, using inline assembly for memory barrier."
@@ -73,8 +75,6 @@ BSON_BEGIN_DECLS
 #elif defined(__SUNPRO_C)
 # include <mbarrier.h>
 # define bson_memory_barrier() __machine_rw_barrier()
-#elif defined(_WIN32)
-# define bson_memory_barrier() MemoryBarrier()
 #elif defined(__xlC__)
 # define __sync()
 #else
