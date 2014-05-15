@@ -292,12 +292,12 @@ static BSON_INLINE bool
 _bson_append_va (bson_t        *bson,        /* IN */
                  size_t         n_bytes,     /* IN */
                  size_t         n_pairs,     /* IN */
-                 uint32_t       first_len,   /* IN */
+                 size_t         first_len,   /* IN */
                  const uint8_t *first_data,  /* IN */
                  va_list        args)        /* IN */
 {
    const uint8_t *data;
-   uint32_t data_len;
+   size_t data_len;
    uint8_t *buf;
 
    BSON_ASSERT (bson);
@@ -323,7 +323,7 @@ _bson_append_va (bson_t        *bson,        /* IN */
       buf += data_len;
 
       if (n_pairs) {
-         data_len = va_arg (args, uint32_t);
+         data_len = va_arg (args, size_t);
          data = va_arg (args, const uint8_t *);
       }
    } while (n_pairs);
@@ -365,7 +365,7 @@ static bool
 _bson_append (bson_t        *bson,        /* IN */
               size_t         n_pairs,     /* IN */
               size_t         n_bytes,     /* IN */
-              uint32_t       first_len,   /* IN */
+              size_t         first_len,   /* IN */
               const uint8_t *first_data,  /* IN */
               ...)
 {
@@ -459,8 +459,8 @@ _bson_append_bson_begin (bson_t      *bson,        /* IN */
                       (1 + key_length + 1 + 5),
                       1, &type,
                       key_length, key,
-                      1, &gZero,
-                      5, empty)) {
+                      (size_t) 1, &gZero,
+                      (size_t) 5, empty)) {
       return false;
    }
 
@@ -721,10 +721,10 @@ bson_append_array (bson_t       *bson,       /* IN */
 
    return _bson_append (bson, 4,
                         (1 + key_length + 1 + array->len),
-                        1, &type,
+                        (size_t) 1, &type,
                         key_length, key,
-                        1, &gZero,
-                        array->len, _bson_data (array));
+                        (size_t) 1, &gZero,
+                        (size_t) array->len, _bson_data (array));
 }
 
 
@@ -780,23 +780,23 @@ bson_append_binary (bson_t         *bson,       /* IN */
 
       return _bson_append (bson, 7,
                            (1 + key_length + 1 + 4 + 1 + 4 + length),
-                           1, &type,
+                           (size_t) 1, &type,
                            key_length, key,
-                           1, &gZero,
-                           4, &length_le,
-                           1, &subtype8,
-                           4, &deprecated_length_le,
+                           (size_t) 1, &gZero,
+                           (size_t) 4, &length_le,
+                           (size_t) 1, &subtype8,
+                           (size_t) 4, &deprecated_length_le,
                            length, binary);
    } else {
       length_le = BSON_UINT32_TO_LE (length);
 
       return _bson_append (bson, 6,
                            (1 + key_length + 1 + 4 + 1 + length),
-                           1, &type,
+                           (size_t) 1, &type,
                            key_length, key,
-                           1, &gZero,
-                           4, &length_le,
-                           1, &subtype8,
+                           (size_t) 1, &gZero,
+                           (size_t) 4, &length_le,
+                           (size_t) 1, &subtype8,
                            length, binary);
    }
 }
@@ -837,10 +837,10 @@ bson_append_bool (bson_t     *bson,       /* IN */
 
    return _bson_append (bson, 4,
                         (1 + key_length + 1 + 1),
-                        1, &type,
+                        (size_t) 1, &type,
                         key_length, key,
-                        1, &gZero,
-                        1, &byte);
+                        (size_t) 1, &gZero,
+                        (size_t) 1, &byte);
 }
 
 
@@ -889,10 +889,10 @@ bson_append_code (bson_t     *bson,       /* IN */
 
    return _bson_append (bson, 5,
                         (1 + key_length + 1 + 4 + length),
-                        1, &type,
+                        (size_t) 1, &type,
                         key_length, key,
-                        1, &gZero,
-                        4, &length_le,
+                        (size_t) 1, &gZero,
+                        (size_t) 4, &length_le,
                         length, javascript);
 }
 
@@ -947,13 +947,13 @@ bson_append_code_with_scope (bson_t       *bson,         /* IN */
 
    return _bson_append (bson, 7,
                         (1 + key_length + 1 + codews_length),
-                        1, &type,
+                        (size_t) 1, &type,
                         key_length, key,
-                        1, &gZero,
-                        4, &codews_length_le,
-                        4, &js_length_le,
+                        (size_t) 1, &gZero,
+                        (size_t) 4, &codews_length_le,
+                        (size_t) 4, &js_length_le,
                         js_length, javascript,
-                        scope->len, _bson_data (scope));
+                        (size_t) scope->len, _bson_data (scope));
 }
 
 
@@ -1000,12 +1000,12 @@ bson_append_dbpointer (bson_t           *bson,       /* IN */
 
    return _bson_append (bson, 6,
                         (1 + key_length + 1 + 4 + length + 12),
-                        1, &type,
+                        (size_t) 1, &type,
                         key_length, key,
-                        1, &gZero,
-                        4, &length_le,
+                        (size_t) 1, &gZero,
+                        (size_t) 4, &length_le,
                         length, collection,
-                        12, oid);
+                        (size_t) 12, oid);
 }
 
 
@@ -1049,10 +1049,10 @@ bson_append_document (bson_t       *bson,       /* IN */
 
    return _bson_append (bson, 4,
                         (1 + key_length + 1 + value->len),
-                        1, &type,
+                        (size_t) 1, &type,
                         key_length, key,
-                        1, &gZero,
-                        value->len, _bson_data (value));
+                        (size_t) 1, &gZero,
+                        (size_t) value->len, _bson_data (value));
 }
 
 
@@ -1077,10 +1077,10 @@ bson_append_double (bson_t     *bson,
 
    return _bson_append (bson, 4,
                         (1 + key_length + 1 + 8),
-                        1, &type,
+                        (size_t) 1, &type,
                         key_length, key,
-                        1, &gZero,
-                        8, &value);
+                        (size_t) 1, &gZero,
+                        (size_t) 8, &value);
 }
 
 
@@ -1104,10 +1104,10 @@ bson_append_int32 (bson_t      *bson,
 
    return _bson_append (bson, 4,
                         (1 + key_length + 1 + 4),
-                        1, &type,
+                        (size_t) 1, &type,
                         key_length, key,
-                        1, &gZero,
-                        4, &value_le);
+                        (size_t) 1, &gZero,
+                        (size_t) 4, &value_le);
 }
 
 
@@ -1131,10 +1131,10 @@ bson_append_int64 (bson_t      *bson,
 
    return _bson_append (bson, 4,
                         (1 + key_length + 1 + 8),
-                        1, &type,
+                        (size_t) 1, &type,
                         key_length, key,
-                        1, &gZero,
-                        8, &value_le);
+                        (size_t) 1, &gZero,
+                        (size_t) 8, &value_le);
 }
 
 
@@ -1323,9 +1323,9 @@ bson_append_maxkey (bson_t     *bson,
 
    return _bson_append (bson, 3,
                         (1 + key_length + 1),
-                        1, &type,
+                        (size_t) 1, &type,
                         key_length, key,
-                        1, &gZero);
+                        (size_t) 1, &gZero);
 }
 
 
@@ -1345,9 +1345,9 @@ bson_append_minkey (bson_t     *bson,
 
    return _bson_append (bson, 3,
                         (1 + key_length + 1),
-                        1, &type,
+                        (size_t) 1, &type,
                         key_length, key,
-                        1, &gZero);
+                        (size_t) 1, &gZero);
 }
 
 
@@ -1367,9 +1367,9 @@ bson_append_null (bson_t     *bson,
 
    return _bson_append (bson, 3,
                         (1 + key_length + 1),
-                        1, &type,
+                        (size_t) 1, &type,
                         key_length, key,
-                        1, &gZero);
+                        (size_t) 1, &gZero);
 }
 
 
@@ -1391,10 +1391,10 @@ bson_append_oid (bson_t           *bson,
 
    return _bson_append (bson, 4,
                         (1 + key_length + 1 + 12),
-                        1, &type,
+                        (size_t) 1, &type,
                         key_length, key,
-                        1, &gZero,
-                        12, value);
+                        (size_t) 1, &gZero,
+                        (size_t) 12, value);
 }
 
 
@@ -1429,9 +1429,9 @@ bson_append_regex (bson_t     *bson,
 
    return _bson_append (bson, 5,
                         (1 + key_length + 1 + regex_len + options_len),
-                        1, &type,
+                        (size_t) 1, &type,
                         key_length, key,
-                        1, &gZero,
+                        (size_t) 1, &gZero,
                         regex_len, regex,
                         options_len, options);
 }
@@ -1466,12 +1466,12 @@ bson_append_utf8 (bson_t     *bson,
 
    return _bson_append (bson, 6,
                         (1 + key_length + 1 + 4 + length + 1),
-                        1, &type,
+                        (size_t) 1, &type,
                         key_length, key,
-                        1, &gZero,
-                        4, &length_le,
+                        (size_t) 1, &gZero,
+                        (size_t) 4, &length_le,
                         length, value,
-                        1, &gZero);
+                        (size_t) 1, &gZero);
 }
 
 
@@ -1504,12 +1504,12 @@ bson_append_symbol (bson_t     *bson,
 
    return _bson_append (bson, 6,
                         (1 + key_length + 1 + 4 + length + 1),
-                        1, &type,
+                        (size_t) 1, &type,
                         key_length, key,
-                        1, &gZero,
-                        4, &length_le,
+                        (size_t) 1, &gZero,
+                        (size_t) 4, &length_le,
                         length, value,
-                        1, &gZero);
+                        (size_t) 1, &gZero);
 }
 
 
@@ -1554,10 +1554,10 @@ bson_append_timestamp (bson_t       *bson,
 
    return _bson_append (bson, 4,
                         (1 + key_length + 1 + 8),
-                        1, &type,
+                        (size_t) 1, &type,
                         key_length, key,
-                        1, &gZero,
-                        8, &value);
+                        (size_t) 1, &gZero,
+                        (size_t) 8, &value);
 }
 
 
@@ -1594,10 +1594,10 @@ bson_append_date_time (bson_t      *bson,
 
    return _bson_append (bson, 4,
                         (1 + key_length + 1 + 8),
-                        1, &type,
+                        (size_t) 1, &type,
                         key_length, key,
-                        1, &gZero,
-                        8, &value_le);
+                        (size_t) 1, &gZero,
+                        (size_t) 8, &value_le);
 }
 
 
@@ -1635,9 +1635,9 @@ bson_append_undefined (bson_t     *bson,
 
    return _bson_append (bson, 3,
                         (1 + key_length + 1),
-                        1, &type,
+                        (size_t) 1, &type,
                         key_length, key,
-                        1, &gZero);
+                        (size_t) 1, &gZero);
 }
 
 
@@ -2853,7 +2853,7 @@ bson_concat (bson_t       *dst,
 
    if (!bson_empty (src)) {
       return _bson_append (dst, 1, src->len - 5,
-                           src->len - 5, _bson_data (src) + 4);
+                           (size_t) (src->len - 5), _bson_data (src) + 4);
    }
 
    return true;
