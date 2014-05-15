@@ -42,8 +42,16 @@ BSON_BEGIN_DECLS
 # define bson_atomic_int64_add(p,v)  __sync_add_and_fetch((volatile int64_t*)(p),(int64_t)(v))
 #elif BSON_GNUC_CHECK_VERSION(4, 1)
   /* Recent GCC toolchain */
-# define bson_atomic_int_add(p,v)   __sync_add_and_fetch((p),(v))
-# if defined(BSON_HAVE_ATOMIC_64_ADD_AND_FETCH)
+# define bson_atomic_int_add(p,v) __sync_add_and_fetch((p),(v))
+# if BSON_GNUC_IS_VERSION(4, 1) && defined(__i386__)
+  /*
+   * GCC 4.1 on i386 can generate buggy 64-bit atomic increment.
+   * So we will work around with a fallback.
+   *
+   * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=40693
+   */
+#  define __BSON_NEED_ATOMIC_64 1
+# elif defined(BSON_HAVE_ATOMIC_64_ADD_AND_FETCH)
 #  define bson_atomic_int64_add(p,v) __sync_add_and_fetch((volatile int64_t*)(p),(int64_t)(v))
 # else
 #  define __BSON_NEED_ATOMIC_64 1
