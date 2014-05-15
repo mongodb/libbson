@@ -51,6 +51,20 @@
 #  define BSON_END_DECLS
 #endif
 
+
+#define BSON_GNUC_CHECK_VERSION(major, minor) \
+    (defined(__GNUC__) && \
+     ((__GNUC__ > (major)) || \
+      ((__GNUC__ == (major)) && \
+       (__GNUC_MINOR__ >= (minor)))))
+
+
+#define BSON_GNUC_IS_VERSION(major, minor) \
+    (defined(__GNUC__) && \
+     (__GNUC__ == (major)) && \
+     (__GNUC_MINOR__ == (minor)))
+
+
 #ifdef _MSC_VER
 #  ifdef BSON_COMPILATION
 #    define BSON_API __declspec(dllexport)
@@ -141,7 +155,7 @@
 #endif
 
 
-#if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(_WIN32)
+#if BSON_GNUC_CHECK_VERSION(4, 0) && !defined(_WIN32)
 #  define BSON_GNUC_NULL_TERMINATED __attribute__((sentinel))
 #  define BSON_GNUC_INTERNAL __attribute__((visibility ("hidden")))
 #else
@@ -160,19 +174,12 @@
 
 
 #if defined(__clang__)
-# define BSON_GNUC_PRINTF(f, v) __attribute__((format (printf, f, v)))
-#elif defined(__GNUC__)
-#  define GCC_VERSION (__GNUC__ * 10000 \
-                       + __GNUC_MINOR__ * 100 \
-                       + __GNUC_PATCHLEVEL__)
-#  if GCC_VERSION > 40400
-#    define BSON_GNUC_PRINTF(f, v) __attribute__((format (gnu_printf, f, v)))
-#  else
-#    define BSON_GNUC_PRINTF(f, v)
-#  endif /* GCC_VERSION > 40400 */
+#  define BSON_GNUC_PRINTF(f, v) __attribute__((format (printf, f, v)))
+#elif BSON_GNUC_CHECK_VERSION(4, 4)
+#  define BSON_GNUC_PRINTF(f, v) __attribute__((format (gnu_printf, f, v)))
 #else
 #  define BSON_GNUC_PRINTF(f, v)
-#endif /* __GNUC__ */
+#endif
 
 
 #if defined(__LP64__) || defined(_LP64)
@@ -218,22 +225,22 @@
 
 
 #ifdef _MSC_VER
-#define BSON_ENSURE_ARRAY_PARAM_SIZE(_n)
-#define BSON_TYPEOF decltype
+#  define BSON_ENSURE_ARRAY_PARAM_SIZE(_n)
+#  define BSON_TYPEOF decltype
 #else
-#define BSON_ENSURE_ARRAY_PARAM_SIZE(_n) static (_n)
-#define BSON_TYPEOF typeof
+#  define BSON_ENSURE_ARRAY_PARAM_SIZE(_n) static (_n)
+#  define BSON_TYPEOF typeof
 #endif
 
 
-#if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1)
+#if BSON_GNUC_CHECK_VERSION(3, 1)
 # define BSON_GNUC_DEPRECATED __attribute__((__deprecated__))
 #else
 # define BSON_GNUC_DEPRECATED
 #endif
 
 
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 5)
+#if BSON_GNUC_CHECK_VERSION(4, 5)
 # define BSON_GNUC_DEPRECATED_FOR(f) __attribute__((deprecated("Use " #f " instead")))
 #else
 # define BSON_GNUC_DEPRECATED_FOR(f) BSON_GNUC_DEPRECATED
