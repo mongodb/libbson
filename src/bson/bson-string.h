@@ -36,8 +36,8 @@ BSON_BEGIN_DECLS
 typedef struct
 {
    char     *str;
-   uint32_t  len;
-   uint32_t  alloc;
+   size_t    len;
+   size_t    alloc;
 } bson_string_t;
 
 
