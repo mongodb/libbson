@@ -43,9 +43,15 @@ endif
 check: test
 
 
+TEST_ARGS = 
+if OS_DARWIN
+TEST_ARGS += -f -p
+endif
+
+
 test: $(TEST_PROGS) $(PYTEST_DEPS)
 	@ for TEST_PROG in $(TEST_PROGS) ; do \
-		$(LIBTOOL) --mode=execute $$VALGRIND ./$$TEST_PROG -F test.log; \
+		$(LIBTOOL) --mode=execute $$VALGRIND ./$$TEST_PROG $(TEST_ARGS) -F test.log; \
 	done
 if ENABLE_PYTHON
 	@ LD_LIBRARY_PATH=.libs DYLD_LIBRARY_PATH=.libs PYTHONPATH=.libs ./tests/test_cbson.py
