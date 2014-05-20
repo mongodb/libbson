@@ -53,7 +53,11 @@
 
 int
 bson_gettimeofday (struct timeval  *tv, /* OUT */
+#if defined(__SUNPRO_C)
+                   void            *tz) /* OUT */
+#else
                    struct timezone *tz) /* OUT */
+#endif
 {
 #if defined(_WIN32)
 # if defined(_MSC_VER)
