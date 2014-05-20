@@ -309,14 +309,7 @@ static void
 _bson_context_get_oid_seq64_threadsafe (bson_context_t *context, /* IN */
                                         bson_oid_t     *oid)     /* OUT */
 {
-#if defined WITH_OID64_PT
-   uint64_t seq;
-   bson_mutex_lock (&context->_m64);
-   seq = context->seq64++;
-   bson_mutex_unlock (&context->_m64);
-#else
-   uint64_t seq = bson_atomic_int64_add (&context->seq64, 1);
-#endif
+   int64_t seq = bson_atomic_int64_add (&context->seq64, 1);
 
    seq = BSON_UINT64_TO_BE (seq);
    memcpy (&oid->bytes[4], &seq, 8);
