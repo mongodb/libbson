@@ -32,8 +32,8 @@ struct _bson_context_t
    bool                 pidbe_once : 1;
    uint8_t              pidbe[2];
    uint8_t              md5[3];
-   uint32_t             seq32;
-   uint64_t             seq64;
+   int32_t              seq32;
+   int64_t              seq64;
 
    void (*oid_get_host)  (bson_context_t *context,
                           bson_oid_t     *oid);
