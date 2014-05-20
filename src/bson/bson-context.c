@@ -252,7 +252,7 @@ static void
 _bson_context_get_oid_seq32_threadsafe (bson_context_t *context, /* IN */
                                         bson_oid_t     *oid)     /* OUT */
 {
-   uint32_t seq = bson_atomic_int_add (&context->seq32, 1);
+   int32_t seq = bson_atomic_int_add (&context->seq32, 1);
 
    seq = BSON_UINT32_TO_BE (seq);
    memcpy (&oid->bytes[9], ((uint8_t *)&seq) + 1, 3);
