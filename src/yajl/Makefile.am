@@ -25,6 +25,7 @@ libyajl_la_SOURCES = \
 libyajl_la_CFLAGS = \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/bson \
+	-I$(top_builddir)/src/bson \
 	-DBSON_COMPILATION
 libyajl_la_LIBADD = 
 libyajl_la_LDFLAGS = 
