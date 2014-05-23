@@ -1,0 +1,51 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="streaming-bson">
+
+  <title>Streaming BSON</title>
+
+  <p>Libbson provides mechanisms to stream BSON documents to and from file-descriptors. This can be convenient if you want to do stream oriented processing.</p>
+  <p><link xref="bson_reader_t">bson_reader_t</link> provides a streaming reader which can be initialized with a file-descriptor or memory region. Similarly, <link xref="bson_writer_t">bson_writer_t</link> provides a streaming writer which can be initialized with a file-descriptor or memory region.</p>
+
+  <section id="reader">
+    <title>Reading from a BSON Stream</title>
+    <p><link xref="bson_reader_t">bson_reader_t</link> provides a convenient API to read sequential BSON documents from a file-descriptor or memory buffer. The <link xref="bson_reader_read">bson_reader_read()</link> function will read forward in the underlying stream and returna <link xref="bson_t">bson_t</link> that can be inspected and iterated upon.</p>
+    <example>
+      <title>reader.c</title>
+      <code mime="text/x-csrc"><![CDATA[#include <stdio.h>
+#include <bson.h>
+
+int main (int argc, char *argv[])
+{
+   bson_reader_t *reader;
+   const bson_t *doc;
+   bson_error_t error;
+   bool eof;
+
+   reader = bson_reader_new_from_file ("mycollection.bson", &error);
+
+   if (!reader) {
+      fprintf (stderr, "Failed to open file.\n");
+      return 1;
+   }
+
+   while ((doc = bson_reader_read (reader, &eof))) {
+      char *str = bson_as_json (doc, NULL);
+      printf ("%s\n", str);
+      bson_free (str);
+   }
+
+   if (!eof) {
+      fprintf (stderr, "corrupted bson document found at %u\n",
+               (unsigned)bson_reader_tell (reader));
+   }
+
+   bson_reader_destroy (reader);
+
+   return 0;
+}]]></code>
+    </example>
+    <p>See <link xref="bson_reader_new_from_fd">bson_reader_new_from_fd()</link>, <link xref="bson_reader_new_from_file">bson_reader_new_from_file()</link>, and <link xref="bson_reader_new_from_data">bson_reader_new_from_data()</link> for more information.</p>
+  </section>
+
+</page>
