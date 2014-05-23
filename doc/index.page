@@ -2,6 +2,7 @@
       type="guide"
       id="index">
   <title>Libbson</title>
+  <subtitle>A Cross Platform BSON library</subtitle>
 
   <section id="installation">
     <title>Installation</title>
