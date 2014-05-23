@@ -1162,7 +1162,7 @@ bson_new_from_json (const uint8_t *data,  /* IN */
    bson_return_val_if_fail (data, NULL);
 
    if (len < 0) {
-      len = strlen (data);
+      len = (ssize_t)strlen ((const char *)data);
    }
 
    bson = bson_new ();
