@@ -27,3 +27,14 @@ AM_CONDITIONAL([ENABLE_PTHREADS], test "$enable_pthreads" = "yes")
 
 # Can we run the abicheck?
 AM_CONDITIONAL([CAN_ABI_CHECK], [test "os_linux" = "yes" && test "$have_sync_add_and_fetch_8" = "yes"])
+
+# Should we build man pages
+AM_CONDITIONAL([ENABLE_MAN_PAGES],[test "$enable_man_pages" = "yes"])
+
+# Should we build HTML documentation
+AM_CONDITIONAL([ENABLE_HTML_DOCS],[test "$enable_html_docs" = "yes"])
+AS_IF([test "$enable_html_docs" = "yes" && test -z "$YELP_BUILD"],
+      [AC_MSG_ERROR([yelp-build must be installed to generate HTML documentation.])])
+
+# Should we install Yelp documentation
+AM_CONDITIONAL([ENABLE_YELP],[test "$enable_yelp" = "yes"])

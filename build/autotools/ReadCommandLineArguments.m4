@@ -55,3 +55,21 @@ AC_ARG_ENABLE([maintainer-flags],
                               [Use strict compiler flags @<:@default=]maintainer_flags_default[@:>@])],
               [],
               [enable_maintainer_flags=maintainer_flags_default])
+
+AC_ARG_ENABLE([html-docs],
+              [AS_HELP_STRING([--enable-html-docs=@<:@yes/no@:>@],
+                              [Build HTML documentation.])],
+              [],
+              [enable_html_docs=no])
+
+AC_ARG_ENABLE([man-pages],
+              [AS_HELP_STRING([--enable-man-pages=@<:@yes/no@:>@],
+                              [Build and install man-pages.])],
+              [],
+              [enable_man_pages=no])
+
+AC_ARG_ENABLE([yelp],
+              [AS_HELP_STRING([--enable-yelp=@<:@yes/no@:>@],
+                              [Install yelp manuals.])],
+              [],
+              [enable_yelp=no])
