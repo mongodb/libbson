@@ -3,9 +3,11 @@
       id="json">
 
   <title>JSON</title>
+
   <p>Libbson provides routines for converting to and from the JSON format. In particular, it supports the <link href="http://docs.mongodb.org/manual/reference/mongodb-extended-json/">MongoDB extended JSON</link> format.</p>
 
   <section id="to-json">
+    <info><link type="guide" xref="index#json"/></info>
     <title>Converting BSON to JSON</title>
     <p>There are often times where you might want to convert a BSON document to JSON. It is convenient for debugging as well as an interchange format. To help with this, Libbson contains the function <link xref="bson_as_json">bson_as_json()</link>.</p>
     <example>
@@ -27,6 +29,7 @@ bson_destroy (b);]]></code>
 
   <section id="from-json">
     <title>Converting JSON to BSON</title>
+    <info><link type="guide" xref="index#json"/></info>
     <p>Converting back from JSON is also useful and common enough that we added <link xref="bson_init_from_json">bson_init_from_json()</link> and <link xref="bson_new_from_json">bson_new_from_json()</link>.</p>
     <p>The following example creates a new <link xref="bson_t">bson_t</link> from the JSON string <code>{"a":1}</code>.</p>
     <example>
