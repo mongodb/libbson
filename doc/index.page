@@ -24,6 +24,10 @@
     <title>Cross Platform Notes</title>
   </section>
 
+  <section id="performance" style="2column">
+    <title>Performance Notes</title>
+  </section>
+
   <section id="api-reference" style="2column">
     <title>API Reference</title>
   </section>
