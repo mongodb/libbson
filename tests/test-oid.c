@@ -33,6 +33,10 @@ static const char *gTestOids[] = {
    "010101010101010101010101",
    "0123456789abcdefafcdef03",
    "fcdeab182763817236817236",
+   "ffffffffffffffffffffffff",
+   "eeeeeeeeeeeeeeeeeeeeeeee",
+   "999999999999999999999999",
+   "111111111111111111111111",
    NULL
 };
 
@@ -83,6 +87,14 @@ test_bson_oid_init_from_string (void)
       bson_oid_to_string(&oid, str);
       assert(!strcmp(str, gTestOids[i]));
    }
+
+   /*
+    * Test that sizeof(str) works (len of 25 with \0 instead of 24).
+    */
+   assert (bson_oid_is_valid ("ffffffffffffffffffffffff", 24));
+   bson_oid_init_from_string (&oid, "ffffffffffffffffffffffff");
+   bson_oid_to_string (&oid, str);
+   assert (bson_oid_is_valid (str, sizeof str));
 
    /*
     * Test the failures.

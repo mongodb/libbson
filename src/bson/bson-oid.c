@@ -458,6 +458,10 @@ bson_oid_is_valid (const char *str,    /* IN */
 
    bson_return_val_if_fail (str, false);
 
+   if ((length == 25) && (str [24] == '\0')) {
+      length = 24;
+   }
+
    if (length == 24) {
       for (i = 0; i < length; i++) {
          switch (str[i]) {
