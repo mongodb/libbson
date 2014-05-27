@@ -470,7 +470,7 @@ typedef struct
 {
    uint32_t domain;
    uint32_t code;
-   char          message[504];
+   char     message[504];
 } bson_error_t;
 
 
