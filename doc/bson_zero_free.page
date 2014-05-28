@@ -21,14 +21,14 @@ bson_zero_free (void  *mem,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>mem</code></p></td><td><p>A UNKNOWN.</p></td></tr>
-      <tr><td><p><code>size</code></p></td><td><p>A size_t.</p></td></tr>
+      <tr><td><p><code>mem</code></p></td><td><p>A memory region.</p></td></tr>
+      <tr><td><p><code>size</code></p></td><td><p>The size of <code>mem</code>.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>This function behaves like <link xref="bson_free">bson_free()</link> except that it zeroes the memory first. This can be useful if you are storing passwords or other similarly important data. Note that if it truely is important, you probably want an <code>mlock()</code>'d page as well to prevent it swapping to disk.</p>
   </section>
 
 </page>
