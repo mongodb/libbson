@@ -513,12 +513,12 @@ bson_append_array (bson_t       *bson,
  * Returns: true if successful; false if append would overflow max size.
  */
 bool
-bson_append_binary (bson_t             *bson,
-                    const char         *key,
-                    int                 key_length,
-                    bson_subtype_t      subtype,
-                    const uint8_t *binary,
-                    uint32_t       length);
+bson_append_binary (bson_t         *bson,
+                    const char     *key,
+                    int             key_length,
+                    bson_subtype_t  subtype,
+                    const uint8_t  *binary,
+                    uint32_t        length);
 
 
 /**
