@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<page id="bson_t"
+      type="guide"
+      style="class"
+      xmlns="http://projectmallard.org/1.0/"
+      xmlns:api="http://projectmallard.org/experimental/api/"
+      xmlns:ui="http://projectmallard.org/experimental/ui/">
+
+  <info>
+    <link type="guide" xref="index#api-reference" />
+  </info>
+
+  <title>bson_t</title>
+  <subtitle>BSON Document Abstraction</subtitle>
+
+  <section id="description">
+    <title>Synopsis</title>
+    <synopsis><code mime="text/x-csrc"><![CDATA[#include <bson.h>
+
+BSON_ALIGNED_BEGIN (128)
+typedef struct
+{
+   uint32_t flags;        /* Internal flags for the bson_t. */
+   uint32_t len;          /* Length of BSON data. */
+   uint8_t padding[120];  /* Padding for stack allocation. */
+} bson_t
+BSON_ALIGNED_END (128);]]></code></synopsis>
+  </section>
+
+  <section id="description">
+    <title>Description</title>
+    <p>The <code>bson_t</code> structure represents a BSON document. This structure manages the underlying BSON encoded buffer. For mutable documents, it can append new data to the document.</p>
+  </section>
+
+  <section id="perf">
+    <title>Performance Notes</title>
+    <p>The <code>bson_t</code> structure attepts to use an inline allocation within the structure to speed up performance of small documents. When this internal buffer has been exhausted, a heap allocated buffer will be dynamically allocated. Therefore, it is essential to call <code>bson_destroy()</code> on allocated documents.</p>
+  </section>
+
+  <section id="subdocs">
+    <title>Sub-Documents and Sub-Arrays</title>
+    <p>To simplify the creation of sub-documents and arrays, <link xref="bson_append_document_begin">bson_append_document_begin()</link> and <link xref="bson_append_array_begin">bson_append_array_begin()</link> exist. These can be used to build a sub-document using the parent documents memory region as the destination buffer.</p>
+    <listing>
+      <title>Creating Sub-Documents</title>
+      <synopsis><code mime="text/x-csrc"><![CDATA[bson_t parent;
+bson_t child;
+char *str;
+
+bson_init (&parent);
+bson_append_document_begin (&parent, "foo", 3, &child);
+bson_append_int32 (&child, "baz", 3, 1);
+bson_append_document_end (&parent, &child);
+
+str = bson_as_json (&parent, NULL);
+printf ("%s\n", str);
+bson_free (str);
+
+bson_destroy (&parent);
+]]></code></synopsis>
+      <screen><output>{ "foo" : { "baz" : 1 } }</output></screen>
+    </listing>
+  </section>
+
+  <section id="bcon">
+    <title>Simplified BSON C Object Notation</title>
+    <p>Creating BSON documents by hand can be tedious and time consuming. BCON, or BSON C Object Notation, was added to allow for the creation of BSON documents in a format that looks closer to the destination format.</p>
+    <p>The following example shows the use of BCON. Notice that values for fields are wrapped in the <code>BCON_*</code> macros. These are required for the variadic processor to determine the parameter type.</p>
+    <listing>
+      <title></title>
+      <synopsis><code mime="text/x-csrc"><![CDATA[bson_t *doc;
+
+doc = BCON_NEW ("foo", "{",
+   "int", BCON_INT32 (1),
+   "array", "[", BCON_INT32 (100), "{", "sub", BCON_UTF8 ("value"), "}", "]",
+"}");
+]]></code></synopsis>
+      <p>Creates the following document</p>
+      <screen><output>{ "foo" : { "int" : 1, "array" : [ 100, { "sub" : "value" } ] } }</output></screen>
+    </listing>
+  </section>
+
+  <links type="topic" groups="function" style="2column">
+    <title>Functions</title>
+  </links>
+
+  <section id="examples">
+    <title>Example</title>
+    <listing>
+      <title></title>
+      <synopsis><code mime="text/x-csrc"><![CDATA[
+static void
+create_on_heap (void)
+{
+   bson_t *b = bson_new ();
+
+   BSON_APPEND_INT32 (b, "foo", 123);
+   BSON_APPEND_UTF8 (b, "bar", "foo");
+   BSON_APPEND_DOUBLE (b, "baz", 1.23f);
+
+   bson_destroy (b);
+}
+]]></code></synopsis>
+    </listing>
+  </section>
+</page>
