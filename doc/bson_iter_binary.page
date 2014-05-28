@@ -12,7 +12,11 @@
 
   <section id="synopsis">
     <title>Synopsis</title>
-    <synopsis><code mime="text/x-csrc"><![CDATA[void
+    <synopsis><code mime="text/x-csrc"><![CDATA[
+#define BSON_ITER_HOLDS_BINARY(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_BINARY)
+
+void
 bson_iter_binary (const bson_iter_t *iter,
                   bson_subtype_t    *subtype,
                   uint32_t          *binary_len,
@@ -23,16 +27,16 @@ bson_iter_binary (const bson_iter_t *iter,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>iter</p></td><td><p>A bson_iter_t.</p></td></tr>
-      <tr><td><p>subtype</p></td><td><p>A bson_subtype_t.</p></td></tr>
-      <tr><td><p>binary_len</p></td><td><p>A uint32_t.</p></td></tr>
-      <tr><td><p>binary</p></td><td><p>A uint8_t.</p></td></tr>
+      <tr><td><p>iter</p></td><td><p>A <link xref="bson_iter_t">bson_iter_t</link>.</p></td></tr>
+      <tr><td><p>subtype</p></td><td><p>A location for a <link xref="bson_subtype_t">bson_subtype_t</link> or NULL.</p></td></tr>
+      <tr><td><p>binary_len</p></td><td><p>A location for the length of <code>binary</code>.</p></td></tr>
+      <tr><td><p>binary</p></td><td><p>A location for a pointer to the immutable buffer.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>This function shall return the binary data of a BSON_TYPE_BINARY element. It is a programming error to call this function on a field that is not of type BSON_TYPE_BINARY. You can check this with the BSON_ITER_HOLDS_BINARY() macro or <link xref="bson_iter_type">bson_iter_type()</link>.</p>
   </section>
 
 </page>

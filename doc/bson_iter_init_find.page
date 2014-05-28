@@ -22,19 +22,14 @@ bson_iter_init_find (bson_iter_t  *iter,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>iter</p></td><td><p>A bson_iter_t.</p></td></tr>
+      <tr><td><p>iter</p></td><td><p>A <link xref="bson_iter_t">bson_iter_t</link>.</p></td></tr>
       <tr><td><p>bson</p></td><td><p>A bson_t.</p></td></tr>
-      <tr><td><p>key</p></td><td><p>A (null).</p></td></tr>
+      <tr><td><p>key</p></td><td><p>A key to locate after initializing the iter.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
-  </section>
-
-  <section id="return">
-    <title>Returns</title>
-    <p>TODO:</p>
+    <p>This function is identical to <code>(bson_iter_init() &amp;&amp; bson_iter_find())</code>.</p>
   </section>
 </page>

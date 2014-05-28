@@ -21,7 +21,7 @@ bson_iter_overwrite_int32 (bson_iter_t *iter,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>iter</p></td><td><p>A bson_iter_t.</p></td></tr>
+      <tr><td><p>iter</p></td><td><p>A <link xref="bson_iter_t">bson_iter_t</link>.</p></td></tr>
       <tr><td><p>value</p></td><td><p>A int32_t.</p></td></tr>
     </table>
   </section>

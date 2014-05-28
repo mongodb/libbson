@@ -23,16 +23,17 @@ bson_iter_dbpointer (const bson_iter_t *iter,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>iter</p></td><td><p>A bson_iter_t.</p></td></tr>
-      <tr><td><p>collection_len</p></td><td><p>A uint32_t.</p></td></tr>
-      <tr><td><p>collection</p></td><td><p>A (null).</p></td></tr>
-      <tr><td><p>oid</p></td><td><p>A bson_oid_t.</p></td></tr>
+      <tr><td><p>iter</p></td><td><p>A <link xref="bson_iter_t">bson_iter_t</link>.</p></td></tr>
+      <tr><td><p>collection_len</p></td><td><p>A location for the length of the collection name.</p></td></tr>
+      <tr><td><p>collection</p></td><td><p>A location for the collection name..</p></td></tr>
+      <tr><td><p>oid</p></td><td><p>A location for a <link xref="bson_oid_t">bson_oid_t</link>.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Fetches the contents of a BSON_TYPE_DBPOINTER element.</p>
+    <note style="warning"><p>The BSON_TYPE_DBPOINTER field type is deprecated by the BSON spec and should not be used in new code.</p></note>
   </section>
 
 </page>

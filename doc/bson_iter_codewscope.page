@@ -12,7 +12,11 @@
 
   <section id="synopsis">
     <title>Synopsis</title>
-    <synopsis><code mime="text/x-csrc"><![CDATA[const char *
+    <synopsis><code mime="text/x-csrc"><![CDATA[
+#define BSON_ITER_HOLDS_CODEWSCOPE(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_CODEWSCOPE)
+
+const char *
 bson_iter_codewscope (const bson_iter_t *iter,
                       uint32_t          *length,
                       uint32_t          *scope_len,
@@ -23,20 +27,21 @@ bson_iter_codewscope (const bson_iter_t *iter,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>iter</p></td><td><p>A bson_iter_t.</p></td></tr>
-      <tr><td><p>length</p></td><td><p>A uint32_t.</p></td></tr>
-      <tr><td><p>scope_len</p></td><td><p>A uint32_t.</p></td></tr>
-      <tr><td><p>scope</p></td><td><p>A uint8_t.</p></td></tr>
+      <tr><td><p>iter</p></td><td><p>A <link xref="bson_iter_t">bson_iter_t</link>.</p></td></tr>
+      <tr><td><p>length</p></td><td><p>An optional location for the length of the resulting UTF-8 encoded string.</p></td></tr>
+      <tr><td><p>scope_len</p></td><td><p>A optional location for the length of <code>scope</code>.</p></td></tr>
+      <tr><td><p>scope</p></td><td><p>An optional location to store the immutable raw scope BSON document.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The <code>bson_iter_codewscope()</code> function acts similar to <link xref="bson_iter_code">bson_iter_code()</link> except for BSON_TYPE_CODEWSCOPE elements. It also will provide a pointer to the buffer for scope, which can be loaded into a <link xref="bson_t">bson_t</link> using <link xref="bson_init_static">bson_init_static()</link>.</p>
+
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>An UTF-8 encoded string containing the JavaScript code which should not be modified or freed.</p>
   </section>
 </page>

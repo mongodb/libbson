@@ -12,7 +12,11 @@
 
   <section id="synopsis">
     <title>Synopsis</title>
-    <synopsis><code mime="text/x-csrc"><![CDATA[const char *
+    <synopsis><code mime="text/x-csrc"><![CDATA[
+#define BSON_ITER_HOLDS_CODE(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_CODE)
+
+const char *
 bson_iter_code (const bson_iter_t *iter,
                 uint32_t          *length);
 ]]></code></synopsis>
@@ -21,18 +25,19 @@ bson_iter_code (const bson_iter_t *iter,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>iter</p></td><td><p>A bson_iter_t.</p></td></tr>
-      <tr><td><p>length</p></td><td><p>A uint32_t.</p></td></tr>
+      <tr><td><p>iter</p></td><td><p>A <link xref="bson_iter_t">bson_iter_t</link>.</p></td></tr>
+      <tr><td><p>length</p></td><td><p>A location for the length of the UTF-8 encoded string or NULL.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>This function returns the contents of a BSON_TYPE_CODE field. The length of the string is stored in <code>length</code> if non-NULL.</p>
+    <p>It is invalid to call this function on a field that is not of type BSON_TYPE_CODE.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A UTF-8 encoded string which should not be modified or freed.</p>
   </section>
 </page>

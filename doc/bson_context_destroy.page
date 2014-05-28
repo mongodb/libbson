@@ -26,7 +26,8 @@ bson_context_destroy (bson_context_t *context);
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The <code>bson_context_destroy()</code> function shall release all resources associated with <code>context</code>.</p>
+    <p>This should be called when you are no longer using a <link xref="bson_context_t">bson_context_t</link> that you have allocated with <link xref="bson_context_new">bson_context_new()</link>.</p>
   </section>
 
 </page>

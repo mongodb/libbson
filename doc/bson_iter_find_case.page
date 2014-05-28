@@ -21,18 +21,19 @@ bson_iter_find_case (bson_iter_t *iter,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>iter</p></td><td><p>A bson_iter_t.</p></td></tr>
-      <tr><td><p>key</p></td><td><p>A (null).</p></td></tr>
+      <tr><td><p>iter</p></td><td><p>A <link xref="bson_iter_t">bson_iter_t</link>.</p></td></tr>
+      <tr><td><p>key</p></td><td><p>An ASCII string containing the field to locate.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Advances <code>iter</code> until it is observing an element matching the name of <code>key</code> or exhausting all elements.</p>
+    <p><code>key</code> is not case-sensitive. The keys will be case-folded to determine a match using the current locale.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>true if <code>key</code> was found.</p>
   </section>
 </page>

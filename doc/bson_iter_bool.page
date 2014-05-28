@@ -12,7 +12,11 @@
 
   <section id="synopsis">
     <title>Synopsis</title>
-    <synopsis><code mime="text/x-csrc"><![CDATA[bool
+    <synopsis><code mime="text/x-csrc"><![CDATA[
+#define BSON_ITER_HOLDS_BOOL(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_BOOL)
+
+bool
 bson_iter_bool (const bson_iter_t *iter);
 ]]></code></synopsis>
   </section>
@@ -20,17 +24,17 @@ bson_iter_bool (const bson_iter_t *iter);
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>iter</p></td><td><p>A bson_iter_t.</p></td></tr>
+      <tr><td><p>iter</p></td><td><p>A <link xref="bson_iter_t">bson_iter_t</link>.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The <code>bson_iter_bool()</code>function shall return the boolean value of a BSON_TYPE_BOOL element. It is a programming error to call this function on an element other than BSON_TYPE_BOOL. You can check this with <code>bson_iter_type()</code>or <code>BSON_ITER_HOLDS_BOOL()</code>.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>Either <code>true</code> or <code>false</code>.</p>
   </section>
 </page>

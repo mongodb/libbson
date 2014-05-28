@@ -20,17 +20,24 @@ bson_iter_as_int64 (const bson_iter_t *iter);
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>iter</p></td><td><p>A bson_iter_t.</p></td></tr>
+      <tr><td><p>iter</p></td><td><p>A <link xref="bson_iter_t">bson_iter_t</link>.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The <code>bson_iter_as_int64()</code> function shall return the contents of the current element as if it were a BSON_TYPE_INT64 element. The currently supported casts include:</p>
+
+    <list>
+      <item><p>BSON_TYPE_BOOL</p></item>
+      <item><p>BSON_TYPE_DOUBLE</p></item>
+      <item><p>BSON_TYPE_INT32</p></item>
+      <item><p>BSON_TYPE_INT64</p></item>
+    </list>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A 64-bit signed integer.</p>
   </section>
 </page>
