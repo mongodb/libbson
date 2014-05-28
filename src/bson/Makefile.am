@@ -80,6 +80,7 @@ libbson_la_SOURCES = \
 	src/bson/bson-string.c \
 	src/bson/bson-utf8.c \
 	src/bson/bson-value.c \
+	src/bson/bson-version.c \
 	src/bson/bson-writer.c
 
 libbson_la_LIBADD =

@@ -54,6 +54,9 @@ bson_destroy_with_steal
 bson_equal
 bson_free
 bson_get_data
+bson_get_major_version
+bson_get_micro_version
+bson_get_minor_version
 bson_get_monotonic_time
 bson_gettimeofday
 bson_has_field
