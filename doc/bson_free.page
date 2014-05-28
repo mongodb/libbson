@@ -20,13 +20,13 @@ bson_free (void *mem);
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>mem</code></p></td><td><p>A UNKNOWN.</p></td></tr>
+      <tr><td><p><code>mem</code></p></td><td><p>A memory region.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>This function shall free the memory supplied by <code>mem</code>. This should be used by functions that require you free the result with <code>bson_free()</code>.</p>
   </section>
 
 </page>

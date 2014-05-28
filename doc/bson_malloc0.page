@@ -26,7 +26,15 @@ bson_malloc0 (size_t num_bytes);
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>This is a portable <code>malloc()</code> wrapper that also sets the memory to zero. Similar to <code>calloc()</code>.</p>
+    <p>In general, this function will return an allocation at least <code>sizeof(void*)</code> bytes or bigger.</p>
+    <p>If there was a failure to allocate <code>num_bytes</code> bytes, the process will be aborted.</p>
+    <note style="warning"><p>This function will abort on failure to allocate memory.</p></note>
+  </section>
+
+  <section id="returns">
+    <title>Returns</title>
+    <p>A pointer to a memory region which <em>HAS</em> been zeroed.</p>
   </section>
 
 </page>

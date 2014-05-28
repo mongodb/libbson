@@ -22,15 +22,15 @@ bson_realloc_ctx (void  *mem,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>mem</code></p></td><td><p>A UNKNOWN.</p></td></tr>
-      <tr><td><p><code>num_bytes</code></p></td><td><p>A size_t.</p></td></tr>
-      <tr><td><p><code>ctx</code></p></td><td><p>A UNKNOWN.</p></td></tr>
+      <tr><td><p><code>mem</code></p></td><td><p>A memory region.</p></td></tr>
+      <tr><td><p><code>num_bytes</code></p></td><td><p>A size_t containing the requested size.</p></td></tr>
+      <tr><td><p><code>ctx</code></p></td><td><p>A consumer-specific pointer or <code>NULL</code>.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>This function is identical to <link xref="bson_realloc">bson_realloc()</link> except it takes a context parameter. This is useful when working with pooled or specific memory allocators.</p>
   </section>
 
 </page>
