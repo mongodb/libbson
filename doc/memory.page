@@ -15,7 +15,7 @@
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Libbson contains a lightweight memory abstraction to make portability to new platforms easier. Additionally, it helps us integrate with interesting higher-level languages. One caveat, however, is that Libbson is not designed to deal with Out of Memory (OOM) situations. Doing so requires extreme dilligence throughout the application stack that has rarely been implemented correctly. This may change in the future. As it stands now, Libbson will <code>abort()</code> under OOM situations.</p>
   </section>
 
   <links type="topic" groups="function" style="2column">
