@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      style="function"
+      xmlns:api="http://projectmallard.org/experimental/api/"
+      xmlns:ui="http://projectmallard.org/experimental/ui/"
+      id="bson_oid_hash_unsafe">
+  <info>
+    <link type="guide" xref="bson_oid_t" group="function"/>
+  </info>
+  <title>bson_oid_hash_unsafe()</title>
+
+  <section id="synopsis">
+    <title>Synopsis</title>
+    <synopsis><code mime="text/x-csrc"><![CDATA[static BSON_INLINE uint32_t
+bson_oid_hash_unsafe (const bson_oid_t *oid)
+{
+   uint32_t hash = 5381;
+   uint32_t i;
+
+   for (i = 0; i < sizeof oid->bytes; i++) {
+      hash = ((hash << 5) + hash) + oid->bytes[i];
+   }
+
+   return hash;
+}
+]]></code></synopsis>
+  </section>
+
+  <section id="parameters">
+    <title>Parameters</title>
+    <table>
+      <tr><td><p><code>oid</code></p></td><td><p>A <link xref="bson_oid_t">bson_oid_t</link>.</p></td></tr>
+    </table>
+  </section>
+
+  <section id="description">
+    <title>Description</title>
+    <p>TODO:</p>
+  </section>
+
+  <section id="return">
+    <title>Returns</title>
+    <p>TODO:</p>
+  </section>
+</page>

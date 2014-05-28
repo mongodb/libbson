@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<page id="memory"
+      type="guide"
+      style="class"
+      xmlns="http://projectmallard.org/1.0/"
+      xmlns:api="http://projectmallard.org/experimental/api/"
+      xmlns:ui="http://projectmallard.org/experimental/ui/">
+
+  <info>
+    <link type="guide" xref="index#api-reference" />
+  </info>
+
+  <title>Memory Management</title>
+  <subtitle>BSON Memory Abstraction</subtitle>
+
+  <section id="description">
+    <title>Description</title>
+    <p>TODO:</p>
+  </section>
+
+  <links type="topic" groups="function" style="2column">
+    <title>Functions</title>
+  </links>
+</page>
