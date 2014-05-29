@@ -44,6 +44,7 @@
 #include "bson-value.h"
 #include "bson-version.h"
 #include "bson-writer.h"
+#include "bcon.h"
 
 #undef BSON_INSIDE
 
