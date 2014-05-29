@@ -22,17 +22,17 @@ bson_string_free (bson_string_t *string,
     <title>Parameters</title>
     <table>
       <tr><td><p><code>string</code></p></td><td><p>A <link xref="bson_string_t">bson_string_t</link>.</p></td></tr>
-      <tr><td><p><code>free_segment</code></p></td><td><p>A UNKNOWN.</p></td></tr>
+      <tr><td><p><code>free_segment</code></p></td><td><p>A bool indicating if <code>str->str</code> should be returned.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Frees the bson_string_t structure and optionally the string itself.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p><code>str->str</code> if <code>free_segment</code> is true, otherwise NULL.</p>
   </section>
 </page>

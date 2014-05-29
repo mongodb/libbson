@@ -23,20 +23,20 @@ bson_vsnprintf (char       *str,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>str</code></p></td><td><p>A UNKNOWN.</p></td></tr>
-      <tr><td><p><code>size</code></p></td><td><p>A size_t.</p></td></tr>
-      <tr><td><p><code>format</code></p></td><td><p>A UNKNOWN.</p></td></tr>
-      <tr><td><p><code>ap</code></p></td><td><p>A va_list.</p></td></tr>
+      <tr><td><p><code>str</code></p></td><td><p>A location for the resulting string.</p></td></tr>
+      <tr><td><p><code>size</code></p></td><td><p>The size of str in bytes.</p></td></tr>
+      <tr><td><p><code>format</code></p></td><td><p>A printf style format string.</p></td></tr>
+      <tr><td><p><code>ap</code></p></td><td><p>A va_list of parameters for the format.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Like bson_snprintf() but allows for variadic parameters.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>The number of bytes written to <code>str</code> excluding the <code>\0</code> byte.</p>
   </section>
 </page>

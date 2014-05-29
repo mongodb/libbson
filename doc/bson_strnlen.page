@@ -21,18 +21,18 @@ bson_strnlen (const char *s,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>s</code></p></td><td><p>A UNKNOWN.</p></td></tr>
-      <tr><td><p><code>maxlen</code></p></td><td><p>A size_t.</p></td></tr>
+      <tr><td><p><code>s</code></p></td><td><p>A string.</p></td></tr>
+      <tr><td><p><code>maxlen</code></p></td><td><p>The maximum size of string to check.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>A portable version of <code>strnlen()</code>.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>The length of <code>s</code> in bytes or <code>maxlen</code> if no <code>\0</code> was found.</p>
   </section>
 </page>

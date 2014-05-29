@@ -20,17 +20,17 @@ bson_string_new (const char *str);
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>str</code></p></td><td><p>A UNKNOWN.</p></td></tr>
+      <tr><td><p><code>str</code></p></td><td><p>A string to be copied or NULL.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Creates a new string builder, which uses power-of-two growth of buffers. Use the various bson_string_append*() functions to append to the string.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A newly allocated bson_string_t that should be freed with bson_string_free() when no longer in use.</p>
   </section>
 </page>

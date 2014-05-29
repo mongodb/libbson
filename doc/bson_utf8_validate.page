@@ -22,19 +22,19 @@ bson_utf8_validate (const char *utf8,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>utf8</code></p></td><td><p>A UNKNOWN.</p></td></tr>
-      <tr><td><p><code>utf8_len</code></p></td><td><p>A size_t.</p></td></tr>
-      <tr><td><p><code>allow_null</code></p></td><td><p>A UNKNOWN.</p></td></tr>
+      <tr><td><p><code>utf8</code></p></td><td><p>A string to verify.</p></td></tr>
+      <tr><td><p><code>utf8_len</code></p></td><td><p>The length of <code>utf8</code> in bytes.</p></td></tr>
+      <tr><td><p><code>allow_null</code></p></td><td><p>A bool indiciating that embedded <code>\0</code> bytes are allowed.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Validates that the content within <code>utf8</code> is valid UTF-8. If <code>allow_null</code> is <code>true</code>, then embedded NULL bytes are allowed (<code>\0></code>).</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>true if <code>utf8</code> contains valid UTF-8.</p>
   </section>
 </page>

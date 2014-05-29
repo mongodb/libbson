@@ -23,14 +23,14 @@ bson_utf8_from_unichar (bson_unichar_t unichar,
     <title>Parameters</title>
     <table>
       <tr><td><p><code>unichar</code></p></td><td><p>A <link xref="bson_unichar_t">bson_unichar_t</link>.</p></td></tr>
-      <tr><td><p><code>utf8</code></p></td><td><p>A UNKNOWN.</p></td></tr>
-      <tr><td><p><code>len</code></p></td><td><p>A uint32_t.</p></td></tr>
+      <tr><td><p><code>utf8</code></p></td><td><p>A location for the utf8 sequence.</p></td></tr>
+      <tr><td><p><code>len</code></p></td><td><p>A location for the number of bytes in the resulting utf8 sequence.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Converts a single unicode character to a multi-byte UTF-8 sequence. The result is stored in <code>utf8</code> and the number of bytes used in <code>len</code>.</p>
   </section>
 
 </page>

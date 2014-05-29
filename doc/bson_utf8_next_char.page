@@ -20,17 +20,18 @@ bson_utf8_next_char (const char *utf8);
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>utf8</code></p></td><td><p>A UNKNOWN.</p></td></tr>
+      <tr><td><p><code>utf8</code></p></td><td><p>A UTF-8 encoded string.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Advances within <code>utf8</code> to the next UTF-8 character, which may be multiple bytes offset from <code>utf8</code>. A pointer to the next character is returned.</p>
+    <p>It is invalid to call this function on a string whose current character is <code>\0</code>.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A pointer to the beginning of the next character in the UTF-8 encoded string.</p>
   </section>
 </page>
