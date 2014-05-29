@@ -41,12 +41,12 @@ bson_as_json (const bson_t *bson,
 
   <section id="example">
     <title>Example</title>
-    <example>
+    <listing>
       <title>bson_as_json</title>
       <code mime="text/x-csrc"><![CDATA[char *str = bson_as_json (doc, NULL);
 printf ("%s\n", str);
 bson_free (str);]]></code>
-    </example>
+    </listing>
   </section>
 
 </page>
