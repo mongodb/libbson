@@ -16,6 +16,7 @@
 
 
 #include <bson.h>
+#include <bcon.h>
 #include <assert.h>
 #define BSON_INSIDE
 #include <bson-private.h>
@@ -1325,6 +1326,36 @@ test_bson_destroy_with_steal (void)
 }
 
 
+static void
+test_bson_has_field (void)
+{
+   bson_t *b;
+   bool r;
+
+   b = BCON_NEW ("foo", "[", "{", "bar", BCON_INT32 (1), "}", "]");
+
+   r = bson_has_field (b, "foo");
+   assert (r);
+
+   r = bson_has_field (b, "foo.0");
+   assert (r);
+
+   r = bson_has_field (b, "foo.0.bar");
+   assert (r);
+
+   r = bson_has_field (b, "0");
+   assert (!r);
+
+   r = bson_has_field (b, "bar");
+   assert (!r);
+
+   r = bson_has_field (b, "0.bar");
+   assert (!r);
+
+   bson_destroy (b);
+}
+
+
 void
 test_bson_install (TestSuite *suite)
 {
@@ -1377,4 +1408,5 @@ test_bson_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/macros", test_bson_macros);
    TestSuite_Add (suite, "/bson/clear", test_bson_clear);
    TestSuite_Add (suite, "/bson/destroy_with_steal", test_bson_destroy_with_steal);
+   TestSuite_Add (suite, "/bson/has_field", test_bson_has_field);
 }

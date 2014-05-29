@@ -2186,9 +2186,15 @@ bson_has_field (const bson_t *bson,
                 const char   *key)
 {
    bson_iter_t iter;
+   bson_iter_t child;
 
    bson_return_val_if_fail (bson, false);
    bson_return_val_if_fail (key, false);
+
+   if (NULL != strchr (key, '.')) {
+      return (bson_iter_init (&iter, bson) &&
+              bson_iter_find_descendant (&iter, key, &child));
+   }
 
    return bson_iter_init_find (&iter, bson, key);
 }
