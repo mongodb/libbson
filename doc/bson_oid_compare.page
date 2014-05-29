@@ -28,11 +28,11 @@ bson_oid_compare (const bson_oid_t *oid1,
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The _bson_oid_compare()_ function shall return a qsort() style value of a lexicographical sort of _oid1_ and _oid2_.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>less than 0, 0, or greater than 0 based on the comparison.</p>
   </section>
 </page>

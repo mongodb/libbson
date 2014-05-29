@@ -26,11 +26,11 @@ bson_oid_hash (const bson_oid_t *oid);
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Generates a hash code for <code>oid</code> suitable for a hashtable.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A 32-bit hash code.</p>
   </section>
 </page>

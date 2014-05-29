@@ -21,18 +21,19 @@ bson_json_reader_new_from_fd (int  fd,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>fd</code></p></td><td><p>A UNKNOWN.</p></td></tr>
-      <tr><td><p><code>close_on_destroy</code></p></td><td><p>A UNKNOWN.</p></td></tr>
+      <tr><td><p><code>fd</code></p></td><td><p>An open file-descriptor.</p></td></tr>
+      <tr><td><p><code>close_on_destroy</code></p></td><td><p>If <code>fd</code> should be <code>close()</code>'d when the reader is destroyed.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Creates a new JSON to BSON converter that will be reading from the file-descriptor <code>fd</code>.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A newly allocated bson_json_reader_t that should be freed with bson_json_reader_destroy().</p>
   </section>
+
 </page>

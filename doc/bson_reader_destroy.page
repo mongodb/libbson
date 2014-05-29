@@ -26,7 +26,7 @@ bson_reader_destroy (bson_reader_t *reader);
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Destroys and releases all resources associated with <code>reader</code>.</p>
   </section>
 
 </page>

@@ -22,13 +22,18 @@ bson_oid_init_from_string (bson_oid_t *oid,
     <title>Parameters</title>
     <table>
       <tr><td><p><code>oid</code></p></td><td><p>A <link xref="bson_oid_t">bson_oid_t</link>.</p></td></tr>
-      <tr><td><p><code>str</code></p></td><td><p>A UNKNOWN.</p></td></tr>
+      <tr><td><p><code>str</code></p></td><td><p>A string containing a hex encoded version of the oid.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Parses the string containing hex encoded oid and initialize the bytes in <code>oid</code>.</p>
+  </section>
+
+  <section id="example">
+    <title>Example</title>
+    <synopsis><code mime="text/x-csrc"><![CDATA[bson_oid_init_from_string (&oid, "012345678901234567890123");]]></code></synopsis>
   </section>
 
 </page>

@@ -26,11 +26,11 @@ bson_oid_get_time_t (const bson_oid_t *oid);
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Fetches the generation time in seconds since the UNIX Epoch of <code>oid</code>.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A time_t containing the seconds since the UNIX epoch of <code>oid</code>.</p>
   </section>
 </page>

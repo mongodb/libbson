@@ -22,13 +22,14 @@ bson_oid_init_sequence (bson_oid_t     *oid,
     <title>Parameters</title>
     <table>
       <tr><td><p><code>oid</code></p></td><td><p>A <link xref="bson_oid_t">bson_oid_t</link>.</p></td></tr>
-      <tr><td><p><code>context</code></p></td><td><p>A <link xref="bson_context_t">bson_context_t</link>.</p></td></tr>
+      <tr><td><p><code>context</code></p></td><td><p>An optional <link xref="bson_context_t">bson_context_t</link>.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Generates a new ObjectID using the 64-bit sequence.</p>
+    <note style="warning"><p>This form of ObjectID is generally used by MongoDB replica peers only.</p></note>
   </section>
 
 </page>

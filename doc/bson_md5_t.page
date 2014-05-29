@@ -25,7 +25,7 @@ typedef struct
 
   <section id="description">
     <title>Description</title>
-    <p></p>
+    <p>bson_md5_t encapsulates an implementation of the MD5 algorithm. This is used in OID generation for the MD5(hostname) bytes. It is also used by some libraries such as the MongoDB C driver.</p>
   </section>
 
   <links type="topic" groups="function" style="2column">

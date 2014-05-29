@@ -22,13 +22,13 @@ bson_oid_init (bson_oid_t     *oid,
     <title>Parameters</title>
     <table>
       <tr><td><p><code>oid</code></p></td><td><p>A <link xref="bson_oid_t">bson_oid_t</link>.</p></td></tr>
-      <tr><td><p><code>context</code></p></td><td><p>A <link xref="bson_context_t">bson_context_t</link>.</p></td></tr>
+      <tr><td><p><code>context</code></p></td><td><p>An <em>optional</em> <link xref="bson_context_t">bson_context_t</link> or NULL.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Generates a new <link xref="bson_oid_t">bson_oid_t</link> using either <code>context</code> or the default <link xref="bson_context_t">bson_context_t</link>.</p>
   </section>
 
 </page>

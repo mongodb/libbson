@@ -30,15 +30,16 @@ bson_json_reader_read (bson_json_reader_t *reader,
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Reads the next BSON document from the underlying JSON source.</p>
   </section>
 
   <section id="errors">
     <title>Errors</title>
-    <p>Describe errors</p>
+    <p>Errors are propagated via the <code>error</code> parameter.</p>
   </section>
+
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>1 if successful and data was read. 0 if successful and no data was read. -1 if there was an error.</p>
   </section>
 </page>

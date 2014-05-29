@@ -28,11 +28,11 @@ bson_oid_equal (const bson_oid_t *oid1,
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Checks if two bson_oid_t contain the same bytes.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>true if they are equal, otherwise false.</p>
   </section>
 </page>

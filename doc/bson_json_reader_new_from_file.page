@@ -21,22 +21,23 @@ bson_json_reader_new_from_file (const char   *filename,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>filename</code></p></td><td><p>A UNKNOWN.</p></td></tr>
+      <tr><td><p><code>filename</code></p></td><td><p>A file-name in the system file-name encoding.</p></td></tr>
       <tr><td><p><code>error</code></p></td><td><p>A <link xref="bson_error_t">bson_error_t</link>.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Creates a new bson_json_reader_t using the underlying file found at <code>filename</code>.</p>
   </section>
 
   <section id="errors">
     <title>Errors</title>
-    <p>Describe errors</p>
+    <p>Errors are propagated via <code>error</code>.</p>
   </section>
+
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A newly allocated bson_json_reader_t if successful, otherwise NULL and error is set.</p>
   </section>
 </page>

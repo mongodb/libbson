@@ -21,18 +21,18 @@ bson_json_data_reader_new (bool   allow_multiple,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>allow_multiple</code></p></td><td><p>A UNKNOWN.</p></td></tr>
-      <tr><td><p><code>size</code></p></td><td><p>A size_t.</p></td></tr>
+      <tr><td><p><code>allow_multiple</code></p></td><td><p>A boolean denoting if more than one document may be allowed in the stream.</p></td></tr>
+      <tr><td><p><code>size</code></p></td><td><p>A requested buffer size.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Creates a new streaming JSON reader that will convert JSON documents to BSON.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A newly allocated bson_json_reader_t that should be freed with bson_json_reader_destroy().</p>
   </section>
 </page>

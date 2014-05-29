@@ -28,7 +28,7 @@ bson_oid_copy (const bson_oid_t *src,
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Copies the contents of src into dst.</p>
   </section>
 
 </page>
