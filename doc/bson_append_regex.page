@@ -34,9 +34,9 @@ bson_append_regex (bson_t     *bson,
 
   <section id="description">
     <title>Description</title>
-    <p>Appends a new field to _bson_ of type BSON_TYPE_REGEX. _regex_ should be the regex string. _options_ should contain the options for the regex.</p>
+    <p>Appends a new field to <code>bson</code> of type BSON_TYPE_REGEX. <code>regex</code> should be the regex string. <code>options</code> should contain the options for the regex.</p>
 
-    <p>Valid characters for _options_ include:</p>
+    <p>Valid characters for <code>options</code> include:</p>
 
     <list>
       <item><p><code>'i'</code> for case-insensitive.</p></item>

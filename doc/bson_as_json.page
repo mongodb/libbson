@@ -28,9 +28,9 @@ bson_as_json (const bson_t *bson,
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_as_json">bson_as_json()</link> function shall encode _bson_ as a JSON encoded UTF-8 string.</p>
+    <p>The <link xref="bson_as_json">bson_as_json()</link> function shall encode <code>bson</code> as a JSON encoded UTF-8 string.</p>
     <p>The caller is responsible for freeing the resulting UTF-8 encoded string by calling <link xref="bson_free">bson_free()</link> with the result.</p>
-    <p>If non-NULL, _length_ will be set to the length of the result in bytes.</p>
+    <p>If non-NULL, <code>length</code> will be set to the length of the result in bytes.</p>
   </section>
 
   <section id="return">

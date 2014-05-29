@@ -32,7 +32,7 @@ bson_append_date_time (bson_t     *bson,
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_append_date_time">bson_append_date_time()</link> function shall append a new element to a _bson_ document containing a date and time with no timezone information. _value_ is assumed to be in UTC format of milliseconds since the UNIX epoch. _value_ <em>MAY</em> be negative.</p>
+    <p>The <link xref="bson_append_date_time">bson_append_date_time()</link> function shall append a new element to a <code>bson</code> document containing a date and time with no timezone information. <code>value</code> is assumed to be in UTC format of milliseconds since the UNIX epoch. <code>value</code> <em>MAY</em> be negative.</p>
   </section>
 
   <section id="return">

@@ -35,7 +35,7 @@ bson_init_static (bson_t        *b,
 
   <section id="return">
     <title>Returns</title>
-    <p><link xref="bson_init_static">bson_init_static()</link> will return _true_ if the <link xref="bson_t">bson_t</link> was successfully initialized.</p>
+    <p><link xref="bson_init_static">bson_init_static()</link> will return <code>true</code> if the <link xref="bson_t">bson_t</link> was successfully initialized.</p>
   </section>
 
 </page>

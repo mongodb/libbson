@@ -28,7 +28,7 @@ bson_concat (bson_t       *dst,
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_concat">bson_concat()</link> function shall append the contents of _src_ to _dst_.</p>
+    <p>The <link xref="bson_concat">bson_concat()</link> function shall append the contents of <code>src</code> to <code>dst</code>.</p>
   </section>
 
   <section id="return">

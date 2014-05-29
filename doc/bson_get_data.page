@@ -26,7 +26,7 @@ bson_get_data (const bson_t *bson);
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_get_data">bson_get_data()</link> function shall return the raw buffer of a bson document. This can be used in conjunction with the _len_ property of a <link xref="bson_t">bson_t</link> if you want to copy the raw buffer around.</p>
+    <p>The <link xref="bson_get_data">bson_get_data()</link> function shall return the raw buffer of a bson document. This can be used in conjunction with the <code>len</code> property of a <link xref="bson_t">bson_t</link> if you want to copy the raw buffer around.</p>
   </section>
 
   <section id="return">

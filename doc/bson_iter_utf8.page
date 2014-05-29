@@ -32,7 +32,7 @@ bson_iter_utf8 (const bson_iter_t *iter,
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_iter_utf8">bson_iter_utf8()</link> function shall retrieve the contents of a BSON_TYPE_UTF8 element currently observed by _iter_.</p>
+    <p>The <link xref="bson_iter_utf8">bson_iter_utf8()</link> function shall retrieve the contents of a BSON_TYPE_UTF8 element currently observed by <code>iter</code>.</p>
     <p>It is invalid to call this function while ovserving an element other than BSON_TYPE_UTF8.</p>
   </section>
 

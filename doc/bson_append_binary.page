@@ -36,7 +36,7 @@ bson_append_binary (bson_t        *bson,
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_append_binary">bson_append_binary()</link> function shall append a new element to _bson_ containing the binary data provided.</p>
+    <p>The <link xref="bson_append_binary">bson_append_binary()</link> function shall append a new element to <code>bson</code> containing the binary data provided.</p>
   </section>
 
   <section id="return">

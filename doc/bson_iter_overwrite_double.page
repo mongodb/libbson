@@ -30,7 +30,7 @@ bson_iter_overwrite_double (bson_iter_t *iter,
     <title>Description</title>
     <p>The <link xref="bson_iter_overwrite_double">bson_iter_overwrite_double()</link> function shall overwrite the contents of a BSON_TYPE_DOUBLE element in place.</p>
     <p>This may only be done when the underlying bson document allows mutation.</p>
-    <p>It is a programming error to call this function when _iter_ is not obvserving an element of type BSON_TYPE_DOUBLE.</p>
+    <p>It is a programming error to call this function when <code>iter</code> is not obvserving an element of type BSON_TYPE_DOUBLE.</p>
   </section>
 
 </page>

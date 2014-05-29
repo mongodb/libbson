@@ -30,7 +30,7 @@ bson_append_now_utc (bson_t     *bson,
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_append_now_utc">bson_append_now_utc()</link> function is a helper to get the current date and time in UTC and append it to _bson_ as a BSON_TYPE_DATE_TIME element.</p>
+    <p>The <link xref="bson_append_now_utc">bson_append_now_utc()</link> function is a helper to get the current date and time in UTC and append it to <code>bson</code> as a BSON_TYPE_DATE_TIME element.</p>
     <p>This function calls <link xref="bson_append_date_time">bson_append_date_time()</link> internally.</p>
   </section>
 

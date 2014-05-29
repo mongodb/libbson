@@ -34,7 +34,7 @@ bson_append_symbol (bson_t     *bson,
 
   <section id="description">
     <title>Description</title>
-    <p>Appends a new field to _bson_ of type BSON_TYPE_SYMBOL. This BSON type is deprecated and should not be used in new code.</p>
+    <p>Appends a new field to <code>bson</code> of type BSON_TYPE_SYMBOL. This BSON type is deprecated and should not be used in new code.</p>
   </section>
 
   <section id="return">

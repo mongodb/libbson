@@ -35,6 +35,6 @@ bson_destroy_with_steal (bson_t   *bson,
 
   <section id="return">
     <title>Returns</title>
-    <p><link xref="bson_destroy_with_steal">bson_destroy_with_steal()</link> shall return a buffer containing the contents of the <link xref="bson_t">bson_t</link> if _steal_ is non-zero. This should be freed with <link xref="bson_free">bson_free()</link> when no longer in use. _length_ will be set to the length of the bson document if non-NULL.</p>
+    <p><link xref="bson_destroy_with_steal">bson_destroy_with_steal()</link> shall return a buffer containing the contents of the <link xref="bson_t">bson_t</link> if <code>steal</code> is non-zero. This should be freed with <link xref="bson_free">bson_free()</link> when no longer in use. <code>length</code> will be set to the length of the bson document if non-NULL.</p>
   </section>
 </page>

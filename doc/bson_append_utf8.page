@@ -34,7 +34,7 @@ bson_append_utf8 (bson_t     *bson,
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_append_utf8">bson_append_utf8()</link> function shall append a UTF-8 encoded string to _bson_.</p>
+    <p>The <link xref="bson_append_utf8">bson_append_utf8()</link> function shall append a UTF-8 encoded string to <code>bson</code>.</p>
     <p>_value_ *MUST* be valid UTF-8.</p>
     <p>Some UTF-8 implementations allow for <code>\0</code> to be contained within the string (excluding the termination <code>\0</code>. This is allowed, but remember that it could cause issues with communicating with external systems that do not support it.</p>
     <p>It is suggested to use modified UTF-8 which uses a 2 byte representation for embedded <code>\0</code> within the string. This will allow these UTF-8 encoded strings to used with many libc functions.</p>
