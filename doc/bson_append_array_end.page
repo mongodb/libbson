@@ -28,7 +28,7 @@ bson_append_array_end (bson_t *bson,
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_append_array_end">bson_append_array_end()</link> function shall complete the appending of an array field started with <link xref="bson_append_array_begin">bson_append_array_begin()</link>. *child* is invalid after calling this function.</p>
+    <p>The <link xref="bson_append_array_end">bson_append_array_end()</link> function shall complete the appending of an array field started with <link xref="bson_append_array_begin">bson_append_array_begin()</link>. <code>child</code> is invalid after calling this function.</p>
   </section>
 
   <section id="return">

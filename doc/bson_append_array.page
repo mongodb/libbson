@@ -32,7 +32,7 @@ bson_append_array (bson_t       *bson,
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_append_array">bson_append_array()</link> function shall append *child* to *bson* using the specified key. The type of the field will be an array, but it is the responsibility of the caller to ensure that the keys of *child* are properly formatted with string keys such as "0", "1", "2" and so forth.</p>
+    <p>The <link xref="bson_append_array">bson_append_array()</link> function shall append <code>child</code> to <code>bson</code> using the specified key. The type of the field will be an array, but it is the responsibility of the caller to ensure that the keys of <code>child</code> are properly formatted with string keys such as "0", "1", "2" and so forth.</p>
   </section>
 
   <section id="return">

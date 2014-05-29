@@ -28,7 +28,7 @@ bson_iter_symbol (const bson_iter_t *iter,
 
   <section id="description">
     <title>Description</title>
-    <p>The symbol element type is *deprecated* in the bson specification at http://bsonspec.org.</p>
+    <p>The symbol element type is <em>DEPRECATED</em> in the bson specification at http://bsonspec.org.</p>
     <p>The <link xref="bson_iter_symbol">bson_iter_symbol()</link> function shall return the contents of a BSON_TYPE_SYMBOL element.</p>
     <p>if non-NULL, <code>length</code> will be set to the length of the resulting string.</p>
   </section>
