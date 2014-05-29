@@ -22,7 +22,7 @@
 
   <section id="sorting">
     <title>Sorting ObjectIDs</title>
-    <p>The typical way to sort in C is using <code>qsort()</code>. Therefore, Libbson provides a <code>qsort()</code> compatible callback function named <code>bson_oid_compare()</code>. It returns <code>less than 1</code>, <code>greater than 1</code>, or <code>0</code> depending on the equality of two <link xref="bson_oid_t">bson_oid_t</link> structures.</p>
+    <p>The typical way to sort in C is using <code>qsort()</code>. Therefore, Libbson provides a <code>qsort()</code> compatible callback function named <link xref="bson_oid_compare">bson_oid_compare()</link>. It returns <code>less than 1</code>, <code>greater than 1</code>, or <code>0</code> depending on the equality of two <link xref="bson_oid_t">bson_oid_t</link> structures.</p>
   </section>
 
   <section id="comparing">
