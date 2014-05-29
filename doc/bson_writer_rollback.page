@@ -26,7 +26,7 @@ bson_writer_rollback (bson_writer_t *writer);
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Abort the appending of the current bson_t to the memory region managed by _writer_. This is useful if you detected that you went past a particular memory limit. For example, MongoDB has 48MB message limits.</p>
   </section>
 
 </page>

@@ -26,7 +26,7 @@ bson_writer_end (bson_writer_t *writer);
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Complete writing of a _bson_writer_t_ to the buffer supplied.</p>
   </section>
 
 </page>

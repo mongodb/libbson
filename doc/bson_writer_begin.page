@@ -28,11 +28,12 @@ bson_writer_begin (bson_writer_t *writer,
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Begins writing a new document. The caller may use the bson structure to write out a new BSON document. When completed, the caller must call either _bson_writer_end()_ or _bson_writer_rollback()_.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>true if there was space in the underlying buffers to begin the document.</p>
   </section>
+
 </page>

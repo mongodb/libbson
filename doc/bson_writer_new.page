@@ -28,17 +28,18 @@ bson_writer_new (uint8_t         **buf,
       <tr><td><p><code>buflen</code></p></td><td><p>A size_t.</p></td></tr>
       <tr><td><p><code>offset</code></p></td><td><p>A size_t.</p></td></tr>
       <tr><td><p><code>realloc_func</code></p></td><td><p>A bson_realloc_func.</p></td></tr>
-      <tr><td><p><code>realloc_func_ctx</code></p></td><td><p>A UNKNOWN.</p></td></tr>
+      <tr><td><p><code>realloc_func_ctx</code></p></td><td><p>A bson_realloc_func.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Creates a new instance of _bson_writer_t_ using the _buffer_, _length_, _offset_, and _realloc()_ function supplied.</p>
+    <p>The caller is expected to clean up the structure when finished using _bson_writer_destroy()_.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A newly allocated bson_writer_t.</p>
   </section>
 </page>

@@ -26,11 +26,13 @@ bson_writer_get_length (bson_writer_t *writer);
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Fetches the current length of the content written by the buffer (including the initial offset). This includes a partly written document currently being written.</p>
+    <p>This is useful if you want to check to see if you've passed a given memory boundry that cannot be sent in a packet. See _bson_writer_rollback()_ to abort the current document being written.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>The length of the underlying buffer.</p>
   </section>
+
 </page>
