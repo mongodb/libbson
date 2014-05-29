@@ -28,11 +28,12 @@ bson_iter_regex (const bson_iter_t *iter,
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The _bson_iter_regex()_ function shall retrieve the contents of a BSON_TYPE_REGEX element currently observed by _iter_.</p>
+    <p>It is invalid to call this function when not observing an element of type BSON_TYPE_REGEX.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A string containing the regex which should not be modified or freed. _options_ is set to the options provided for the regex.</p>
   </section>
 </page>

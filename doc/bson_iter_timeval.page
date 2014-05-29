@@ -28,7 +28,7 @@ bson_iter_timeval (const bson_iter_t *iter,
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The _bson_iter_timeval()_ function shall return the number of seconds and microseconds since the UNIX epoch, as contained in the BSON_TYPE_DATE_TIME element into _tv_.</p>
   </section>
 
 </page>

@@ -22,13 +22,15 @@ bson_iter_overwrite_bool (bson_iter_t *iter,
     <title>Parameters</title>
     <table>
       <tr><td><p>iter</p></td><td><p>A <link xref="bson_iter_t">bson_iter_t</link>.</p></td></tr>
-      <tr><td><p>value</p></td><td><p>A (null).</p></td></tr>
+      <tr><td><p>value</p></td><td><p>A bool containing the new value.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The <code>bson_iter_overwrite_bool()</code> function shall overwrite the contents of a BSON_TYPE_BOOL element in place.</p>
+    <p>This may only be done when the underlying bson document allows mutation.</p>
+    <p>It is a programming error to call this function when <code>iter</code> is not obvserving an element of type BSON_TYPE_BOOL.</p>
   </section>
 
 </page>

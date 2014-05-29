@@ -12,7 +12,11 @@
 
   <section id="synopsis">
     <title>Synopsis</title>
-    <synopsis><code mime="text/x-csrc"><![CDATA[int32_t
+    <synopsis><code mime="text/x-csrc"><![CDATA[
+#define BSON_ITER_HOLDS_INT32(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_INT32)
+
+int32_t
 bson_iter_int32 (const bson_iter_t *iter);
 ]]></code></synopsis>
   </section>
@@ -26,11 +30,11 @@ bson_iter_int32 (const bson_iter_t *iter);
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Fetches the value from a BSON_TYPE_INT32 element. You should verify that the field is a BSON_TYPE_INT32 field before calling this function.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A 32-bit integer.</p>
   </section>
 </page>

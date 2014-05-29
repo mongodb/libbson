@@ -28,11 +28,13 @@ bson_iter_symbol (const bson_iter_t *iter,
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The symbol element type is *deprecated* in the bson specification at http://bsonspec.org.</p>
+    <p>The _bson_iter_symbol()_ function shall return the contents of a BSON_TYPE_SYMBOL element.</p>
+    <p>if non-NULL, _length_ will be set to the length of the resulting string.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>The symbol and <code>length</code> is set.</p>
   </section>
 </page>

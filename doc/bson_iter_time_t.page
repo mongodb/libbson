@@ -26,11 +26,11 @@ bson_iter_time_t (const bson_iter_t *iter);
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The _bson_iter_time_t()_ function shall return the number of seconds since the UNIX epoch, as contained in the BSON_TYPE_DATE_TIME element.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A <code>time_t</code> containing the number of seconds since the UNIX epoch.</p>
   </section>
 </page>

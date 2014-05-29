@@ -12,7 +12,11 @@
 
   <section id="synopsis">
     <title>Synopsis</title>
-    <synopsis><code mime="text/x-csrc"><![CDATA[const char *
+    <synopsis><code mime="text/x-csrc"><![CDATA[
+#define BSON_ITER_HOLDS_UTF8(iter) \
+   (bson_iter_type ((iter)) == BSON_TYPE_UTF8)
+
+const char *
 bson_iter_utf8 (const bson_iter_t *iter,
                 uint32_t          *length);
 ]]></code></synopsis>
@@ -22,17 +26,20 @@ bson_iter_utf8 (const bson_iter_t *iter,
     <title>Parameters</title>
     <table>
       <tr><td><p>iter</p></td><td><p>A <link xref="bson_iter_t">bson_iter_t</link>.</p></td></tr>
-      <tr><td><p>length</p></td><td><p>A uint32_t.</p></td></tr>
+      <tr><td><p>length</p></td><td><p>An optional location for the length of the resulting UTF-8 encoded string.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The _bson_iter_utf8()_ function shall retrieve the contents of a BSON_TYPE_UTF8 element currently observed by _iter_.</p>
+    <p>It is invalid to call this function while ovserving an element other than BSON_TYPE_UTF8.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A UTF-8 encoded string that has not been modified or freed.</p>
+    <p>It is suggested that the caller validate the content is valid UTF-8 before using this in other places. That can be done by calling _bson_utf8_validate()_ or validating the underlying _bson_t_ before iterating it.</p>
+    <p>Note that not all drivers use multi-byte representation for <code>\0</code> in UTF-8 encodings (commonly referred to as modified-UTF8). You probably want to take a look at the length field when marshaling to other runtimes.</p>
   </section>
 </page>

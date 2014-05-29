@@ -26,11 +26,11 @@ bson_iter_next (bson_iter_t *iter);
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Advances <code>iter</code> to the next element in the document if one exists.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>true if <code>iter</code> was advanced, otherwise false and <code>iter</code> should be considered invalid.</p>
   </section>
 </page>

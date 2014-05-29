@@ -26,11 +26,11 @@ bson_iter_key (const bson_iter_t *iter);
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Fetches the key for the current element observed by <code>iter</code>.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A string which should not be modified or freed.</p>
   </section>
 </page>
