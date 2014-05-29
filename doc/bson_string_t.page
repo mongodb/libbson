@@ -27,7 +27,7 @@ typedef struct
 
   <section id="description">
     <title>Description</title>
-    <p><code>bson_string_t</code> is an abstraction for building strings. As chunks are added to the string, allocations are performed in powers of two.</p>
+    <p><link xref="bson_string_t">bson_string_t</link> is an abstraction for building strings. As chunks are added to the string, allocations are performed in powers of two.</p>
     <p>This API is useful if you need to build UTF-8 encoded strings.</p>
   </section>
 

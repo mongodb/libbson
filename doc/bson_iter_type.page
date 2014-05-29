@@ -56,6 +56,6 @@ bson_iter_type (const bson_iter_t *iter);
 
   <section id="return">
     <title>Returns</title>
-    <p>A <code>bson_type_t</code>.</p>
+    <p>A <link xref="bson_type_t">bson_type_t</link>.</p>
   </section>
 </page>

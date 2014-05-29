@@ -30,7 +30,7 @@ bson_new_from_json (const uint8_t *data,
 
   <section id="description">
     <title>Description</title>
-    <p>The <code>bson_new_from_json()</code> function allocates and initialize a new <code>bson_t</code> by parsing the JSON found in <code>data</code>. Only a single JSON object may exist in <code>data</code> or an error will be set and NULL returned.</p>
+    <p>The <code>bson_new_from_json()</code> function allocates and initialize a new <link xref="bson_t">bson_t</link> by parsing the JSON found in <code>data</code>. Only a single JSON object may exist in <code>data</code> or an error will be set and NULL returned.</p>
   </section>
 
   <section id="errors">

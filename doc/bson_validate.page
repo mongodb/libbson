@@ -33,7 +33,7 @@ bson_validate (const bson_t         *bson,
     <title>Parameters</title>
     <table>
       <tr><td><p>bson</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
-      <tr><td><p>flags</p></td><td><p>A bitwise-or of all desired <code>bson_validate_flags_t</code>.</p></td></tr>
+      <tr><td><p>flags</p></td><td><p>A bitwise-or of all desired <link xref="bson_validate">bson_validate_flags_t</link>.</p></td></tr>
       <tr><td><p>offset</p></td><td><p>A location for the offset within <code>bson</code> where the error ocurred.</p></td></tr>
     </table>
   </section>
