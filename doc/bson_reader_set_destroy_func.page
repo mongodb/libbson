@@ -28,7 +28,7 @@ bson_reader_set_destroy_func (bson_reader_t             *reader,
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Allows for setting a callback to be executed when a reader is destroyed. This should only be used by implementations implementing their own read callbacks.</p>
   </section>
 
 </page>

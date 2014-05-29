@@ -26,11 +26,12 @@ bson_reader_tell (bson_reader_t *reader);
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Tells the current position within the underlying stream.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>-1 on failure, otherwise the offset within the underlying stream.</p>
   </section>
+
 </page>

@@ -28,11 +28,12 @@ bson_reader_new_from_data (const uint8_t *data,
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The _bson_reader_new_from_data()_ function shall create a new _bson_reader_t_ using the buffer supplied. _data_ is not copied and *MUST* be valid for the lifetime of the resulting _bson_reader_t_.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A newly allocated <link xref="bson_reader_t">bson_reader_t</link>.</p>
   </section>
+
 </page>

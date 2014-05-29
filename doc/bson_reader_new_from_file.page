@@ -21,22 +21,24 @@ bson_reader_new_from_file (const char   *path,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>path</code></p></td><td><p>A UNKNOWN.</p></td></tr>
+      <tr><td><p><code>path</code></p></td><td><p>A filename in the host filename encoding.</p></td></tr>
       <tr><td><p><code>error</code></p></td><td><p>A <link xref="bson_error_t">bson_error_t</link>.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Creates a new <link xref="bson_reader_t">bson_reader_t</link> using the file denoted by <code>filename</code>.</p>
   </section>
 
   <section id="errors">
     <title>Errors</title>
-    <p>Describe errors</p>
+    <p>Errors are propagated via the <code>error</code> parameter.</p>
   </section>
+
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A newly allocated <link xref="bson_reader_t">bson_reader_t</link> on success, otherwise NULL and error is set.</p>
   </section>
+
 </page>

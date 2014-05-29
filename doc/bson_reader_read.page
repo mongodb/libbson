@@ -28,11 +28,30 @@ bson_reader_read (bson_reader_t *reader,
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The _bson_reader_read()_ function shall read the next document from the underlying file-descriptor or buffer.</p>
+    <p>If there are no further documents or a failure was detected, then NULL is returned.</p>
+    <p>If we reached the end of the sequence, _reached_eof_ is set to TRUE.</p>
+    <p>To detect an error, check for NULL and _reached_of_ is FALSE.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A _bson_t_ that should not be modified or freed.</p>
+  </section>
+
+  <section id="example">
+    <title>Example</title>
+    <synopsis><code mime="text/x-csrc"><![CDATA[
+const bson_t *doc;
+bool reached_eof = false;
+
+while ((doc = bson_reader_read (reader, &reached_eof))) {
+	/* do something */
+}
+
+if (!reached_eof) {
+	fprintf (stderr, "Failed to read all documents.\n");
+}
+]]></code></synopsis>
   </section>
 </page>
