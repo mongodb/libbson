@@ -22,13 +22,13 @@ bson_string_append_c (bson_string_t *string,
     <title>Parameters</title>
     <table>
       <tr><td><p><code>string</code></p></td><td><p>A <link xref="bson_string_t">bson_string_t</link>.</p></td></tr>
-      <tr><td><p><code>str</code></p></td><td><p>A UNKNOWN.</p></td></tr>
+      <tr><td><p><code>str</code></p></td><td><p>An ASCII char.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Appends <code>c</code> to the string builder <code>string</code>.</p>
   </section>
 
 </page>

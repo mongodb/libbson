@@ -21,18 +21,19 @@ bson_strdupv_printf (const char *format,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>format</code></p></td><td><p>A UNKNOWN.</p></td></tr>
+      <tr><td><p><code>format</code></p></td><td><p>A printf style format string.</p></td></tr>
       <tr><td><p><code>args</code></p></td><td><p>A va_list.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>This function is like <link xref="bson_strdup_printf">bson_strdup_printf()</link> except takes a va_list of parameters.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A newly allocated string that should be freed with bson_free().</p>
   </section>
+
 </page>

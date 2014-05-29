@@ -21,17 +21,18 @@ bson_strdup_printf (const char *format,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>format</code></p></td><td><p>A UNKNOWN.</p></td></tr>
+      <tr><td><p><code>format</code></p></td><td><p>A printf style format string.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>This function performs a printf style format but into a newly allocated string.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A newly allocated string that should be freed with bson_free().</p>
   </section>
+
 </page>

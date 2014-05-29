@@ -28,7 +28,7 @@ bson_iter_dup_utf8 (const bson_iter_t *iter,
 
   <section id="description">
     <title>Description</title>
-    <p>This function is similar to <link xref="bson_iter_utf8">bson_iter_utf8()</link> except that it calls <link xref="bson_strdup">bson_strdup()</link> on the result.</p>
+    <p>This function is similar to <link xref="bson_iter_utf8">bson_iter_utf8()</link> except that it calls <link xref="bson_strndup">bson_strndup()</link> on the result.</p>
   </section>
 
   <section id="return">

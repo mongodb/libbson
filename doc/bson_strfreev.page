@@ -20,13 +20,13 @@ bson_strfreev (char **strv);
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>strv</code></p></td><td><p>A UNKNOWN.</p></td></tr>
+      <tr><td><p><code>strv</code></p></td><td><p>A NULL-terminated array of strings to free, including the array.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>This will free each string in a NULL-terminated array of strings and then the array itself.</p>
   </section>
 
 </page>

@@ -28,7 +28,7 @@ bson_string_append_unichar (bson_string_t *string,
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Appends a unicode character to string. The character will be encoded into it's multi-byte UTF-8 representation.</p>
   </section>
 
 </page>
