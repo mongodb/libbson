@@ -26,11 +26,12 @@ bson_copy (const bson_t *bson);
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The _bson_copy()_ function shall copy the contents of a bson document into a new _bson_t_.</p>
+    <p>The resulting _bson_t_ should be freed with _bson_destroy()_.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A newly allocated _bson_t_ that should be freed with _bson_destroy()_.</p>
   </section>
 </page>

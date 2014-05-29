@@ -26,7 +26,8 @@ bson_reinit (bson_t *b);
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The _bson_reinit()_ function shall be equivalent to calling _bson_destroy()_ and _bson_init()_.</p>
+    <p>However, if the _bson_t_ structure contains a malloc()'d buffer, it may be reused.</p>
   </section>
 
 </page>

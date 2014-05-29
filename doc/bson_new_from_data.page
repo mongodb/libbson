@@ -21,18 +21,19 @@ bson_new_from_data (const uint8_t *data,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>data</p></td><td><p>A uint8_t.</p></td></tr>
-      <tr><td><p>length</p></td><td><p>A uint32_t.</p></td></tr>
+      <tr><td><p>data</p></td><td><p>A BSON encoded document buffer.</p></td></tr>
+      <tr><td><p>length</p></td><td><p>The length of <code>data</code> in bytes.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The _bson_new_from_data()_ function shall create a new _bson_t_ on the heap and copy the contents of _data_. This may be helpful when working with language bindings but is generally expected to be slower.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A newly allocated _bson_t_ if successful, otherwise NULL.</p>
   </section>
+
 </page>

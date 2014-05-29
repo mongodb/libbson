@@ -25,13 +25,14 @@ bson_copy_to_excluding (const bson_t *src,
     <table>
       <tr><td><p>src</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
       <tr><td><p>dst</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
-      <tr><td><p>first_exclude</p></td><td><p>A (null).</p></td></tr>
+      <tr><td><p>first_exclude</p></td><td><p>The first field name to exclude.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The _bson_copy_to_excluding()_ function shall copy all fields from _src_ to _dst_ except those speified by the variadic, NULL terminated list of keys starting from _first_exclude_.</p>
+    <note style="warning"><p>This is generally not needed except in very special situations.</p></note>
   </section>
 
 </page>

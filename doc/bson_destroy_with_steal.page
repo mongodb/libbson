@@ -23,18 +23,18 @@ bson_destroy_with_steal (bson_t   *bson,
     <title>Parameters</title>
     <table>
       <tr><td><p>bson</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
-      <tr><td><p>steal</p></td><td><p>A (null).</p></td></tr>
-      <tr><td><p>length</p></td><td><p>A uint32_t.</p></td></tr>
+      <tr><td><p>steal</p></td><td><p>A bool indicating if the underlying buffer should be stolen.</p></td></tr>
+      <tr><td><p>length</p></td><td><p>A location for storing the resulting buffer length.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The _bson_destroy_with_steal()_ function shall destroy a _bson_t_ structure but return the underlying buffer instead of freeing it. If steal is false, this is equivalent to calling bson_destroy(). It is a programming error to call this function on a _bson_t_ that is not a top-level _bson_t_, shuch as those initialized with _bson_append_document_begin()_, _bson_append_array_begin()_, and _bson_writer_begin()_.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>_bson_destroy_with_steal()_ shall return a buffer containing the contents of the _bson_t_ if _steal_ is non-zero. This should be freed with _bson_free()_ when no longer in use. _length_ will be set to the length of the bson document if non-NULL.</p>
   </section>
 </page>

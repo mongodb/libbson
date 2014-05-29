@@ -28,11 +28,11 @@ bson_concat (bson_t       *dst,
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The _bson_concat()_ function shall append the contents of _src_ to _dst_.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>true if the operation was applied successfully, otherwise false and <code>dst</code> should be discarded.</p>
   </section>
 </page>

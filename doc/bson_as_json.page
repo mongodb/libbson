@@ -22,17 +22,31 @@ bson_as_json (const bson_t *bson,
     <title>Parameters</title>
     <table>
       <tr><td><p>bson</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
-      <tr><td><p>length</p></td><td><p>A size_t.</p></td></tr>
+      <tr><td><p>length</p></td><td><p>An optional location for the length of the resulting string.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The _bson_as_json()_ function shall encode _bson_ as a JSON encoded UTF-8 string.</p>
+    <p>The caller is responsible for freeing the resulting UTF-8 encoded string by calling _bson_free()_ with the result.</p>
+    <p>If non-NULL, _length_ will be set to the length of the result in bytes.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>If successful, a newly allocated UTF-8 encoded string and <code>length</code> is set.</p>
+    <p>Upon failure, NULL is returned.</p>
   </section>
+
+  <section id="example">
+    <title>Example</title>
+    <example>
+      <title>bson_as_json</title>
+      <code mime="text/x-csrc"><![CDATA[char *str = bson_as_json (doc, NULL);
+printf ("%s\n", str);
+bson_free (str);]]></code>
+    </example>
+  </section>
+
 </page>

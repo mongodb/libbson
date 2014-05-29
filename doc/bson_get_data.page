@@ -26,11 +26,12 @@ bson_get_data (const bson_t *bson);
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The _bson_get_data()_ function shall return the raw buffer of a bson document. This can be used in conjunction with the _len_ property of a _bson_t_ if you want to copy the raw buffer around.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A buffer which should not be modified or freed.</p>
   </section>
+
 </page>

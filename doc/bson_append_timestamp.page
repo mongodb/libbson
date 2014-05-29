@@ -34,11 +34,13 @@ bson_append_timestamp (bson_t     *bson,
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>This function is not similar in functionality to _bson_append_date_time()_. Timestamp elements are different in that they include only second precision and an increment field.</p>
+    <p>They are primarily used for intra-MongoDB server communication.</p>
+    <p>The _bson_append_timestamp()_ function shall append a new element of type BSON_TYPE_TIMESTAMP.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>true if the operation was applied successfully, otherwise false and <code>bson</code> should be discarded.</p>
   </section>
 </page>

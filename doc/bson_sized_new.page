@@ -20,17 +20,18 @@ bson_sized_new (size_t size);
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>size</p></td><td><p>A size_t.</p></td></tr>
+      <tr><td><p>size</p></td><td><p>The size to pre-allocate for the underlying buffer.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The _bson_sized_new()_ function shall create a new `bson_t` on the heap with a preallocated buffer. This is useful if you have a good idea of the size of the resulting document.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A newly allocated _bson_t_ that should be freed with _bson_destroy()_.</p>
   </section>
+
 </page>

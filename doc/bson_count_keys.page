@@ -26,11 +26,11 @@ bson_count_keys (const bson_t *bson);
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The _bson_count_keys()_ function shall count the number of elements within _bson_.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A positive integer or zero.</p>
   </section>
 </page>

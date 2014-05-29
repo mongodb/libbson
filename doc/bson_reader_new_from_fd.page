@@ -30,7 +30,7 @@ bson_reader_new_from_fd (int  fd,
     <title>Description</title>
     <p>The _bson_reader_new_from_fd()_ function shall create a new _bson_reader_t_ that will read from the provided file-descriptor.</p>
     <p>_fd_ *MUST* be in blocking mode.</p>
-    <p>If _close_fd_ is TRUE, then _fd_ will be closed when the _bson_reader_t_ is destroyed with _bson_reader_destroy()_.</p>
+    <p>If _close_fd_ is true, then _fd_ will be closed when the _bson_reader_t_ is destroyed with _bson_reader_destroy()_.</p>
   </section>
 
   <section id="return">
