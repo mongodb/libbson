@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      style="function"
+      xmlns:api="http://projectmallard.org/experimental/api/"
+      xmlns:ui="http://projectmallard.org/experimental/ui/"
+      id="bson_concat">
+  <info>
+    <link type="guide" xref="bson_t" group="function"/>
+  </info>
+  <title>bson_concat()</title>
+
+  <section id="synopsis">
+    <title>Synopsis</title>
+    <synopsis><code mime="text/x-csrc"><![CDATA[bool
+bson_concat (bson_t       *dst,
+             const bson_t *src);
+]]></code></synopsis>
+  </section>
+
+  <section id="parameters">
+    <title>Parameters</title>
+    <table>
+      <tr><td><p>dst</p></td><td><p>A bson_t.</p></td></tr>
+      <tr><td><p>src</p></td><td><p>A bson_t.</p></td></tr>
+    </table>
+  </section>
+
+  <section id="description">
+    <title>Description</title>
+    <p>TODO:</p>
+  </section>
+
+  <section id="return">
+    <title>Returns</title>
+    <p>TODO:</p>
+  </section>
+</page>
