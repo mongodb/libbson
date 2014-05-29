@@ -30,7 +30,7 @@ bson_append_undefined (bson_t     *bson,
 
   <section id="description">
     <title>Description</title>
-    <p>The _bson_append_undefined()_ function shall append a new element to _bson_ of type BSON_TYPE_UNDEFINED. Undefined is common in Javascript. However, this element type is deprecated and should not be used in new code.</p>
+    <p>The <link xref="bson_append_undefined">bson_append_undefined()</link> function shall append a new element to _bson_ of type BSON_TYPE_UNDEFINED. Undefined is common in Javascript. However, this element type is deprecated and should not be used in new code.</p>
   </section>
 
   <section id="return">

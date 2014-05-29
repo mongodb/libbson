@@ -30,7 +30,7 @@ bson_append_maxkey (bson_t     *bson,
 
   <section id="description">
     <title>Description</title>
-    <p>The _bson_append_maxkey()_ function shall append an element of type BSON_TYPE_MAXKEY to a bson document. This is primarily used in queries and unlikely to be used when storing a document to MongoDB.</p>
+    <p>The <link xref="bson_append_maxkey">bson_append_maxkey()</link> function shall append an element of type BSON_TYPE_MAXKEY to a bson document. This is primarily used in queries and unlikely to be used when storing a document to MongoDB.</p>
   </section>
 
   <section id="return">

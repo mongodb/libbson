@@ -36,7 +36,7 @@ bson_iter_timestamp (const bson_iter_t *iter,
     <title>Description</title>
     <p>The BSON_TYPE_TIMESTAMP type is not a date/time and is typically used for intra-server communication.</p>
     <p>You probably want <link xref="bson_iter_date_time">bson_iter_date_time()</link>.</p>
-    <p>The _bson_iter_timestamp()_ function shall return the contents of a BSON_TYPE_TIMESTAMP element. It is invalid to call this function while observing an element that is not of type BSON_TYPE_TIMESTAMP.</p>
+    <p>The <link xref="bson_iter_timestamp">bson_iter_timestamp()</link> function shall return the contents of a BSON_TYPE_TIMESTAMP element. It is invalid to call this function while observing an element that is not of type BSON_TYPE_TIMESTAMP.</p>
   </section>
 
 </page>

@@ -32,7 +32,7 @@ bson_append_int32 (bson_t     *bson,
 
   <section id="description">
     <title>Description</title>
-    <p>The _bson_append_int32()_ function shall append a new element to _bson_ containing a 32-bit signed integer.</p>
+    <p>The <link xref="bson_append_int32">bson_append_int32()</link> function shall append a new element to _bson_ containing a 32-bit signed integer.</p>
   </section>
 
   <section id="return">

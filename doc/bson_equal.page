@@ -28,7 +28,7 @@ bson_equal (const bson_t *bson,
 
   <section id="description">
     <title>Description</title>
-    <p>The _bson_equal()_ function shall return true if both documents are equal.</p>
+    <p>The <link xref="bson_equal">bson_equal()</link> function shall return true if both documents are equal.</p>
   </section>
 
   <section id="return">

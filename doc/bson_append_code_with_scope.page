@@ -34,7 +34,7 @@ bson_append_code_with_scope (bson_t       *bson,
 
   <section id="description">
     <title>Description</title>
-    <p>The _bson_append_code_with_scope()_ function shall perform like _bson_append_code()_ except it allows providing a scope to the javascript function in the form of a bson document.</p>
+    <p>The <link xref="bson_append_code_with_scope">bson_append_code_with_scope()</link> function shall perform like <link xref="bson_append_code">bson_append_code()</link> except it allows providing a scope to the javascript function in the form of a bson document.</p>
   </section>
 
   <section id="return">

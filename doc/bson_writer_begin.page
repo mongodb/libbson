@@ -28,7 +28,7 @@ bson_writer_begin (bson_writer_t *writer,
 
   <section id="description">
     <title>Description</title>
-    <p>Begins writing a new document. The caller may use the bson structure to write out a new BSON document. When completed, the caller must call either _bson_writer_end()_ or _bson_writer_rollback()_.</p>
+    <p>Begins writing a new document. The caller may use the bson structure to write out a new BSON document. When completed, the caller must call either <link xref="bson_writer_end">bson_writer_end()</link> or <link xref="bson_writer_rollback">bson_writer_rollback()</link>.</p>
   </section>
 
   <section id="return">

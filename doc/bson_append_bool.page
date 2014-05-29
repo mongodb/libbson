@@ -32,7 +32,7 @@ bson_append_bool (bson_t     *bson,
 
   <section id="description">
     <title>Description</title>
-    <p>The _bson_append_binary()_ function shall append a new element to _bson_ containing the binary data provided.</p>
+    <p>The <link xref="bson_append_binary">bson_append_binary()</link> function shall append a new element to _bson_ containing the binary data provided.</p>
   </section>
 
   <section id="return">

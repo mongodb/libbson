@@ -26,7 +26,8 @@ bson_destroy (bson_t *bson);
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The <link xref="bson_destroy">bson_destroy()</link> function shall free an allocated <link xref="bson_t">bson_t</link> structure.</p>
+    <p>This function should always be called when you are done with a <link xref="bson_t">bson_t</link> unless otherwise specified.</p>
   </section>
 
 </page>

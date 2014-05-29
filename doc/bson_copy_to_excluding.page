@@ -31,7 +31,7 @@ bson_copy_to_excluding (const bson_t *src,
 
   <section id="description">
     <title>Description</title>
-    <p>The _bson_copy_to_excluding()_ function shall copy all fields from _src_ to _dst_ except those speified by the variadic, NULL terminated list of keys starting from _first_exclude_.</p>
+    <p>The <link xref="bson_copy_to_excluding">bson_copy_to_excluding()</link> function shall copy all fields from _src_ to _dst_ except those speified by the variadic, NULL terminated list of keys starting from _first_exclude_.</p>
     <note style="warning"><p>This is generally not needed except in very special situations.</p></note>
   </section>
 

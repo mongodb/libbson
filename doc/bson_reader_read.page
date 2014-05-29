@@ -28,7 +28,7 @@ bson_reader_read (bson_reader_t *reader,
 
   <section id="description">
     <title>Description</title>
-    <p>The _bson_reader_read()_ function shall read the next document from the underlying file-descriptor or buffer.</p>
+    <p>The <link xref="bson_reader_read">bson_reader_read()</link> function shall read the next document from the underlying file-descriptor or buffer.</p>
     <p>If there are no further documents or a failure was detected, then NULL is returned.</p>
     <p>If we reached the end of the sequence, _reached_eof_ is set to true.</p>
     <p>To detect an error, check for NULL and _reached_of_ is false.</p>

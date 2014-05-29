@@ -26,7 +26,7 @@ bson_writer_destroy (bson_writer_t *writer);
 
   <section id="description">
     <title>Description</title>
-    <p>Cleanup after _writer_ and release any allocated memory. Note that the buffer supplied to _bson_writer_new()_ is *NOT* freed from this method.  The caller is responsible for that.</p>
+    <p>Cleanup after _writer_ and release any allocated memory. Note that the buffer supplied to <link xref="bson_writer_new">bson_writer_new()</link> is *NOT* freed from this method.  The caller is responsible for that.</p>
   </section>
 
 </page>

@@ -32,7 +32,7 @@ bson_append_code (bson_t     *bson,
 
   <section id="description">
     <title>Description</title>
-    <p>The _bson_append_code()_ function shall append a new element to _bson_ using the UTF-8 encoded _javascript_ provided. _javascript_ must be a NULL terminated C string.</p>
+    <p>The <link xref="bson_append_code">bson_append_code()</link> function shall append a new element to _bson_ using the UTF-8 encoded _javascript_ provided. _javascript_ must be a NULL terminated C string.</p>
   </section>
 
   <section id="return">

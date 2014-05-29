@@ -30,11 +30,11 @@ bson_destroy_with_steal (bson_t   *bson,
 
   <section id="description">
     <title>Description</title>
-    <p>The _bson_destroy_with_steal()_ function shall destroy a <link xref="bson_t">bson_t</link> structure but return the underlying buffer instead of freeing it. If steal is false, this is equivalent to calling bson_destroy(). It is a programming error to call this function on a <link xref="bson_t">bson_t</link> that is not a top-level <link xref="bson_t">bson_t</link>, shuch as those initialized with _bson_append_document_begin()_, _bson_append_array_begin()_, and _bson_writer_begin()_.</p>
+    <p>The <link xref="bson_destroy_with_steal">bson_destroy_with_steal()</link> function shall destroy a <link xref="bson_t">bson_t</link> structure but return the underlying buffer instead of freeing it. If steal is false, this is equivalent to calling bson_destroy(). It is a programming error to call this function on a <link xref="bson_t">bson_t</link> that is not a top-level <link xref="bson_t">bson_t</link>, shuch as those initialized with <link xref="bson_append_document_begin">bson_append_document_begin()</link>, <link xref="bson_append_array_begin">bson_append_array_begin()</link>, and <link xref="bson_writer_begin">bson_writer_begin()</link>.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>_bson_destroy_with_steal()_ shall return a buffer containing the contents of the <link xref="bson_t">bson_t</link> if _steal_ is non-zero. This should be freed with _bson_free()_ when no longer in use. _length_ will be set to the length of the bson document if non-NULL.</p>
+    <p><link xref="bson_destroy_with_steal">bson_destroy_with_steal()</link> shall return a buffer containing the contents of the <link xref="bson_t">bson_t</link> if _steal_ is non-zero. This should be freed with <link xref="bson_free">bson_free()</link> when no longer in use. _length_ will be set to the length of the bson document if non-NULL.</p>
   </section>
 </page>

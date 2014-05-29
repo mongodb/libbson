@@ -28,7 +28,7 @@ bson_iter_recurse (const bson_iter_t *iter,
 
   <section id="description">
     <title>Description</title>
-    <p>The _bson_iter_recurse()_ function shall initialize _child_ using the embedded document or array currently observed by _iter_.</p>
+    <p>The <link xref="bson_iter_recurse">bson_iter_recurse()</link> function shall initialize _child_ using the embedded document or array currently observed by _iter_.</p>
     <p>If there was a failure to initialize the _iter_, false is returned and both _iter_ and _child_ should be considered invalid.</p>
     <p>This should only be called when observing an element of type BSON_TYPE_ARRAY or BSON_TYPE_DOCUMENT.</p>
   </section>
