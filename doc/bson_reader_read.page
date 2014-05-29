@@ -36,7 +36,7 @@ bson_reader_read (bson_reader_t *reader,
 
   <section id="return">
     <title>Returns</title>
-    <p>A _bson_t_ that should not be modified or freed.</p>
+    <p>A <link xref="bson_t">bson_t</link> that should not be modified or freed.</p>
   </section>
 
   <section id="example">

@@ -31,7 +31,7 @@ bson_sized_new (size_t size);
 
   <section id="return">
     <title>Returns</title>
-    <p>A newly allocated _bson_t_ that should be freed with _bson_destroy()_.</p>
+    <p>A newly allocated <link xref="bson_t">bson_t</link> that should be freed with _bson_destroy()_.</p>
   </section>
 
 </page>

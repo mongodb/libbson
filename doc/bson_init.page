@@ -26,7 +26,7 @@ bson_init (bson_t *b);
 
   <section id="description">
     <title>Description</title>
-    <p>The _bson_init()_ function shall initialize a _bson_t_ that is placed on the stack. This is equivalent to initializing a _bson_t_ to _BSON_INITIALIZER_.</p>
+    <p>The _bson_init()_ function shall initialize a <link xref="bson_t">bson_t</link> that is placed on the stack. This is equivalent to initializing a <link xref="bson_t">bson_t</link> to _BSON_INITIALIZER_.</p>
   </section>
 
 </page>

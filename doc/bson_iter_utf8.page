@@ -39,7 +39,7 @@ bson_iter_utf8 (const bson_iter_t *iter,
   <section id="return">
     <title>Returns</title>
     <p>A UTF-8 encoded string that has not been modified or freed.</p>
-    <p>It is suggested that the caller validate the content is valid UTF-8 before using this in other places. That can be done by calling _bson_utf8_validate()_ or validating the underlying _bson_t_ before iterating it.</p>
+    <p>It is suggested that the caller validate the content is valid UTF-8 before using this in other places. That can be done by calling _bson_utf8_validate()_ or validating the underlying <link xref="bson_t">bson_t</link> before iterating it.</p>
     <p>Note that not all drivers use multi-byte representation for <code>\0</code> in UTF-8 encodings (commonly referred to as modified-UTF8). You probably want to take a look at the length field when marshaling to other runtimes.</p>
   </section>
 </page>

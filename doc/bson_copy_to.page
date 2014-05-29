@@ -29,7 +29,7 @@ bson_copy_to (const bson_t *src,
   <section id="description">
     <title>Description</title>
     <p>The _bson_copy_to()_ function shall initialize _dst_ with a copy of the contents of _src_.</p>
-    <p>_dst_ *MUST* be an uninitialized _bson_t_ to avoid leaking memory.</p>
+    <p>_dst_ *MUST* be an uninitialized <link xref="bson_t">bson_t</link> to avoid leaking memory.</p>
   </section>
 
 </page>
