@@ -450,6 +450,13 @@ test_bson_iter_find_descendant (void)
    assert(BSON_ITER_HOLDS_INT32(&desc));
    assert(bson_iter_int32(&desc) == 1);
    bson_destroy(b);
+
+   b = BCON_NEW ("foo", "{", "bar", "[", "{", "baz", BCON_INT32 (1), "}", "]", "}");
+   assert (bson_iter_init (&iter, b));
+   assert (bson_iter_find_descendant (&iter, "foo.bar.0.baz", &desc));
+   assert (BSON_ITER_HOLDS_INT32 (&desc));
+   assert (bson_iter_int32 (&desc) == 1);
+   bson_destroy (b);
 }
 
 

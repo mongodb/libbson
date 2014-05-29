@@ -38,12 +38,47 @@ if ((b = bson_new_from_data (my_data, my_data_len))) {
 char *json;
 
 if ((b = bson_new_from_data (my_data, my_data_len))) {
-   if ((str = bson_as_json (b, NULL))) {
-      printf ("%s\n", str);
-      bson_free (str);
+   if ((json = bson_as_json (b, NULL))) {
+      printf ("%s\n", json);
+      bson_free (json);
    }
    bson_destroy (b);
 }]]></code></example>
+
+  <section id="recursing">
+    <title>Recursing into Sub-Documents</title>
+    <p>Libbson provides convenient sub-iterators to dive down into a sub-document or sub-array. Below is an example that will dive into a sub-document named "foo" and print it's field names.</p>
+    <example><code mime="text/x-csrc"><![CDATA[bson_iter_t iter;
+bson_iter_t *child;
+char *json;
+
+if (bson_iter_init_find (&iter, doc, "foo") &&
+    BSON_ITER_HOLDS_DOCUMENT (&iter) &&
+    bson_iter_recurse (&iter, &child)) {
+   while (bson_iter_next (&child)) {
+      printf ("Found sub-key of \"foo\" named \"%s\"\n", bson_iter_key (&child));
+   }
+}]]></code></example>
+  </section>
+
+  <section id="dotkey">
+    <title>Finding Fields using Dot Notation</title>
+    <p>Using the <link xref="bson_iter_recurse">bson_iter_recurse()</link> function exemplified above, <link xref="bson_iter_find_descendant">bson_iter_find_descendant()</link> can find a field for you using the MongoDB style path notation such as "foo.bar.0.baz".</p>
+    <p>Let's create a document like <code mime="text/x-javascript">{"foo": {"bar": [{"baz: 1}]}}</code> and locate the <code>"baz"</code> field.</p>
+    <example><code mime="text/x-csrc"><![CDATA[bson_t *b;
+bson_iter_t iter;
+bson_iter_t baz;
+
+b = BCON_NEW ("foo", "{", "bar", "[", "{", "baz", BCON_INT32 (1), "}", "]", "}");
+
+if (bson_iter_init (&iter, b) &&
+    bson_iter_find_descendant (&iter, "foo.bar.0.baz", &baz) &&
+    BSON_ITER_HOLDS_INT32 (&baz)) {
+   printf ("baz = %d\n", bson_iter_int32 (&baz));
+}
+
+bson_destroy (b);]]></code></example>
+  </section>
 
   <section id="validating">
     <title>Validating a BSON Document</title>
