@@ -21,8 +21,8 @@ bson_equal (const bson_t *bson,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>bson</p></td><td><p>A bson_t.</p></td></tr>
-      <tr><td><p>other</p></td><td><p>A bson_t.</p></td></tr>
+      <tr><td><p>bson</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
+      <tr><td><p>other</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
     </table>
   </section>
 

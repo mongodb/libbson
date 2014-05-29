@@ -25,7 +25,7 @@ bson_append_binary (bson_t        *bson,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>bson</p></td><td><p>A bson_t.</p></td></tr>
+      <tr><td><p>bson</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
       <tr><td><p>key</p></td><td><p>A (null).</p></td></tr>
       <tr><td><p>key_length</p></td><td><p>A (null).</p></td></tr>
       <tr><td><p>subtype</p></td><td><p>A bson_subtype_t.</p></td></tr>

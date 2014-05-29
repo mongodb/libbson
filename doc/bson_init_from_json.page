@@ -23,7 +23,7 @@ bson_init_from_json (bson_t       *bson,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>bson</p></td><td><p>A bson_t.</p></td></tr>
+      <tr><td><p>bson</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
       <tr><td><p>data</p></td><td><p>A (null).</p></td></tr>
       <tr><td><p>len</p></td><td><p>A ssize_t.</p></td></tr>
       <tr><td><p>error</p></td><td><p>A bson_error_t.</p></td></tr>

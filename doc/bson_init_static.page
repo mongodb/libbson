@@ -22,7 +22,7 @@ bson_init_static (bson_t        *b,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>b</p></td><td><p>A bson_t.</p></td></tr>
+      <tr><td><p>b</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
       <tr><td><p>data</p></td><td><p>A uint8_t.</p></td></tr>
       <tr><td><p>length</p></td><td><p>A uint32_t.</p></td></tr>
     </table>

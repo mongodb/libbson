@@ -21,8 +21,8 @@ bson_concat (bson_t       *dst,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>dst</p></td><td><p>A bson_t.</p></td></tr>
-      <tr><td><p>src</p></td><td><p>A bson_t.</p></td></tr>
+      <tr><td><p>dst</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
+      <tr><td><p>src</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
     </table>
   </section>
 

@@ -22,7 +22,7 @@ bson_destroy_with_steal (bson_t   *bson,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>bson</p></td><td><p>A bson_t.</p></td></tr>
+      <tr><td><p>bson</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
       <tr><td><p>steal</p></td><td><p>A (null).</p></td></tr>
       <tr><td><p>length</p></td><td><p>A uint32_t.</p></td></tr>
     </table>
