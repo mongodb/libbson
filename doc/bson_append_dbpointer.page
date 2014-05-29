@@ -25,20 +25,20 @@ bson_append_dbpointer (bson_t           *bson,
     <title>Parameters</title>
     <table>
       <tr><td><p>bson</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
-      <tr><td><p>key</p></td><td><p>A (null).</p></td></tr>
-      <tr><td><p>key_length</p></td><td><p>A (null).</p></td></tr>
-      <tr><td><p>collection</p></td><td><p>A (null).</p></td></tr>
-      <tr><td><p>oid</p></td><td><p>A bson_oid_t.</p></td></tr>
+      <tr><td><p>key</p></td><td><p>An ASCII C string containing the name of the field.</p></td></tr>
+      <tr><td><p>key</p></td><td><p>The length of <code>key</code> in bytes, or -1 to determine the length with <code>strlen()</code>.</p></td></tr>
+      <tr><td><p>collection</p></td><td><p>The target collection name.</p></td></tr>
+      <tr><td><p>oid</p></td><td><p>The target document identifer.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
-  </section>
+    <note style="warning"><p>The dbpointer field type is <em>DEPRECATED</em> and should only be used when interacting with legacy systems.</p></note>
+  </section>l
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>true if the operation was applied successfully, otherwise false and <code>bson</code> should be discarded.</p>
   </section>
 </page>

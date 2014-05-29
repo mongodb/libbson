@@ -24,19 +24,19 @@ bson_append_array (bson_t       *bson,
     <title>Parameters</title>
     <table>
       <tr><td><p>bson</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
-      <tr><td><p>key</p></td><td><p>A (null).</p></td></tr>
-      <tr><td><p>key_length</p></td><td><p>A (null).</p></td></tr>
+      <tr><td><p>key</p></td><td><p>An ASCII C string containing the name of the field.</p></td></tr>
+      <tr><td><p>key</p></td><td><p>The length of <code>key</code> in bytes, or -1 to determine the length with <code>strlen()</code>.</p></td></tr>
       <tr><td><p>array</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The _bson_append_array()_ function shall append *child* to *bson* using the specified key. The type of the field will be an array, but it is the responsibility of the caller to ensure that the keys of *child* are properly formatted with string keys such as "0", "1", "2" and so forth.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>true if the operation was applied successfully, otherwise false and <code>bson</code> should be discarded.</p>
   </section>
 </page>

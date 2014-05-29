@@ -24,19 +24,19 @@ bson_append_bool (bson_t     *bson,
     <title>Parameters</title>
     <table>
       <tr><td><p>bson</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
-      <tr><td><p>key</p></td><td><p>A (null).</p></td></tr>
-      <tr><td><p>key_length</p></td><td><p>A (null).</p></td></tr>
-      <tr><td><p>value</p></td><td><p>A (null).</p></td></tr>
+      <tr><td><p>key</p></td><td><p>The name of the field.</p></td></tr>
+      <tr><td><p>key_length</p></td><td><p>The length of <code>key</code> or -1 to use strlen().</p></td></tr>
+      <tr><td><p>value</p></td><td><p>true or false.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The _bson_append_binary()_ function shall append a new element to _bson_ containing the binary data provided.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>true if the operation was applied successfully, otherwise false and <code>bson</code> should be discarded.</p>
   </section>
 </page>

@@ -24,19 +24,19 @@ bson_append_code (bson_t     *bson,
     <title>Parameters</title>
     <table>
       <tr><td><p>bson</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
-      <tr><td><p>key</p></td><td><p>A (null).</p></td></tr>
-      <tr><td><p>key_length</p></td><td><p>A (null).</p></td></tr>
-      <tr><td><p>javascript</p></td><td><p>A (null).</p></td></tr>
+      <tr><td><p>key</p></td><td><p>The key name.</p></td></tr>
+      <tr><td><p>key_length</p></td><td><p>The length of _key_ or -1 to use strlen().</p></td></tr>
+      <tr><td><p>javascript</p></td><td><p>A UTF-8 encoded string containing the javascript.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The _bson_append_code()_ function shall append a new element to _bson_ using the UTF-8 encoded _javascript_ provided. _javascript_ must be a NULL terminated C string.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>true if the operation was applied successfully, otherwise false and <code>bson</code> should be discarded.</p>
   </section>
 </page>

@@ -26,21 +26,21 @@ bson_append_binary (bson_t        *bson,
     <title>Parameters</title>
     <table>
       <tr><td><p>bson</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
-      <tr><td><p>key</p></td><td><p>A (null).</p></td></tr>
-      <tr><td><p>key_length</p></td><td><p>A (null).</p></td></tr>
-      <tr><td><p>subtype</p></td><td><p>A bson_subtype_t.</p></td></tr>
-      <tr><td><p>binary</p></td><td><p>A uint8_t.</p></td></tr>
-      <tr><td><p>length</p></td><td><p>A uint32_t.</p></td></tr>
+      <tr><td><p>key</p></td><td><p>The key name.</p></td></tr>
+      <tr><td><p>key_length</p></td><td><p>The length of <code>key</code> in bytes or -1 to use strlen().</p></td></tr>
+      <tr><td><p>subtype</p></td><td><p>A bson_subtype_t indicationg the binary subtype.</p></td></tr>
+      <tr><td><p>binary</p></td><td><p>A buffer to embed as binary data.</p></td></tr>
+      <tr><td><p>length</p></td><td><p>The length of <code>buffer</code> in bytes.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The _bson_append_binary()_ function shall append a new element to _bson_ containing the binary data provided.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>true if the operation was applied successfully, otherwise false and <code>bson</code> should be discarded.</p>
   </section>
 </page>

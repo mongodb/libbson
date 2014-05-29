@@ -22,17 +22,17 @@ bson_append_document_end (bson_t *bson,
     <title>Parameters</title>
     <table>
       <tr><td><p>bson</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
-      <tr><td><p>child</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
+      <tr><td><p>child</p></td><td><p>The child <link xref="bson_t">bson_t</link> initialized in a call to _bson_append_document_begin()_.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>The _bson_append_document_end()_ function shall complete the appending of a document with _bson_append_document_begin()_. *child* is invalid after calling this function.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>true if the operation was applied successfully, otherwise false and <code>bson</code> should be discarded.</p>
   </section>
 </page>
