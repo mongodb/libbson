@@ -1,11 +1,11 @@
 Name:           libbson
-Version:        0.6.9
+Version:        0.8.0
 Release:        1%{?dist}
 Summary:        BSON library
 
 License:        ASL 2.0
 URL:            https://github.com/mongodb/libbson
-Source0:        https://github.com/mongodb/libbson/releases/download/0.6.9/libbson-0.6.9.tar.gz
+Source0:        https://github.com/mongodb/libbson/releases/download/0.8.0/libbson-0.8.0.tar.gz
 BuildRequires:  automake
 
 %description
@@ -56,6 +56,9 @@ find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 %{_prefix}/share/man/man7/*
 
 %changelog
+* Thu May 29 2014 Christian Hergert <christian.hergert@mongodb.com> - 0.8.0-1
+- Release 0.8.0
+
 * Tue May 06 2014 Christian Hergert <christian.hergert@mongodb.com> - 0.6.9-1
 - Update to 0.6.9 from git.
 - Enable debug symbols

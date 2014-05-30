@@ -1,3 +1,25 @@
+Libbson 0.8.0
+=============
+
+It's that time again, time for another Libbson release!
+
+This cycle includes much, much more documentation for your perusing. There is
+much more cross-referencing and structure for your navigation pleasure.
+
+We've improved support for Libbson on a few more exotic platforms. SPARC
+support is looking pretty good these days.
+
+You'll also find some new examples in this release to help you get started a
+bit faster. If there is something you'd like to see, just ask!
+
+There are a few ABI breaks this cycle, as we are well on the road to a 1.0 and
+would like things as clean as possible. I anticipate a few more during the next
+couple of cycles, but we will try to keep them to a minimum.  With that said,
+you *WILL* need to recompile your application against 0.8.0.
+
+Happy Hacking!
+
+
 Libbson 0.6.8
 =============
 
