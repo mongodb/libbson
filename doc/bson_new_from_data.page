@@ -14,7 +14,7 @@
     <title>Synopsis</title>
     <synopsis><code mime="text/x-csrc"><![CDATA[bson_t *
 bson_new_from_data (const uint8_t *data,
-                    uint32_t       length);
+                    size_t         length);
 ]]></code></synopsis>
   </section>
 

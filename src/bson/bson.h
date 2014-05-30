@@ -212,9 +212,9 @@ bson_init_from_json (bson_t        *bson,
  * Returns: true if initialized successfully; otherwise false.
  */
 bool
-bson_init_static (bson_t             *b,
+bson_init_static (bson_t        *b,
                   const uint8_t *data,
-                  uint32_t       length);
+                  size_t         length);
 
 
 /**
@@ -261,7 +261,7 @@ bson_reinit (bson_t *b);
  */
 bson_t *
 bson_new_from_data (const uint8_t *data,
-                    uint32_t       length);
+                    size_t         length);
 
 
 /**

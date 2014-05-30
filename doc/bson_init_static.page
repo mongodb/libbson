@@ -15,7 +15,7 @@
     <synopsis><code mime="text/x-csrc"><![CDATA[bool
 bson_init_static (bson_t        *b,
                   const uint8_t *data,
-                  uint32_t       length);
+                  size_t         length);
 ]]></code></synopsis>
   </section>
 

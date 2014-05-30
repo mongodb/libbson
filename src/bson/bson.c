@@ -1794,9 +1794,9 @@ bson_reinit (bson_t *bson)
 
 
 bool
-bson_init_static (bson_t             *bson,
+bson_init_static (bson_t        *bson,
                   const uint8_t *data,
-                  uint32_t       length)
+                  size_t         length)
 {
    bson_impl_alloc_t *impl = (bson_impl_alloc_t *)bson;
    uint32_t len_le;
@@ -1810,7 +1810,7 @@ bson_init_static (bson_t             *bson,
 
    memcpy (&len_le, data, 4);
 
-   if (BSON_UINT32_FROM_LE (len_le) != length) {
+   if ((size_t)BSON_UINT32_FROM_LE (len_le) != length) {
       return false;
    }
 
@@ -1819,7 +1819,7 @@ bson_init_static (bson_t             *bson,
    }
 
    impl->flags = BSON_FLAG_STATIC | BSON_FLAG_RDONLY;
-   impl->len = length;
+   impl->len = (uint32_t)length;
    impl->parent = NULL;
    impl->depth = 0;
    impl->buf = &impl->alloc;
@@ -1896,30 +1896,26 @@ bson_sized_new (size_t size)
 
 bson_t *
 bson_new_from_data (const uint8_t *data,
-                    uint32_t       length)
+                    size_t         length)
 {
    uint32_t len_le;
    bson_t *bson;
 
    bson_return_val_if_fail (data, NULL);
 
-   if (length < 5) {
-      return NULL;
-   }
-
-   if (data[length - 1]) {
+   if ((length < 5) || (length > INT_MAX) || data [length - 1]) {
       return NULL;
    }
 
    memcpy (&len_le, data, 4);
 
-   if (length != BSON_UINT32_FROM_LE (len_le)) {
+   if (length != (size_t)BSON_UINT32_FROM_LE (len_le)) {
       return NULL;
    }
 
    bson = bson_sized_new (length);
    memcpy (_bson_data (bson), data, length);
-   bson->len = length;
+   bson->len = (uint32_t)length;
 
    return bson;
 }
