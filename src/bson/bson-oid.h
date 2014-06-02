@@ -237,7 +237,7 @@ bson_oid_get_time_t_unsafe (const bson_oid_t *oid)
 {
    uint32_t t;
 
-   memcpy (&t, oid, 4);
+   memcpy (&t, oid, sizeof (t));
    return BSON_UINT32_FROM_BE (t);
 }
 

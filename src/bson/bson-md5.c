@@ -186,7 +186,7 @@ bson_md5_process (bson_md5_t     *md5,
             }
             else {
                 /* not aligned */
-                memcpy(xbuf, data, 64);
+                memcpy(xbuf, data, sizeof (xbuf));
                 X = xbuf;
             }
         }
@@ -398,7 +398,7 @@ bson_md5_finish (bson_md5_t   *pms,
     /* Pad to 56 bytes mod 64. */
     bson_md5_append(pms, pad, ((55 - (pms->count[0] >> 3)) & 63) + 1);
     /* Append the length. */
-    bson_md5_append(pms, data, 8);
+    bson_md5_append(pms, data, sizeof (data));
     for (i = 0; i < 16; ++i)
         digest[i] = (uint8_t)(pms->abcd[i >> 2] >> ((i & 3) << 3));
 }

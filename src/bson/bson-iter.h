@@ -114,7 +114,7 @@ bson_iter_utf8_len_unsafe (const bson_iter_t *iter)
 {
    int32_t val;
 
-   memcpy (&val, iter->raw + iter->d1, 4);
+   memcpy (&val, iter->raw + iter->d1, sizeof (val));
    val = BSON_UINT32_FROM_LE (val);
    return MAX (0, val - 1);
 }
@@ -122,20 +122,20 @@ bson_iter_utf8_len_unsafe (const bson_iter_t *iter)
 
 void
 bson_iter_array (const bson_iter_t   *iter,
-                 uint32_t       *array_len,
-                 const uint8_t **array);
+                 uint32_t            *array_len,
+                 const uint8_t      **array);
 
 
 void
 bson_iter_binary (const bson_iter_t   *iter,
                   bson_subtype_t      *subtype,
-                  uint32_t       *binary_len,
-                  const uint8_t **binary);
+                  uint32_t            *binary_len,
+                  const uint8_t      **binary);
 
 
 const char *
 bson_iter_code (const bson_iter_t *iter,
-                uint32_t     *length);
+                uint32_t          *length);
 
 
 /**
@@ -149,7 +149,7 @@ bson_iter_code (const bson_iter_t *iter,
  */
 static BSON_INLINE const char *
 bson_iter_code_unsafe (const bson_iter_t *iter,
-                       uint32_t     *length)
+                       uint32_t          *length)
 {
    *length = bson_iter_utf8_len_unsafe (iter);
    return (const char *)(iter->raw + iter->d2);
@@ -158,22 +158,22 @@ bson_iter_code_unsafe (const bson_iter_t *iter,
 
 const char *
 bson_iter_codewscope (const bson_iter_t   *iter,
-                      uint32_t       *length,
-                      uint32_t       *scope_len,
-                      const uint8_t **scope);
+                      uint32_t            *length,
+                      uint32_t            *scope_len,
+                      const uint8_t      **scope);
 
 
 void
 bson_iter_dbpointer (const bson_iter_t *iter,
-                     uint32_t     *collection_len,
+                     uint32_t          *collection_len,
                      const char       **collection,
                      const bson_oid_t **oid);
 
 
 void
 bson_iter_document (const bson_iter_t   *iter,
-                    uint32_t       *document_len,
-                    const uint8_t **document);
+                    uint32_t            *document_len,
+                    const uint8_t      **document);
 
 
 double
@@ -193,7 +193,7 @@ bson_iter_double_unsafe (const bson_iter_t *iter)
 {
    double val;
 
-   memcpy (&val, iter->raw + iter->d1, 8);
+   memcpy (&val, iter->raw + iter->d1, sizeof (val));
    return BSON_DOUBLE_FROM_LE (val);
 }
 
@@ -232,7 +232,7 @@ bson_iter_int32_unsafe (const bson_iter_t *iter)
 {
    int32_t val;
 
-   memcpy (&val, iter->raw + iter->d1, 4);
+   memcpy (&val, iter->raw + iter->d1, sizeof (val));
    return BSON_UINT32_FROM_LE (val);
 }
 
@@ -258,7 +258,7 @@ bson_iter_int64_unsafe (const bson_iter_t *iter)
 {
    int64_t val;
 
-   memcpy (&val, iter->raw + iter->d1, 8);
+   memcpy (&val, iter->raw + iter->d1, sizeof (val));
    return BSON_UINT64_FROM_LE (val);
 }
 
@@ -323,7 +323,7 @@ bson_iter_key_unsafe (const bson_iter_t *iter)
 
 const char *
 bson_iter_utf8 (const bson_iter_t *iter,
-                uint32_t     *length);
+                uint32_t          *length);
 
 
 /**
@@ -335,7 +335,7 @@ bson_iter_utf8 (const bson_iter_t *iter,
  */
 static BSON_INLINE const char *
 bson_iter_utf8_unsafe (const bson_iter_t *iter,
-                       uint32_t     *length)
+                       size_t            *length)
 {
    *length = bson_iter_utf8_len_unsafe (iter);
    return (const char *)(iter->raw + iter->d2);
@@ -344,7 +344,7 @@ bson_iter_utf8_unsafe (const bson_iter_t *iter,
 
 char *
 bson_iter_dup_utf8 (const bson_iter_t *iter,
-                    uint32_t     *length);
+                    uint32_t          *length);
 
 
 int64_t
@@ -435,7 +435,7 @@ bson_iter_regex (const bson_iter_t *iter,
 
 const char *
 bson_iter_symbol (const bson_iter_t *iter,
-                  uint32_t     *length);
+                  uint32_t          *length);
 
 
 bson_type_t

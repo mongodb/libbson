@@ -285,7 +285,7 @@ _bson_context_get_oid_seq64 (bson_context_t *context, /* IN */
    BSON_ASSERT (oid);
 
    seq = BSON_UINT64_TO_BE (context->seq64++);
-   memcpy (&oid->bytes[4], &seq, 8);
+   memcpy (&oid->bytes[4], &seq, sizeof (seq));
 }
 
 
@@ -312,7 +312,7 @@ _bson_context_get_oid_seq64_threadsafe (bson_context_t *context, /* IN */
    int64_t seq = bson_atomic_int64_add (&context->seq64, 1);
 
    seq = BSON_UINT64_TO_BE (seq);
-   memcpy (&oid->bytes[4], &seq, 8);
+   memcpy (&oid->bytes[4], &seq, sizeof (seq));
 }
 
 
