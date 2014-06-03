@@ -23,6 +23,10 @@
 
 #include <bson.h>
 
+
+BSON_BEGIN_DECLS
+
+
 #define BCON_STACK_MAX 100
 
 #define BCON_ENSURE_DECLARE(fun, type) \
@@ -281,5 +285,9 @@ bcon_new (void *unused,
 
 const char *bson_bcon_magic  (void) BSON_GNUC_CONST;
 const char *bson_bcone_magic (void) BSON_GNUC_CONST;
+
+
+BSON_END_DECLS
+
 
 #endif
