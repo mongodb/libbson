@@ -1356,6 +1356,43 @@ test_bson_has_field (void)
 }
 
 
+static void
+test_next_power_of_two (void)
+{
+   size_t s;
+
+   s = 3;
+   s = bson_next_power_of_two (s);
+   assert (s == 4);
+
+   s = 4;
+   s = bson_next_power_of_two (s);
+   assert (s == 4);
+
+   s = 33;
+   s = bson_next_power_of_two (s);
+   assert (s == 64);
+
+   s = 91;
+   s = bson_next_power_of_two (s);
+   assert (s == 128);
+
+#if BSON_WORD_SIZE == 64
+   s = 4294967296LL;
+   s = bson_next_power_of_two (s);
+   assert (s == 4294967296LL);
+
+   s = 4294967297LL;
+   s = bson_next_power_of_two (s);
+   assert (s == 8589934592LL);
+
+   s = 17179901952LL;
+   s = bson_next_power_of_two (s);
+   assert (s == 34359738368LL);
+#endif
+}
+
+
 void
 test_bson_install (TestSuite *suite)
 {
@@ -1409,4 +1446,6 @@ test_bson_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/clear", test_bson_clear);
    TestSuite_Add (suite, "/bson/destroy_with_steal", test_bson_destroy_with_steal);
    TestSuite_Add (suite, "/bson/has_field", test_bson_has_field);
+
+   TestSuite_Add (suite, "/util/next_power_of_two", test_next_power_of_two);
 }

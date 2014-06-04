@@ -488,8 +488,8 @@ BSON_STATIC_ASSERT (sizeof (bson_error_t) == 512);
  *
  * Returns: The next power of 2 from @v.
  */
-static BSON_INLINE uint32_t
-bson_next_power_of_two (uint32_t v)
+static BSON_INLINE size_t
+bson_next_power_of_two (size_t v)
 {
    v--;
    v |= v >> 1;
@@ -497,6 +497,9 @@ bson_next_power_of_two (uint32_t v)
    v |= v >> 4;
    v |= v >> 8;
    v |= v >> 16;
+#if BSON_WORD_SIZE == 64
+   v |= v >> 32;
+#endif
    v++;
 
    return v;

@@ -295,7 +295,7 @@ _bson_json_buf_ensure (bson_json_buf_t *buf, /* IN */
    if (buf->n_bytes < len) {
       bson_free (buf->buf);
 
-      buf->n_bytes = bson_next_power_of_two ((uint32_t)len);
+      buf->n_bytes = bson_next_power_of_two (len);
       buf->buf = bson_malloc (buf->n_bytes);
    }
 }
