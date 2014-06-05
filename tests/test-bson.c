@@ -1377,6 +1377,14 @@ test_next_power_of_two (void)
    s = bson_next_power_of_two (s);
    assert (s == 128);
 
+   s = 939524096UL;
+   s = bson_next_power_of_two (s);
+   assert (s == 1073741824);
+
+   s = 1073741824UL;
+   s = bson_next_power_of_two (s);
+   assert (s == 1073741824UL);
+
 #if BSON_WORD_SIZE == 64
    s = 4294967296LL;
    s = bson_next_power_of_two (s);
@@ -1389,6 +1397,14 @@ test_next_power_of_two (void)
    s = 17179901952LL;
    s = bson_next_power_of_two (s);
    assert (s == 34359738368LL);
+
+   s = 9223372036854775807ULL;
+   s = bson_next_power_of_two (s);
+   assert (s == 9223372036854775808ULL);
+
+   s = 36028795806651656ULL;
+   s = bson_next_power_of_two (s);
+   assert (s == 36028797018963968ULL);
 #endif
 }
 
