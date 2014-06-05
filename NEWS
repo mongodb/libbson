@@ -1,3 +1,17 @@
+Libbson 0.8.2
+=============
+
+A bugfix release is here as a follow up to 0.8.0.
+
+In this release you will find the following changes:
+
+ * A fix for BCON when used from C++.
+ * Change bson_next_power_of_two() to accept size_t. This should not be
+   an ABI break since it is static inline.
+
+Happy Hacking!
+
+
 Libbson 0.8.0
 =============
 

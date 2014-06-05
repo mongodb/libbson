@@ -30,6 +30,7 @@ platform here, we would be happy to hear from you.
  * x86_64/amd64
  * SPARC
  * ARM
+ * PowerPC
 
 ### Supported Compilers
 
