@@ -120,7 +120,7 @@
 #  define BSON_ALIGNED_END(_N)
 #elif defined(__SUNPRO_C)
 #  define BSON_ALIGNED_BEGIN(_N)
-#  define BSON_ALIGNED_END(_N)
+#  define BSON_ALIGNED_END(_N) __attribute__((aligned (_N)))
 #else
 #  define BSON_ALIGNED_BEGIN(_N)
 #  define BSON_ALIGNED_END(_N) __attribute__((aligned (_N)))
