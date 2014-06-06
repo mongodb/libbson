@@ -50,7 +50,6 @@ BSON_ALIGNED_END (128);
 
 
 BSON_STATIC_ASSERT (sizeof (bson_impl_inline_t) == 128);
-BSON_STATIC_ASSERT (offsetof (bson_impl_inline_t, data) == 8);
 
 
 BSON_ALIGNED_BEGIN (128)
@@ -72,7 +71,6 @@ BSON_ALIGNED_END (128);
 
 
 BSON_STATIC_ASSERT (sizeof (bson_impl_alloc_t) <= 128);
-BSON_STATIC_ASSERT (offsetof (bson_impl_alloc_t, parent) == 8);
 
 
 BSON_END_DECLS
