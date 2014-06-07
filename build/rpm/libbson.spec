@@ -28,7 +28,7 @@ developing applications that use %{name}.
 automake 
 
 %build
-%configure --disable-static --disable-silent-rules --enable-debug-symbols --enable-hardening --docdir=%{_pkgdocdir}
+%configure --disable-static --disable-silent-rules --enable-debug --enable-debug-symbols --enable-hardening --docdir=%{_pkgdocdir} --enable-man-pages
 make %{?_smp_mflags}
 
 %check
@@ -53,7 +53,6 @@ find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 %{_libdir}/%{name}-1.0.so
 %{_libdir}/pkgconfig/%{name}-1.0.pc
 %{_prefix}/share/man/man3/*
-%{_prefix}/share/man/man7/*
 
 %changelog
 * Thu Jun 05 2014 Christian Hergert <christian.hergert@mongodb.com> - 0.8.2-1
