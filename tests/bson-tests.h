@@ -127,9 +127,9 @@ run_test (const char *name,
 
    fprintf(stdout, "%-42s : ", name);
    fflush(stdout);
-   bson_gettimeofday(&begin, NULL);
+   bson_gettimeofday(&begin);
    func();
-   bson_gettimeofday(&end, NULL);
+   bson_gettimeofday(&end);
    fprintf(stdout, "PASS");
 
    diff.tv_sec = end.tv_sec - begin.tv_sec;

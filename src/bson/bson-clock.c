@@ -46,18 +46,13 @@
  *       0 if successful.
  *
  * Side effects:
- *       @tv and @tz are set.
+ *       @tv is set.
  *
  *--------------------------------------------------------------------------
  */
 
 int
-bson_gettimeofday (struct timeval  *tv, /* OUT */
-#if defined(__SUNPRO_C)
-                   void            *tz) /* OUT */
-#else
-                   struct timezone *tz) /* OUT */
-#endif
+bson_gettimeofday (struct timeval *tv) /* OUT */
 {
 #if defined(_WIN32)
 # if defined(_MSC_VER)
@@ -96,11 +91,9 @@ bson_gettimeofday (struct timeval  *tv, /* OUT */
       tv->tv_usec = (long)(tmp % 1000000UL);
    }
 
-   BSON_ASSERT (NULL == tz);
-
    return 0;
 #else
-   return gettimeofday (tv, tz);
+   return gettimeofday (tv, NULL);
 #endif
 }
 

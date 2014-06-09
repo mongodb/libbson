@@ -29,7 +29,7 @@ static double
 dtimeofday (void)
 {
     struct timeval timeval;
-    bson_gettimeofday(&timeval, 0);
+    bson_gettimeofday(&timeval);
     return (timeval.tv_sec + timeval.tv_usec * 0.000001);
 }
 

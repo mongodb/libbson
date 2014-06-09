@@ -33,12 +33,7 @@ BSON_BEGIN_DECLS
 
 
 int64_t bson_get_monotonic_time (void);
-int     bson_gettimeofday       (struct timeval  *tv,
-#if defined(__SUNPRO_C)
-                                 void            *tz);
-#else
-                                 struct timezone *tz);
-#endif
+int     bson_gettimeofday       (struct timeval *tv);
 
 
 BSON_END_DECLS

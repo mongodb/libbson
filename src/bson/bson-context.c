@@ -385,7 +385,7 @@ bson_context_new (bson_context_flags_t flags) /* IN */
     * The seed itself is made up of the current time in seconds, milliseconds,
     * and pid xored together. I welcome better solutions if at all necessary.
     */
-   bson_gettimeofday (&tv, NULL);
+   bson_gettimeofday (&tv);
    seed[0] = (unsigned int)tv.tv_sec;
    seed[1] = (unsigned int)tv.tv_usec;
    seed[2] = _bson_getpid ();
