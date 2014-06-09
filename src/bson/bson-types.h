@@ -366,6 +366,7 @@ typedef struct
  * You may pre-maturely stop the visitation of fields by returning true in your
  * visitor. Returning false will continue visitation to further fields.
  */
+BSON_ALIGNED_BEGIN (8)
 typedef struct
 {
    bool (*visit_before)     (const bson_iter_t *iter,
@@ -465,7 +466,8 @@ typedef struct
                              void              *data);
 
    void *padding[9];
-} bson_visitor_t;
+} bson_visitor_t
+BSON_ALIGNED_END (8);
 
 
 BSON_ALIGNED_BEGIN (8)
