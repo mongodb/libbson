@@ -28,7 +28,7 @@ developing applications that use %{name}.
 automake 
 
 %build
-%configure --disable-static --disable-silent-rules --enable-debug --enable-debug-symbols --enable-hardening --docdir=%{_pkgdocdir} --enable-man-pages
+%configure --disable-static --disable-silent-rules --enable-debug-symbols --enable-hardening --enable-optimizations --docdir=%{_pkgdocdir} --enable-man-pages --enable-html-docs
 make %{?_smp_mflags}
 
 %check
