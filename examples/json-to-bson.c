@@ -73,7 +73,10 @@ main (int   argc,
             abort ();
          }
 
-         fwrite (bson_get_data(&doc), 1, doc.len, stdout);
+         if (fwrite (bson_get_data(&doc), 1, doc.len, stdout) != doc.len) {
+            fprintf (stderr, "Failed to write to stdout, exiting.\n");
+            exit (1);
+         }
          bson_reinit (&doc);
       }
 
