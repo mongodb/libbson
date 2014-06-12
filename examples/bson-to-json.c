@@ -40,7 +40,9 @@ main (int   argc,
     * Print program usage if no arguments are provided.
     */
    if (argc == 1) {
-      fprintf(stderr, "usage: %s FILE...\n", argv[0]);
+      fprintf(stderr,
+              "usage: %s [FILE | -]...\nUse - for STDIN.\n",
+              argv[0]);
       return 1;
    }
 
@@ -50,13 +52,14 @@ main (int   argc,
    for (i = 1; i < argc; i++) {
       filename = argv[i];
 
-      /*
-       * Initialize a new reader for this file descriptor.
-       */
-      if (!(reader = bson_reader_new_from_file (filename, &error))) {
-         fprintf (stderr, "Failed to open \"%s\": %s\n",
-                  filename, error.message);
-         continue;
+      if (strcmp (filename, "-") == 0) {
+         reader = bson_reader_new_from_fd (STDIN_FILENO, false);
+      } else {
+         if (!(reader = bson_reader_new_from_file (filename, &error))) {
+            fprintf (stderr, "Failed to open \"%s\": %s\n",
+                     filename, error.message);
+            continue;
+         }
       }
 
       /*
