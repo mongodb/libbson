@@ -51,7 +51,7 @@ bson_iter_type (const bson_iter_t *iter);
 
   <section id="description">
     <title>Description</title>
-    <p>The <code>bson_iter_type()</code> function shall return the type of the ovserved element in a bson document.</p>
+    <p>The <code>bson_iter_type()</code> function shall return the type of the observed element in a bson document.</p>
   </section>
 
   <section id="return">
