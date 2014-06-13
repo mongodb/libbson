@@ -448,6 +448,28 @@ test_bson_json_read_bad_cb(void)
    bson_destroy (&bson);
 }
 
+static void
+test_bson_json_number_long (void)
+{
+   bson_error_t error;
+   bson_iter_t iter;
+   const char *json = "{ \"key\": { \"$numberLong\": \"4611686018427387904\" }}";
+   const char *json2 = "{ \"key\": { \"$numberLong\": \"461168601abcd\" }}";
+   bson_t b;
+   bool r;
+
+   r = bson_init_from_json (&b, json, -1, &error);
+   if (!r) fprintf (stderr, "%s\n", error.message);
+   assert (r);
+   assert (bson_iter_init (&iter, &b));
+   assert (bson_iter_find (&iter, "key"));
+   assert (BSON_ITER_HOLDS_INT64 (&iter));
+   assert (bson_iter_int64 (&iter) == 4611686018427387904LL);
+   bson_destroy (&b);
+
+   assert (!bson_init_from_json (&b, json2, -1, &error));
+}
+
 void
 test_json_install (TestSuite *suite)
 {
@@ -465,4 +487,5 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/json/read/missing_complex", test_bson_json_read_missing_complex);
    TestSuite_Add (suite, "/bson/json/read/invalid_json", test_bson_json_read_invalid_json);
    TestSuite_Add (suite, "/bson/json/read/bad_cb", test_bson_json_read_bad_cb);
+   TestSuite_Add (suite, "/bson/json/read/$numberLong", test_bson_json_number_long);
 }
