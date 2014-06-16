@@ -266,7 +266,7 @@ _parse_long_long (const char  *str,
    errno = 0;
    val = _atoi64 (str);
 
-   if (errno == 0) {
+   if ((errno == 0) && endptr) {
       bson_snprintf (fmt, sizeof fmt, "%"PRId64, val);
       *endptr = (char *)str + strlen (fmt);
    }
