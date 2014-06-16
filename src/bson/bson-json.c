@@ -28,9 +28,10 @@
 #include <yajl/yajl_parser.h>
 #include <yajl/yajl_bytestack.h>
 
-#ifdef BSON_OS_WIN32
+#ifdef _WIN32
 # include <io.h>
 # include <share.h>
+# define strtoll(nptr,endptr,base) _strtol_l(nptr,endptr,base,NULL)
 #endif
 
 
