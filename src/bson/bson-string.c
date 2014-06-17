@@ -663,3 +663,102 @@ bson_snprintf (char       *str,    /* IN */
 
    return r;
 }
+
+
+int64_t
+bson_ascii_strtoll (const char  *s,
+                    char       **e,
+                    int          base)
+{
+    char *tok = (char *)(s);
+    char c = *tok;
+    int64_t number = 0;
+    int64_t sign = 1;
+
+    while (isspace (c)) {
+        c = *++tok;
+    }
+
+    if (!isdigit (c) && (c != '+') && (c != '-')) {
+        *e = tok - 1;
+        errno = EINVAL;
+        return 0;
+    }
+
+    if (c == '-') {
+        sign = -1;
+        c = *++tok;
+    }
+
+    if (c == '+') {
+        c = *++tok;
+    }
+
+    if (c == '0' && tok[1] != '\0') {
+        /* Hex, octal or binary -- maybe. */
+
+        c = *++tok;
+
+        if (c == 'x' || c == 'X') { /* Hex */
+            if (base != 16) {
+                *e = (char *)(s);
+                errno = EINVAL;
+                return 0;
+            }
+
+            c = *++tok;
+            if (!isxdigit (c)) {
+                *e = tok;
+                errno = EINVAL;
+                return 0;
+            }
+            do {
+                number = (number << 4) + (c - '0');
+                c = *(++tok);
+            } while (isxdigit (c));
+        }
+        else { /* Octal */
+            if (base != 8) {
+                *e = (char *)(s);
+                errno = EINVAL;
+                return 0;
+            }
+
+            if (c < '0' || c >= '8') {
+                *e = tok;
+                errno = EINVAL;
+                return 0;
+            }
+            do {
+                number = (number << 3) + (c - '0');
+                c = *(++tok);
+            } while (('0' <= c) && (c < '8'));
+        }
+
+        while (c == 'l' || c == 'L' || c == 'u' || c == 'U') {
+            c = *++tok;
+        }
+    }
+    else {
+        /* Decimal */
+        if (base != 10) {
+            *e = (char *)(s);
+            errno = EINVAL;
+            return 0;
+        }
+
+        do {
+            number = (number * 10) + (c - '0');
+            c = *(++tok);
+        } while (isdigit (c));
+
+        while (c == 'l' || c == 'L' || c == 'u' || c == 'U') {
+            c = *(++tok);
+        }
+    }
+
+    *e = tok;
+    errno = 0;
+    return (sign * number);
+}
+

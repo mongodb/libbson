@@ -244,40 +244,6 @@ typedef struct
    }
 
 
-#ifdef _WIN32
-/*
- * This is a pretty horrible hack due to the lack of strtoll() support on
- * Windows. We could also just hand make a parser, but I'd rather not
- * maintain that. Patches accepted!
- */
-# ifndef LLONG_MIN
-#  define LLONG_MIN INT64_MIN
-# endif
-# ifndef LLONG_MAX
-#  define LLONG_MAX INT64_MAX
-# endif
-static int64_t
-_parse_long_long (const char  *str,
-                  char       **endptr)
-{
-   int64_t val;
-   char fmt[32];
-
-   errno = 0;
-   val = _atoi64 (str);
-
-   if ((errno == 0) && endptr) {
-      bson_snprintf (fmt, sizeof fmt, "%"PRId64, val);
-      *endptr = (char *)str + strlen (fmt);
-   }
-
-   return val;
-}
-#else
-# define _parse_long_long(a,b) strtoll(a,b,10)
-#endif
-
-
 static bool
 _bson_json_all_whitespace (const char *utf8)
 {
@@ -570,7 +536,7 @@ _bson_json_read_string (void                *_ctx, /* IN */
             char *endptr = NULL;
 
             errno = 0;
-            v64 = _parse_long_long ((const char *)val, &endptr);
+            v64 = bson_ascii_strtoll ((const char *)val, &endptr, 10);
 
             if (((v64 == LLONG_MIN) || (v64 == LLONG_MAX)) && (errno == ERANGE)) {
                goto BAD_PARSE;

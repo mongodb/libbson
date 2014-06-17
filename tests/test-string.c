@@ -161,6 +161,60 @@ test_bson_strndup (void)
 }
 
 
+typedef struct
+{
+   const char *str;
+   int         base;
+   int64_t     rv;
+   int         _errno;
+} strtoll_test;
+
+
+static void
+test_bson_ascii_strtoll (void)
+{
+   char *endptr = NULL;
+   int64_t rv;
+   int i;
+   strtoll_test tests[] = {
+      { "1", 10, 1, 0 },
+      { "+1", 10, 1, 0 },
+      { "-1", 10, -1, 0 },
+      { "0", 10, 0, 0 },
+      { "-0", 10, 0, 0 },
+      { "+0", 10, 0, 0 },
+      { "68719476736", 10, 68719476736, 0 },
+      { "-68719476736", 10, -68719476736, 0 },
+      { "+68719476736", 10, 68719476736, 0 },
+      { "   68719476736  ", 10, 68719476736, 0 },
+      { "   -68719476736  ", 10, -68719476736, 0 },
+      { "   4611686018427387904LL", 10, 4611686018427387904LL, 0 },
+      { " -4611686018427387904LL ", 10, -4611686018427387904LL, 0 },
+      { "0x1000000000", 16, 68719476736, 0 },
+      { "-0x1000000000", 16, -68719476736, 0 },
+      { "+0x1000000000", 16, 68719476736, 0 },
+      { "01234", 8, 668, 0 },
+      { "-01234", 8, -668, 0 },
+      { "+01234", 8, 668, 0 },
+      { NULL }
+   };
+
+   for (i = 0; tests [i].str; i++) {
+      errno = 0;
+      endptr = NULL;
+
+      rv = bson_ascii_strtoll (tests [i].str, &endptr, tests [i].base);
+
+#if 0
+      fprintf (stderr, "rv=%"PRId64" errno=%d\n", rv, errno);
+#endif
+
+      assert_cmpint (rv, ==, tests [i].rv);
+      assert_cmpint (errno, ==, tests [i]._errno);
+   }
+}
+
+
 void
 test_string_install (TestSuite *suite)
 {
@@ -172,4 +226,5 @@ test_string_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/string/strdup", test_bson_strdup);
    TestSuite_Add (suite, "/bson/string/strdup_printf", test_bson_strdup_printf);
    TestSuite_Add (suite, "/bson/string/strndup", test_bson_strndup);
+   TestSuite_Add (suite, "/bson/string/ascii_strtoll", test_bson_ascii_strtoll);
 }

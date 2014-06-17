@@ -76,6 +76,9 @@ int            bson_snprintf              (char           *str,
 void           bson_strfreev              (char          **strv);
 size_t         bson_strnlen               (const char     *s,
                                            size_t          maxlen);
+int64_t        bson_ascii_strtoll         (const char     *str,
+                                           char          **endptr,
+                                           int             base);
 
 
 BSON_END_DECLS
