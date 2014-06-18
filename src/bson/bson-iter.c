@@ -195,6 +195,8 @@ _bson_iter_find_with_len (bson_iter_t *iter,   /* INOUT */
                           const char  *key,    /* IN */
                           int          keylen) /* IN */
 {
+   const char *ikey;
+
    bson_return_val_if_fail (iter, false);
    bson_return_val_if_fail (key, false);
 
@@ -203,7 +205,9 @@ _bson_iter_find_with_len (bson_iter_t *iter,   /* INOUT */
    }
 
    while (bson_iter_next (iter)) {
-      if (!strncmp (key, bson_iter_key (iter), keylen)) {
+      ikey = bson_iter_key (iter);
+
+      if ((0 == strncmp (key, ikey, keylen)) && (ikey [keylen] == '\0')) {
          return true;
       }
    }
