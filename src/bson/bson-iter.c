@@ -200,6 +200,10 @@ _bson_iter_find_with_len (bson_iter_t *iter,   /* INOUT */
    bson_return_val_if_fail (iter, false);
    bson_return_val_if_fail (key, false);
 
+   if (keylen == 0) {
+      return false;
+   }
+
    if (keylen < 0) {
       keylen = (int)strlen (key);
    }

@@ -463,6 +463,12 @@ test_bson_iter_find_descendant (void)
    assert (bson_iter_find_descendant (&iter, "n", &desc));
    assert (!strcmp (bson_iter_key (&desc), "n"));
    bson_destroy (b);
+
+   b = BCON_NEW ("", BCON_INT32 (1), "n", BCON_INT32 (2));
+   assert (bson_iter_init (&iter, b));
+   assert (bson_iter_find_descendant (&iter, "n", &desc));
+   assert (!strcmp (bson_iter_key (&desc), "n"));
+   bson_destroy (b);
 }
 
 
