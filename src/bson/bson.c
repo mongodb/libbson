@@ -2518,10 +2518,13 @@ _bson_as_json_visit_code (const bson_iter_t *iter,
                           void              *data)
 {
    bson_json_state_t *state = data;
+   char *escaped;
 
+   escaped = bson_utf8_escape_for_json (v_code, v_code_len);
    bson_string_append (state->str, "\"");
-   bson_string_append (state->str, v_code);
+   bson_string_append (state->str, escaped);
    bson_string_append (state->str, "\"");
+   bson_free (escaped);
 
    return false;
 }
@@ -2553,10 +2556,13 @@ _bson_as_json_visit_codewscope (const bson_iter_t *iter,
                                 void              *data)
 {
    bson_json_state_t *state = data;
+   char *escaped;
 
+   escaped = bson_utf8_escape_for_json (v_code, v_code_len);
    bson_string_append (state->str, "\"");
-   bson_string_append (state->str, v_code);
+   bson_string_append (state->str, escaped);
    bson_string_append (state->str, "\"");
+   bson_free (escaped);
 
    return false;
 }
