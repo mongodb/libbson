@@ -470,6 +470,24 @@ test_bson_json_number_long (void)
    assert (!bson_init_from_json (&b, json2, -1, &error));
 }
 
+static void
+test_bson_array_as_json (void)
+{
+   bson_t d = BSON_INITIALIZER;
+   char *str;
+
+   str = bson_array_as_json (&d, NULL);
+   assert (0 == strcmp (str, "[]"));
+   bson_free (str);
+
+   BSON_APPEND_INT32 (&d, "0", 1);
+   str = bson_array_as_json (&d, NULL);
+   assert (0 == strcmp (str, "[1]"));
+   bson_free (str);
+
+   bson_destroy (&d);
+}
+
 void
 test_json_install (TestSuite *suite)
 {
@@ -483,6 +501,7 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/as_json/corrupt", test_bson_corrupt);
    TestSuite_Add (suite, "/bson/as_json/corrupt_utf8", test_bson_corrupt_utf8);
    TestSuite_Add (suite, "/bson/as_json/corrupt_binary", test_bson_corrupt_binary);
+   TestSuite_Add (suite, "/bson/array_as_json", test_bson_array_as_json);
    TestSuite_Add (suite, "/bson/json/read", test_bson_json_read);
    TestSuite_Add (suite, "/bson/json/read/missing_complex", test_bson_json_read_missing_complex);
    TestSuite_Add (suite, "/bson/json/read/invalid_json", test_bson_json_read_invalid_json);

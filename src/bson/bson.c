@@ -2694,6 +2694,55 @@ bson_as_json (const bson_t *bson,
 }
 
 
+char *
+bson_array_as_json (const bson_t *bson,
+                    size_t       *length)
+{
+   bson_json_state_t state;
+   bson_iter_t iter;
+
+   bson_return_val_if_fail (bson, NULL);
+
+   if (length) {
+      *length = 0;
+   }
+
+   if (bson_empty0 (bson)) {
+      if (length) {
+         *length = 2;
+      }
+
+      return bson_strdup ("[]");
+   }
+
+   if (!bson_iter_init (&iter, bson)) {
+      return NULL;
+   }
+
+   state.count = 0;
+   state.keys = false;
+   state.str = bson_string_new ("[");
+   state.depth = 0;
+   bson_iter_visit_all (&iter, &bson_as_json_visitors, &state);
+
+   if (iter.err_off) {
+      bson_string_free (state.str, true);
+      if (length) {
+         *length = 0;
+      }
+      return NULL;
+   }
+
+   bson_string_append (state.str, "]");
+
+   if (length) {
+      *length = state.str->len;
+   }
+
+   return bson_string_free (state.str, false);
+}
+
+
 static bool
 _bson_iter_validate_utf8 (const bson_iter_t *iter,
                           const char        *key,

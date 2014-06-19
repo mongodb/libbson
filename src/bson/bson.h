@@ -475,6 +475,12 @@ bson_as_json (const bson_t *bson,
               size_t       *length);
 
 
+/* like bson_as_json() but for outermost arrays. */
+char *
+bson_array_as_json (const bson_t *bson,
+                    size_t       *length);
+
+
 bool
 bson_append_value (bson_t             *bson,
                    const char         *key,
