@@ -1,3 +1,34 @@
+Libbson 0.8.4
+=============
+
+Another incremental release with a couple of new functions and bugfixes.
+
+In this release you will find the following changes:
+
+ * Alignment fixes for Solaris Studio C compiler.
+ * RPM and Debian packaging helpers.
+ * bson_gettimeofday() has dropped the deprecated timezone field used
+   when calling posix gettimeofday(). This eases portability concerns.
+   It is technically an ABI break, but since the field was never set,
+   in reality it shouldn't be an issue.
+ * Multi-byte optimizations for bson_oid_to_string() have been disabled
+   on non-x86 based platforms. This should aid in architecture portability.
+ * The JSON parser can now support $numberLong.
+ * bson_ascii_strtoll() has been added, which is a portable strtoll()
+   implementation. This is primarily useful for Windows users and is
+   used by the JSON parser.
+ * A bug was fixed in bson_iter_find_descendent() where the wrong field
+   could be matched if it's prefix matched the query.
+ * bson_array_as_json() has been added to convert a bson_t as a top-level
+   array.
+
+Thanks to:
+ * Kyle Suarez
+ * Itay Neeman
+
+Happy Hacking!
+
+
 Libbson 0.8.2
 =============
 
