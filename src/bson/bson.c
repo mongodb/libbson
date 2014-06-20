@@ -2666,7 +2666,7 @@ bson_as_json (const bson_t *bson,
 
    if (bson_empty0 (bson)) {
       if (length) {
-         *length = 2;
+         *length = 3;
       }
 
       return bson_strdup ("{ }");
@@ -2715,10 +2715,10 @@ bson_array_as_json (const bson_t *bson,
 
    if (bson_empty0 (bson)) {
       if (length) {
-         *length = 2;
+         *length = 3;
       }
 
-      return bson_strdup ("[]");
+      return bson_strdup ("[ ]");
    }
 
    if (!bson_iter_init (&iter, bson)) {
@@ -2727,7 +2727,7 @@ bson_array_as_json (const bson_t *bson,
 
    state.count = 0;
    state.keys = false;
-   state.str = bson_string_new ("[");
+   state.str = bson_string_new ("[ ");
    state.depth = 0;
    bson_iter_visit_all (&iter, &bson_as_json_visitors, &state);
 
@@ -2739,7 +2739,7 @@ bson_array_as_json (const bson_t *bson,
       return NULL;
    }
 
-   bson_string_append (state.str, "]");
+   bson_string_append (state.str, " ]");
 
    if (length) {
       *length = state.str->len;

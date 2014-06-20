@@ -474,15 +474,40 @@ static void
 test_bson_array_as_json (void)
 {
    bson_t d = BSON_INITIALIZER;
+   size_t len;
    char *str;
 
-   str = bson_array_as_json (&d, NULL);
-   assert (0 == strcmp (str, "[]"));
+   str = bson_array_as_json (&d, &len);
+   assert (0 == strcmp (str, "[ ]"));
+   assert (len == 3);
    bson_free (str);
 
    BSON_APPEND_INT32 (&d, "0", 1);
-   str = bson_array_as_json (&d, NULL);
-   assert (0 == strcmp (str, "[1]"));
+   str = bson_array_as_json (&d, &len);
+   assert (0 == strcmp (str, "[ 1 ]"));
+   assert (len == 5);
+   bson_free (str);
+
+   bson_destroy (&d);
+}
+
+
+static void
+test_bson_as_json_spacing (void)
+{
+   bson_t d = BSON_INITIALIZER;
+   size_t len;
+   char *str;
+
+   str = bson_as_json (&d, &len);
+   assert (0 == strcmp (str, "{ }"));
+   assert (len == 3);
+   bson_free (str);
+
+   BSON_APPEND_INT32 (&d, "a", 1);
+   str = bson_as_json (&d, &len);
+   assert (0 == strcmp (str, "{ \"a\" : 1 }"));
+   assert (len == 11);
    bson_free (str);
 
    bson_destroy (&d);
@@ -501,6 +526,7 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/as_json/corrupt", test_bson_corrupt);
    TestSuite_Add (suite, "/bson/as_json/corrupt_utf8", test_bson_corrupt_utf8);
    TestSuite_Add (suite, "/bson/as_json/corrupt_binary", test_bson_corrupt_binary);
+   TestSuite_Add (suite, "/bson/as_json_spacing", test_bson_as_json_spacing);
    TestSuite_Add (suite, "/bson/array_as_json", test_bson_array_as_json);
    TestSuite_Add (suite, "/bson/json/read", test_bson_json_read);
    TestSuite_Add (suite, "/bson/json/read/missing_complex", test_bson_json_read_missing_complex);
