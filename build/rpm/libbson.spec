@@ -1,5 +1,5 @@
 Name:           libbson
-Version:        0.8.4
+Version:        0.8.5
 Release:        1%{?dist}
 Summary:        BSON library
 
@@ -55,6 +55,9 @@ find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 %{_prefix}/share/man/man3/*
 
 %changelog
+* Thu Jun 20 2014 Christian Hergert <christian.hergert@mongodb.com> - 0.8.5-1
+- Bump for development builds.
+
 * Thu Jun 20 2014 Christian Hergert <christian.hergert@mongodb.com> - 0.8.4-1
 - Bump for 0.8.4.
 
