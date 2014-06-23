@@ -18,7 +18,11 @@
  *    limitations under the License.
  */
 
+
+#include <stdio.h>
+
 #include "bcon.h"
+
 
 /* These stack manipulation macros are used to manage append recursion in
  * bcon_append_ctx_va().  They take care of some awkward dereference rules (the
@@ -708,11 +712,17 @@ _bson_concat_array (bson_t            *dest,
                     const bson_t      *src,
                     bcon_append_ctx_t *ctx)
 {
+   bson_iter_t iter;
    const char *key;
    char i_str[16];
-   bson_iter_t iter;
+   bool r;
 
-   bson_iter_init (&iter, src);
+   r = bson_iter_init (&iter, src);
+
+   if (!r) {
+      fprintf (stderr, "Invalid BSON document, possible memory coruption.\n");
+      return;
+   }
 
    STACK_I--;
 
