@@ -249,10 +249,12 @@ _bson_json_all_whitespace (const char *utf8)
 {
    bool all_whitespace = true;
 
-   for (; *utf8; utf8 = bson_utf8_next_char (utf8)) {
-      if (!isspace (bson_utf8_get_char (utf8))) {
-         all_whitespace = false;
-         break;
+   if (utf8) {
+      for (; *utf8; utf8 = bson_utf8_next_char (utf8)) {
+         if (!isspace (bson_utf8_get_char (utf8))) {
+            all_whitespace = false;
+            break;
+         }
       }
    }
 
