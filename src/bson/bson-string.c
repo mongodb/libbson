@@ -670,10 +670,17 @@ bson_ascii_strtoll (const char  *s,
                     char       **e,
                     int          base)
 {
-    char *tok = (char *)(s);
-    char c = *tok;
+    char *tok = (char *)s;
+    char c;
     int64_t number = 0;
     int64_t sign = 1;
+
+    if (!s) {
+       errno = EINVAL;
+       return 0;
+    }
+
+    c = *tok;
 
     while (isspace (c)) {
         c = *++tok;
