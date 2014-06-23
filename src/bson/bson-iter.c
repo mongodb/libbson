@@ -45,6 +45,7 @@ bson_iter_init (bson_iter_t  *iter, /* OUT */
    bson_return_val_if_fail (bson, false);
 
    if (BSON_UNLIKELY (bson->len < 5)) {
+      memset (iter, 0, sizeof *iter);
       return false;
    }
 
@@ -1241,12 +1242,6 @@ bson_iter_codewscope (const bson_iter_t  *iter,      /* IN */
 }
 
 
-/**
- * bson_iter_dbpointer:
- *
- *
- *
- */
 /*
  *--------------------------------------------------------------------------
  *
