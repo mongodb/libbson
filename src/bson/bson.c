@@ -2236,12 +2236,16 @@ _bson_as_json_visit_utf8 (const bson_iter_t *iter,
    char *escaped;
 
    escaped = bson_utf8_escape_for_json (v_utf8, v_utf8_len);
-   bson_string_append (state->str, "\"");
-   bson_string_append (state->str, escaped);
-   bson_string_append (state->str, "\"");
-   bson_free (escaped);
 
-   return false;
+   if (escaped) {
+      bson_string_append (state->str, "\"");
+      bson_string_append (state->str, escaped);
+      bson_string_append (state->str, "\"");
+      bson_free (escaped);
+      return false;
+   }
+
+   return true;
 }
 
 
@@ -2498,10 +2502,14 @@ _bson_as_json_visit_before (const bson_iter_t *iter,
 
    if (state->keys) {
       escaped = bson_utf8_escape_for_json (key, -1);
-      bson_string_append (state->str, "\"");
-      bson_string_append (state->str, escaped);
-      bson_string_append (state->str, "\" : ");
-      bson_free (escaped);
+      if (escaped) {
+         bson_string_append (state->str, "\"");
+         bson_string_append (state->str, escaped);
+         bson_string_append (state->str, "\" : ");
+         bson_free (escaped);
+      } else {
+         return true;
+      }
    }
 
    state->count++;
@@ -2521,12 +2529,16 @@ _bson_as_json_visit_code (const bson_iter_t *iter,
    char *escaped;
 
    escaped = bson_utf8_escape_for_json (v_code, v_code_len);
-   bson_string_append (state->str, "\"");
-   bson_string_append (state->str, escaped);
-   bson_string_append (state->str, "\"");
-   bson_free (escaped);
 
-   return false;
+   if (escaped) {
+      bson_string_append (state->str, "\"");
+      bson_string_append (state->str, escaped);
+      bson_string_append (state->str, "\"");
+      bson_free (escaped);
+      return false;
+   }
+
+   return true;
 }
 
 
@@ -2559,12 +2571,16 @@ _bson_as_json_visit_codewscope (const bson_iter_t *iter,
    char *escaped;
 
    escaped = bson_utf8_escape_for_json (v_code, v_code_len);
-   bson_string_append (state->str, "\"");
-   bson_string_append (state->str, escaped);
-   bson_string_append (state->str, "\"");
-   bson_free (escaped);
 
-   return false;
+   if (escaped) {
+      bson_string_append (state->str, "\"");
+      bson_string_append (state->str, escaped);
+      bson_string_append (state->str, "\"");
+      bson_free (escaped);
+      return false;
+   }
+
+   return true;
 }
 
 
@@ -2680,9 +2696,12 @@ bson_as_json (const bson_t *bson,
    state.keys = true;
    state.str = bson_string_new ("{ ");
    state.depth = 0;
-   bson_iter_visit_all (&iter, &bson_as_json_visitors, &state);
 
-   if (iter.err_off) {
+   if (bson_iter_visit_all (&iter, &bson_as_json_visitors, &state) ||
+       iter.err_off) {
+      /*
+       * We were prematurely exited due to corruption or failed visitor.
+       */
       bson_string_free (state.str, true);
       if (length) {
          *length = 0;
@@ -2731,7 +2750,11 @@ bson_array_as_json (const bson_t *bson,
    state.depth = 0;
    bson_iter_visit_all (&iter, &bson_as_json_visitors, &state);
 
-   if (iter.err_off) {
+   if (bson_iter_visit_all (&iter, &bson_as_json_visitors, &state) ||
+       iter.err_off) {
+      /*
+       * We were prematurely exited due to corruption or failed visitor.
+       */
       bson_string_free (state.str, true);
       if (length) {
          *length = 0;
