@@ -540,7 +540,7 @@ _bson_json_read_string (void                *_ctx, /* IN */
             errno = 0;
             v64 = bson_ascii_strtoll ((const char *)val, &endptr, 10);
 
-            if (((v64 == LLONG_MIN) || (v64 == LLONG_MAX)) && (errno == ERANGE)) {
+            if (((v64 == INT64_MIN) || (v64 == INT64_MAX)) && (errno == ERANGE)) {
                goto BAD_PARSE;
             }
 
