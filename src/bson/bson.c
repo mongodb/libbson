@@ -448,7 +448,9 @@ _bson_append_bson_begin (bson_t      *bson,        /* IN */
     */
    if ((bson->flags & BSON_FLAG_INLINE)) {
       BSON_ASSERT (bson->len <= 120);
-      _bson_grow (bson, 128 - bson->len);
+      if (!_bson_grow (bson, 128 - bson->len)) {
+         return false;
+      }
       BSON_ASSERT (!(bson->flags & BSON_FLAG_INLINE));
    }
 
