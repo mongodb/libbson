@@ -16,6 +16,7 @@
 
 
 #include <stdarg.h>
+#include <string.h>
 
 #include "b64_ntop.h"
 #include "bson.h"
@@ -719,6 +720,22 @@ bson_append_array (bson_t       *bson,       /* IN */
 
    if (key_length < 0) {
       key_length = (int)strlen (key);
+   }
+
+   /*
+    * Let's be a bit pedantic and ensure the array has properly formatted key
+    * names.  We will verify this simply by checking the first element for "0"
+    * if the array is non-empty.
+    */
+   if (array && !bson_empty (array)) {
+      bson_iter_t iter;
+
+      if (bson_iter_init (&iter, array) && bson_iter_next (&iter)) {
+         if (0 != strcmp ("0", bson_iter_key (&iter))) {
+            fprintf (stderr, "%s(): array contains invalid element keys.\n",
+                     __FUNCTION__);
+         }
+      }
    }
 
    return _bson_append (bson, 4,
