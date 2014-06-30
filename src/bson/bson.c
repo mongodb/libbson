@@ -732,7 +732,9 @@ bson_append_array (bson_t       *bson,       /* IN */
 
       if (bson_iter_init (&iter, array) && bson_iter_next (&iter)) {
          if (0 != strcmp ("0", bson_iter_key (&iter))) {
-            fprintf (stderr, "%s(): array contains invalid element keys.\n",
+            fprintf (stderr,
+                     "%s(): invalid array detected. first element of array "
+                     "parameter is not \"0\".\n",
                      __FUNCTION__);
          }
       }
