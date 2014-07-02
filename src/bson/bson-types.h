@@ -120,7 +120,7 @@ typedef struct _bson_context_t bson_context_t;
  * This structure is meant to fit in two sequential 64-byte cachelines.
  */
 BSON_ALIGNED_BEGIN (128)
-typedef struct
+typedef struct struct_bson
 {
    uint32_t flags;        /* Internal flags for the bson_t. */
    uint32_t len;          /* Length of BSON data. */
@@ -471,7 +471,7 @@ BSON_ALIGNED_END (8);
 
 
 BSON_ALIGNED_BEGIN (8)
-typedef struct
+typedef struct struct_bson_error
 {
    uint32_t domain;
    uint32_t code;
