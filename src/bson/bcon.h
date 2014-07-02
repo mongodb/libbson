@@ -217,13 +217,13 @@ typedef struct bcon_extract_ctx_frame
    bson_iter_t iter;
 } bcon_extract_ctx_frame_t;
 
-typedef struct bcon_append_ctx
+typedef struct _bcon_append_ctx_t
 {
    bcon_append_ctx_frame_t stack[BCON_STACK_MAX];
    int                     n;
 } bcon_append_ctx_t;
 
-typedef struct bcon_extract_ctx
+typedef struct _bcon_extract_ctx_t
 {
    bcon_extract_ctx_frame_t stack[BCON_STACK_MAX];
    int                      n;
