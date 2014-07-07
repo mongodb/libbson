@@ -30,6 +30,10 @@
 
 BSON_BEGIN_DECLS
 
+typedef void *(*bson_custom_malloc_func_t) (size_t num_bytes);
+typedef void *(*bson_custom_calloc_func_t) (size_t num, size_t size);
+typedef void *(*bson_custom_realloc_func_t) (void *mem, size_t num_bytes);
+typedef void (*bson_custom_free_func_t) (void *mem);
 
 typedef void *(*bson_realloc_func) (void  *mem,
                                     size_t num_bytes,
@@ -46,6 +50,11 @@ void *bson_realloc_ctx (void   *mem,
 void  bson_free      (void   *mem);
 void  bson_zero_free (void   *mem,
                       size_t  size);
+
+void bson_set_mem_functions(bson_custom_malloc_func_t,
+                            bson_custom_calloc_func_t,
+                            bson_custom_realloc_func_t,
+                            bson_custom_free_func_t);
 
 
 BSON_END_DECLS

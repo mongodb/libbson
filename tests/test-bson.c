@@ -1325,6 +1325,74 @@ test_bson_destroy_with_steal (void)
    data = NULL;
 }
 
+/* test custom memory management functions uses double mem size */
+static int ntest_mem_func_calls[4];
+static void *
+test_malloc (size_t num_bytes)
+{
+   bson_atomic_int_add (&ntest_mem_func_calls[0], 1);
+   return malloc (num_bytes);
+}
+
+static void *
+test_calloc (size_t num, size_t size)
+{
+   bson_atomic_int_add (&ntest_mem_func_calls[1], 1);
+   return calloc(num, size);
+}
+
+static void *
+test_realloc (void *mem, size_t num_bytes)
+{
+   bson_atomic_int_add (&ntest_mem_func_calls[2], 1);
+   return realloc (mem, num_bytes);
+}
+
+static void *
+test_free (void *mem)
+{
+   bson_atomic_int_add (&ntest_mem_func_calls[3], 1);
+   free (mem);
+}
+
+static void
+should_use_custom_mem_functions (bool should_use_custom)
+{
+   bson_t *b;
+   uint8_t *buf = NULL;
+   size_t len = 0;
+   int i;
+
+   memset (ntest_mem_func_calls, 0, sizeof (int) * 4);
+
+   /* call custom malloc */
+   b = bson_new ();
+
+   /* call custom free */
+   bson_destroy (b);
+
+   /* call custom calloc and realloc */
+   b = bson_new_from_buffer (&buf, &len, bson_realloc_ctx, NULL);
+
+   bson_destroy (b);
+
+   /* should be called > 0 times */
+   for (i = 0; i < 4; ++i)
+      if (should_use_custom)
+         assert_cmpint (ntest_mem_func_calls[i], > , 0);
+      else
+         assert_cmpint (ntest_mem_func_calls[i], == , 0);
+}
+
+static void
+test_bson_set_mem_functions (void)
+{
+   bson_set_mem_functions (test_malloc, test_calloc, test_realloc, test_free);
+   should_use_custom_mem_functions (true);
+   /* reset to default */
+   bson_set_mem_functions (NULL, NULL, NULL, NULL);
+   should_use_custom_mem_functions (false);
+}
 
 static void
 test_bson_has_field (void)
@@ -1462,6 +1530,7 @@ test_bson_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/clear", test_bson_clear);
    TestSuite_Add (suite, "/bson/destroy_with_steal", test_bson_destroy_with_steal);
    TestSuite_Add (suite, "/bson/has_field", test_bson_has_field);
+   TestSuite_Add (suite, "/bson/set_mem_functions", test_bson_set_mem_functions);
 
    TestSuite_Add (suite, "/util/next_power_of_two", test_next_power_of_two);
 }

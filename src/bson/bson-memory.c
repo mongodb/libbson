@@ -21,6 +21,33 @@
 #include "bson-config.h"
 #include "bson-memory.h"
 
+/* standard function pointers. */
+bson_custom_malloc_func_t bson_malloc_func_p = malloc;
+bson_custom_calloc_func_t bson_calloc_func_p = calloc;
+#ifdef __APPLE__
+   bson_custom_realloc_func_t bson_realloc_func_p = reallocf;
+#else
+   bson_custom_realloc_func_t bson_realloc_func_p = realloc;
+#endif
+bson_custom_free_func_t bson_free_func_p = free;
+
+void bson_set_mem_functions(bson_custom_malloc_func_t custom_bson_malloc_func, /* IN */
+                            bson_custom_calloc_func_t custom_bson_calloc_func, /* IN */
+                            bson_custom_realloc_func_t custom_bson_realloc_func, /* IN */
+                            bson_custom_free_func_t custom_bson_free_func) /* IN */
+{
+   bson_malloc_func_p = custom_bson_malloc_func ? custom_bson_malloc_func : malloc;
+   bson_calloc_func_p = custom_bson_calloc_func ? custom_bson_calloc_func : calloc;
+   if (custom_bson_realloc_func)
+      bson_realloc_func_p = custom_bson_realloc_func;
+   else
+#ifdef __APPLE__
+      bson_realloc_func_p = reallocf;
+#else
+      bson_realloc_func_p = realloc;
+#endif
+   bson_free_func_p = custom_bson_free_func ? custom_bson_free_func : free;
+}
 
 /*
  *--------------------------------------------------------------------------
@@ -51,7 +78,7 @@ bson_malloc (size_t num_bytes) /* IN */
 {
    void *mem;
 
-   if (!(mem = malloc (num_bytes))) {
+   if (!(mem = bson_malloc_func_p (num_bytes))) {
       abort ();
    }
 
@@ -87,7 +114,7 @@ bson_malloc0 (size_t num_bytes) /* IN */
    void *mem = NULL;
 
    if (BSON_LIKELY (num_bytes)) {
-      if (BSON_UNLIKELY (!(mem = calloc (1, num_bytes)))) {
+      if (BSON_UNLIKELY (!(mem = bson_calloc_func_p (1, num_bytes)))) {
          abort ();
       }
    }
@@ -132,11 +159,7 @@ bson_realloc (void   *mem,        /* IN */
       return NULL;
    }
 
-#ifdef __APPLE__
-   mem = reallocf (mem, num_bytes);
-#else
-   mem = realloc (mem, num_bytes);
-#endif
+   mem = bson_realloc_func_p (mem, num_bytes);
 
    if (BSON_UNLIKELY (!mem)) {
       abort ();
@@ -204,7 +227,7 @@ bson_realloc_ctx (void   *mem,        /* IN */
 void
 bson_free (void *mem) /* IN */
 {
-   free (mem);
+   bson_free_func_p (mem);
 }
 
 

@@ -109,6 +109,7 @@ bson_json_reader_new
 bson_json_reader_new_from_fd
 bson_json_reader_new_from_file
 bson_json_reader_read
+bson_set_mem_functions
 bson_malloc
 bson_malloc0
 bson_md5_init
