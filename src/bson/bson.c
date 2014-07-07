@@ -2221,17 +2221,26 @@ int
 bson_compare (const bson_t *bson,
               const bson_t *other)
 {
-   uint32_t len;
+   const uint8_t *data1;
+   const uint8_t *data2;
+   size_t len1;
+   size_t len2;
    int ret;
 
-   if (bson->len != other->len) {
-      len = MIN (bson->len, other->len);
+   data1 = _bson_data (bson) + 4;
+   len1 = bson->len - 4;
 
-      if (!(ret = memcmp (_bson_data (bson), _bson_data (other), len))) {
-         ret = bson->len - other->len;
-      }
-   } else {
-      ret = memcmp (_bson_data (bson), _bson_data (other), bson->len);
+   data2 = _bson_data (other) + 4;
+   len2 = other->len - 4;
+
+   if (len1 == len2) {
+      return memcmp (data1, data2, len1);
+   }
+
+   ret = memcmp (data1, data2, MIN (len1, len2));
+
+   if (ret == 0) {
+      return len1 - len2;
    }
 
    return ret;
