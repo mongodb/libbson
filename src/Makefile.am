@@ -14,7 +14,6 @@ libbson_1_0_la_LDFLAGS = \
 
 include src/bson/Makefile.am
 include src/yajl/Makefile.am
-include src/bindings/Makefile.am
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = $(top_builddir)/src/libbson-1.0.pc
