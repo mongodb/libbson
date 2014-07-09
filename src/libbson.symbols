@@ -113,6 +113,7 @@ bson_malloc0
 bson_md5_init
 bson_md5_finish
 bson_md5_append
+bson_mem_set_vtable
 bson_new
 bson_new_from_buffer
 bson_new_from_data
