@@ -326,8 +326,6 @@ _bson_context_init (bson_context_t *context,    /* IN */
    unsigned int real_seed;
    bson_oid_t oid;
 
-   context = bson_malloc0 (sizeof *context);
-
    context->flags = flags;
    context->oid_get_host = _bson_context_get_oid_host_cached;
    context->oid_get_pid = _bson_context_get_oid_pid_cached;
