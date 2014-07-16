@@ -1,3 +1,28 @@
+Libbson 0.98.0
+==============
+
+One more step closer to a 1.0!
+
+This release has a few fixes as we near the finish line of a 1.0 release.
+We have bumped the version to 0.98.0 to sync up with MongoDB C driver, which
+is the primary consumer of this library.
+
+This release includes a new memory callback vtable to help in embedding
+situations that have their own custom allocator such as various language
+runtimes.
+
+A few compilation fixes for various C++ compilers have also been included.
+
+A special thanks to:
+
+ * Itay Neeman
+ * Michael Whittaker
+
+Happy Hacking!
+
+-- Christian
+
+
 Libbson 0.8.4
 =============
 
