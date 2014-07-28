@@ -147,7 +147,7 @@ static const char * gUint32Strs[] = {
  *       @size: Size of @str.
  *
  * Returns:
- *       None.
+ *       The number of bytes in the resulting string.
  *
  * Side effects:
  *       None.
@@ -158,7 +158,7 @@ static const char * gUint32Strs[] = {
 size_t
 bson_uint32_to_string (uint32_t     value,  /* IN */
                        const char **strptr, /* OUT */
-                       char        *str,    /* IN */
+                       char        *str,    /* OUT */
                        size_t       size)   /* IN */
 {
    if (value < 1000) {
