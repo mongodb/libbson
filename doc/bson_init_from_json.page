@@ -24,7 +24,7 @@ bson_init_from_json (bson_t       *bson,
     <title>Parameters</title>
     <table>
       <tr><td><p>bson</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
-      <tr><td><p>data</p></td><td><p>A UTF-8 encoed string containing valid JSON.</p></td></tr>
+      <tr><td><p>data</p></td><td><p>A UTF-8 encoded string containing valid JSON.</p></td></tr>
       <tr><td><p>len</p></td><td><p>The length of <code>data</code> in bytes excluding a trailing <code>\0</code> or -1 to determine the length with <code>strlen()</code>.</p></td></tr>
       <tr><td><p>error</p></td><td><p>An optional location for a <link xref="bson_error_t">bson_error_t</link>.</p></td></tr>
     </table>
