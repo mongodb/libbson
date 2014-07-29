@@ -1159,7 +1159,7 @@ bson_json_data_reader_new (bool   allow_multiple, /* IN */
 {
    bson_json_data_reader_t *dr = bson_malloc0 (sizeof *dr);
 
-   return bson_json_reader_new (dr, &_bson_json_data_reader_cb, &free,
+   return bson_json_reader_new (dr, &_bson_json_data_reader_cb, &bson_free,
                                 allow_multiple, size);
 }
 
