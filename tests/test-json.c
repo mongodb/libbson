@@ -471,6 +471,25 @@ test_bson_json_number_long (void)
 }
 
 static void
+test_bson_json_inc (void)
+{
+   /* test that reproduces a bug with special mode checking.  Specifically,
+    * mistaking '$inc' for '$id'
+    *
+    * From https://github.com/mongodb/mongo-c-driver/issues/62
+    */
+   bson_error_t error;
+   const char *json = "{ \"$inc\" : { \"ref\" : 1 } }";
+   bson_t b;
+   bool r;
+
+   r = bson_init_from_json (&b, json, -1, &error);
+   if (!r) fprintf (stderr, "%s\n", error.message);
+   assert (r);
+   bson_destroy (&b);
+}
+
+static void
 test_bson_array_as_json (void)
 {
    bson_t d = BSON_INITIALIZER;
@@ -529,6 +548,7 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/as_json_spacing", test_bson_as_json_spacing);
    TestSuite_Add (suite, "/bson/array_as_json", test_bson_array_as_json);
    TestSuite_Add (suite, "/bson/json/read", test_bson_json_read);
+   TestSuite_Add (suite, "/bson/json/inc", test_bson_json_inc);
    TestSuite_Add (suite, "/bson/json/read/missing_complex", test_bson_json_read_missing_complex);
    TestSuite_Add (suite, "/bson/json/read/invalid_json", test_bson_json_read_invalid_json);
    TestSuite_Add (suite, "/bson/json/read/bad_cb", test_bson_json_read_bad_cb);
