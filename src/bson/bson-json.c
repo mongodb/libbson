@@ -598,15 +598,12 @@ _bson_json_read_start_map (void *_ctx) /* IN */
 
 
 static bool
-_is_known_key (const char *key)
+_is_known_key (const char *key, size_t len)
 {
    bool ret;
 
-#define IS_KEY(k) (0 == strncmp (k, key, strlen(k) - 1))
+#define IS_KEY(k) (len == strlen(k) && (0 == memcmp (k, key, len)))
 
-   /*
-    * For the LULZ, yajl includes the end " character as part of the key name.
-    */
    ret = (IS_KEY ("$regex") ||
           IS_KEY ("$options") ||
           IS_KEY ("$oid") ||
@@ -636,7 +633,7 @@ _bson_json_read_map_key (void          *_ctx, /* IN */
    bson_json_reader_bson_t *bson = &reader->bson;
 
    if (bson->read_state == BSON_JSON_IN_START_MAP) {
-      if (len > 0 && val[0] == '$' && _is_known_key ((const char *)val)) {
+      if (len > 0 && val[0] == '$' && _is_known_key ((const char *)val, len)) {
          bson->read_state = BSON_JSON_IN_BSON_TYPE;
          bson->bson_type = (bson_type_t) 0;
          memset (&bson->bson_type_data, 0, sizeof bson->bson_type_data);
