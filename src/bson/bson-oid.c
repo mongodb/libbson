@@ -455,7 +455,7 @@ bson_oid_copy (const bson_oid_t *src, /* IN */
  *
  * bson_oid_is_valid --
  *
- *       Validates that @str is a valid OID string. @length MUST be 12, but
+ *       Validates that @str is a valid OID string. @length MUST be 24, but
  *       is provided as a parameter to simplify calling code.
  *
  * Parameters:
