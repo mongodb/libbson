@@ -1243,7 +1243,7 @@ bson_append_iter (bson_t            *bson,
                                    bson_iter_date_time (iter));
       break;
    case BSON_TYPE_NULL:
-      ret = bson_append_undefined (bson, key, key_length);
+      ret = bson_append_null (bson, key, key_length);
       break;
    case BSON_TYPE_REGEX:
       {
