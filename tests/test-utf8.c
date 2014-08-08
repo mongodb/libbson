@@ -165,6 +165,32 @@ test_bson_utf8_from_unichar (void)
 }
 
 
+static void
+test_bson_utf8_non_shortest (void)
+{
+   static const char *tests[] = {
+      "\xC0\x80"        , /* Non-shortest form representation of U+0000 */
+      "\xE0\x80\x80"    , /* Non-shortest form representation of U+0000 */
+      "\xF0\x80\x80\x80", /* Non-shortest form representation of U+0000 */
+
+      "\xE0\x83\xBF"    , /* Non-shortest form representation of U+00FF */
+      "\xF0\x80\x83\xBF", /* Non-shortest form representation of U+00FF */
+
+      "\xF0\x80\xA3\x80", /* Non-shortest form representation of U+08C0 */
+
+      NULL
+   };
+   int i;
+
+   for (i = 0; tests [i]; i++) {
+      if (bson_utf8_validate (tests [i], strlen (tests [i]), false)) {
+         fprintf (stderr, "non-shortest form failure, test %d\n", i);
+         assert (false);
+      }
+   }
+}
+
+
 void
 test_utf8_install (TestSuite *suite)
 {
@@ -172,4 +198,5 @@ test_utf8_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/utf8/escape_for_json", test_bson_utf8_escape_for_json);
    TestSuite_Add (suite, "/bson/utf8/get_char_next_char", test_bson_utf8_get_char);
    TestSuite_Add (suite, "/bson/utf8/from_unichar", test_bson_utf8_from_unichar);
+   TestSuite_Add (suite, "/bson/utf8/non_shortest", test_bson_utf8_non_shortest);
 }
