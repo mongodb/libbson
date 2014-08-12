@@ -255,7 +255,7 @@ bson_reinit (bson_t *b);
  * Creates a new bson_t structure using the data provided. @data should contain
  * at least @length bytes that can be copied into the new bson_t structure.
  *
- * Returns: A newly allocate bson_t that should be freed with bson_destroy().
+ * Returns: A newly allocated bson_t that should be freed with bson_destroy().
  *   If the first four bytes (little-endian) of data do not match @length,
  *   then NULL will be returned.
  */
@@ -274,7 +274,7 @@ bson_new_from_data (const uint8_t *data,
  * Creates a new bson_t structure using the data provided. @buf should contain
  * a bson document, or null pointer should be passed for new allocations.
  *
- * Returns: A newly allocate bson_t that should be freed with bson_destroy().
+ * Returns: A newly allocated bson_t that should be freed with bson_destroy().
  *          The underlying buffer will be used and not be freed in destroy.
  */
 bson_t *
