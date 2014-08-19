@@ -137,6 +137,13 @@ bson_utf8_validate (const char *utf8,       /* IN */
       }
 
       /*
+       * Ensure we have enough bytes left.
+       */
+      if ((utf8_len - i) < seq_length) {
+         return false;
+      }
+
+      /*
        * Check for non-shortest form UTF-8.
        */
       if ((seq_length > 1) && (0 == (utf8 [i] & first_mask))) {
