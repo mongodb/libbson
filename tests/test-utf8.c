@@ -26,6 +26,7 @@ static void
 test_bson_utf8_validate (void)
 {
    static const unsigned char test1[] = {0xe2, 0x82, 0xac, ' ', 0xe2, 0x82, 0xac, ' ', 0xe2, 0x82, 0xac, 0};
+   static const unsigned char test2[] = {0xc0, 0x80, 0};
 
    assert(bson_utf8_validate("asdf", 4, false));
    assert(bson_utf8_validate("asdf", 4, true));
@@ -36,6 +37,8 @@ test_bson_utf8_validate (void)
    assert(bson_utf8_validate((const char *)test1, 11, false));
    assert(bson_utf8_validate((const char *)test1, 12, true));
    assert(!bson_utf8_validate((const char *)test1, 12, false));
+
+   assert(bson_utf8_validate((const char *)test2, 2, true));
 }
 
 
@@ -169,7 +172,6 @@ static void
 test_bson_utf8_non_shortest (void)
 {
    static const char *tests[] = {
-      "\xC0\x80"        , /* Non-shortest form representation of U+0000 */
       "\xE0\x80\x80"    , /* Non-shortest form representation of U+0000 */
       "\xF0\x80\x80\x80", /* Non-shortest form representation of U+0000 */
 
@@ -180,11 +182,25 @@ test_bson_utf8_non_shortest (void)
 
       NULL
    };
+   static const char *valid_tests[] = {
+      "\xC0\x80"        , /* Non-shortest form representation of U+0000.
+                           * This is how \0 should be encoded. Special casing
+                           * to allow for use in things like strlen(). */
+
+      NULL
+   };
    int i;
 
    for (i = 0; tests [i]; i++) {
       if (bson_utf8_validate (tests [i], strlen (tests [i]), false)) {
          fprintf (stderr, "non-shortest form failure, test %d\n", i);
+         assert (false);
+      }
+   }
+
+   for (i = 0; valid_tests [i]; i++) {
+      if (!bson_utf8_validate (valid_tests [i], strlen (valid_tests [i]), false)) {
+         fprintf (stderr, "non-shortest form failure, valid_tests %d\n", i);
          assert (false);
       }
    }

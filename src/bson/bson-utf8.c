@@ -119,6 +119,7 @@ bson_utf8_validate (const char *utf8,       /* IN */
                     size_t      utf8_len,   /* IN */
                     bool        allow_null) /* IN */
 {
+   bson_unichar_t c;
    uint8_t first_mask;
    uint8_t seq_length;
    unsigned i;
@@ -144,16 +145,16 @@ bson_utf8_validate (const char *utf8,       /* IN */
       }
 
       /*
-       * Check for non-shortest form UTF-8.
+       * Also calculate the next char as a unichar so we can
+       * check code ranges for non-shortest form.
        */
-      if ((seq_length > 1) && (0 == (utf8 [i] & first_mask))) {
-         return false;
-      }
+      c = utf8 [i] & first_mask;
 
       /*
        * Check the high-bits for each additional sequence byte.
        */
       for (j = i + 1; j < (i + seq_length); j++) {
+         c = (c << 6) | (utf8 [j] & 0x3F);
          if ((utf8[j] & 0xC0) != 0x80) {
             return false;
          }
@@ -173,6 +174,59 @@ bson_utf8_validate (const char *utf8,       /* IN */
                return false;
             }
          }
+      }
+
+      /*
+       * Code point wont fit in utf-16, not allowed.
+       */
+      if (c > 0x0010FFFF) {
+         return false;
+      }
+
+      /*
+       * Byte is in reserved range for UTF-16 high-marks
+       * for surrogate pairs.
+       */
+      if ((c & 0xFFFFF800) == 0xD800) {
+         return false;
+      }
+
+      /*
+       * Check non-shortest form unicode.
+       */
+      switch (seq_length) {
+      case 1:
+         if ((c >= 0x0000) && (c <= 0x007F)) {
+            continue;
+         }
+         return false;
+
+      case 2:
+         if ((c >= 0x0080) && (c <= 0x07FF)) {
+            continue;
+         } else if (c == 0) {
+            /* Two-byte representation for NULL. */
+            continue;
+         }
+         return false;
+
+      case 3:
+         if (((c >= 0x0800) && (c <= 0x0FFF)) ||
+             ((c >= 0x1000) && (c <= 0xFFFF))) {
+            continue;
+         }
+         return false;
+
+      case 4:
+         if (((c >= 0x10000) && (c <= 0x3FFFF)) ||
+             ((c >= 0x40000) && (c <= 0xFFFFF)) ||
+             ((c >= 0x100000) && (c <= 0x10FFFF))) {
+            continue;
+         }
+         return false;
+
+      default:
+         return false;
       }
    }
 
