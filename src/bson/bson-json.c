@@ -176,6 +176,38 @@ typedef struct
 } bson_json_reader_handle_fd_t;
 
 
+static void *
+bson_yajl_malloc_func (void   *ctx,
+                       size_t  sz)
+{
+   return bson_malloc (sz);
+}
+
+
+static void
+bson_yajl_free_func (void *ctx,
+                     void *ptr)
+{
+   bson_free (ptr);
+}
+
+
+static void *
+bson_yajl_realloc_func (void   *ctx,
+                        void   *ptr,
+                        size_t  sz)
+{
+   return bson_realloc (ptr, sz);
+}
+
+
+static yajl_alloc_funcs gYajlAllocFuncs = {
+   bson_yajl_malloc_func,
+   bson_yajl_realloc_func,
+   bson_yajl_free_func,
+};
+
+
 #define STACK_ELE(_delta, _name) (bson->stack[(_delta) + bson->n]._name)
 #define STACK_BSON(_delta) \
       (((_delta) + bson->n) == 0 ? bson->bson : &STACK_ELE (_delta, bson))
@@ -1088,7 +1120,7 @@ bson_json_reader_new (void                 *data,           /* IN */
    p->buf = bson_malloc (buf_size);
    p->buf_size = buf_size ? buf_size : BSON_JSON_DEFAULT_BUF_SIZE;
 
-   r->yh = yajl_alloc (&read_cbs, NULL, r);
+   r->yh = yajl_alloc (&read_cbs, &gYajlAllocFuncs, r);
 
    yajl_config (r->yh,
                 yajl_dont_validate_strings |
