@@ -1067,6 +1067,34 @@ cleanup:
    return ret;
 }
 
+static void *
+_bson_json_yajl_malloc(void   *ctx, /* IN */
+                       size_t  sz)  /* IN */
+{
+    return bson_malloc(sz);
+}
+
+static void *
+_bson_json_yajl_realloc(void   *ctx,      /* IN */
+                        void   *previous, /* IN */
+                        size_t  sz)       /* IN */
+{
+    return bson_realloc(previous, sz);
+}
+
+static void
+_bson_json_yajl_free(void *ctx, /* IN */
+                     void *ptr) /* IN */
+{
+    return bson_free(ptr);
+}
+
+static yajl_alloc_funcs gYajlAllocFuncs = {
+  _bson_json_yajl_malloc,
+  _bson_json_yajl_realloc,
+  _bson_json_yajl_free,
+  NULL
+};
 
 bson_json_reader_t *
 bson_json_reader_new (void                 *data,           /* IN */
@@ -1088,7 +1116,7 @@ bson_json_reader_new (void                 *data,           /* IN */
    p->buf = bson_malloc (buf_size);
    p->buf_size = buf_size ? buf_size : BSON_JSON_DEFAULT_BUF_SIZE;
 
-   r->yh = yajl_alloc (&read_cbs, NULL, r);
+   r->yh = yajl_alloc (&read_cbs, &gYajlAllocFuncs, r);
 
    yajl_config (r->yh,
                 yajl_dont_validate_strings |
