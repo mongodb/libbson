@@ -41,137 +41,21 @@ BSON_BEGIN_DECLS
 #define BSON_LITTLE_ENDIAN 1234
 
 
-/*
- *--------------------------------------------------------------------------
- *
- * __bson_uint16_swap_slow --
- *
- *       Fallback endianness conversion for 16-bit integers.
- *
- * Returns:
- *       The endian swapped version.
- *
- * Side effects:
- *       None.
- *
- *--------------------------------------------------------------------------
- */
-
-static BSON_INLINE uint16_t
-__bson_uint16_swap_slow (uint16_t v) /* IN */
-{
-   return ((v & 0xFF) << 8) | ((v & 0xFF00) >> 8);
-}
-
-
-/*
- *--------------------------------------------------------------------------
- *
- * __bson_uint32_swap_slow --
- *
- *       Fallback endianness conversion for 32-bit integers.
- *
- * Returns:
- *       The endian swapped version.
- *
- * Side effects:
- *       None.
- *
- *--------------------------------------------------------------------------
- */
-
-static BSON_INLINE uint32_t
-__bson_uint32_swap_slow (uint32_t v) /* IN */
-{
-   uint32_t ret;
-   const char *src = (const char *)&v;
-   char *dst = (char *)&ret;
-
-   dst[0] = src[3];
-   dst[1] = src[2];
-   dst[2] = src[1];
-   dst[3] = src[0];
-
-   return ret;
-}
-
-
-/*
- *--------------------------------------------------------------------------
- *
- * __bson_uint64_swap_slow --
- *
- *       Fallback endianness conversion for 64-bit integers.
- *
- * Returns:
- *       The endian swapped version.
- *
- * Side effects:
- *       None.
- *
- *--------------------------------------------------------------------------
- */
-
-static BSON_INLINE uint64_t
-__bson_uint64_swap_slow (uint64_t v) /* IN */
-{
-   uint64_t ret;
-   const char *src = (const char *)&v;
-   char *dst = (char *)&ret;
-
-   dst[0] = src[7];
-   dst[1] = src[6];
-   dst[2] = src[5];
-   dst[3] = src[4];
-   dst[4] = src[3];
-   dst[5] = src[2];
-   dst[6] = src[1];
-   dst[7] = src[0];
-
-   return ret;
-}
-
-
-/*
- *--------------------------------------------------------------------------
- *
- * __bson_double_swap_slow --
- *
- *       Fallback endianness conversion for double floating point.
- *
- * Returns:
- *       The endian swapped version.
- *
- * Side effects:
- *       None.
- *
- *--------------------------------------------------------------------------
- */
-
-static BSON_INLINE double
-__bson_double_swap_slow (double v) /* IN */
-{
-   double ret;
-   const char *src = (const char *)&v;
-   char *dst = (char *)&ret;
-
-   dst[0] = src[7];
-   dst[1] = src[6];
-   dst[2] = src[5];
-   dst[3] = src[4];
-   dst[4] = src[3];
-   dst[5] = src[2];
-   dst[6] = src[1];
-   dst[7] = src[0];
-
-   return ret;
-}
-
-
 #if defined(__sun)
 # define BSON_UINT16_SWAP_LE_BE(v) BSWAP_16((uint16_t)v)
 # define BSON_UINT32_SWAP_LE_BE(v) BSWAP_32((uint32_t)v)
 # define BSON_UINT64_SWAP_LE_BE(v) BSWAP_64((uint64_t)v)
+#elif defined(__clang__) && defined(__clang_major__) && defined(__clang_minor__) && \
+  (__clang_major__ >= 3) && (__clang_minor__ >= 1)
+# if __has_builtin(__builtin_bswap16)
+#  define BSON_UINT16_SWAP_LE_BE(v) __builtin_bswap16(v)
+# endif
+# if __has_builtin(__builtin_bswap32)
+#  define BSON_UINT32_SWAP_LE_BE(v) __builtin_bswap32(v)
+# endif
+# if __has_builtin(__builtin_bswap64)
+#  define BSON_UINT64_SWAP_LE_BE(v) __builtin_bswap64(v)
+# endif
 #elif defined(__GNUC__) && (__GNUC__ >= 4)
 # if __GNUC__ >= 4 && defined (__GNUC_MINOR__) && __GNUC_MINOR__ >= 3
 #  define BSON_UINT32_SWAP_LE_BE(v) __builtin_bswap32 ((uint32_t)v)
@@ -232,6 +116,116 @@ __bson_double_swap_slow (double v) /* IN */
 # error "The endianness of target architecture is unknown."
 #endif
 
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * __bson_uint16_swap_slow --
+ *
+ *       Fallback endianness conversion for 16-bit integers.
+ *
+ * Returns:
+ *       The endian swapped version.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+static BSON_INLINE uint16_t
+__bson_uint16_swap_slow (uint16_t v) /* IN */
+{
+   return ((v & 0x00FF) << 8) |
+          ((v & 0xFF00) >> 8);
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * __bson_uint32_swap_slow --
+ *
+ *       Fallback endianness conversion for 32-bit integers.
+ *
+ * Returns:
+ *       The endian swapped version.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+static BSON_INLINE uint32_t
+__bson_uint32_swap_slow (uint32_t v) /* IN */
+{
+   return ((v & 0x000000FFUL) << 24) |
+          ((v & 0x0000FF00UL) <<  8) |
+          ((v & 0x00FF0000UL) >>  8) |
+          ((v & 0xFF000000UL) >> 24);
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * __bson_uint64_swap_slow --
+ *
+ *       Fallback endianness conversion for 64-bit integers.
+ *
+ * Returns:
+ *       The endian swapped version.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+static BSON_INLINE uint64_t
+__bson_uint64_swap_slow (uint64_t v) /* IN */
+{
+   return ((v & 0x00000000000000FFULL) << 56) |
+          ((v & 0x000000000000FF00ULL) << 40) |
+          ((v & 0x0000000000FF0000ULL) << 24) |
+          ((v & 0x00000000FF000000ULL) <<  8) |
+          ((v & 0x000000FF00000000ULL) >>  8) |
+          ((v & 0x0000FF0000000000ULL) >> 24) |
+          ((v & 0x00FF000000000000ULL) >> 40) |
+          ((v & 0xFF00000000000000ULL) >> 56);
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * __bson_double_swap_slow --
+ *
+ *       Fallback endianness conversion for double floating point.
+ *
+ * Returns:
+ *       The endian swapped version.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+static BSON_INLINE double
+__bson_double_swap_slow (double v) /* IN */
+{
+   uint64_t uv;
+
+   BSON_STATIC_ASSERT(sizeof(v) == sizeof(uv));
+
+   memcpy(&uv, &v, sizeof(v));
+   uv = BSON_UINT64_SWAP_LE_BE(uv);
+   memcpy(&v, &uv, sizeof(v));
+
+   return v;
+}
 
 BSON_END_DECLS
 
