@@ -213,12 +213,12 @@ __bson_uint64_swap_slow (uint64_t v) /* IN */
  *--------------------------------------------------------------------------
  */
 
+BSON_STATIC_ASSERT(sizeof(double) == sizeof(uint64_t));
+
 static BSON_INLINE double
 __bson_double_swap_slow (double v) /* IN */
 {
    uint64_t uv;
-
-   BSON_STATIC_ASSERT(sizeof(v) == sizeof(uv));
 
    memcpy(&uv, &v, sizeof(v));
    uv = BSON_UINT64_SWAP_LE_BE(uv);
