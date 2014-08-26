@@ -420,6 +420,11 @@ _bson_json_read_integer (void    *_ctx, /* IN */
    bs = bson->bson_state;
 
    if (rs == BSON_JSON_REGULAR) {
+      if (!key) {
+         _bson_json_read_set_error (reader,
+                                    "Missing key for JSON number.");
+         return 0;
+      }
       if (val <= INT32_MAX) {
          bson_append_int32 (STACK_BSON_CHILD, key, (int)len, (int)val);
       } else {
