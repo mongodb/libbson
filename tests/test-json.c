@@ -422,19 +422,19 @@ test_bson_json_read_invalid_json(void)
    test_bson_json_error (json, BSON_ERROR_JSON,
                          BSON_JSON_ERROR_READ_CORRUPT_JS);
 
-   b = bson_new_from_json ("1", 1, NULL);
+   b = bson_new_from_json ((uint8_t *)"1", 1, NULL);
    assert (!b);
 
-   b = bson_new_from_json ("*", 1, NULL);
+   b = bson_new_from_json ((uint8_t *)"*", 1, NULL);
    assert (!b);
 
-   b = bson_new_from_json ("", 0, NULL);
+   b = bson_new_from_json ((uint8_t *)"", 0, NULL);
    assert (!b);
 
-   b = bson_new_from_json ("asdfasdf", 0, NULL);
+   b = bson_new_from_json ((uint8_t *)"asdfasdf", -1, NULL);
    assert (!b);
 
-   b = bson_new_from_json ("{\"a\":*}", 0, NULL);
+   b = bson_new_from_json ((uint8_t *)"{\"a\":*}", -1, NULL);
    assert (!b);
 }
 

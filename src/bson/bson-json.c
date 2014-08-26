@@ -262,6 +262,10 @@ static yajl_alloc_funcs gYajlAllocFuncs = {
       _bson_json_read_set_error (reader, "Invalid read of %s in state %d", \
                                  (_type), bson->read_state); \
       return 0; \
+   } else if (! key) { \
+      _bson_json_read_set_error (reader, "Invalid read of %s without key in state %d", \
+                                 (_type), bson->read_state); \
+      return 0; \
    }
 #define HANDLE_OPTION(_key, _type, _state) \
    (len == strlen (_key) && strncmp ((const char *)val, (_key), len) == 0) { \
@@ -420,11 +424,8 @@ _bson_json_read_integer (void    *_ctx, /* IN */
    bs = bson->bson_state;
 
    if (rs == BSON_JSON_REGULAR) {
-      if (!key) {
-         _bson_json_read_set_error (reader,
-                                    "Missing key for JSON number.");
-         return 0;
-      }
+      BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL ("integer");
+
       if (val <= INT32_MAX) {
          bson_append_int32 (STACK_BSON_CHILD, key, (int)len, (int)val);
       } else {
@@ -503,6 +504,7 @@ _bson_json_read_string (void                *_ctx, /* IN */
    bs = bson->bson_state;
 
    if (rs == BSON_JSON_REGULAR) {
+      BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL ("string");
       bson_append_utf8 (STACK_BSON_CHILD, key, (int)len, (const char *)val, (int)vlen);
    } else if (rs == BSON_JSON_IN_BSON_TYPE || rs ==
               BSON_JSON_IN_BSON_TYPE_TIMESTAMP_VALUES) {
@@ -933,7 +935,11 @@ _bson_json_read_end_array (void *_ctx) /* IN */
    bson_json_reader_t *reader = (bson_json_reader_t *)_ctx;
    bson_json_reader_bson_t *bson = &reader->bson;
 
-   BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL ("]");
+   if (bson->read_state != BSON_JSON_REGULAR) {
+      _bson_json_read_set_error (reader, "Invalid read of %s in state %d",
+                                 "]", bson->read_state);
+      return 0;
+   }
 
    STACK_POP_ARRAY (bson_append_array_end (STACK_BSON_PARENT,
                                            STACK_BSON_CHILD));
