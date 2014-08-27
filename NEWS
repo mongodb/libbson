@@ -1,3 +1,48 @@
+Libbson 1.0.0
+=============
+
+It is my very distinct pleasure to announce to you the release of
+Libbson-1.0.0!
+
+This is the culmination of just over a year of work and could not have been
+done without the help of our wonderful community.
+
+Thanks to everyone who contributed to the development of Libbson!
+
+ * Christian Hergert
+ * Jason Carey
+ * Jose Sebastian Battig
+ * Maxim Zakharov
+ * Jérôme Lebel
+ * Itay Neeman
+ * Mike Manilone
+ * Michael Kuhn
+ * Kyle Suarez
+ * Josh Blum
+ * Jason Choy
+ * mntmnt7@gmail.com
+ * Tyler Brock
+ * Stefan Kaes
+ * Paul Melnikow
+ * Matt Cotter
+ * Gary J. Murakami
+ * Toon Schoenmakers
+ * Máximo Cuadros
+ * Michael Whittaker
+ * Kota Yamaguchi
+ * Justin Case
+ * Jeff Yemin
+ * Ivan Suvorov
+ * Hannes Magnusson
+ * Eric Daniels
+ * Anil Kumar
+ * A. Jesse Jiryu Davis
+
+Happy Hacking!
+
+-- Christian Hergert
+
+
 Libbson 0.98.0
 ==============
 
