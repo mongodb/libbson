@@ -218,26 +218,29 @@ static yajl_alloc_funcs gYajlAllocFuncs = {
 #define STACK_PUSH_ARRAY(statement) \
    do { \
       if (bson->n >= (STACK_MAX - 1)) { return 0; } \
-      if (bson->n == -1) { return 0; } \
       bson->n++; \
       STACK_I = 0; \
       STACK_IS_ARRAY = 1; \
-      statement; \
+      if (bson->n != 0) { \
+         statement; \
+      } \
    } while (0)
 #define STACK_PUSH_DOC(statement) \
    do { \
       if (bson->n >= (STACK_MAX - 1)) { return 0; } \
       bson->n++; \
+      STACK_IS_ARRAY = 0; \
       if (bson->n != 0) { \
-         STACK_IS_ARRAY = 0; \
          statement; \
       } \
    } while (0)
 #define STACK_POP_ARRAY(statement) \
    do { \
       if (!STACK_IS_ARRAY) { return 0; } \
-      if (bson->n <= 0) { return 0; } \
-      statement; \
+      if (bson->n < 0) { return 0; } \
+      if (bson->n > 0) { \
+         statement; \
+      } \
       bson->n--; \
    } while (0)
 #define STACK_POP_DOC(statement) \
@@ -348,7 +351,7 @@ _bson_json_read_fixup_key (bson_json_reader_bson_t *bson) /* IN */
 {
    BSON_ASSERT (bson);
 
-   if (bson->n > 0 && STACK_IS_ARRAY) {
+   if (bson->n >= 0 && STACK_IS_ARRAY) {
       _bson_json_buf_ensure (&bson->key_buf, 12);
       bson->key_buf.len = bson_uint32_to_string (STACK_I, &bson->key,
                                                  (char *)bson->key_buf.buf, 12);
@@ -919,11 +922,23 @@ _bson_json_read_end_map (void *_ctx) /* IN */
 static int
 _bson_json_read_start_array (void *_ctx) /* IN */
 {
-   BASIC_YAJL_CB_PREAMBLE;
-   BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL ("[");
+   const char *key;
+   size_t len;
+   bson_json_reader_t *reader = (bson_json_reader_t *)_ctx;
+   bson_json_reader_bson_t *bson = &reader->bson;
 
-   STACK_PUSH_ARRAY (bson_append_array_begin (STACK_BSON_PARENT, key, (int)len,
-                                              STACK_BSON_CHILD));
+   if (bson->n < 0) {
+      STACK_PUSH_ARRAY ();
+   } else {
+      _bson_json_read_fixup_key (bson);
+      key = bson->key;
+      len = bson->key_buf.len;
+
+      BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL ("[");
+
+      STACK_PUSH_ARRAY (bson_append_array_begin (STACK_BSON_PARENT, key, (int)len,
+                                                 STACK_BSON_CHILD));
+   }
 
    return 1;
 }
@@ -943,6 +958,10 @@ _bson_json_read_end_array (void *_ctx) /* IN */
 
    STACK_POP_ARRAY (bson_append_array_end (STACK_BSON_PARENT,
                                            STACK_BSON_CHILD));
+   if (bson->n == -1) {
+      bson->read_state = BSON_JSON_DONE;
+      return 0;
+   }
 
    return 1;
 }
