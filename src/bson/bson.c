@@ -2026,7 +2026,7 @@ bson_copy_to (const bson_t *src,
    }
 
    data = _bson_data (src);
-   len = bson_next_power_of_two ((size_t)src->len);
+   len = (uint32_t)bson_next_power_of_two ((size_t)src->len);
 
    adst = (bson_impl_alloc_t *)dst;
    adst->flags = BSON_FLAG_STATIC;
@@ -2240,7 +2240,7 @@ bson_compare (const bson_t *bson,
    ret = memcmp (data1, data2, MIN (len1, len2));
 
    if (ret == 0) {
-      return len1 - len2;
+      return (int)(len1 - len2);
    }
 
    return ret;
