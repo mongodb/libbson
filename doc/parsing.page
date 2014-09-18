@@ -17,7 +17,7 @@ if (!b) {
 
 bson_destroy (b);]]></code></example>
 
-  <p>Only two checks are performed when creating a new <link xref="bson_t">bson_t</link> from an existing buffer. First, the document must begin with the buffer lenght, matching what was expected by the caller. Second, the document must end with the expected trailing <code>\0</code> byte.</p>
+  <p>Only two checks are performed when creating a new <link xref="bson_t">bson_t</link> from an existing buffer. First, the document must begin with the buffer length, matching what was expected by the caller. Second, the document must end with the expected trailing <code>\0</code> byte.</p>
   <p>To parse the document further we use a <link xref="bson_iter_t">bson_iter_t</link> to iterate the elements within the document. Let's print all of the field names in the document.</p>
 
   <example><code mime="text/x-csrc"><![CDATA[bson_t *b;

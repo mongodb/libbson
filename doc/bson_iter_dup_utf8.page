@@ -22,7 +22,7 @@ bson_iter_dup_utf8 (const bson_iter_t *iter,
     <title>Parameters</title>
     <table>
       <tr><td><p>iter</p></td><td><p>A <link xref="bson_iter_t">bson_iter_t</link>.</p></td></tr>
-      <tr><td><p>length</p></td><td><p>An optional location for the lenght of the UTF-8 encoded string.</p></td></tr>
+      <tr><td><p>length</p></td><td><p>An optional location for the length of the UTF-8 encoded string.</p></td></tr>
     </table>
   </section>
 
