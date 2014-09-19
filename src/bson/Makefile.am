@@ -39,8 +39,10 @@ NOINST_H_FILES = \
 	src/bson/b64_ntop.h \
 	src/bson/b64_pton.h \
 	src/bson/bson-private.h \
+	src/bson/bson-iso8601-private.h \
 	src/bson/bson-context-private.h \
-	src/bson/bson-thread-private.h
+	src/bson/bson-thread-private.h \
+	src/bson/bson-timegm-private.h
 
 
 libbson_la_CPPFLAGS = \
@@ -71,6 +73,7 @@ libbson_la_SOURCES = \
 	src/bson/bson-context.c \
 	src/bson/bson-error.c \
 	src/bson/bson-iter.c \
+	src/bson/bson-iso8601.c \
 	src/bson/bson-json.c \
 	src/bson/bson-keys.c \
 	src/bson/bson-md5.c \
@@ -78,6 +81,7 @@ libbson_la_SOURCES = \
 	src/bson/bson-oid.c \
 	src/bson/bson-reader.c \
 	src/bson/bson-string.c \
+	src/bson/bson-timegm.c \
 	src/bson/bson-utf8.c \
 	src/bson/bson-value.c \
 	src/bson/bson-version.c \

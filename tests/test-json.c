@@ -529,6 +529,59 @@ test_bson_json_array (void)
 }
 
 static void
+test_bson_json_date_check (bool        should_work,
+                           const char *json,
+                           int64_t     value)
+{
+   bson_error_t error = { 0 };
+   bson_t b, compare;
+   bool r;
+
+   if (should_work) {
+      bson_init (&compare);
+
+      BSON_APPEND_DATE_TIME (&compare, "dt", value);
+
+      r = bson_init_from_json (&b, json, -1, &error);
+
+      if (!r) { fprintf (stderr, "%s\n", error.message); }
+
+      assert (r);
+
+      bson_eq_bson (&b, &compare);
+      bson_destroy (&compare);
+      bson_destroy (&b);
+   } else {
+      r = bson_init_from_json (&b, json, -1, &error);
+
+      if (r) { fprintf (stderr, "parsing %s should fail\n", json); }
+
+      assert (!r);
+   }
+}
+
+static void
+test_bson_json_date (void)
+{
+   test_bson_json_date_check (true,
+                              "{ \"dt\" : { \"$date\" : \"1970-01-01T00:00:00.000Z\" } }",
+                              0);
+   test_bson_json_date_check (true,
+                              "{ \"dt\" : { \"$date\" : \"1969-12-31T16:00:00.000-0800\" } }",
+                              0);
+   test_bson_json_date_check (true,
+                              "{ \"dt\" : { \"$date\" : -62135593139000 } }",
+                              -62135593139000);
+   test_bson_json_date_check (true,
+                              "{ \"dt\" : { \"$date\" : { \"$numberLong\" : \"-62135593139000\" } } }",
+                              -62135593139000);
+
+   test_bson_json_date_check (false,
+                              "{ \"dt\" : { \"$date\" : \"1970-01-01T01:00:00.000+01:00\" } }",
+                              0);
+}
+
+static void
 test_bson_array_as_json (void)
 {
    bson_t d = BSON_INITIALIZER;
@@ -589,6 +642,7 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/json/read", test_bson_json_read);
    TestSuite_Add (suite, "/bson/json/inc", test_bson_json_inc);
    TestSuite_Add (suite, "/bson/json/array", test_bson_json_array);
+   TestSuite_Add (suite, "/bson/json/date", test_bson_json_date);
    TestSuite_Add (suite, "/bson/json/read/missing_complex", test_bson_json_read_missing_complex);
    TestSuite_Add (suite, "/bson/json/read/invalid_json", test_bson_json_read_invalid_json);
    TestSuite_Add (suite, "/bson/json/read/bad_cb", test_bson_json_read_bad_cb);

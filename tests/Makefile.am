@@ -11,6 +11,7 @@ test_libbson_SOURCES = \
 	tests/test-endian.c \
 	tests/test-clock.c \
 	tests/test-error.c \
+	tests/test-iso8601.c \
 	tests/test-iter.c \
 	tests/test-json.c \
 	tests/test-oid.c \
@@ -32,7 +33,8 @@ test_libbson_CPPFLAGS = \
 
 test_libbson_LDADD = \
 	$(PTHREAD_LIBS) \
-	libbson-1.0.la
+	libbson-1.0.la \
+	libbson.la
 
 
 if ENABLE_PYTHON
