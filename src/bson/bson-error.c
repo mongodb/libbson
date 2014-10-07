@@ -112,7 +112,7 @@ bson_strerror_r (int     err_code,  /* IN */
       ret = buf;
    }
 #else /* XSI strerror_r */
-   if (strerror_r (err_code, buf, buflen) != 0) {
+   if (strerror_r (err_code, buf, buflen) == 0) {
       ret = buf;
    }
 #endif
