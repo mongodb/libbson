@@ -2076,8 +2076,6 @@ _bson_copy_to_excluding_va (const bson_t *src,
 {
    bson_iter_t iter;
 
-   bson_init (dst);
-
    if (bson_iter_init (&iter, src)) {
       while (bson_iter_next (&iter)) {
          if (!should_ignore (first_exclude, args, bson_iter_key (&iter))) {
