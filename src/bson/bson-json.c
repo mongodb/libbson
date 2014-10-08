@@ -936,7 +936,7 @@ _bson_json_read_start_array (void *_ctx) /* IN */
 
       BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL ("[");
 
-      STACK_PUSH_ARRAY (bson_append_array_begin (STACK_BSON_PARENT, key, (int)len,
+      STACK_PUSH_ARRAY (bson_append_array_begin (STACK_BSON_PARENT, key, len,
                                                  STACK_BSON_CHILD));
    }
 
@@ -1323,7 +1323,7 @@ _bson_json_reader_handle_fd_destroy (void *handle) /* IN */
 static ssize_t
 _bson_json_reader_handle_fd_read (void    *handle, /* IN */
                                   uint8_t *buf,    /* IN */
-                                  size_t   len)   /* IN */
+                                  size_t   len)    /* IN */
 {
    bson_json_reader_handle_fd_t *fd = handle;
    ssize_t ret = -1;

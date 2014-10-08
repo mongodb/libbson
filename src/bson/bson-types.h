@@ -513,7 +513,7 @@ bson_next_power_of_two (size_t v)
 
 
 static BSON_INLINE bool
-bson_is_power_of_two (uint32_t v)
+bson_is_power_of_two (size_t v)
 {
    return ((v != 0) && ((v & (v - 1)) == 0));
 }
