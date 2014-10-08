@@ -1122,7 +1122,7 @@ test_bson_copy_to (void)
 
 
 static void
-test_bson_copy_to_excluding (void)
+test_bson_copy_to_excluding_noinit (void)
 {
    bson_iter_t iter;
    bool r;
@@ -1134,7 +1134,8 @@ test_bson_copy_to_excluding (void)
    bson_append_int32(&b, "a", 1, 1);
    bson_append_int32(&b, "b", 1, 2);
 
-   bson_copy_to_excluding(&b, &c, "b", NULL);
+   bson_init(&c);
+   bson_copy_to_excluding_noinit(&b, &c, "b", NULL);
    r = bson_iter_init_find(&iter, &c, "a");
    assert(r);
    r = bson_iter_init_find(&iter, &c, "b");
@@ -1454,7 +1455,7 @@ test_bson_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/count", test_bson_count_keys);
    TestSuite_Add (suite, "/bson/copy", test_bson_copy);
    TestSuite_Add (suite, "/bson/copy_to", test_bson_copy_to);
-   TestSuite_Add (suite, "/bson/copy_to_excluding", test_bson_copy_to_excluding);
+   TestSuite_Add (suite, "/bson/copy_to_excluding_noinit", test_bson_copy_to_excluding_noinit);
    TestSuite_Add (suite, "/bson/initializer", test_bson_initializer);
    TestSuite_Add (suite, "/bson/concat", test_bson_concat);
    TestSuite_Add (suite, "/bson/reinit", test_bson_reinit);
