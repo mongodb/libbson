@@ -180,5 +180,5 @@ b64_ntop (uint8_t const *src,
       return -1;
    }
    target[datalength] = '\0'; /* Returned value doesn't count \0. */
-   return (int)datalength;
+   return datalength;
 }
