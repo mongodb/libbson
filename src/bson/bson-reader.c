@@ -799,7 +799,8 @@ bson_reader_t *
 bson_reader_new_from_file (const char   *path,  /* IN */
                            bson_error_t *error) /* OUT */
 {
-   char errmsg[32];
+   char errmsg_buf[32];
+   char *errmsg;
    int fd;
 
    bson_return_val_if_fail (path, NULL);
@@ -813,7 +814,7 @@ bson_reader_new_from_file (const char   *path,  /* IN */
 #endif
 
    if (fd == -1) {
-      bson_strerror_r (errno, errmsg, sizeof errmsg);
+      errmsg = bson_strerror_r (errno, errmsg_buf, sizeof errmsg_buf);
       bson_set_error (error,
                       BSON_ERROR_READER,
                       BSON_ERROR_READER_BADFD,
