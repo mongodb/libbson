@@ -1134,6 +1134,7 @@ test_bson_copy_to_excluding (void)
    bson_append_int32(&b, "a", 1, 1);
    bson_append_int32(&b, "b", 1, 2);
 
+   bson_init(&c);
    bson_copy_to_excluding(&b, &c, "b", NULL);
    r = bson_iter_init_find(&iter, &c, "a");
    assert(r);
