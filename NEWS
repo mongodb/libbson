@@ -1,3 +1,28 @@
+Libbson 1.0.2
+=============
+
+It is my pleasure to announce to you the release of Libbson-1.0.2.
+
+This release is a minor point release with no ABI changes and mostly small
+bugfixes.
+
+Changes include:
+ * bson_init_from_json supports top level arrays
+ * fixes for bson_strerror_r
+ * fix for timeouts on OS X
+ * house cleaning for various integer types
+
+Thanks to everyone who contributed to the development of this point release for
+Libbson.
+
+ * Adam Midvidy
+ * Christian Hergert
+ * Jason Carey
+ * Jérôme Lebel
+ * Tyler Brock
+
+-- Jason Carey
+
 Libbson 1.0.0
 =============
 
