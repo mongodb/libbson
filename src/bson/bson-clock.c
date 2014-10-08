@@ -128,8 +128,10 @@ bson_get_monotonic_time (void)
    static double ratio = 0.0;
 
    if (!info.denom) {
+      // the value from mach_absolute_time () * info.numer / info.denom
+      // is in nano seconds. So we have to divid by 1000.0 to get micro seconds
       mach_timebase_info (&info);
-      ratio = info.numer / info.denom;
+      ratio = (double)info.numer / (double)info.denom / 1000.0;
    }
 
    return mach_absolute_time () * ratio;
