@@ -1405,7 +1405,7 @@ bson_json_reader_t *
 bson_json_reader_new_from_file (const char   *path,  /* IN */
                                 bson_error_t *error) /* OUT */
 {
-   char errmsg_buf[32];
+   char errmsg_buf[BSON_ERROR_BUFFER_SIZE];
    char *errmsg;
    int fd = -1;
 
