@@ -196,7 +196,7 @@ bson_utf8_validate (const char *utf8,       /* IN */
        */
       switch (seq_length) {
       case 1:
-         if ((c >= 0x0000) && (c <= 0x007F)) {
+         if (c <= 0x007F) {
             continue;
          }
          return false;
