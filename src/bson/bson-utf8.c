@@ -122,8 +122,8 @@ bson_utf8_validate (const char *utf8,       /* IN */
    bson_unichar_t c;
    uint8_t first_mask;
    uint8_t seq_length;
-   unsigned i;
-   unsigned j;
+   size_t i;
+   size_t j;
 
    bson_return_val_if_fail (utf8, false);
 
@@ -418,7 +418,7 @@ void
 bson_utf8_from_unichar (
       bson_unichar_t  unichar,                               /* IN */
       char            utf8[BSON_ENSURE_ARRAY_PARAM_SIZE(6)], /* OUT */
-      uint32_t       *len)                                   /* OUT */
+      size_t         *len)                                   /* OUT */
 {
    bson_return_if_fail (utf8);
    bson_return_if_fail (len);

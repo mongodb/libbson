@@ -36,8 +36,8 @@ BSON_BEGIN_DECLS
 typedef struct
 {
    char     *str;
-   uint32_t  len;
-   uint32_t  alloc;
+   size_t    len;
+   size_t    alloc;
 } bson_string_t;
 
 
@@ -54,7 +54,7 @@ void           bson_string_append_printf  (bson_string_t   *string,
                                            const char      *format,
                                            ...) BSON_GNUC_PRINTF (2, 3);
 void           bson_string_truncate       (bson_string_t  *string,
-                                           uint32_t        len);
+                                           size_t          len);
 char          *bson_strdup                (const char     *str);
 char          *bson_strdup_printf         (const char     *format,
                                            ...) BSON_GNUC_PRINTF (1, 2);

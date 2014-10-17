@@ -63,7 +63,7 @@ bson_string_new (const char *str) /* IN */
    ret->alloc = ret->len + 1;
 
    if (!bson_is_power_of_two (ret->alloc)) {
-      ret->alloc = bson_next_power_of_two ((size_t)ret->alloc);
+      ret->alloc = bson_next_power_of_two (ret->alloc);
    }
 
    BSON_ASSERT (ret->alloc >= 1);
@@ -141,17 +141,17 @@ void
 bson_string_append (bson_string_t *string, /* IN */
                     const char    *str)    /* IN */
 {
-   uint32_t len;
+   size_t len;
 
    bson_return_if_fail (string);
    bson_return_if_fail (str);
 
-   len = (uint32_t)strlen (str);
+   len = strlen (str);
 
    if ((string->alloc - string->len - 1) < len) {
       string->alloc += len;
       if (!bson_is_power_of_two (string->alloc)) {
-         string->alloc = bson_next_power_of_two ((size_t)string->alloc);
+         string->alloc = bson_next_power_of_two (string->alloc);
       }
       string->str = bson_realloc (string->str, string->alloc);
    }
@@ -221,7 +221,7 @@ void
 bson_string_append_unichar (bson_string_t  *string,  /* IN */
                             bson_unichar_t  unichar) /* IN */
 {
-   uint32_t len;
+   size_t len;
    char str [8];
 
    BSON_ASSERT (string);
@@ -292,9 +292,9 @@ bson_string_append_printf (bson_string_t *string,
 
 void
 bson_string_truncate (bson_string_t *string, /* IN */
-                      uint32_t       len)    /* IN */
+                      size_t         len)    /* IN */
 {
-   uint32_t alloc;
+   size_t alloc;
 
    bson_return_if_fail (string);
    bson_return_if_fail (len < INT_MAX);
@@ -306,7 +306,7 @@ bson_string_truncate (bson_string_t *string, /* IN */
    }
 
    if (!bson_is_power_of_two (alloc)) {
-      alloc = bson_next_power_of_two ((size_t)alloc);
+      alloc = bson_next_power_of_two (alloc);
    }
 
    string->str = bson_realloc (string->str, alloc);
