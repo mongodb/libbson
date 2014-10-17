@@ -105,6 +105,10 @@ BSON_BEGIN_DECLS
 # include <inttypes.h>
 #endif
 
+#if defined(__MINGW32__) && ! defined(INIT_ONCE_STATIC_INIT)
+# define INIT_ONCE_STATIC_INIT RTL_RUN_ONCE_INIT
+typedef RTL_RUN_ONCE INIT_ONCE;
+#endif
 
 #ifdef BSON_HAVE_STDBOOL_H
 # include <stdbool.h>
