@@ -200,7 +200,7 @@ typedef enum
    BCON_TYPE_RAW,
    BCON_TYPE_SKIP,
    BCON_TYPE_ITER,
-   BCON_TYPE_ERROR,
+   BCON_TYPE_ERROR
 } bcon_type_t;
 
 typedef struct bcon_append_ctx_frame
