@@ -149,6 +149,7 @@ static const bson_visitor_t bson_metrics_visitors = {
    NULL, /* visit_int64 */
    NULL, /* visit_maxkey */
    NULL, /* visit_minkey */
+   NULL  /* padding */
 };
 
 static bool
@@ -254,7 +255,13 @@ main (int   argc,
       mark = 0;
       while ((b = bson_reader_read (reader, NULL))) {
         off_t pos = bson_reader_tell(reader);
-        state.doc_size_max = MAX(pos - mark, state.doc_size_max);
+        off_t new_off = pos - mark;
+
+        if(new_off < 0)
+                state.doc_size_max = 0;
+        else
+                state.doc_size_max = MAX((uint64_t)new_off, state.doc_size_max);
+
         mark = pos;
         bson_metrics(b, NULL, &state);
       }
@@ -271,18 +278,18 @@ main (int   argc,
       printf("    \"docs_per_sec\": %"PRIu64",\n", (uint64_t)round(state.doc_count/dtime_delta));
       printf("    \"docs\": %"PRIu64",\n", state.doc_count);
       printf("    \"elements\": %"PRIu64",\n", state.element_count);
-      printf("    \"elements_per_doc\": %"PRIu64",\n", (uint64_t)round((double)state.element_count/(double)MAX(state.doc_count, 1)));
+      printf("    \"elements_per_doc\": %"PRIu64",\n", (uint64_t)round((double)state.element_count/(double)MAX(state.doc_count, (uint32_t)1)));
       printf("    \"aggregates\": %"PRIu64",\n", aggregate_count);
-      printf("    \"aggregates_per_doc\": %"PRIu64",\n", (uint64_t)round((double)aggregate_count/(double)MAX(state.doc_count, 1)));
-      printf("    \"degree\": %"PRIu64",\n", (uint64_t)round((double)state.element_count/((double)MAX(state.doc_count + aggregate_count, 1))));
+      printf("    \"aggregates_per_doc\": %"PRIu64",\n", (uint64_t)round((double)aggregate_count/(double)MAX(state.doc_count, (uint32_t)1)));
+      printf("    \"degree\": %"PRIu64",\n", (uint64_t)round((double)state.element_count/((double)MAX(state.doc_count + aggregate_count, (uint32_t)1))));
       printf("    \"doc_size_max\": %"PRIu64",\n", state.doc_size_max);
-      printf("    \"doc_size_average\": %"PRIu64",\n", (uint64_t)round((double)bson_reader_tell(reader)/(double)MAX(state.doc_count, 1)));
-      printf("    \"key_size_average\": %"PRIu64",\n", (uint64_t)round((double)state.key_size_tally/(double)MAX(state.element_count, 1)));
-      printf("    \"string_size_average\": %"PRIu64",\n", (uint64_t)round((double)state.utf8_size_tally/(double)MAX(state.bson_type_metrics[BSON_TYPE_UTF8].count, 1)));
+      printf("    \"doc_size_average\": %"PRIu64",\n", (uint64_t)round((double)bson_reader_tell(reader)/(double)MAX(state.doc_count, (uint32_t)1)));
+      printf("    \"key_size_average\": %"PRIu64",\n", (uint64_t)round((double)state.key_size_tally/(double)MAX(state.element_count, (uint32_t)1)));
+      printf("    \"string_size_average\": %"PRIu64",\n", (uint64_t)round((double)state.utf8_size_tally/(double)MAX(state.bson_type_metrics[BSON_TYPE_UTF8].count, (uint32_t)1)));
       printf("    \"percent_by_type\": {\n");
       for (j = 0; state.bson_type_metrics[j].count > 0; j++) {
         bson_type_metrics_t bson_type_metrics = state.bson_type_metrics[j];
-        printf("      \"%s\": %"PRIu64",\n", bson_type_metrics.description, (uint64_t)round((double)bson_type_metrics.count*100.0/(double)MAX(state.element_count, 1)));
+        printf("      \"%s\": %"PRIu64",\n", bson_type_metrics.description, (uint64_t)round((double)bson_type_metrics.count*100.0/(double)MAX(state.element_count, (uint32_t)1)));
       }
       printf("    }\n");
       printf("  }");
