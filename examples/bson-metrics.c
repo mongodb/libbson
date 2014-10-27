@@ -254,13 +254,17 @@ main (int   argc,
       dtime_before = dtimeofday();
       mark = 0;
       while ((b = bson_reader_read (reader, NULL))) {
-        off_t pos = bson_reader_tell(reader);
-        off_t new_off = pos - mark;
+        off_t pos, new_off;
 
-        if(new_off < 0)
+        pos = bson_reader_tell(reader);
+        new_off = pos - mark;
+
+        if (new_off < 0) {
                 state.doc_size_max = 0;
-        else
+        }
+        else {
                 state.doc_size_max = MAX((uint64_t)new_off, state.doc_size_max);
+        }
 
         mark = pos;
         bson_metrics(b, NULL, &state);

@@ -85,13 +85,12 @@
 
 char *strdup(const char *str)
 {
-    int n = strlen(str) + 1;
-    char *dup = malloc(n);
-    if(dup)
-    {
-        strcpy(dup, str);
-    }
-    return dup;
+   size_t n = strlen(str) + 1;
+   char *dup = bson_malloc(n);
+   if (dup) {
+      strcpy(dup, str);
+   }
+   return dup;
 }
 
 #if defined(_MSC_VER)
