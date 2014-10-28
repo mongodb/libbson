@@ -143,7 +143,7 @@ bson_get_monotonic_time (void)
 # warning "Monotonic clock is not yet supported on your platform."
    struct timeval tv;
 
-   bson_gettimeofday (&tv, NULL);
+   bson_gettimeofday (&tv);
    return (tv.tv_sec * 1000000UL) + tv.tv_usec;
 #endif
 }
