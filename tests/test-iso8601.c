@@ -127,7 +127,6 @@ test_bson_iso8601_invalid (void)
    test_date_should_fail ("-970-01-01T00:00:00.000Z");
 
    /* Out of range */
-   test_date_should_fail ("1970-01-01T00:00:60.000Z");
    test_date_should_fail ("1970-01-01T00:60:00.000Z");
    test_date_should_fail ("1970-01-01T24:00:00.000Z");
    test_date_should_fail ("1970-01-32T00:00:00.000Z");
