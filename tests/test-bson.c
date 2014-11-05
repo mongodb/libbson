@@ -732,6 +732,206 @@ test_bson_append_deep (void)
 
 
 static void
+test_bson_validate_dbref (void)
+{
+   size_t offset;
+   bson_t dbref, child, child2;
+
+   /* should fail, $ref without an $id */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_UTF8 (&child, "$ref", "foo");
+      bson_append_document_end (&dbref, &child);
+
+      assert (!bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should fail, $ref with non id field */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_UTF8 (&child, "$ref", "foo");
+      BSON_APPEND_UTF8 (&child, "extra", "field");
+      bson_append_document_end (&dbref, &child);
+
+      assert (!bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should fail, $ref with $id at the top */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_UTF8 (&dbref, "$ref", "foo");
+      BSON_APPEND_UTF8 (&dbref, "$id", "bar");
+
+      assert (!bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should fail, $ref with $id not first keys */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_UTF8 (&child, "extra", "field");
+      BSON_APPEND_UTF8 (&child, "$ref", "foo");
+      BSON_APPEND_UTF8 (&child, "$id", "bar");
+      bson_append_document_end (&dbref, &child);
+
+      assert (!bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should fail, $ref with $db */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_UTF8 (&child, "$ref", "foo");
+      BSON_APPEND_UTF8 (&child, "$db", "bar");
+      bson_append_document_end (&dbref, &child);
+
+      assert (!bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should fail, non-string $ref with $id */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_INT32 (&child, "$ref", 1);
+      BSON_APPEND_UTF8 (&child, "$id", "bar");
+      bson_append_document_end (&dbref, &child);
+
+      assert (!bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should fail, non-string $ref with nothing */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_INT32 (&child, "$ref", 1);
+      bson_append_document_end (&dbref, &child);
+
+      assert (!bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should fail, $ref with $id with non-string $db */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_UTF8 (&child, "$ref", "foo");
+      BSON_APPEND_UTF8 (&child, "$id", "bar");
+      BSON_APPEND_INT32 (&child, "$db", 1);
+      bson_append_document_end (&dbref, &child);
+
+      assert (!bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should fail, $ref with $id with non-string $db with stuff after */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_UTF8 (&child, "$ref", "foo");
+      BSON_APPEND_UTF8 (&child, "$id", "bar");
+      BSON_APPEND_INT32 (&child, "$db", 1);
+      BSON_APPEND_UTF8 (&child, "extra", "field");
+      bson_append_document_end (&dbref, &child);
+
+      assert (!bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should fail, $ref with $id with stuff, then $db */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_UTF8 (&child, "$ref", "foo");
+      BSON_APPEND_UTF8 (&child, "$id", "bar");
+      BSON_APPEND_UTF8 (&child, "extra", "field");
+      BSON_APPEND_UTF8 (&child, "$db", "baz");
+      bson_append_document_end (&dbref, &child);
+
+      assert (!bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should succeed, $ref with $id */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_UTF8 (&child, "$ref", "foo");
+      BSON_APPEND_UTF8 (&child, "$id", "bar");
+      bson_append_document_end (&dbref, &child);
+
+      assert (bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should succeed, $ref with nested dbref $id */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_UTF8 (&child, "$ref", "foo");
+      BSON_APPEND_DOCUMENT_BEGIN (&child, "$id", &child2);
+      BSON_APPEND_UTF8 (&child2, "$ref", "foo2");
+      BSON_APPEND_UTF8 (&child2, "$id", "bar2");
+      BSON_APPEND_UTF8 (&child2, "$db", "baz2");
+      bson_append_document_end (&child, &child2);
+      BSON_APPEND_UTF8 (&child, "$db", "baz");
+      bson_append_document_end (&dbref, &child);
+
+      assert (bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should succeed, $ref with $id and $db */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_UTF8 (&child, "$ref", "foo");
+      BSON_APPEND_UTF8 (&child, "$id", "bar");
+      BSON_APPEND_UTF8 (&child, "$db", "baz");
+      bson_append_document_end (&dbref, &child);
+
+      assert (bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
+   /* should succeed, $ref with $id and $db and trailing */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_UTF8 (&child, "$ref", "foo");
+      BSON_APPEND_UTF8 (&child, "$id", "bar");
+      BSON_APPEND_UTF8 (&child, "$db", "baz");
+      BSON_APPEND_UTF8 (&child, "extra", "field");
+      bson_append_document_end (&dbref, &child);
+
+      assert (bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+}
+
+
+static void
 test_bson_validate (void)
 {
    char filename[64];
@@ -1446,6 +1646,7 @@ test_bson_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/append_deep", test_bson_append_deep);
    TestSuite_Add (suite, "/bson/utf8_key", test_bson_utf8_key);
    TestSuite_Add (suite, "/bson/validate", test_bson_validate);
+   TestSuite_Add (suite, "/bson/validate/dbref", test_bson_validate_dbref);
    TestSuite_Add (suite, "/bson/new_1mm", test_bson_new_1mm);
    TestSuite_Add (suite, "/bson/init_1mm", test_bson_init_1mm);
    TestSuite_Add (suite, "/bson/build_child", test_bson_build_child);
