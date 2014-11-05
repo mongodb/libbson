@@ -29,6 +29,18 @@
 #endif
 
 
+typedef enum {
+   BSON_VALIDATE_PHASE_START,
+   BSON_VALIDATE_PHASE_TOP,
+   BSON_VALIDATE_PHASE_LF_REF_KEY,
+   BSON_VALIDATE_PHASE_LF_REF_UTF8,
+   BSON_VALIDATE_PHASE_LF_ID_KEY,
+   BSON_VALIDATE_PHASE_LF_DB_KEY,
+   BSON_VALIDATE_PHASE_LF_DB_UTF8,
+   BSON_VALIDATE_PHASE_NOT_DBREF,
+} bson_validate_phase_t;
+
+
 /*
  * Structures.
  */
@@ -36,6 +48,7 @@ typedef struct
 {
    bson_validate_flags_t flags;
    ssize_t               err_offset;
+   bson_validate_phase_t phase;
 } bson_validate_state_t;
 
 
@@ -2838,6 +2851,14 @@ _bson_iter_validate_utf8 (const bson_iter_t *iter,
       }
    }
 
+   if ((state->flags & BSON_VALIDATE_DOLLAR_KEYS)) {
+      if (state->phase == BSON_VALIDATE_PHASE_LF_REF_UTF8) {
+         state->phase = BSON_VALIDATE_PHASE_LF_ID_KEY;
+      } else if (state->phase == BSON_VALIDATE_PHASE_LF_DB_UTF8) {
+         state->phase = BSON_VALIDATE_PHASE_NOT_DBREF;
+      }
+   }
+
    return false;
 }
 
@@ -2861,8 +2882,26 @@ _bson_iter_validate_before (const bson_iter_t *iter,
 
    if ((state->flags & BSON_VALIDATE_DOLLAR_KEYS)) {
       if (key[0] == '$') {
+         if (state->phase == BSON_VALIDATE_PHASE_LF_REF_KEY &&
+             strcmp (key, "$ref") == 0) {
+            state->phase = BSON_VALIDATE_PHASE_LF_REF_UTF8;
+         } else if (state->phase == BSON_VALIDATE_PHASE_LF_ID_KEY &&
+                    strcmp (key, "$id") == 0) {
+            state->phase = BSON_VALIDATE_PHASE_LF_DB_KEY;
+         } else if (state->phase == BSON_VALIDATE_PHASE_LF_DB_KEY &&
+                    strcmp (key, "$db") == 0) {
+            state->phase = BSON_VALIDATE_PHASE_LF_DB_UTF8;
+         } else {
+            state->err_offset = iter->off;
+            return true;
+         }
+      } else if (state->phase == BSON_VALIDATE_PHASE_LF_ID_KEY ||
+                 state->phase == BSON_VALIDATE_PHASE_LF_REF_UTF8 ||
+                 state->phase == BSON_VALIDATE_PHASE_LF_DB_UTF8) {
          state->err_offset = iter->off;
          return true;
+      } else {
+         state->phase = BSON_VALIDATE_PHASE_NOT_DBREF;
       }
    }
 
@@ -2934,13 +2973,29 @@ _bson_iter_validate_document (const bson_iter_t *iter,
 {
    bson_validate_state_t *state = data;
    bson_iter_t child;
+   bson_validate_phase_t phase = state->phase;
 
    if (!bson_iter_init (&child, v_document)) {
       state->err_offset = iter->off;
       return true;
    }
 
+   if (state->phase == BSON_VALIDATE_PHASE_START) {
+      state->phase = BSON_VALIDATE_PHASE_TOP;
+   } else {
+      state->phase = BSON_VALIDATE_PHASE_LF_REF_KEY;
+   }
+
    bson_iter_visit_all (&child, &bson_validate_funcs, state);
+
+   if (state->phase == BSON_VALIDATE_PHASE_LF_ID_KEY ||
+       state->phase == BSON_VALIDATE_PHASE_LF_REF_UTF8 ||
+       state->phase == BSON_VALIDATE_PHASE_LF_DB_UTF8) {
+       state->err_offset = iter->off;
+       return true;
+   }
+
+   state->phase = phase;
 
    return false;
 }
@@ -2951,7 +3006,7 @@ bson_validate (const bson_t         *bson,
                bson_validate_flags_t flags,
                size_t               *offset)
 {
-   bson_validate_state_t state = { flags, -1 };
+   bson_validate_state_t state = { flags, -1, BSON_VALIDATE_PHASE_START };
    bson_iter_t iter;
 
    if (!bson_iter_init (&iter, bson)) {
