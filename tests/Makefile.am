@@ -62,6 +62,8 @@ if CAN_ABI_CHECK
 	@ $(srcdir)/tests/abicheck.sh "$(srcdir)/src/libbson.symbols"
 endif
 
+valgrind: $(TEST_PROGS)
+	$(LIBTOOL) --mode=execute valgrind --leak-check=full ./test-libbson -f -p
 
 DISTCLEANFILES += test.log
 
