@@ -854,6 +854,21 @@ test_bson_validate_dbref (void)
       bson_destroy (&dbref);
    }
 
+   /* should fail, $ref with $id with stuff, then $db */
+   {
+      bson_init (&dbref);
+      BSON_APPEND_DOCUMENT_BEGIN (&dbref, "dbref", &child);
+      BSON_APPEND_UTF8 (&child, "$ref", "foo");
+      BSON_APPEND_UTF8 (&child, "$id", "bar");
+      BSON_APPEND_UTF8 (&child, "extra", "field");
+      BSON_APPEND_UTF8 (&child, "$db", "baz");
+      bson_append_document_end (&dbref, &child);
+
+      assert (!bson_validate (&dbref, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+
+      bson_destroy (&dbref);
+   }
+
    /* should succeed, $ref with $id */
    {
       bson_init (&dbref);
