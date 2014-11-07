@@ -83,6 +83,7 @@ set (SOURCES
    ${SOURCE_DIR}/src/bson/bson-clock.c
    ${SOURCE_DIR}/src/bson/bson-context.c
    ${SOURCE_DIR}/src/bson/bson-error.c
+   ${SOURCE_DIR}/src/bson/bson-iso8601.c
    ${SOURCE_DIR}/src/bson/bson-iter.c
    ${SOURCE_DIR}/src/bson/bson-json.c
    ${SOURCE_DIR}/src/bson/bson-keys.c
@@ -176,6 +177,7 @@ add_executable(test-libbson
    ${SOURCE_DIR}/tests/test-endian.c
    ${SOURCE_DIR}/tests/test-clock.c
    ${SOURCE_DIR}/tests/test-error.c
+   ${SOURCE_DIR}/tests/test-iso8601.c
    ${SOURCE_DIR}/tests/test-iter.c
    ${SOURCE_DIR}/tests/test-json.c
    ${SOURCE_DIR}/tests/test-oid.c
@@ -188,7 +190,7 @@ add_executable(test-libbson
    ${SOURCE_DIR}/tests/test-bcon-extract.c
 )
 
-target_link_libraries(test-libbson bson_shared)
+target_link_libraries(test-libbson bson_static)
 add_test(NAME test-libbson COMMAND test-libbson)
 
 file(COPY ${SOURCE_DIR}/tests/binary DESTINATION ${PROJECT_BINARY_DIR}/tests)

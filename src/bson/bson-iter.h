@@ -15,13 +15,13 @@
  */
 
 
+#ifndef BSON_ITER_H
+#define BSON_ITER_H
+
+
 #if !defined (BSON_INSIDE) && !defined (BSON_COMPILATION)
 # error "Only <bson.h> can be included directly."
 #endif
-
-
-#ifndef BSON_ITER_H
-#define BSON_ITER_H
 
 
 #include "bson.h"

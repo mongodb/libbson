@@ -15,13 +15,13 @@
  */
 
 
+#ifndef BSON_CONTEXT_H
+#define BSON_CONTEXT_H
+
+
 #if !defined (BSON_INSIDE) && !defined (BSON_COMPILATION)
 # error "Only <bson.h> can be included directly."
 #endif
-
-
-#ifndef BSON_CONTEXT_H
-#define BSON_CONTEXT_H
 
 
 #include "bson-macros.h"

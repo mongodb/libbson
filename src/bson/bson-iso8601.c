@@ -141,8 +141,8 @@ _bson_iso8601_date_parse (const char *str,
 #ifdef BSON_OS_WIN32
    SYSTEMTIME win_sys_time;
    FILETIME win_file_time;
-   uint64_t win_time_offset;
-   uint64_t win_epoch_difference;
+   int64_t win_time_offset;
+   int64_t win_epoch_difference;
 #else
    struct tm posix_date = { 0 };
 #endif
@@ -290,7 +290,7 @@ _bson_iso8601_date_parse (const char *str,
    win_sys_time.wHour = hour;
    win_sys_time.wDay = day;
    win_sys_time.wDayOfWeek = -1;  /* ignored */
-   win_sys_time.wMonth = month;
+   win_sys_time.wMonth = month + 1;
    win_sys_time.wYear = year + 1900;
 
    /* the wDayOfWeek member of SYSTEMTIME is ignored by this function */
@@ -308,7 +308,7 @@ _bson_iso8601_date_parse (const char *str,
    /* There are 11644473600 seconds between the unix epoch and the windows epoch
     * 100-nanoseconds = milliseconds * 10000
     */
-   uint64_t win_epoch_difference = 11644473600000 * 10000;
+   win_epoch_difference = 11644473600000 * 10000;
 
    /* removes the diff between 1970 and 1601 */
    win_time_offset -= win_epoch_difference;
