@@ -1,3 +1,35 @@
+Libbson 1.1.0-rc0
+=================
+
+It is my pleasure to announce to you the release of Libbson-1.1.0-rc0.
+
+This release is a release candidate release with some ABI additions and bugfixes.
+
+ABI changes include:
+ * Deprecation of bson_copy_to_excluding
+ * Addition of bson_copy_to_excluding_noinit
+
+Other changes include:
+ * Addition of a versioned ABI for the libbson shared library
+ * fixed bson_get_monotonic_time fallback when a system monotonic clock can not
+   be found.  Formerly failed to compile with an incorrect call to
+   bson_gettimeofday
+ * Allow the "dbref" convention in bson_validate when BSON_VALIDATE_DOLLAR_KEYS
+   is present
+ * Support for ISO-8601 or $numberLong dates in bson <-> json parsing
+ * Quiet various compiler warnings
+
+Thanks to everyone who contributed to the development of this release candidate for
+Libbson.
+
+ * Adam Midvidy
+ * Daniel Colchete
+ * Ivan Suvorov
+ * Jason Carey
+ * Jérôme Lebel
+
+-- Jason Carey
+
 Libbson 1.0.2
 =============
 

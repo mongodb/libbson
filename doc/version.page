@@ -19,9 +19,9 @@
 #define BSON_CHECK_VERSION(major, minor, micro)
 
 #define BSON_MAJOR_VERSION 1
-#define BSON_MINOR_VERSION 0
-#define BSON_MICRO_VERSION 3
-#define BSON_VERSION_S     "1.0.3"
+#define BSON_MINOR_VERSION 1
+#define BSON_MICRO_VERSION 0
+#define BSON_VERSION_S     "1.1.0-rc0"
 
 #define BSON_VERSION_HEX (BSON_MAJOR_VERSION << 24 | \
                           BSON_MINOR_VERSION << 16 | \

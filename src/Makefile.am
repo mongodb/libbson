@@ -25,4 +25,5 @@ pkgconfig_DATA = $(top_builddir)/src/libbson-1.0.pc
 
 EXTRA_DIST += \
 	src/libbson.symbols \
+	build/autotools/versions.ldscript \
 	src/libbson-1.0.pc.in
