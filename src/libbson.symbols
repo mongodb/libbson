@@ -177,3 +177,5 @@ bson_writer_get_length
 bson_writer_new
 bson_writer_rollback
 bson_zero_free
+LIBBSON_1.0
+LIBBSON_1.1
