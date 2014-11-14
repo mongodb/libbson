@@ -287,7 +287,7 @@ test_bson_append_array (void)
 static void
 test_bson_append_binary (void)
 {
-   const static uint8_t binary[] = { '1', '2', '3', '4' };
+   static const uint8_t binary[] = { '1', '2', '3', '4' };
    bson_t *b;
    bson_t *b2;
 
@@ -303,7 +303,7 @@ test_bson_append_binary (void)
 static void
 test_bson_append_binary_deprecated (void)
 {
-   const static uint8_t binary[] = { '1', '2', '3', '4' };
+   static const uint8_t binary[] = { '1', '2', '3', '4' };
    bson_t *b;
    bson_t *b2;
 

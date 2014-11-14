@@ -69,10 +69,10 @@ typedef enum
    BSON_CONTEXT_NONE = 0,
    BSON_CONTEXT_THREAD_SAFE = (1 << 0),
    BSON_CONTEXT_DISABLE_HOST_CACHE = (1 << 1),
-   BSON_CONTEXT_DISABLE_PID_CACHE = (1 << 2),
 #if defined(__linux__)
    BSON_CONTEXT_USE_TASK_ID = (1 << 3),
 #endif
+   BSON_CONTEXT_DISABLE_PID_CACHE = (1 << 2)
 } bson_context_flags_t;
 
 
@@ -179,7 +179,7 @@ typedef enum
    BSON_VALIDATE_UTF8 = (1 << 0),
    BSON_VALIDATE_DOLLAR_KEYS = (1 << 1),
    BSON_VALIDATE_DOT_KEYS = (1 << 2),
-   BSON_VALIDATE_UTF8_ALLOW_NULL = (1 << 3),
+   BSON_VALIDATE_UTF8_ALLOW_NULL = (1 << 3)
 } bson_validate_flags_t;
 
 
@@ -211,7 +211,7 @@ typedef enum
    BSON_TYPE_TIMESTAMP = 0x11,
    BSON_TYPE_INT64 = 0x12,
    BSON_TYPE_MAXKEY = 0x7F,
-   BSON_TYPE_MINKEY = 0xFF,
+   BSON_TYPE_MINKEY = 0xFF
 } bson_type_t;
 
 
@@ -229,7 +229,7 @@ typedef enum
    BSON_SUBTYPE_UUID_DEPRECATED = 0x03,
    BSON_SUBTYPE_UUID = 0x04,
    BSON_SUBTYPE_MD5 = 0x05,
-   BSON_SUBTYPE_USER = 0x80,
+   BSON_SUBTYPE_USER = 0x80
 } bson_subtype_t;
 
 

@@ -73,7 +73,6 @@
 #  define Mutex_Destroy           DeleteCriticalSection
 #  define Thread                  HANDLE
 #  define Thread_Join(_n)         WaitForSingleObject ((_n), INFINITE)
-#  define strdup _strdup
 #endif
 
 
@@ -84,6 +83,15 @@
 
 # define AtomicInt_DecrementAndTest(p) (bson_atomic_int_add(p, -1) == 0)
 
+char *strdup(const char *str)
+{
+   size_t n = strlen(str) + 1;
+   char *dup = bson_malloc(n);
+   if (dup) {
+      strcpy(dup, str);
+   }
+   return dup;
+}
 
 #if defined(_MSC_VER)
 struct timespec

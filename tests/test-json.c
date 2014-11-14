@@ -385,7 +385,7 @@ test_bson_json_read(void)
 
 static void
 test_bson_json_error (const char              *json,
-                      int                      domain,
+                      unsigned int             domain,
                       bson_json_error_code_t   code)
 {
    bson_error_t error;
