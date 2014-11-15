@@ -63,7 +63,7 @@ bson_string_new (const char *str) /* IN */
    ret->alloc = ret->len + 1;
 
    if (!bson_is_power_of_two (ret->alloc)) {
-      ret->alloc = bson_next_power_of_two ((size_t)ret->alloc);
+      ret->alloc = (uint32_t)bson_next_power_of_two ((size_t)ret->alloc);
    }
 
    BSON_ASSERT (ret->alloc >= 1);
@@ -151,7 +151,7 @@ bson_string_append (bson_string_t *string, /* IN */
    if ((string->alloc - string->len - 1) < len) {
       string->alloc += len;
       if (!bson_is_power_of_two (string->alloc)) {
-         string->alloc = bson_next_power_of_two ((size_t)string->alloc);
+         string->alloc = (uint32_t)bson_next_power_of_two ((size_t)string->alloc);
       }
       string->str = bson_realloc (string->str, string->alloc);
    }
@@ -306,7 +306,7 @@ bson_string_truncate (bson_string_t *string, /* IN */
    }
 
    if (!bson_is_power_of_two (alloc)) {
-      alloc = bson_next_power_of_two ((size_t)alloc);
+      alloc = (uint32_t)bson_next_power_of_two ((size_t)alloc);
    }
 
    string->str = bson_realloc (string->str, alloc);
