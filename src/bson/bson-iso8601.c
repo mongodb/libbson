@@ -18,6 +18,7 @@
 #include "bson-compat.h"
 #include "bson-macros.h"
 #include "bson-error.h"
+#include "bson-iso8601-private.h"
 
 #ifndef _WIN32
 # include "bson-timegm-private.h"
