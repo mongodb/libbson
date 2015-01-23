@@ -152,3 +152,6 @@ application.
 
 See the `doc/` directory for documentation on individual types.
 
+## Bug reports and Feature requests
+
+Please use [the MongoDB C Driver JIRA project](https://jira.mongodb.org/browse/CDRIVER) to report bugs or request features.
