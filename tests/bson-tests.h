@@ -96,7 +96,7 @@ bson_open (const char *filename,
             } \
          } \
          if (off == -1) { \
-            off = MAX ((expected)->len, (bson)->len) - 1; \
+            off = BSON_MAX ((expected)->len, (bson)->len) - 1; \
          } \
          fprintf (stderr, "bson objects unequal (byte %u):\n(%s)\n(%s)\n", \
                   off, bson_json, expected_json); \

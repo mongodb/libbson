@@ -1913,7 +1913,7 @@ bson_sized_new (size_t size)
       impl_a->buf = &impl_a->alloc;
       impl_a->buflen = &impl_a->alloclen;
       impl_a->offset = 0;
-      impl_a->alloclen = MAX (5, size);
+      impl_a->alloclen = BSON_MAX (5, size);
       impl_a->alloc = bson_malloc (impl_a->alloclen);
       impl_a->alloc[0] = 5;
       impl_a->alloc[1] = 0;
@@ -2267,7 +2267,7 @@ bson_compare (const bson_t *bson,
       return memcmp (data1, data2, len1);
    }
 
-   ret = memcmp (data1, data2, MIN (len1, len2));
+   ret = memcmp (data1, data2, BSON_MIN (len1, len2));
 
    if (ret == 0) {
       return len1 - len2;

@@ -1242,7 +1242,7 @@ _bson_json_data_reader_cb (void    *_ctx,
       return -1;
    }
 
-   bytes = MIN (len, ctx->len - ctx->bytes_parsed);
+   bytes = BSON_MIN (len, ctx->len - ctx->bytes_parsed);
 
    memcpy (buf, ctx->data + ctx->bytes_parsed, bytes);
 

@@ -127,7 +127,7 @@ assert_bson_equal (const bson_t *a,
    uint32_t i;
 
    if (!bson_equal(a, b)) {
-      for (i = 0; i < MAX(a->len, b->len); i++) {
+      for (i = 0; i < BSON_MAX(a->len, b->len); i++) {
          if (i >= a->len) {
             printf("a is too short len=%u\n", a->len);
             abort();

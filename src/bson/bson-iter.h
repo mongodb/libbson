@@ -116,7 +116,7 @@ bson_iter_utf8_len_unsafe (const bson_iter_t *iter)
 
    memcpy (&val, iter->raw + iter->d1, sizeof (val));
    val = BSON_UINT32_FROM_LE (val);
-   return MAX (0, val - 1);
+   return BSON_MAX (0, val - 1);
 }
 
 
