@@ -1,3 +1,46 @@
+Libbson 1.1.0
+=============
+
+It is my pleasure to announce to you the release of Libbson-1.1.0.
+
+This release is a stable release with some ABI additions and bugfixes.
+
+The below changes include the changes mentioned in the rc0.
+
+ABI/API changes include:
+ * RC0
+   * Deprecation of bson_copy_to_excluding
+   * Addition of bson_copy_to_excluding_noinit
+ * Removal of MIN, MAX and ABS macros in favor of BSON_MIN, BSON_MAX and
+   BSON_ABS.  Note this is a breaking source level change if you relied on
+   these from bson.h.  Also note that this is not a breaking ABI change.
+ * Addition of BSON_ERROR_BUFFER_SIZE macro
+
+Other changes include:
+ * RC0
+   * Addition of a versioned ABI for the libbson shared library
+   * fixed bson_get_monotonic_time fallback when a system monotonic clock can not
+     be found.  Formerly failed to compile with an incorrect call to
+     bson_gettimeofday
+   * Allow the "dbref" convention in bson_validate when BSON_VALIDATE_DOLLAR_KEYS
+     is present
+   * Support for ISO-8601 or $numberLong dates in bson <-> json parsing
+   * Quiet various compiler warnings
+
+Thanks to everyone who contributed to the development of this release candidate for
+Libbson.
+
+ * Adam Midvidy
+ * Christian Hergert
+ * Daniel Colchete
+ * Ivan Suvorov
+ * Hannes Magnusson
+ * Jason Carey
+ * Jérôme Lebel
+ * Samantha Ritter
+
+-- Jason Carey
+
 Libbson 1.1.0-rc0
 =================
 
