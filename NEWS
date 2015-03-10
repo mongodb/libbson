@@ -1,3 +1,14 @@
+Libbson 1.1.2
+=============
+
+It is my pleasure to announce to you the release of Libbson-1.1.2.
+
+This release is a minor patch release with one bug fix for mingw.
+
+* sscanf_s doesn't exist for mingw.
+
+-- Jason Carey
+
 Libbson 1.1.0
 =============
 
