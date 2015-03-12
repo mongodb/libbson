@@ -1,7 +1,10 @@
 m4_define([bson_major_version], [1])
 m4_define([bson_minor_version], [1])
 m4_define([bson_micro_version], [3])
-m4_define([bson_version], [bson_major_version.bson_minor_version.bson_micro_version])
+m4_define([bson_prerelease_version], [dev])
+
+#m4_define([bson_version], [bson_major_version.bson_minor_version.bson_micro_version])
+m4_define([bson_version], [bson_major_version.bson_minor_version.bson_micro_version-bson_prerelease_version])
 
 # bump up by 1 for every micro release with no API changes, otherwise
 # set to 0. after release, bump up by 1
