@@ -387,12 +387,13 @@ static BSON_INLINE void
 bson_iter_timeval_unsafe (const bson_iter_t *iter,
                           struct timeval    *tv)
 {
+   int64_t value = bson_iter_int64_unsafe (iter);
 #ifdef BSON_OS_WIN32
-   tv->tv_sec = (long)bson_iter_int64_unsafe (iter);
+   tv->tv_sec = (long) (value / 1000);
 #else
-   tv->tv_sec = (suseconds_t)bson_iter_int64_unsafe (iter);
+   tv->tv_sec = (suseconds_t) (value / 1000);
 #endif
-   tv->tv_usec = 0;
+   tv->tv_usec = (value % 1000) * 1000;
 }
 
 
