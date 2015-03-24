@@ -163,6 +163,26 @@ test_bson_iter_binary_deprecated (void)
 
 
 static void
+test_bson_iter_timeval (void)
+{
+   bson_iter_t iter;
+   bson_t * b;
+   struct timeval tv;
+
+   b = get_bson(BINARY_DIR"/test26.bson");
+   assert(b);
+
+   assert(bson_iter_init(&iter, b));
+   assert(bson_iter_next(&iter));
+   bson_iter_timeval(&iter, &tv);
+   assert(tv.tv_sec == 1234567890);
+   assert(tv.tv_usec == 0);
+
+   bson_destroy(b);
+}
+
+
+static void
 test_bson_iter_trailing_null (void)
 {
    bson_iter_t iter;
@@ -510,6 +530,7 @@ test_iter_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/iter/test_string", test_bson_iter_utf8);
    TestSuite_Add (suite, "/bson/iter/test_mixed", test_bson_iter_mixed);
    TestSuite_Add (suite, "/bson/iter/test_overflow", test_bson_iter_overflow);
+   TestSuite_Add (suite, "/bson/iter/test_timeval", test_bson_iter_timeval);
    TestSuite_Add (suite, "/bson/iter/test_trailing_null", test_bson_iter_trailing_null);
    TestSuite_Add (suite, "/bson/iter/test_fuzz", test_bson_iter_fuzz);
    TestSuite_Add (suite, "/bson/iter/test_regex", test_bson_iter_regex);
