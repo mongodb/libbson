@@ -288,7 +288,7 @@ bson_mem_set_vtable (const bson_mem_vtable_t *vtable)
 }
 
 void
-bson_mem_restore_vtable ()
+bson_mem_restore_vtable (void)
 {
    bson_mem_vtable_t vtable = {
       malloc,
