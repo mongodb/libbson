@@ -39,6 +39,7 @@ if (MSVC)
    set (BSON_HAVE_SNPRINTF 0)
    set (BSON_HAVE_STDBOOL_H 0)
    set (BSON_HAVE_STRNLEN 0)
+   set (BSON_EXTRA_ALIGN 1)
 else ()
    find_package (Threads)
 

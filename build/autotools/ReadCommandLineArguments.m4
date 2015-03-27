@@ -17,6 +17,17 @@ AC_ARG_ENABLE(optimizations,
     ])
 AC_MSG_RESULT([$enable_optimizations])
 
+AC_MSG_CHECKING([whether to enable extra alignment of types])
+AC_ARG_ENABLE(extra_align,
+    AC_HELP_STRING([--enable-extra-align], [turn on extra alignment of types.  This is required for the 1.0 ABI [default=yes]]),
+    [enable_extra_align=$enableval],
+    [enable_extra_align="yes"])
+AC_MSG_RESULT([$enable_extra_align])
+
+AS_IF([test "$enable_extra_align" = "yes"],
+      [AC_SUBST(BSON_EXTRA_ALIGN, 1)],
+      [AC_SUBST(BSON_EXTRA_ALIGN, 0)])
+
 AC_ARG_ENABLE(lto,
               AC_HELP_STRING([--enable-lto], [turn on link time optimizations [default=no]]),
               [enable_lto=$enableval],

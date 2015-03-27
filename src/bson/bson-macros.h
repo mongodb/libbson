@@ -116,16 +116,24 @@
 #  define BSON_ABS(a) (((a) < 0) ? ((a) * -1) : (a))
 #endif
 
+#define BSON_ALIGN_OF_PTR (sizeof(void *))
 
-#if defined(_MSC_VER)
-#  define BSON_ALIGNED_BEGIN(_N) __declspec (align (_N))
-#  define BSON_ALIGNED_END(_N)
-#elif defined(__SUNPRO_C)
-#  define BSON_ALIGNED_BEGIN(_N)
-#  define BSON_ALIGNED_END(_N) __attribute__((aligned (_N)))
+#ifdef BSON_EXTRA_ALIGN
+#  if defined(_MSC_VER)
+#    define BSON_ALIGNED_BEGIN(_N) __declspec (align (_N))
+#    define BSON_ALIGNED_END(_N)
+#  else
+#    define BSON_ALIGNED_BEGIN(_N)
+#    define BSON_ALIGNED_END(_N) __attribute__((aligned (_N)))
+#  endif
 #else
-#  define BSON_ALIGNED_BEGIN(_N)
-#  define BSON_ALIGNED_END(_N) __attribute__((aligned (_N)))
+#  if defined(_MSC_VER)
+#    define BSON_ALIGNED_BEGIN(_N) __declspec (align ((_N) > BSON_ALIGN_OF_PTR ? BSON_ALIGN_OF_PTR : (_N) ))
+#    define BSON_ALIGNED_END(_N)
+#  else
+#    define BSON_ALIGNED_BEGIN(_N)
+#    define BSON_ALIGNED_END(_N) __attribute__((aligned ((_N) > BSON_ALIGN_OF_PTR ? BSON_ALIGN_OF_PTR : (_N) )))
+#  endif
 #endif
 
 
