@@ -27,6 +27,7 @@ libbson was configured with the following options:
 
 Build configuration:
   Enable debugging (slow)                          : ${enable_debug}
+  Enable extra alignment (required for 1.0 ABI)    : ${enable_extra_align}
   Compile with debug symbols (slow)                : ${enable_debug_symbols}
   Enable GCC build optimization                    : ${enable_optimizations}
   Enable automatic binary hardening                : ${enable_hardening}
