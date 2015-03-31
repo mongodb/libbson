@@ -30,6 +30,4 @@ if test "$enable_optimizations" = "yes"; then
     if test "$c_compiler" = "gcc"; then
         CFLAGS="$CFLAGS -D_FORTIFY_SOURCE=2"
     fi
-else
-    CFLAGS="$CFLAGS -O0"
 fi
