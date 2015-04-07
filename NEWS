@@ -1,3 +1,18 @@
+Libbson 1.2.0-beta
+==================
+
+It is my pleasure to announce to you the beta of Libbson-1.2.0.
+
+This release adds the bson_mem_restore_vtable() function to undo the effect
+of bson_mem_set_vtable().
+
+Thanks to everyone who contributed to the development of this beta.
+
+ * Jason Carey
+ * Hannes Magnusson
+
+-- A. Jesse Jiryu Davis
+
 Libbson 1.1.4
 =============
 
