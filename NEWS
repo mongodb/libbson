@@ -1,3 +1,19 @@
+Libbson 1.1.4
+=============
+
+It is my pleasure to announce to you the release of Libbson-1.1.4.
+
+This release is a minor patch release with one bug fix for bson_iter_timeval
+
+Thanks to everyone who contributed to the development of this release candidate for
+Libbson.
+
+ * Jason Carey
+ * A. Jesse Jiryu Davis
+ * Vladimir Zidar
+
+-- Jason Carey
+
 Libbson 1.1.2
 =============
 
