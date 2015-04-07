@@ -1,6 +1,6 @@
 AC_OUTPUT
 
-if test $(( ${BSON_MINOR_VERSION} % 2 )) -eq 1; then
+if test -n "$BSON_PRERELEASE_VERSION"; then
 cat << EOF
  *** IMPORTANT *** 
 
