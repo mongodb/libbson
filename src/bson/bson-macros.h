@@ -116,7 +116,15 @@
 #  define BSON_ABS(a) (((a) < 0) ? ((a) * -1) : (a))
 #endif
 
-#define BSON_ALIGN_OF_PTR (sizeof(void *))
+#ifdef _MSC_VER
+#  ifdef _WIN64
+#    define BSON_ALIGN_OF_PTR 8
+#  else
+#    define BSON_ALIGN_OF_PTR 4
+#  endif
+#else
+#  define BSON_ALIGN_OF_PTR (sizeof(void *))
+#endif
 
 #ifdef BSON_EXTRA_ALIGN
 #  if defined(_MSC_VER)
