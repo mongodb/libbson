@@ -82,12 +82,6 @@
 #  define BSON_MIN(a, b) ( (std::min)(a, b) )
 #elif defined(_MSC_VER)
 #  define BSON_MIN(a, b) ((a) < (b) ? (a) : (b))
-#elif defined(__GNUC__)
-#  define BSON_MIN(a, b) ({     \
-                        __typeof__ (a)_a = (a); \
-                        __typeof__ (b)_b = (b); \
-                        _a < _b ? _a : _b;   \
-                     })
 #else
 #  define BSON_MIN(a,b) (((a) < (b)) ? (a) : (b))
 #endif
@@ -99,12 +93,6 @@
 #  define BSON_MAX(a, b) ( (std::max)(a, b) )
 #elif defined(_MSC_VER)
 #  define BSON_MAX(a, b) ((a) > (b) ? (a) : (b))
-#elif defined(__GNUC__)
-#  define BSON_MAX(a, b) ({     \
-                        __typeof__ (a)_a = (a); \
-                        __typeof__ (b)_b = (b); \
-                        _a > _b ? _a : _b;   \
-                     })
 #else
 #  define BSON_MAX(a, b) (((a) > (b)) ? (a) : (b))
 #endif
