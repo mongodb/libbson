@@ -76,6 +76,10 @@ include_directories("${PROJECT_BINARY_DIR}/src/bson")
 include_directories("${SOURCE_DIR}/src/bson")
 include_directories("${SOURCE_DIR}/src")
 
+if (APPLE)
+   cmake_policy(SET CMP0042 OLD)
+endif()
+
 set (SOURCES
    ${SOURCE_DIR}/src/bson/bcon.c
    ${SOURCE_DIR}/src/bson/bson.c
