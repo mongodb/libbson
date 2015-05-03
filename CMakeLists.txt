@@ -12,6 +12,7 @@ set (SOURCE_DIR "${PROJECT_SOURCE_DIR}/")
 set (BSON_MAJOR_VERSION 1)
 set (BSON_MINOR_VERSION 2)
 set (BSON_MICRO_VERSION 0)
+set (BSON_PRERELEASE_VERSION beta)
 set (BSON_API_VERSION 1.0)
 set (BSON_VERSION 1.2.0-beta)
 
@@ -76,6 +77,10 @@ configure_file (
 include_directories("${PROJECT_BINARY_DIR}/src/bson")
 include_directories("${SOURCE_DIR}/src/bson")
 include_directories("${SOURCE_DIR}/src")
+
+if (APPLE)
+   cmake_policy(SET CMP0042 OLD)
+endif()
 
 set (SOURCES
    ${SOURCE_DIR}/src/bson/bcon.c
