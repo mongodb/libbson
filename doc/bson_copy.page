@@ -20,18 +20,18 @@ bson_copy (const bson_t *bson);
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>bson</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
+      <tr><td><p>bson</p></td><td><p>A <code xref="bson_t">bson_t</code>.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_copy">bson_copy()</link> function shall copy the contents of a bson document into a new <link xref="bson_t">bson_t</link>.</p>
-    <p>The resulting <link xref="bson_t">bson_t</link> should be freed with <link xref="bson_destroy">bson_destroy()</link>.</p>
+    <p>The <code xref="bson_copy">bson_copy()</code> function shall copy the contents of a bson document into a new <code xref="bson_t">bson_t</code>.</p>
+    <p>The resulting <code xref="bson_t">bson_t</code> should be freed with <code xref="bson_destroy">bson_destroy()</code>.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>A newly allocated <link xref="bson_t">bson_t</link> that should be freed with <link xref="bson_destroy">bson_destroy()</link>.</p>
+    <p>A newly allocated <code xref="bson_t">bson_t</code> that should be freed with <code xref="bson_destroy">bson_destroy()</code>.</p>
   </section>
 </page>

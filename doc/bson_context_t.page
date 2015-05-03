@@ -37,7 +37,7 @@ void            bson_context_destroy     (bson_context_t       *context);]]></co
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_context_t">bson_context_t</link> structure is context for generation of BSON Object IDs. This context allows for specialized overriding of how ObjectIDs are generated based on the applications requirements. For example, disabling of PID caching can be configured if the application cannot detect when a call to <code>fork()</code> has occurred.</p>.
+    <p>The <code xref="bson_context_t">bson_context_t</code> structure is context for generation of BSON Object IDs. This context allows for specialized overriding of how ObjectIDs are generated based on the applications requirements. For example, disabling of PID caching can be configured if the application cannot detect when a call to <code>fork()</code> has occurred.</p>.
   </section>
 
   <links type="topic" groups="function" style="2column">

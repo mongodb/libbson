@@ -21,7 +21,7 @@ bson_md5_finish (bson_md5_t *pms,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>pms</code></p></td><td><p>A <link xref="bson_md5_t">bson_md5_t</link>.</p></td></tr>
+      <tr><td><p><code>pms</code></p></td><td><p>A <code xref="bson_md5_t">bson_md5_t</code>.</p></td></tr>
       <tr><td><p><code>digest</code></p></td><td><p>A location for the digest.</p></td></tr>
     </table>
   </section>

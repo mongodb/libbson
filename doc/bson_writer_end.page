@@ -20,13 +20,13 @@ bson_writer_end (bson_writer_t *writer);
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>writer</code></p></td><td><p>A <link xref="bson_writer_t">bson_writer_t</link>.</p></td></tr>
+      <tr><td><p><code>writer</code></p></td><td><p>A <code xref="bson_writer_t">bson_writer_t</code>.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>Complete writing of a <link xref="bson_writer_t">bson_writer_t</link> to the buffer supplied.</p>
+    <p>Complete writing of a <code xref="bson_writer_t">bson_writer_t</code> to the buffer supplied.</p>
   </section>
 
 </page>

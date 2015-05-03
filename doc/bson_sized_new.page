@@ -26,12 +26,12 @@ bson_sized_new (size_t size);
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_sized_new">bson_sized_new()</link> function shall create a new <link xref="bson_t">bson_t</link> on the heap with a preallocated buffer. This is useful if you have a good idea of the size of the resulting document.</p>
+    <p>The <code xref="bson_sized_new">bson_sized_new()</code> function shall create a new <code xref="bson_t">bson_t</code> on the heap with a preallocated buffer. This is useful if you have a good idea of the size of the resulting document.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>A newly allocated <link xref="bson_t">bson_t</link> that should be freed with <link xref="bson_destroy">bson_destroy()</link>.</p>
+    <p>A newly allocated <code xref="bson_t">bson_t</code> that should be freed with <code xref="bson_destroy">bson_destroy()</code>.</p>
   </section>
 
 </page>

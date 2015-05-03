@@ -21,14 +21,14 @@ bson_writer_begin (bson_writer_t *writer,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>writer</code></p></td><td><p>A <link xref="bson_writer_t">bson_writer_t</link>.</p></td></tr>
-      <tr><td><p><code>bson</code></p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
+      <tr><td><p><code>writer</code></p></td><td><p>A <code xref="bson_writer_t">bson_writer_t</code>.</p></td></tr>
+      <tr><td><p><code>bson</code></p></td><td><p>A <code xref="bson_t">bson_t</code>.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>Begins writing a new document. The caller may use the bson structure to write out a new BSON document. When completed, the caller must call either <link xref="bson_writer_end">bson_writer_end()</link> or <link xref="bson_writer_rollback">bson_writer_rollback()</link>.</p>
+    <p>Begins writing a new document. The caller may use the bson structure to write out a new BSON document. When completed, the caller must call either <code xref="bson_writer_end">bson_writer_end()</code> or <code xref="bson_writer_rollback">bson_writer_rollback()</code>.</p>
   </section>
 
   <section id="return">

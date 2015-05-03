@@ -28,12 +28,12 @@ bson_new_from_data (const uint8_t *data,
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_new_from_data">bson_new_from_data()</link> function shall create a new <link xref="bson_t">bson_t</link> on the heap and copy the contents of <code>data</code>. This may be helpful when working with language bindings but is generally expected to be slower.</p>
+    <p>The <code xref="bson_new_from_data">bson_new_from_data()</code> function shall create a new <code xref="bson_t">bson_t</code> on the heap and copy the contents of <code>data</code>. This may be helpful when working with language bindings but is generally expected to be slower.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>A newly allocated <link xref="bson_t">bson_t</link> if successful, otherwise NULL.</p>
+    <p>A newly allocated <code xref="bson_t">bson_t</code> if successful, otherwise NULL.</p>
   </section>
 
 </page>

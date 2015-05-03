@@ -22,13 +22,13 @@ bson_reader_new_from_file (const char   *path,
     <title>Parameters</title>
     <table>
       <tr><td><p><code>path</code></p></td><td><p>A filename in the host filename encoding.</p></td></tr>
-      <tr><td><p><code>error</code></p></td><td><p>A <link xref="bson_error_t">bson_error_t</link>.</p></td></tr>
+      <tr><td><p><code>error</code></p></td><td><p>A <code xref="bson_error_t">bson_error_t</code>.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>Creates a new <link xref="bson_reader_t">bson_reader_t</link> using the file denoted by <code>filename</code>.</p>
+    <p>Creates a new <code xref="bson_reader_t">bson_reader_t</code> using the file denoted by <code>filename</code>.</p>
   </section>
 
   <section id="errors">
@@ -38,7 +38,7 @@ bson_reader_new_from_file (const char   *path,
 
   <section id="return">
     <title>Returns</title>
-    <p>A newly allocated <link xref="bson_reader_t">bson_reader_t</link> on success, otherwise NULL and error is set.</p>
+    <p>A newly allocated <code xref="bson_reader_t">bson_reader_t</code> on success, otherwise NULL and error is set.</p>
   </section>
 
 </page>

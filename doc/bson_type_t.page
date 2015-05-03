@@ -45,7 +45,7 @@ typedef enum
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_type_t">bson_type_t</link> enumeration contains all of the types from the <link href="http://bsonspec.org">BSON Specification</link>. It can be used to determine the type of a field at runtime.</p>
+    <p>The <code xref="bson_type_t">bson_type_t</code> enumeration contains all of the types from the <link href="http://bsonspec.org">BSON Specification</link>. It can be used to determine the type of a field at runtime.</p>
   </section>
 
   <links type="topic" groups="function" style="2column">

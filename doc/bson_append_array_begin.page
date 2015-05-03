@@ -23,16 +23,16 @@ bson_append_array_begin (bson_t     *bson,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>bson</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
+      <tr><td><p>bson</p></td><td><p>A <code xref="bson_t">bson_t</code>.</p></td></tr>
       <tr><td><p>key</p></td><td><p>A string containing the name for the key.</p></td></tr>
       <tr><td><p>key_length</p></td><td><p>The length of <code>key</code> or -1 to call <code>strlen()</code>.</p></td></tr>
-      <tr><td><p>child</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
+      <tr><td><p>child</p></td><td><p>A <code xref="bson_t">bson_t</code>.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_append_array_begin">bson_append_array_begin()</link> function shall begin appending an array field to <code>bson</code>. This allows for incrementally building a sub-array. Doing so will generally yield better performance as you will serialize to a single buffer. When done building the sub-array, the caller <em>MUST</em> call <link xref="bson_append_array_end">bson_append_array_end()</link>.</p>
+    <p>The <code xref="bson_append_array_begin">bson_append_array_begin()</code> function shall begin appending an array field to <code>bson</code>. This allows for incrementally building a sub-array. Doing so will generally yield better performance as you will serialize to a single buffer. When done building the sub-array, the caller <em>MUST</em> call <code xref="bson_append_array_end">bson_append_array_end()</code>.</p>
   </section>
 
   <section id="return">

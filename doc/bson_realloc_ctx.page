@@ -30,7 +30,7 @@ bson_realloc_ctx (void  *mem,
 
   <section id="description">
     <title>Description</title>
-    <p>This function is identical to <link xref="bson_realloc">bson_realloc()</link> except it takes a context parameter. This is useful when working with pooled or specific memory allocators.</p>
+    <p>This function is identical to <code xref="bson_realloc">bson_realloc()</code> except it takes a context parameter. This is useful when working with pooled or specific memory allocators.</p>
   </section>
 
 </page>

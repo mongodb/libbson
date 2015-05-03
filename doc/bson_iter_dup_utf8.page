@@ -21,18 +21,18 @@ bson_iter_dup_utf8 (const bson_iter_t *iter,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>iter</p></td><td><p>A <link xref="bson_iter_t">bson_iter_t</link>.</p></td></tr>
+      <tr><td><p>iter</p></td><td><p>A <code xref="bson_iter_t">bson_iter_t</code>.</p></td></tr>
       <tr><td><p>length</p></td><td><p>An optional location for the length of the UTF-8 encoded string.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>This function is similar to <link xref="bson_iter_utf8">bson_iter_utf8()</link> except that it calls <link xref="bson_strndup">bson_strndup()</link> on the result.</p>
+    <p>This function is similar to <code xref="bson_iter_utf8">bson_iter_utf8()</code> except that it calls <code xref="bson_strndup">bson_strndup()</code> on the result.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>A newly allocated string that should be freed with <link xref="bson_free">bson_free()</link>.</p>
+    <p>A newly allocated string that should be freed with <code xref="bson_free">bson_free()</code>.</p>
   </section>
 </page>

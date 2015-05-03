@@ -20,13 +20,13 @@ bson_init (bson_t *b);
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>b</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
+      <tr><td><p>b</p></td><td><p>A <code xref="bson_t">bson_t</code>.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_init">bson_init()</link> function shall initialize a <link xref="bson_t">bson_t</link> that is placed on the stack. This is equivalent to initializing a <link xref="bson_t">bson_t</link> to <code>BSON_INITIALIZER</code>.</p>
+    <p>The <code xref="bson_init">bson_init()</code> function shall initialize a <code xref="bson_t">bson_t</code> that is placed on the stack. This is equivalent to initializing a <code xref="bson_t">bson_t</code> to <code>BSON_INITIALIZER</code>.</p>
   </section>
 
 </page>

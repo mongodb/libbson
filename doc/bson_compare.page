@@ -21,14 +21,14 @@ bson_compare (const bson_t *bson,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>bson</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
-      <tr><td><p>other</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
+      <tr><td><p>bson</p></td><td><p>A <code xref="bson_t">bson_t</code>.</p></td></tr>
+      <tr><td><p>other</p></td><td><p>A <code xref="bson_t">bson_t</code>.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_compare">bson_compare()</link> function shall compare two bson documents for equality.</p>
+    <p>The <code xref="bson_compare">bson_compare()</code> function shall compare two bson documents for equality.</p>
     <p>This can be useful in conjunction with _qsort()_.</p>
     <p>If equal, 0 is returned.</p>
     <note style="tip"><p>This function uses _memcmp()_ internally, so the semantics are the same.</p></note>

@@ -24,17 +24,17 @@ bson_append_code_with_scope (bson_t       *bson,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>bson</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
+      <tr><td><p>bson</p></td><td><p>A <code xref="bson_t">bson_t</code>.</p></td></tr>
       <tr><td><p>key</p></td><td><p>An ASCII C string containing the name of the field.</p></td></tr>
       <tr><td><p>key_length</p></td><td><p>The length of <code>key</code> in bytes, or -1 to determine the length with <code>strlen()</code>.</p></td></tr>
       <tr><td><p>javascript</p></td><td><p>A NULL-terminated UTF-8 encoded string containing the javascript fragment.</p></td></tr>
-      <tr><td><p>scope</p></td><td><p>A <link xref="bson_t">bson_t</link> containing the scope for <code>javascript</code>.</p></td></tr>
+      <tr><td><p>scope</p></td><td><p>A <code xref="bson_t">bson_t</code> containing the scope for <code>javascript</code>.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_append_code_with_scope">bson_append_code_with_scope()</link> function shall perform like <link xref="bson_append_code">bson_append_code()</link> except it allows providing a scope to the javascript function in the form of a bson document.</p>
+    <p>The <code xref="bson_append_code_with_scope">bson_append_code_with_scope()</code> function shall perform like <code xref="bson_append_code">bson_append_code()</code> except it allows providing a scope to the javascript function in the form of a bson document.</p>
   </section>
 
   <section id="return">

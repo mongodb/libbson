@@ -6,7 +6,7 @@
 
   <section id="basic">
     <title>The bson_t structure</title>
-    <p>BSON documents are created using the <link xref="bson_t">bson_t</link> structure. This structure encapsulates the necessary logic for encoding using the <link href="http://bsonspec.org">BSON Specification</link>. At the core, <link xref="bson_t">bson_t</link> is a buffer manager and set of encoding routines.</p>
+    <p>BSON documents are created using the <code xref="bson_t">bson_t</code> structure. This structure encapsulates the necessary logic for encoding using the <link href="http://bsonspec.org">BSON Specification</link>. At the core, <code xref="bson_t">bson_t</code> is a buffer manager and set of encoding routines.</p>
     <note style="tip"><p>BSON documents can live on the stack or the heap based on the performance needs or preference of the consumer.</p></note>
     <p>Let's start by creating a new BSON document on the stack. Whenever using libbson, make sure you <code>#include &lt;bson.h&gt;</code>.</p>
     <example><code mime="text/x-csrc"><![CDATA[bson_t b;
@@ -25,12 +25,12 @@ BSON_APPEND_UTF8 (&b, "key", "value");]]></code></example>
 BSON_APPEND_INT32 (&b, "a", 1);
 BSON_APPEND_UTF8 (&b, "hello", "world");
 BSON_APPEND_BOOL (&b, "bool", true);]]></code></example>
-    <p>Notice that we ommitted the call to <link xref="bson_init">bson_init()</link>. By specifying <code>BSON_INITIALIZER</code> we can remove the need to initialize the structure to a base state.</p>
+    <p>Notice that we ommitted the call to <code xref="bson_init">bson_init()</code>. By specifying <code>BSON_INITIALIZER</code> we can remove the need to initialize the structure to a base state.</p>
   </section>
 
   <section id="subdocs">
     <title>Sub-Documents and Sub-Arrays</title>
-    <p>To simplify the creation of sub-documents and arrays, <link xref="bson_append_document_begin">bson_append_document_begin()</link> and <link xref="bson_append_array_begin">bson_append_array_begin()</link> exist. These can be used to build a sub-document using the parent documents memory region as the destination buffer.</p>
+    <p>To simplify the creation of sub-documents and arrays, <code xref="bson_append_document_begin">bson_append_document_begin()</code> and <code xref="bson_append_array_begin">bson_append_array_begin()</code> exist. These can be used to build a sub-document using the parent documents memory region as the destination buffer.</p>
     <listing>
       <title>Creating Sub-Documents</title>
       <synopsis><code mime="text/x-csrc"><![CDATA[bson_t parent;

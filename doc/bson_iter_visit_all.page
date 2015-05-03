@@ -22,8 +22,8 @@ bson_iter_visit_all (bson_iter_t          *iter,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>iter</p></td><td><p>A <link xref="bson_iter_t">bson_iter_t</link>.</p></td></tr>
-      <tr><td><p>visitor</p></td><td><p>A <link xref="bson_visitor_t">bson_visitor_t</link>.</p></td></tr>
+      <tr><td><p>iter</p></td><td><p>A <code xref="bson_iter_t">bson_iter_t</code>.</p></td></tr>
+      <tr><td><p>visitor</p></td><td><p>A <code xref="bson_visitor_t">bson_visitor_t</code>.</p></td></tr>
       <tr><td><p>data</p></td><td><p>Optional data for <code>visitor</code>.</p></td></tr>
     </table>
   </section>

@@ -23,10 +23,10 @@ bson_iter_dbpointer (const bson_iter_t *iter,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>iter</p></td><td><p>A <link xref="bson_iter_t">bson_iter_t</link>.</p></td></tr>
+      <tr><td><p>iter</p></td><td><p>A <code xref="bson_iter_t">bson_iter_t</code>.</p></td></tr>
       <tr><td><p>collection_len</p></td><td><p>A location for the length of the collection name.</p></td></tr>
       <tr><td><p>collection</p></td><td><p>A location for the collection name..</p></td></tr>
-      <tr><td><p>oid</p></td><td><p>A location for a <link xref="bson_oid_t">bson_oid_t</link>.</p></td></tr>
+      <tr><td><p>oid</p></td><td><p>A location for a <code xref="bson_oid_t">bson_oid_t</code>.</p></td></tr>
     </table>
   </section>
 

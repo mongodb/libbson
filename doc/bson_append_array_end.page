@@ -21,14 +21,14 @@ bson_append_array_end (bson_t *bson,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>bson</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
-      <tr><td><p>child</p></td><td><p>The <link xref="bson_t">bson_t</link> initialized in a call to <link xref="bson_append_array_begin">bson_append_array_begin()</link>.</p></td></tr>
+      <tr><td><p>bson</p></td><td><p>A <code xref="bson_t">bson_t</code>.</p></td></tr>
+      <tr><td><p>child</p></td><td><p>The <code xref="bson_t">bson_t</code> initialized in a call to <code xref="bson_append_array_begin">bson_append_array_begin()</code>.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_append_array_end">bson_append_array_end()</link> function shall complete the appending of an array field started with <link xref="bson_append_array_begin">bson_append_array_begin()</link>. <code>child</code> is invalid after calling this function.</p>
+    <p>The <code xref="bson_append_array_end">bson_append_array_end()</code> function shall complete the appending of an array field started with <code xref="bson_append_array_begin">bson_append_array_begin()</code>. <code>child</code> is invalid after calling this function.</p>
   </section>
 
   <section id="return">

@@ -21,14 +21,14 @@ bson_reader_read (bson_reader_t *reader,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>reader</code></p></td><td><p>A <link xref="bson_reader_t">bson_reader_t</link>.</p></td></tr>
+      <tr><td><p><code>reader</code></p></td><td><p>A <code xref="bson_reader_t">bson_reader_t</code>.</p></td></tr>
       <tr><td><p><code>reached_eof</code></p></td><td><p>A UNKNOWN.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_reader_read">bson_reader_read()</link> function shall read the next document from the underlying file-descriptor or buffer.</p>
+    <p>The <code xref="bson_reader_read">bson_reader_read()</code> function shall read the next document from the underlying file-descriptor or buffer.</p>
     <p>If there are no further documents or a failure was detected, then NULL is returned.</p>
     <p>If we reached the end of the sequence, <code>reached_eof</code> is set to true.</p>
     <p>To detect an error, check for NULL and <code>reached_of</code> is false.</p>
@@ -36,7 +36,7 @@ bson_reader_read (bson_reader_t *reader,
 
   <section id="return">
     <title>Returns</title>
-    <p>A <link xref="bson_t">bson_t</link> that should not be modified or freed.</p>
+    <p>A <code xref="bson_t">bson_t</code> that should not be modified or freed.</p>
   </section>
 
   <section id="example">

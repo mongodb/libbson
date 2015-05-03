@@ -21,7 +21,7 @@ bson_string_truncate (bson_string_t *string,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>string</code></p></td><td><p>A <link xref="bson_string_t">bson_string_t</link>.</p></td></tr>
+      <tr><td><p><code>string</code></p></td><td><p>A <code xref="bson_string_t">bson_string_t</code>.</p></td></tr>
       <tr><td><p><code>len</code></p></td><td><p>The new length of the string, excluding the trailing <code>\0</code>.</p></td></tr>
     </table>
   </section>

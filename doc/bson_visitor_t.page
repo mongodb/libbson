@@ -121,7 +121,7 @@ typedef struct
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_visitor_t">bson_visitor_t</link> structure provides a series of callbacks that can be called while iterating a BSON document. This may simplify the conversion of a <link xref="bson_t">bson_t</link> to a higher level language structure.</p>
+    <p>The <code xref="bson_visitor_t">bson_visitor_t</code> structure provides a series of callbacks that can be called while iterating a BSON document. This may simplify the conversion of a <code xref="bson_t">bson_t</code> to a higher level language structure.</p>
   </section>
 
   <links type="topic" groups="function" style="2column">

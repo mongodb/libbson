@@ -28,7 +28,7 @@ bson_strdupv_printf (const char *format,
 
   <section id="description">
     <title>Description</title>
-    <p>This function is like <link xref="bson_strdup_printf">bson_strdup_printf()</link> except takes a va_list of parameters.</p>
+    <p>This function is like <code xref="bson_strdup_printf">bson_strdup_printf()</code> except takes a va_list of parameters.</p>
   </section>
 
   <section id="return">

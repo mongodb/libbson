@@ -33,6 +33,6 @@ bson_utf8_escape_for_json (const char *utf8,
 
   <section id="return">
     <title>Returns</title>
-    <p>A newly allocated string that should be freed with <link xref="bson_free">bson_free()</link>.</p>
+    <p>A newly allocated string that should be freed with <code xref="bson_free">bson_free()</code>.</p>
   </section>
 </page>
