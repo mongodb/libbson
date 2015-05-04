@@ -40,7 +40,7 @@ BSON_BEGIN_DECLS
   /* XL C Compiler (IBM) */
 # define bson_atomic_int_add(p,v)    __sync_add_and_fetch((p),(v))
 # define bson_atomic_int64_add(p,v)  __sync_add_and_fetch((volatile int64_t*)(p),(int64_t)(v))
-#elif BSON_GNUC_CHECK_VERSION(4, 1)
+#elif BSON_GNUC_CHECK_VERSION(4, 1) && defined(BSON_HAVE_ATOMIC_32_ADD_AND_FETCH)
   /* Recent GCC toolchain */
 # define bson_atomic_int_add(p,v) __sync_add_and_fetch((p),(v))
 # if BSON_GNUC_IS_VERSION(4, 1) && defined(__i386__)
@@ -57,7 +57,6 @@ BSON_BEGIN_DECLS
 #  define __BSON_NEED_ATOMIC_64 1
 # endif
 #else
-# warning "Unsupported Compiler/OS combination, please add support for atomics in bson-atomic.h. Using Mutex to emulate atomics."
 # define __BSON_NEED_ATOMIC_32 1
 # define __BSON_NEED_ATOMIC_64 1
 #endif
