@@ -1,6 +1,28 @@
 Libbson 1.1.5
 =============
 
+It is my pleasure to announce to you the release of Libbson-1.1.5.
+
+This is a patch release with small bug fixes:
+
+ * Fix link error "missing __sync_add_and_fetch_4" in GCC on i386
+ * Fix version check for GCC 5 and future versions of Clang
+ * Fix warnings and errors building on various platforms
+
+With this release, Libbson abandons the convention that odd-numbered patch
+versions indicate unstable releases. We switch to simple semantic versioning:
+1.1.5 is a stable release with bug fixes since 1.1.4. During subsequent
+development the version will be "1.1.6-dev".
+
+Thanks to everyone who contributed to this version of Libbson.
+
+ * A. Jesse Jiryu Davis
+ * Jason Carey
+ * Hannes Magnusson
+ * Paul Melnikow
+
+-- A. Jesse Jiryu Davis
+
 Libbson 1.1.4
 =============
 
