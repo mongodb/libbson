@@ -5,7 +5,9 @@ It is my pleasure to announce to you the release of Libbson-1.1.5.
 
 This is a patch release with small bug fixes:
 
- * Fix link error "missing __sync_add_and_fetch_4" in GCC on i386
+ * Fix link error "missing __sync_add_and_fetch_4" in GCC on i386 -
+   the functions bson_atomic_int_add and bson_atomic_int64_add are now
+   compiled and exported if needed in i386 mode
  * Fix version check for GCC 5 and future versions of Clang
  * Fix warnings and errors building on various platforms
 
