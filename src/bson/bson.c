@@ -2345,7 +2345,7 @@ _bson_as_json_visit_double (const bson_iter_t *iter,
 {
    bson_json_state_t *state = data;
 
-   bson_string_append_printf (state->str, "%lf", v_double);
+   bson_string_append_printf (state->str, "%.15g", v_double);
 
    return false;
 }
