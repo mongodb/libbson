@@ -1,5 +1,10 @@
-Libbson-1.1.6-dev
-=================
+Libbson-1.1.6
+=============
+
+No change since 1.1.5; released to keep pace with libmongoc's version.
+
+-- A. Jesse Jiryu Davis
+
 
 Libbson 1.1.5
 =============
