@@ -17,6 +17,7 @@
 
 #include <stdarg.h>
 #include <string.h>
+#include <math.h>
 
 #include "b64_ntop.h"
 #include "bson.h"
@@ -2345,7 +2346,12 @@ _bson_as_json_visit_double (const bson_iter_t *iter,
 {
    bson_json_state_t *state = data;
 
-   bson_string_append_printf (state->str, "%.15g", v_double);
+   if (!fmod(v_double, 1)) {
+      /* nice to distinguish 2.0 from 2, though not required in JSON */
+      bson_string_append_printf (state->str, "%.1f", v_double);
+   } else {
+      bson_string_append_printf (state->str, "%.15g", v_double);
+   }
 
    return false;
 }
