@@ -122,15 +122,18 @@ test_bson_as_json_double (void)
 
    b = bson_new();
    assert(bson_append_double(b, "foo", -1, 123.456));
-   assert(bson_append_double(b, "bar", -1, 1));
-   assert(bson_append_double(b, "baz", -1, 3));
+   assert(bson_append_double(b, "bar", -1, 3));
+   assert(bson_append_double(b, "baz", -1, -1));
    assert(bson_append_double(b, "quux", -1, 1.0001));
+   assert(bson_append_double(b, "huge", -1, 1e99));
    str = bson_as_json(b, &len);
-   assert(!strcmp(str,
-                  "{ \"foo\" : 123.456,"
-                  " \"bar\" : 1.0,"
-                  " \"baz\" : 3.0,"
-                  " \"quux\" : 1.0001 }"));
+   ASSERT_CMPSTR (str,
+                  "{"
+                  " \"foo\" : 123.456,"
+                  " \"bar\" : 3,"
+                  " \"baz\" : -1,"
+                  " \"quux\" : 1.0001,"
+                  " \"huge\" : 1e+99 }");
    bson_free(str);
    bson_destroy(b);
 }
