@@ -28,7 +28,7 @@ bson_string_append (bson_string_t *string,
 
   <section id="description">
     <title>Description</title>
-    <p>Appends the ASCII or UTF-8 encoded string <code>str</code> to <code>string</code>. This is not suitable for embedding NULL's in strings.</p>
+    <p>Appends the ASCII or UTF-8 encoded string <code>str</code> to <code>string</code>. This is not suitable for embedding NULLs in strings.</p>
   </section>
 
 </page>

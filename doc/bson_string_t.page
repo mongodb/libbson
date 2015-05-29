@@ -46,7 +46,7 @@ bson_string_append_printf (str, "%d %s %f\n", 0, "some string", 0.123);
 printf ("%s\n", str->str);
 
 bson_string_free (str, true);]]></code></synopsis>
-      <note style="tip"><p>You can call <code xref="bson_string_free">bson_string_free()</code> with <code>false</code> if you would like to take ownership of <code>str->str</code>. Some API's that do this might call <code mime="text/x-csrc">return bson_string_free (str, false);</code> after building the string.</p></note>
+      <note style="tip"><p>You can call <code xref="bson_string_free">bson_string_free()</code> with <code>false</code> if you would like to take ownership of <code>str->str</code>. Some APIs that do this might call <code mime="text/x-csrc">return bson_string_free (str, false);</code> after building the string.</p></note>
     </listing>
   </section>
 </page>
