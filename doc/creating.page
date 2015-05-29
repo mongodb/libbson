@@ -15,7 +15,7 @@ bson_init (&b);]]></code></example>
     <p>This creates an empty document. In JSON, this would be the same as <code mime="text/x-javascript">{}</code>.</p>
     <p>We can now proceed to adding items to the BSON document. A variety of functions prefixed with <code>bson_append_</code> can be used based on the type of field you want to append. Let's append a UTF-8 encoded string.</p>
     <example><code mime="text/x-csrc"><![CDATA[bson_append_utf8 (&b, "key", -1, "value", -1);]]></code></example>
-    <p>Notice the two <code>-1</code> parameters. The first indicates that <code>key</code>'s length in bytes should be determined with <code>strlen()</code>. Alternatively, we could have passed the number <code>3</code>. The same goes for the second <code>-1</code>, but for <code>value</code>.</p>
+    <p>Notice the two <code>-1</code> parameters. The first indicates that the length of <code>key</code> in bytes should be determined with <code>strlen()</code>. Alternatively, we could have passed the number <code>3</code>. The same goes for the second <code>-1</code>, but for <code>value</code>.</p>
     <p>Libbson provides macros to make this less tedious when using string literals. The following two appends are identical.</p>
     <example><code mime="text/x-csrc"><![CDATA[bson_append_utf8 (&b, "key", -1, "value", -1);
 BSON_APPEND_UTF8 (&b, "key", "value");]]></code></example>

@@ -42,12 +42,12 @@ typedef struct
 
   <section id="hashing">
     <title>Hashing</title>
-    <p><code xref="bson_oid_t">bson_oid_t</code>'s can be used in hashtables using the function <code xref="bson_oid_hash">bson_oid_hash()</code> and <code xref="bson_oid_equal">bson_oid_equal()</code>.</p>
+    <p>A <code xref="bson_oid_t">bson_oid_t</code> can be used in hashtables using the function <code xref="bson_oid_hash">bson_oid_hash()</code> and <code xref="bson_oid_equal">bson_oid_equal()</code>.</p>
   </section>
 
   <section id="hashing">
     <title>Comparing</title>
-    <p><code xref="bson_oid_t">bson_oid_t</code>'s can be compared using <code xref="bson_oid_compare">bson_oid_compare()</code> for <code>qsort()</code> style comparing and <code xref="bson_oid_equal">bson_oid_equal()</code> for direct equality.</p>
+    <p>A <code xref="bson_oid_t">bson_oid_t</code> can be compared to another using <code xref="bson_oid_compare">bson_oid_compare()</code> for <code>qsort()</code> style comparing and <code xref="bson_oid_equal">bson_oid_equal()</code> for direct equality.</p>
   </section>
 
   <section id="validating">

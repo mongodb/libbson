@@ -22,7 +22,7 @@ bson_json_reader_new_from_fd (int  fd,
     <title>Parameters</title>
     <table>
       <tr><td><p><code>fd</code></p></td><td><p>An open file-descriptor.</p></td></tr>
-      <tr><td><p><code>close_on_destroy</code></p></td><td><p>If <code>fd</code> should be <code>close()</code>'d when the reader is destroyed.</p></td></tr>
+      <tr><td><p><code>close_on_destroy</code></p></td><td><p>Whether <code>close()</code> should be called on <code>fd</code> when the reader is destroyed.</p></td></tr>
     </table>
   </section>
 
