@@ -162,7 +162,8 @@ class Convert(object):
 
     def _generateCode(self, code):
         text = code.text
-        if text and '\n' not in text:
+        is_synopsis = self._get_parent(code).tag.endswith('synopsis')
+        if text and '\n' not in text and not is_synopsis:
             text = text.replace('()', '(%s)' % self.section)
             self._writeCommand('.BR ' + text)
         else:
