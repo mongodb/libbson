@@ -35,7 +35,7 @@
 #endif
 
 
-#define STACK_MAX 100
+#define BSON_JSON_STACK_MAX 100
 #define BSON_JSON_DEFAULT_BUF_SIZE (1 << 14)
 
 
@@ -137,7 +137,7 @@ typedef union
 typedef struct
 {
    bson_t                      *bson;
-   bson_json_stack_frame_t      stack[STACK_MAX];
+   bson_json_stack_frame_t      stack[BSON_JSON_STACK_MAX];
    int                          n;
    const char                  *key;
    bson_json_buf_t              key_buf;
@@ -211,44 +211,44 @@ static yajl_alloc_funcs gYajlAllocFuncs = {
 };
 
 
-#define STACK_ELE(_delta, _name) (bson->stack[(_delta) + bson->n]._name)
-#define STACK_BSON(_delta) \
-      (((_delta) + bson->n) == 0 ? bson->bson : &STACK_ELE (_delta, bson))
-#define STACK_BSON_PARENT STACK_BSON (-1)
-#define STACK_BSON_CHILD STACK_BSON (0)
-#define STACK_I STACK_ELE (0, i)
-#define STACK_IS_ARRAY STACK_ELE (0, is_array)
-#define STACK_PUSH_ARRAY(statement) \
+#define BSON_JSON_STACK_ELE(_delta, _name) (bson->stack[(_delta) + bson->n]._name)
+#define BSON_JSON_STACK_BSON(_delta) \
+      (((_delta) + bson->n) == 0 ? bson->bson : &BSON_JSON_STACK_ELE (_delta, bson))
+#define BSON_JSON_STACK_BSON_PARENT BSON_JSON_STACK_BSON (-1)
+#define BSON_JSON_STACK_BSON_CHILD BSON_JSON_STACK_BSON (0)
+#define BSON_JSON_STACK_I BSON_JSON_STACK_ELE (0, i)
+#define BSON_JSON_STACK_IS_ARRAY BSON_JSON_STACK_ELE (0, is_array)
+#define BSON_JSON_STACK_PUSH_ARRAY(statement) \
    do { \
-      if (bson->n >= (STACK_MAX - 1)) { return 0; } \
+      if (bson->n >= (BSON_JSON_STACK_MAX - 1)) { return 0; } \
       bson->n++; \
-      STACK_I = 0; \
-      STACK_IS_ARRAY = 1; \
+      BSON_JSON_STACK_I = 0; \
+      BSON_JSON_STACK_IS_ARRAY = 1; \
       if (bson->n != 0) { \
          statement; \
       } \
    } while (0)
-#define STACK_PUSH_DOC(statement) \
+#define BSON_JSON_STACK_PUSH_DOC(statement) \
    do { \
-      if (bson->n >= (STACK_MAX - 1)) { return 0; } \
+      if (bson->n >= (BSON_JSON_STACK_MAX - 1)) { return 0; } \
       bson->n++; \
       STACK_IS_ARRAY = 0; \
       if (bson->n != 0) { \
          statement; \
       } \
    } while (0)
-#define STACK_POP_ARRAY(statement) \
+#define BSON_JSON_STACK_POP_ARRAY(statement) \
    do { \
-      if (!STACK_IS_ARRAY) { return 0; } \
+      if (!BSON_JSON_STACK_IS_ARRAY) { return 0; } \
       if (bson->n < 0) { return 0; } \
       if (bson->n > 0) { \
          statement; \
       } \
       bson->n--; \
    } while (0)
-#define STACK_POP_DOC(statement) \
+#define BSON_JSON_STACK_POP_DOC(statement) \
    do { \
-      if (STACK_IS_ARRAY) { return 0; } \
+      if (BSON_JSON_STACK_IS_ARRAY) { return 0; } \
       if (bson->n < 0) { return 0; } \
       if (bson->n > 0) { \
          statement; \
@@ -353,11 +353,11 @@ _bson_json_read_fixup_key (bson_json_reader_bson_t *bson) /* IN */
 {
    BSON_ASSERT (bson);
 
-   if (bson->n >= 0 && STACK_IS_ARRAY) {
+   if (bson->n >= 0 && BSON_JSON_STACK_IS_ARRAY) {
       _bson_json_buf_ensure (&bson->key_buf, 12);
-      bson->key_buf.len = bson_uint32_to_string (STACK_I, &bson->key,
+      bson->key_buf.len = bson_uint32_to_string (BSON_JSON_STACK_I, &bson->key,
                                                  (char *)bson->key_buf.buf, 12);
-      STACK_I++;
+      BSON_JSON_STACK_I++;
    }
 }
 
@@ -390,7 +390,7 @@ _bson_json_read_null (void *_ctx)
    BASIC_YAJL_CB_PREAMBLE;
    BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL ("null");
 
-   bson_append_null (STACK_BSON_CHILD, key, (int)len);
+   bson_append_null (BSON_JSON_STACK_BSON_CHILD, key, (int)len);
 
    return 1;
 }
@@ -410,7 +410,7 @@ _bson_json_read_boolean (void *_ctx, /* IN */
 
    BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL ("boolean");
 
-   bson_append_bool (STACK_BSON_CHILD, key, (int)len, val);
+   bson_append_bool (BSON_JSON_STACK_BSON_CHILD, key, (int)len, val);
 
    return 1;
 }
@@ -432,9 +432,9 @@ _bson_json_read_integer (void    *_ctx, /* IN */
       BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL ("integer");
 
       if (val <= INT32_MAX) {
-         bson_append_int32 (STACK_BSON_CHILD, key, (int)len, (int)val);
+         bson_append_int32 (BSON_JSON_STACK_BSON_CHILD, key, (int)len, (int)val);
       } else {
-         bson_append_int64 (STACK_BSON_CHILD, key, (int)len, val);
+         bson_append_int64 (BSON_JSON_STACK_BSON_CHILD, key, (int)len, val);
       }
    } else if (rs == BSON_JSON_IN_BSON_TYPE || rs ==
               BSON_JSON_IN_BSON_TYPE_TIMESTAMP_VALUES) {
@@ -489,7 +489,7 @@ _bson_json_read_double (void   *_ctx, /* IN */
    BASIC_YAJL_CB_PREAMBLE;
    BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL ("double");
 
-   bson_append_double (STACK_BSON_CHILD, key, (int)len, val);
+   bson_append_double (BSON_JSON_STACK_BSON_CHILD, key, (int)len, val);
 
    return 1;
 }
@@ -705,10 +705,10 @@ _bson_json_read_map_key (void          *_ctx, /* IN */
          memset (&bson->bson_type_data, 0, sizeof bson->bson_type_data);
       } else {
          bson->read_state = BSON_JSON_REGULAR;
-         STACK_PUSH_DOC (bson_append_document_begin (STACK_BSON_PARENT,
-                                                     bson->key,
-                                                     (int)bson->key_buf.len,
-                                                     STACK_BSON_CHILD));
+         BSON_JSON_STACK_PUSH_DOC (bson_append_document_begin (BSON_JSON_STACK_BSON_PARENT,
+                                                               bson->key,
+                                                               (int)bson->key_buf.len,
+                                                               BSON_JSON_STACK_BSON_CHILD));
       }
    }
 
@@ -772,7 +772,7 @@ _bson_json_read_append_binary (bson_json_reader_t      *reader, /* IN */
       _bson_json_read_set_error (reader,
                                  "Missing $type after $binary in BSON_TYPE_BINARY");
    } else {
-      return bson_append_binary (STACK_BSON_CHILD, bson->key, (int)bson->key_buf.len,
+      return bson_append_binary (BSON_JSON_STACK_BSON_CHILD, bson->key, (int)bson->key_buf.len,
                                  bson->bson_type_data.binary.type,
                                  bson->bson_type_buf[0].buf,
                                  (uint32_t)bson->bson_type_buf[0].len);
@@ -801,7 +801,7 @@ _bson_json_read_append_regex (bson_json_reader_t      *reader, /* IN */
       options = (char *)bson->bson_type_buf[1].buf;
    }
 
-   return bson_append_regex (STACK_BSON_CHILD, bson->key, (int)bson->key_buf.len,
+   return bson_append_regex (BSON_JSON_STACK_BSON_CHILD, bson->key, (int)bson->key_buf.len,
                              regex, options);
 }
 
@@ -810,7 +810,7 @@ static int
 _bson_json_read_append_oid (bson_json_reader_t      *reader, /* IN */
                             bson_json_reader_bson_t *bson)   /* IN */
 {
-   return bson_append_oid (STACK_BSON_CHILD, bson->key, (int)bson->key_buf.len,
+   return bson_append_oid (BSON_JSON_STACK_BSON_CHILD, bson->key, (int)bson->key_buf.len,
                            &bson->bson_type_data.oid.oid);
 }
 
@@ -819,7 +819,7 @@ static int
 _bson_json_read_append_date_time (bson_json_reader_t      *reader, /* IN */
                                   bson_json_reader_bson_t *bson)   /* IN */
 {
-   return bson_append_date_time (STACK_BSON_CHILD, bson->key, (int)bson->key_buf.len,
+   return bson_append_date_time (BSON_JSON_STACK_BSON_CHILD, bson->key, (int)bson->key_buf.len,
                                  bson->bson_type_data.date.date);
 }
 
@@ -840,7 +840,7 @@ _bson_json_read_append_timestamp (bson_json_reader_t      *reader, /* IN */
       return 0;
    }
 
-   return bson_append_timestamp (STACK_BSON_CHILD, bson->key, (int)bson->key_buf.len,
+   return bson_append_timestamp (BSON_JSON_STACK_BSON_CHILD, bson->key, (int)bson->key_buf.len,
                                  bson->bson_type_data.timestamp.t,
                                  bson->bson_type_data.timestamp.i);
 }
@@ -866,7 +866,7 @@ _bson_json_read_append_dbpointer (bson_json_reader_t      *reader, /* IN */
 
    ref = (char *)bson->bson_type_buf[0].buf;
 
-   return bson_append_dbpointer (STACK_BSON_CHILD, bson->key, (int)bson->key_buf.len,
+   return bson_append_dbpointer (BSON_JSON_STACK_BSON_CHILD, bson->key, (int)bson->key_buf.len,
                                  ref, &bson->bson_type_data.ref.id);
 }
 
@@ -879,9 +879,9 @@ _bson_json_read_end_map (void *_ctx) /* IN */
 
    if (bson->read_state == BSON_JSON_IN_START_MAP) {
       bson->read_state = BSON_JSON_REGULAR;
-      STACK_PUSH_DOC (bson_append_document_begin (STACK_BSON_PARENT, bson->key,
-                                                  (int)bson->key_buf.len,
-                                                  STACK_BSON_CHILD));
+      BSON_JSON_STACK_PUSH_DOC (bson_append_document_begin (BSON_JSON_STACK_BSON_PARENT, bson->key,
+                                                            (int)bson->key_buf.len,
+                                                            BSON_JSON_STACK_BSON_CHILD));
    }
 
    if (bson->read_state == BSON_JSON_IN_BSON_TYPE) {
@@ -898,13 +898,13 @@ _bson_json_read_end_map (void *_ctx) /* IN */
       case BSON_TYPE_DBPOINTER:
          return _bson_json_read_append_dbpointer (reader, bson);
       case BSON_TYPE_UNDEFINED:
-         return bson_append_undefined (STACK_BSON_CHILD, bson->key,
+         return bson_append_undefined (BSON_JSON_STACK_BSON_CHILD, bson->key,
                                        (int)bson->key_buf.len);
       case BSON_TYPE_MINKEY:
-         return bson_append_minkey (STACK_BSON_CHILD, bson->key,
+         return bson_append_minkey (BSON_JSON_STACK_BSON_CHILD, bson->key,
                                     (int)bson->key_buf.len);
       case BSON_TYPE_MAXKEY:
-         return bson_append_maxkey (STACK_BSON_CHILD, bson->key,
+         return bson_append_maxkey (BSON_JSON_STACK_BSON_CHILD, bson->key,
                                     (int)bson->key_buf.len);
       case BSON_TYPE_INT64:
          return bson_append_int64 (STACK_BSON_CHILD, bson->key,
@@ -940,8 +940,8 @@ _bson_json_read_end_map (void *_ctx) /* IN */
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_DATE_ENDMAP) {
       bson->read_state = BSON_JSON_REGULAR;
    } else if (bson->read_state == BSON_JSON_REGULAR) {
-      STACK_POP_DOC (bson_append_document_end (STACK_BSON_PARENT,
-                                               STACK_BSON_CHILD));
+      BSON_JSON_STACK_POP_DOC (bson_append_document_end (BSON_JSON_STACK_BSON_PARENT,
+                                                         BSON_JSON_STACK_BSON_CHILD));
 
       if (bson->n == -1) {
          bson->read_state = BSON_JSON_DONE;
@@ -973,8 +973,8 @@ _bson_json_read_start_array (void *_ctx) /* IN */
 
       BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL ("[");
 
-      STACK_PUSH_ARRAY (bson_append_array_begin (STACK_BSON_PARENT, key, (int)len,
-                                                 STACK_BSON_CHILD));
+      BSON_JSON_STACK_PUSH_ARRAY (bson_append_array_begin (BSON_JSON_STACK_BSON_PARENT, key, (int)len,
+                                                           BSON_JSON_STACK_BSON_CHILD));
    }
 
    return 1;

@@ -29,57 +29,57 @@
  * real bson object isn't in the stack, but accessed by pointer) and add in run
  * time asserts to make sure we don't blow the stack in either direction */
 
-#define STACK_ELE(_delta, _name) (ctx->stack[(_delta) + ctx->n]._name)
+#define BCON_STACK_ELE(_delta, _name) (ctx->stack[(_delta) + ctx->n]._name)
 
-#define STACK_BSON(_delta) ( \
+#define BCON_STACK_BSON(_delta) ( \
       ((_delta) + ctx->n) == 0 \
       ? bson \
-      : &STACK_ELE (_delta, bson) \
+      : &BCON_STACK_ELE (_delta, bson) \
       )
 
-#define STACK_ITER(_delta) ( \
+#define BCON_STACK_ITER(_delta) ( \
       ((_delta) + ctx->n) == 0 \
       ? &root_iter \
-      : &STACK_ELE (_delta, iter) \
+      : &BCON_STACK_ELE (_delta, iter) \
       )
 
-#define STACK_BSON_PARENT STACK_BSON (-1)
-#define STACK_BSON_CHILD STACK_BSON (0)
+#define BCON_STACK_BSON_PARENT BCON_STACK_BSON (-1)
+#define BCON_STACK_BSON_CHILD BCON_STACK_BSON (0)
 
-#define STACK_ITER_PARENT STACK_ITER (-1)
-#define STACK_ITER_CHILD STACK_ITER (0)
+#define BCON_STACK_ITER_PARENT BCON_STACK_ITER (-1)
+#define BCON_STACK_ITER_CHILD BCON_STACK_ITER (0)
 
-#define STACK_I STACK_ELE (0, i)
-#define STACK_IS_ARRAY STACK_ELE (0, is_array)
+#define BCON_STACK_I BCON_STACK_ELE (0, i)
+#define BCON_STACK_IS_ARRAY BCON_STACK_ELE (0, is_array)
 
-#define STACK_PUSH_ARRAY(statement) \
+#define BCON_STACK_PUSH_ARRAY(statement) \
    do { \
       assert (ctx->n < (BCON_STACK_MAX - 1)); \
       ctx->n++; \
-      STACK_I = 0; \
-      STACK_IS_ARRAY = 1; \
+      BCON_STACK_I = 0; \
+      BCON_STACK_IS_ARRAY = 1; \
       statement; \
    } while (0)
 
-#define STACK_PUSH_DOC(statement) \
+#define BCON_STACK_PUSH_DOC(statement) \
    do { \
       assert (ctx->n < (BCON_STACK_MAX - 1)); \
       ctx->n++; \
-      STACK_IS_ARRAY = 0; \
+      BCON_STACK_IS_ARRAY = 0; \
       statement; \
    } while (0)
 
-#define STACK_POP_ARRAY(statement) \
+#define BCON_STACK_POP_ARRAY(statement) \
    do { \
-      assert (STACK_IS_ARRAY); \
+      assert (BCON_STACK_IS_ARRAY); \
       assert (ctx->n != 0); \
       statement; \
       ctx->n--; \
    } while (0)
 
-#define STACK_POP_DOC(statement) \
+#define BCON_STACK_POP_DOC(statement) \
    do { \
-      assert (!STACK_IS_ARRAY); \
+      assert (!BCON_STACK_IS_ARRAY); \
       assert (ctx->n != 0); \
       statement; \
       ctx->n--; \
@@ -724,11 +724,11 @@ _bson_concat_array (bson_t            *dest,
       return;
    }
 
-   STACK_I--;
+   BCON_STACK_I--;
 
    while (bson_iter_next (&iter)) {
-      bson_uint32_to_string (STACK_I, &key, i_str, sizeof i_str);
-      STACK_I++;
+      bson_uint32_to_string (BCON_STACK_I, &key, i_str, sizeof i_str);
+      BCON_STACK_I++;
 
       bson_append_iter (dest, key, -1, &iter);
    }
@@ -750,7 +750,7 @@ _bson_concat_array (bson_t            *dest,
  * var_args stuff is already incredibly fragile to mistakes, and we have no way
  * of introspecting, so just don't screw it up).
  *
- * There are also a few STACK_* macros in here which manimpulate ctx that are
+ * There are also a few BCON_STACK_* macros in here which manimpulate ctx that are
  * defined up top.
  * */
 void
@@ -765,9 +765,9 @@ bcon_append_ctx_va (bson_t            *bson,
    bcon_append_t u = { 0 };
 
    while (1) {
-      if (STACK_IS_ARRAY) {
-         bson_uint32_to_string (STACK_I, &key, i_str, sizeof i_str);
-         STACK_I++;
+      if (BCON_STACK_IS_ARRAY) {
+         bson_uint32_to_string (BCON_STACK_I, &key, i_str, sizeof i_str);
+         BCON_STACK_I++;
       } else {
          type = _bcon_append_tokenize (ap, &u);
 
@@ -776,13 +776,13 @@ bcon_append_ctx_va (bson_t            *bson,
          }
 
          if (type == BCON_TYPE_DOC_END) {
-            STACK_POP_DOC (bson_append_document_end (STACK_BSON_PARENT,
-                                                     STACK_BSON_CHILD));
+            BCON_STACK_POP_DOC (bson_append_document_end (BCON_STACK_BSON_PARENT,
+                                                     BCON_STACK_BSON_CHILD));
             continue;
          }
 
          if (type == BCON_TYPE_BCON) {
-            bson_concat (STACK_BSON_CHILD, u.BCON);
+            bson_concat (BCON_STACK_BSON_CHILD, u.BCON);
             continue;
          }
 
@@ -796,28 +796,28 @@ bcon_append_ctx_va (bson_t            *bson,
 
       switch ((int)type) {
       case BCON_TYPE_BCON:
-         assert (STACK_IS_ARRAY);
-         _bson_concat_array (STACK_BSON_CHILD, u.BCON, ctx);
+         assert (BCON_STACK_IS_ARRAY);
+         _bson_concat_array (BCON_STACK_BSON_CHILD, u.BCON, ctx);
 
          break;
       case BCON_TYPE_DOC_START:
-         STACK_PUSH_DOC (bson_append_document_begin (STACK_BSON_PARENT, key, -1,
-                                                     STACK_BSON_CHILD));
+         BCON_STACK_PUSH_DOC (bson_append_document_begin (BCON_STACK_BSON_PARENT, key, -1,
+                                                     BCON_STACK_BSON_CHILD));
          break;
       case BCON_TYPE_DOC_END:
-         STACK_POP_DOC (bson_append_document_end (STACK_BSON_PARENT,
-                                                  STACK_BSON_CHILD));
+         BCON_STACK_POP_DOC (bson_append_document_end (BCON_STACK_BSON_PARENT,
+                                                  BCON_STACK_BSON_CHILD));
          break;
       case BCON_TYPE_ARRAY_START:
-         STACK_PUSH_ARRAY (bson_append_array_begin (STACK_BSON_PARENT, key, -1,
-                                                    STACK_BSON_CHILD));
+         BCON_STACK_PUSH_ARRAY (bson_append_array_begin (BCON_STACK_BSON_PARENT, key, -1,
+                                                    BCON_STACK_BSON_CHILD));
          break;
       case BCON_TYPE_ARRAY_END:
-         STACK_POP_ARRAY (bson_append_array_end (STACK_BSON_PARENT,
-                                                 STACK_BSON_CHILD));
+         BCON_STACK_POP_ARRAY (bson_append_array_end (BCON_STACK_BSON_PARENT,
+                                                 BCON_STACK_BSON_CHILD));
          break;
       default:
-         _bcon_append_single (STACK_BSON_CHILD, type, key, &u);
+         _bcon_append_single (BCON_STACK_BSON_CHILD, type, key, &u);
 
          break;
       }
@@ -840,7 +840,7 @@ bcon_append_ctx_va (bson_t            *bson,
  * var_args stuff is already incredibly fragile to mistakes, and we have no way
  * of introspecting, so just don't screw it up).
  *
- * There are also a few STACK_* macros in here which manimpulate ctx that are
+ * There are also a few BCON_STACK_* macros in here which manimpulate ctx that are
  * defined up top.
  *
  * The function returns true if all tokens could be successfully matched, false
@@ -862,9 +862,9 @@ bcon_extract_ctx_va (bson_t             *bson,
    bson_iter_init (&root_iter, bson);
 
    while (1) {
-      if (STACK_IS_ARRAY) {
-         bson_uint32_to_string (STACK_I, &key, i_str, sizeof i_str);
-         STACK_I++;
+      if (BCON_STACK_IS_ARRAY) {
+         bson_uint32_to_string (BCON_STACK_I, &key, i_str, sizeof i_str);
+         BCON_STACK_I++;
       } else {
          type = _bcon_extract_tokenize (ap, &u);
 
@@ -873,7 +873,7 @@ bcon_extract_ctx_va (bson_t             *bson,
          }
 
          if (type == BCON_TYPE_DOC_END) {
-            STACK_POP_DOC (_noop ());
+            BCON_STACK_POP_DOC (_noop ());
             continue;
          }
 
@@ -886,11 +886,11 @@ bcon_extract_ctx_va (bson_t             *bson,
       assert (type != BCON_TYPE_END);
 
       if (type == BCON_TYPE_DOC_END) {
-         STACK_POP_DOC (_noop ());
+         BCON_STACK_POP_DOC (_noop ());
       } else if (type == BCON_TYPE_ARRAY_END) {
-         STACK_POP_ARRAY (_noop ());
+         BCON_STACK_POP_ARRAY (_noop ());
       } else {
-         memcpy (&current_iter, STACK_ITER_CHILD, sizeof current_iter);
+         memcpy (&current_iter, BCON_STACK_ITER_CHILD, sizeof current_iter);
 
          if (!bson_iter_find (&current_iter, key)) { return false; }
 
@@ -900,22 +900,22 @@ bcon_extract_ctx_va (bson_t             *bson,
             if (bson_iter_type (&current_iter) !=
                 BSON_TYPE_DOCUMENT) { return false; }
 
-            STACK_PUSH_DOC (bson_iter_recurse (&current_iter,
-                                               STACK_ITER_CHILD));
+            BCON_STACK_PUSH_DOC (bson_iter_recurse (&current_iter,
+                                               BCON_STACK_ITER_CHILD));
             break;
          case BCON_TYPE_DOC_END:
-            STACK_POP_DOC (_noop ());
+            BCON_STACK_POP_DOC (_noop ());
             break;
          case BCON_TYPE_ARRAY_START:
 
             if (bson_iter_type (&current_iter) !=
                 BSON_TYPE_ARRAY) { return false; }
 
-            STACK_PUSH_ARRAY (bson_iter_recurse (&current_iter,
-                                                 STACK_ITER_CHILD));
+            BCON_STACK_PUSH_ARRAY (bson_iter_recurse (&current_iter,
+                                                 BCON_STACK_ITER_CHILD));
             break;
          case BCON_TYPE_ARRAY_END:
-            STACK_POP_ARRAY (_noop ());
+            BCON_STACK_POP_ARRAY (_noop ());
             break;
          default:
 
