@@ -15,7 +15,7 @@ const char *key;
 uint32_t i;
 
 for (i = 0; i < 10; i++) {
-   bson_uint32_to_string (i, &key, str, sizeof str);
+   bson_uint32_to_string (i, &key, str, sizeof (str));
    printf ("Key: %s\n", key);
 }]]></code></synopsis>
     </example>
