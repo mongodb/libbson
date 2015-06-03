@@ -1412,9 +1412,7 @@ bson_json_reader_new_from_file (const char   *path,  /* IN */
    bson_return_val_if_fail (path, NULL);
 
 #ifdef BSON_OS_WIN32
-   int errno = _sopen_s (&fd, path, (_O_RDONLY | _O_BINARY), _SH_DENYNO, _S_IREAD);
-   if (errno != 0)
-       fd=-1;
+   _sopen_s (&fd, path, (_O_RDONLY | _O_BINARY), _SH_DENYNO, _S_IREAD);
 #else
    fd = open (path, O_RDONLY);
 #endif
