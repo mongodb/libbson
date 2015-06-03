@@ -29,7 +29,7 @@
 #include <yajl/yajl_parser.h>
 #include <yajl/yajl_bytestack.h>
 
-#ifdef _WIN32
+#ifdef BSON_OS_WIN32
 # include <io.h>
 # include <share.h>
 #endif
@@ -211,13 +211,16 @@ static yajl_alloc_funcs gYajlAllocFuncs = {
 };
 
 
+#undef STACK_ELE
 #define STACK_ELE(_delta, _name) (bson->stack[(_delta) + bson->n]._name)
+#undef STACK_BSON
 #define STACK_BSON(_delta) \
       (((_delta) + bson->n) == 0 ? bson->bson : &STACK_ELE (_delta, bson))
 #define STACK_BSON_PARENT STACK_BSON (-1)
 #define STACK_BSON_CHILD STACK_BSON (0)
 #define STACK_I STACK_ELE (0, i)
 #define STACK_IS_ARRAY STACK_ELE (0, is_array)
+#undef STACK_PUSH_ARRAY
 #define STACK_PUSH_ARRAY(statement) \
    do { \
       if (bson->n >= (STACK_MAX - 1)) { return 0; } \
@@ -228,6 +231,7 @@ static yajl_alloc_funcs gYajlAllocFuncs = {
          statement; \
       } \
    } while (0)
+#undef STACK_PUSH_DOC
 #define STACK_PUSH_DOC(statement) \
    do { \
       if (bson->n >= (STACK_MAX - 1)) { return 0; } \
@@ -237,6 +241,7 @@ static yajl_alloc_funcs gYajlAllocFuncs = {
          statement; \
       } \
    } while (0)
+#undef STACK_POP_ARRAY
 #define STACK_POP_ARRAY(statement) \
    do { \
       if (!STACK_IS_ARRAY) { return 0; } \
@@ -246,6 +251,7 @@ static yajl_alloc_funcs gYajlAllocFuncs = {
       } \
       bson->n--; \
    } while (0)
+#undef STACK_POP_DOC
 #define STACK_POP_DOC(statement) \
    do { \
       if (STACK_IS_ARRAY) { return 0; } \

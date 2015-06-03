@@ -42,11 +42,12 @@
 
 #include "bson-compat.h"
 
-#define Assert(Cond) if (!(Cond)) abort()
+#ifndef Assert
+  #define Assert(Cond) if (!(Cond)) abort()
+#endif
 
-static const char Base64[] =
-	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-static const char Pad64 = '=';
+extern const char Base64[];
+extern const char Pad64;
 
 /* (From RFC1521 and draft-ietf-dnssec-secext-03.txt)
    The following encoding technique is taken from RFC 1521 by Borenstein
