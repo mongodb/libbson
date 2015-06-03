@@ -200,7 +200,8 @@ add_executable(test-libbson
 target_link_libraries(test-libbson bson_static)
 add_test(NAME test-libbson COMMAND test-libbson)
 
-file(COPY ${SOURCE_DIR}/tests/binary DESTINATION ${PROJECT_BINARY_DIR}/tests)
+file(COPY ${SOURCE_DIR}/tests/binary ${SOURCE_DIR}/tests/json
+     DESTINATION ${PROJECT_BINARY_DIR}/tests)
 
 install(
   TARGETS bson_shared bson_static
