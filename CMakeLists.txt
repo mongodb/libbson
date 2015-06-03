@@ -99,6 +99,7 @@ set (SOURCES
    ${SOURCE_DIR}/src/bson/bson-oid.c
    ${SOURCE_DIR}/src/bson/bson-reader.c
    ${SOURCE_DIR}/src/bson/bson-string.c
+   ${SOURCE_DIR}/src/bson/bson-timegm.c
    ${SOURCE_DIR}/src/bson/bson-utf8.c
    ${SOURCE_DIR}/src/bson/bson-value.c
    ${SOURCE_DIR}/src/bson/bson-version.c
