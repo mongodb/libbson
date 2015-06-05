@@ -2346,7 +2346,15 @@ _bson_as_json_visit_double (const bson_iter_t *iter,
 {
    bson_json_state_t *state = data;
 
+#ifdef _MSC_VER
+   unsigned int current_format = _set_output_format(_TWO_DIGIT_EXPONENT);
+#endif
+
    bson_string_append_printf (state->str, "%.15g", v_double);
+
+#ifdef _MSC_VER
+   _set_output_format(current_format);
+#endif
 
    return false;
 }
