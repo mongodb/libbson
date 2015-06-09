@@ -472,6 +472,34 @@ test_bson_json_read_bad_cb(void)
    bson_destroy (&bson);
 }
 
+static ssize_t
+test_bson_json_read_invalid_helper (void *ctx, uint8_t *buf, size_t len)
+{
+   assert (len);
+   *buf = 0x80;  /* no UTF-8 sequence can start with 0x80 */
+   return 1;
+}
+
+static void
+test_bson_json_read_invalid(void)
+{
+   bson_error_t error;
+   bson_json_reader_t *reader;
+   int r;
+   bson_t bson = BSON_INITIALIZER;
+
+   reader = bson_json_reader_new (NULL, test_bson_json_read_invalid_helper, NULL, false, 0);
+
+   r = bson_json_reader_read (reader, &bson, &error);
+
+   assert(r == -1);
+   assert(error.domain == BSON_ERROR_JSON);
+   assert(error.code == BSON_JSON_ERROR_READ_CORRUPT_JS);
+
+   bson_json_reader_destroy (reader);
+   bson_destroy (&bson);
+}
+
 static void
 test_bson_json_number_long (void)
 {
@@ -654,5 +682,6 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/json/read/missing_complex", test_bson_json_read_missing_complex);
    TestSuite_Add (suite, "/bson/json/read/invalid_json", test_bson_json_read_invalid_json);
    TestSuite_Add (suite, "/bson/json/read/bad_cb", test_bson_json_read_bad_cb);
+   TestSuite_Add (suite, "/bson/json/read/invalid", test_bson_json_read_invalid);
    TestSuite_Add (suite, "/bson/json/read/$numberLong", test_bson_json_number_long);
 }

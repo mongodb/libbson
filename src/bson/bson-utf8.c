@@ -266,6 +266,7 @@ bson_utf8_escape_for_json (const char *utf8,     /* IN */
 {
    bson_unichar_t c;
    bson_string_t *str;
+   bool length_provided = true;
    const char *end;
 
    bson_return_val_if_fail (utf8, NULL);
@@ -273,12 +274,13 @@ bson_utf8_escape_for_json (const char *utf8,     /* IN */
    str = bson_string_new (NULL);
 
    if (utf8_len < 0) {
+      length_provided = false;
       utf8_len = strlen (utf8);
    }
 
    end = utf8 + utf8_len;
 
-   for (; utf8 < end; utf8 = bson_utf8_next_char (utf8)) {
+   while (utf8 < end) {
       c = bson_utf8_get_char (utf8);
 
       switch (c) {
@@ -310,6 +312,19 @@ bson_utf8_escape_for_json (const char *utf8,     /* IN */
             bson_string_append_unichar (str, c);
          }
          break;
+      }
+
+      if (c) {
+         utf8 = bson_utf8_next_char (utf8);
+      } else {
+         if (length_provided && !*utf8) {
+            /* we escaped nil as '\u0000', now advance past it */
+            utf8++;
+         } else {
+            /* invalid UTF-8 */
+            bson_string_free (str, true);
+            return NULL;
+         }
       }
    }
 
