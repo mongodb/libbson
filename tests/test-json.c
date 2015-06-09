@@ -516,8 +516,8 @@ test_bson_json_read_bad_cb(void)
    r = bson_json_reader_read (reader, &bson, &error);
 
    assert(r == -1);
-   assert(error.domain = BSON_ERROR_JSON);
-   assert(error.code = BSON_JSON_ERROR_READ_CB_FAILURE);
+   assert(error.domain == BSON_ERROR_JSON);
+   assert(error.code == BSON_JSON_ERROR_READ_CB_FAILURE);
 
    bson_json_reader_destroy (reader);
    bson_destroy (&bson);
