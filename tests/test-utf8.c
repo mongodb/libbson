@@ -66,6 +66,38 @@ test_bson_utf8_escape_for_json (void)
 
 
 static void
+test_bson_utf8_invalid (void)
+{
+   /* no UTF-8 sequence can start with 0x80 */
+   static const unsigned char bad[] = {0x80, 0};
+
+   assert (!bson_utf8_validate ((const char *)bad, 1, true));
+   assert (!bson_utf8_validate ((const char *)bad, 1, false));
+   assert (!bson_utf8_escape_for_json ((const char *)bad, 1));
+}
+
+
+static void
+test_bson_utf8_nil (void)
+{
+   static const unsigned char test[] = {'a', 0, 'b', 0};
+   char *str;
+
+   assert (bson_utf8_validate ((const char *)test, 3, true));
+   assert (!bson_utf8_validate ((const char *)test, 3, false));
+
+   /* no length provided, stop at first nil */
+   str = bson_utf8_escape_for_json ((const char *)test, -1);
+   ASSERT_CMPSTR ("a", str);
+   bson_free (str);
+
+   str = bson_utf8_escape_for_json ((const char *)test, 3);
+   ASSERT_CMPSTR ("a\\u0000b", str);
+   bson_free (str);
+}
+
+
+static void
 test_bson_utf8_get_char (void)
 {
    static const char *test1 = "asdf";
@@ -211,6 +243,8 @@ void
 test_utf8_install (TestSuite *suite)
 {
    TestSuite_Add (suite, "/bson/utf8/validate", test_bson_utf8_validate);
+   TestSuite_Add (suite, "/bson/utf8/invalid", test_bson_utf8_invalid);
+   TestSuite_Add (suite, "/bson/utf8/nil", test_bson_utf8_nil);
    TestSuite_Add (suite, "/bson/utf8/escape_for_json", test_bson_utf8_escape_for_json);
    TestSuite_Add (suite, "/bson/utf8/get_char_next_char", test_bson_utf8_get_char);
    TestSuite_Add (suite, "/bson/utf8/from_unichar", test_bson_utf8_from_unichar);
