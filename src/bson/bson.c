@@ -711,7 +711,7 @@ bson_append_document_end (bson_t *bson,   /* IN */
  *       since few buffers need to be malloced.
  *
  * Returns:
- *       true if successful; otherwise false indiciating INT_MAX overflow.
+ *       true if successful; otherwise false indicating INT_MAX overflow.
  *
  * Side effects:
  *       None.
