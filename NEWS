@@ -12,6 +12,27 @@ Thanks to everyone who contributed to the development of this beta.
  * Hannes Magnusson
 
 -- A. Jesse Jiryu Davis
+Libbson-1.1.7
+=============
+
+It is my pleasure to announce to you the release of Libbson-1.1.7.
+
+This is a patch release with bug fixes:
+
+ * Unchecked error in bson_utf8_escape_for_json caused unbounded memory growth
+   and a crash.
+ * Nicer floating-point formatting in bson_as_json.
+ * Link error with CMake on Mac.
+
+Thanks to everyone who contributed to this version of Libbson.
+
+ * A. Jesse Jiryu Davis
+ * Jason Carey
+ * Jeroen Ooms
+ * Hannes Magnusson
+ * Hendrik Dahlkamp
+
+-- A. Jesse Jiryu Davis
 
 Libbson-1.1.6
 =============
