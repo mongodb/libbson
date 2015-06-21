@@ -1,11 +1,11 @@
 Name:           libbson
-Version:        1.1.7
+Version:        1.1.8
 Release:        1%{?dist}
 Summary:        BSON library
 
 License:        ASL 2.0
 URL:            https://github.com/mongodb/libbson
-Source0:        https://github.com/mongodb/libbson/releases/download/1.1.7/libbson-1.1.7.tar.gz
+Source0:        https://github.com/mongodb/mongo-c-driver/releases/download/%{Version}/mongo-c-driver-%{Version}.tar.gz
 BuildRequires:  automake
 
 %description
@@ -55,6 +55,9 @@ find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 %{_prefix}/share/man/man3/*
 
 %changelog
+
+* Sun June 21 2015 A. Jesse Jiryu Davis <jesse@mongodb.com> - 1.1.8-1
+- Release 1.1.8
 
 * Tue June 9 2015 A. Jesse Jiryu Davis <jesse@mongodb.com> - 1.1.7-1
 - Release 1.1.7
