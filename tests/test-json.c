@@ -142,6 +142,7 @@ test_bson_as_json_double (void)
 static void
 test_bson_as_json_utf8 (void)
 {
+#ifndef _MSC_VER
    size_t len;
    bson_t *b;
    char *str;
@@ -152,6 +153,7 @@ test_bson_as_json_utf8 (void)
    assert(!strcmp(str, "{ \"€€€€€\" : \"€€€€€\" }"));
    bson_free(str);
    bson_destroy(b);
+#endif
 }
 
 

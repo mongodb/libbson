@@ -1076,6 +1076,7 @@ test_bson_new_from_buffer (void)
 static void
 test_bson_utf8_key (void)
 {
+#ifndef _MSC_VER
    uint32_t length;
    bson_iter_t iter;
    const char *str;
@@ -1091,6 +1092,7 @@ test_bson_utf8_key (void)
    assert(length == 15); /* 5 3-byte sequences. */
    assert(!strcmp(str, "€€€€€"));
    bson_destroy(b);
+#endif
 }
 
 
