@@ -575,6 +575,14 @@ bson_dec128_from_string (const char    *string, /* IN */
    /* Round */
    /* We've normalized the exponent, but might still need to round. */
    if (last_digit - first_digit + 1 < significant_digits) {
+      size_t end_of_string = ndigits_read;
+      /* If we have seen a radix point, 'string' is 1 longer than we have
+       * documented with ndigits_read, so inc the position of the first nonzero
+       * digit and the position that digits are read to. */
+      if (saw_radix && exponent == BSON_DEC128_EXPONENT_MIN) {
+         first_nonzero++;
+         end_of_string++;
+      }
       /* There are non-zero digits after last_digit that need rounding. */
       /* We round to nearest, ties to even */
       uint8_t round_digit = string[first_nonzero + last_digit + 1] - '0',
@@ -586,7 +594,7 @@ bson_dec128_from_string (const char    *string, /* IN */
          if (round_digit == 5) {
             round_bit = digits[last_digit] % 2 == 1;
 
-            for (i = first_nonzero + last_digit + 2; i < ndigits_read; i++) {
+            for (i = first_nonzero + last_digit + 2; i < end_of_string; i++) {
                if (string[i] - '0') {
                   round_bit = 1;
                   break;

@@ -494,6 +494,7 @@ static void
 test_dec128_from_string__round (void) {
    bson_dec128_t truncate;
    bson_dec128_t up;
+   bson_dec128_t up_literal;
    bson_dec128_t check_tie_up;
    bson_dec128_t check_tie_trunc;
    bson_dec128_t extra_digit_up;
@@ -509,6 +510,15 @@ test_dec128_from_string__round (void) {
 
    bson_dec128_from_string ("10E-6177", &truncate);
    bson_dec128_from_string ("15E-6177", &up);
+
+   // Test rounding with 'max exponent' range of characters: 0.000...00015
+   char up_literal_string[6180] = {[0 ... sizeof up_literal_string - 1] = '0'};
+   up_literal_string[1] = '.';
+   up_literal_string[6177] = '1';
+   up_literal_string[6178] = '5';
+   up_literal_string[6179] = '\0';
+   bson_dec128_from_string (up_literal_string, &up_literal);
+
    bson_dec128_from_string ("251E-6178", &check_tie_up);
    bson_dec128_from_string ("250E-6178", &check_tie_trunc);
 
@@ -532,6 +542,7 @@ test_dec128_from_string__round (void) {
 
    assert (dec128_equal (&truncate, 0x0000000000000000, 0x0000000000000001));
    assert (dec128_equal (&up, 0x0000000000000000, 0x0000000000000002));
+   assert (dec128_equal (&up_literal, 0x0000000000000000, 0x0000000000000002));
    assert (dec128_equal (&check_tie_up, 0x0000000000000000, 0x0000000000000003));
    assert (dec128_equal (&check_tie_trunc, 0x0000000000000000, 0x0000000000000002));
 
