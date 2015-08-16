@@ -11,10 +11,10 @@ set (SOURCE_DIR "${PROJECT_SOURCE_DIR}/")
 
 set (BSON_MAJOR_VERSION 1)
 set (BSON_MINOR_VERSION 1)
-set (BSON_MICRO_VERSION 7)
+set (BSON_MICRO_VERSION 11)
 set (BSON_PRERELEASE_VERSION dev)
 set (BSON_API_VERSION 1.0)
-set (BSON_VERSION 1.1.7-dev)
+set (BSON_VERSION 1.1.11-dev)
 
 set (CPACK_RESOURCE_FILE_LICENSE "${SOURCE_DIR}/COPYING")
 set (CPACK_PACKAGE_VERSION_MAJOR ${BSON_MAJOR_VERSION})
@@ -45,9 +45,21 @@ else ()
 
    set (BSON_OS 1)
    CHECK_FUNCTION_EXISTS(clock_gettime BSON_HAVE_CLOCK_GETTIME)
+   if (NOT BSON_HAVE_CLOCK_GETTIME)
+      set(BSON_HAVE_CLOCK_GETTIME 0)
+   endif ()
    CHECK_FUNCTION_EXISTS(strnlen BSON_HAVE_STRNLEN)
+   if (NOT BSON_HAVE_STRNLEN)
+      set(BSON_HAVE_STRNLEN 0)
+   endif ()
    CHECK_FUNCTION_EXISTS(snprintf BSON_HAVE_SNPRINTF)
+   if (NOT BSON_HAVE_SNPRINTF)
+      set(BSON_HAVE_SNPRINTF 0)
+   endif ()
    CHECK_INCLUDE_FILE(stdbool.h BSON_HAVE_STDBOOL_H)
+   if (NOT BSON_HAVE_STDBOOL_H)
+      set(BSON_HAVE_STDBOOL_H 0)
+   endif ()
 endif ()
 
 set (BSON_HAVE_ATOMIC_32_ADD_AND_FETCH 1)
@@ -98,6 +110,7 @@ set (SOURCES
    ${SOURCE_DIR}/src/bson/bson-oid.c
    ${SOURCE_DIR}/src/bson/bson-reader.c
    ${SOURCE_DIR}/src/bson/bson-string.c
+   ${SOURCE_DIR}/src/bson/bson-timegm.c
    ${SOURCE_DIR}/src/bson/bson-utf8.c
    ${SOURCE_DIR}/src/bson/bson-value.c
    ${SOURCE_DIR}/src/bson/bson-version.c
