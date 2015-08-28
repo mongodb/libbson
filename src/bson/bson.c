@@ -422,7 +422,7 @@ _bson_append (bson_t        *bson,        /* IN */
  *       @key_type MUST be either BSON_TYPE_DOCUMENT or BSON_TYPE_ARRAY.
  *
  * Returns:
- *       true if successful; otherwise false indiciating INT_MAX overflow.
+ *       true if successful; otherwise false indicating INT_MAX overflow.
  *
  * Side effects:
  *       @child is initialized if true is returned.
@@ -522,7 +522,7 @@ _bson_append_bson_begin (bson_t      *bson,        /* IN */
  *       Complete a call to _bson_append_bson_begin.
  *
  * Returns:
- *       true if successful; otherwise false indiciating INT_MAX overflow.
+ *       true if successful; otherwise false indicating INT_MAX overflow.
  *
  * Side effects:
  *       @child is destroyed and no longer valid after calling this
@@ -612,7 +612,7 @@ bson_append_array_begin (bson_t     *bson,         /* IN */
  *       function.
  *
  * Returns:
- *       true if successful; otherwise false indiciating INT_MAX overflow.
+ *       true if successful; otherwise false indicating INT_MAX overflow.
  *
  * Side effects:
  *       @child is invalid after calling this function.
