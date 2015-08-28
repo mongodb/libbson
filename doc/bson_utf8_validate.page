@@ -24,7 +24,7 @@ bson_utf8_validate (const char *utf8,
     <table>
       <tr><td><p><code>utf8</code></p></td><td><p>A string to verify.</p></td></tr>
       <tr><td><p><code>utf8_len</code></p></td><td><p>The length of <code>utf8</code> in bytes.</p></td></tr>
-      <tr><td><p><code>allow_null</code></p></td><td><p>A bool indiciating that embedded <code>\0</code> bytes are allowed.</p></td></tr>
+      <tr><td><p><code>allow_null</code></p></td><td><p>A bool indicating that embedded <code>\0</code> bytes are allowed.</p></td></tr>
     </table>
   </section>
 
