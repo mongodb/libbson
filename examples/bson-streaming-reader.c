@@ -49,7 +49,7 @@ bson_streaming_remote_read (const char *hostname,
                             int         port)
 {
    FILE              *fd;
-   int		          sock;
+   int                sock;
    struct hostent    *server_host;
    struct sockaddr_in my_addr;
    struct sockaddr_in server_addr;
@@ -121,6 +121,16 @@ bson_streaming_remote_read (const char *hostname,
 }
 
 
+/*
+ * main --
+ *
+ *       Connects to a server and reads BSON from it. This program takes the
+ *       following command line options:
+ *
+ *          -h              Print this help and exit.
+ *          -s SERVER_NAME  Specify the host name of the server.
+ *          -p PORT_NUM     Specify the port number to connect to on the server.
+ */
 int
 main (int   argc,
       char *argv[])
@@ -128,10 +138,10 @@ main (int   argc,
    FILE           *fd;
    bson_reader_t  *reader;
    const bson_t   *document;
-   char           *hostname;
+   char           *hostname = NULL;
    char           *json;
-   int		       opt;
-   int		       port;
+   int             opt;
+   int             port;
 
    opterr = 1;
 
@@ -147,9 +157,12 @@ main (int   argc,
          port = (int)(strtol (optarg, NULL, 0));
          break;
       case "s":
+         free (hostname);
          hostname = (char *)malloc (strlen (optarg));
          strcpy (hostname, optarg);
          break;
+      default:
+         fprintf (stderr, "Unknown option: %s\n", optarg);
       }
    }
 
