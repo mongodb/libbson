@@ -32,8 +32,14 @@ json_to_bson_SOURCES = examples/json-to-bson.c
 json_to_bson_CPPFLAGS = $(EXAMPLE_CFLAGS)
 json_to_bson_LDADD = libbson-1.0.la
 
+
 noinst_PROGRAMS += bson-metrics
 bson_metrics_SOURCES = examples/bson-metrics.c
 bson_metrics_CPPFLAGS = $(EXAMPLE_CFLAGS)
 bson_metrics_LDADD = -lm libbson-1.0.la
 
+
+noinst_PROGRAMS += bson-streaming-reader
+bson_streaming_reader_SOURCES = examples/bson-streaming-reader.c
+bson_streaming_reader_CPPFLAGS = $(EXAMPLE_CFLAGS)
+bson_streaming_reader_LDADD = libbson-1.0.la
