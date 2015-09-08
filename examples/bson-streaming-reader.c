@@ -164,7 +164,7 @@ main (int   argc,
     * JSON onto STDOUT.
     */
    fd = bson_streaming_remote_open (hostname, port);
-   if (!fd) {
+   if (fd == -1) {
       return EXIT_FAILURE;
    }
 
