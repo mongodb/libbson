@@ -114,7 +114,7 @@ set (SOURCES
    ${SOURCE_DIR}/src/bson/bson-timegm.c
    ${SOURCE_DIR}/src/bson/bson-utf8.c
    ${SOURCE_DIR}/src/bson/bson-value.c
-   ${SOURCE_DIR}/src/bson/bson-version.c
+   ${SOURCE_DIR}/src/bson/bson-version-functions.c
    ${SOURCE_DIR}/src/bson/bson-writer.c
    ${SOURCE_DIR}/src/yajl/yajl_alloc.c
    ${SOURCE_DIR}/src/yajl/yajl_buf.c
@@ -152,6 +152,7 @@ set (HEADERS
    ${SOURCE_DIR}/src/bson/bson-types.h
    ${SOURCE_DIR}/src/bson/bson-utf8.h
    ${SOURCE_DIR}/src/bson/bson-value.h
+   ${SOURCE_DIR}/src/bson/bson-version-functions.h
    ${SOURCE_DIR}/src/bson/bson-writer.h
 )
 
@@ -205,6 +206,7 @@ add_executable(test-libbson
    ${SOURCE_DIR}/tests/test-string.c
    ${SOURCE_DIR}/tests/test-utf8.c
    ${SOURCE_DIR}/tests/test-value.c
+   ${SOURCE_DIR}/tests/test-version.c
    ${SOURCE_DIR}/tests/test-writer.c
    ${SOURCE_DIR}/tests/test-bcon-basic.c
    ${SOURCE_DIR}/tests/test-bcon-extract.c

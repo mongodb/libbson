@@ -19,6 +19,7 @@ test_libbson_SOURCES = \
 	tests/test-string.c \
 	tests/test-utf8.c \
 	tests/test-value.c \
+	tests/test-version.c \
 	tests/test-writer.c \
 	tests/test-bcon-basic.c \
 	tests/test-bcon-extract.c
