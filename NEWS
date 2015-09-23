@@ -1,6 +1,20 @@
 Libbson-1.1.11
 ==============
 
+It is my pleasure to announce to you the release of Libbson-1.1.11.
+
+This is a patch release with improvements to the documentation:
+
+  * Document bson streaming reads with an example,
+    bson-streaming-reader.c.
+  * Document callback function types bson_reader_destroy_func_t and
+    bson_reader_read_func_t.
+
+Thanks to Kyle Suarez for his contributions to this version of Libbson.
+
+-- A. Jesse Jiryu Davis
+
+
 Libbson-1.1.10
 ==============
 

@@ -1,5 +1,5 @@
 Name:           libbson
-Version:        1.1.10
+Version:        1.1.11
 Release:        1%{?dist}
 Summary:        BSON library
 
@@ -55,6 +55,9 @@ find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 %{_prefix}/share/man/man3/*
 
 %changelog
+
+* Wed September 23 2015 A. Jesse Jiryu Davis <jesse@mongodb.com> - 1.1.11-1
+- Release 1.1.11
 
 * Tue July 21 2015 A. Jesse Jiryu Davis <jesse@mongodb.com> - 1.1.10-1
 - Release 1.1.10
