@@ -23,6 +23,7 @@ platform here, we would be happy to hear from you.
  * Solaris
  * FreeBSD 10
  * Windows Vista, 7, 8
+ * OS X 10.8
 
 ### Supported Architectures
 
