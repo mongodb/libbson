@@ -202,34 +202,6 @@
 #endif
 
 
-#ifndef BSON_DISABLE_CHECKS
-#  define bson_return_if_fail(test) \
-   do { \
-      if (!(test)) { \
-         fprintf (stderr, "%s(): precondition failed: %s\n", \
-                  __FUNCTION__, #test); \
-         return; \
-      } \
-   } while (0)
-#else
-#  define bson_return_if_fail(test)
-#endif
-
-
-#ifndef BSON_DISABLE_CHECKS
-#  define bson_return_val_if_fail(test, val) \
-   do { \
-      if (!(test)) { \
-         fprintf (stderr, "%s(): precondition failed: %s\n", \
-                  __FUNCTION__, #test); \
-         return (val); \
-      } \
-   } while (0)
-#else
-#  define bson_return_val_if_fail(test, val)
-#endif
-
-
 #ifdef _MSC_VER
 #  define BSON_ENSURE_ARRAY_PARAM_SIZE(_n)
 #  define BSON_TYPEOF decltype
