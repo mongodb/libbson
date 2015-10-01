@@ -1,5 +1,5 @@
 Name:           libbson
-Version:        1.2.0-beta
+Version:        1.2.0-rc0
 Release:        1%{?dist}
 Summary:        BSON library
 
