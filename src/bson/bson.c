@@ -17,6 +17,7 @@
 
 #include <stdarg.h>
 #include <string.h>
+#include <math.h>
 
 #include "b64_ntop.h"
 #include "bson.h"

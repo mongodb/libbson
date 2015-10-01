@@ -11,7 +11,50 @@ Thanks to everyone who contributed to the development of this beta.
  * Jason Carey
  * Hannes Magnusson
 
+
+Libbson-1.1.11
+==============
+
+It is my pleasure to announce to you the release of Libbson-1.1.11.
+
+This is a patch release with improvements to the documentation:
+
+  * Document bson streaming reads with an example,
+    bson-streaming-reader.c.
+  * Document callback function types bson_reader_destroy_func_t and
+    bson_reader_read_func_t.
+
+Thanks to Kyle Suarez for his contributions to this version of Libbson.
+
 -- A. Jesse Jiryu Davis
+
+
+Libbson-1.1.10
+==============
+
+No change since 1.1.9; released to keep pace with libmongoc's version.
+
+-- A. Jesse Jiryu Davis
+
+
+Libbson-1.1.9
+=============
+
+This is a patch release with a fix for the build system:
+
+ * "./configure --enable-coverage" works now.
+
+-- A. Jesse Jiryu Davis
+
+
+Libbson-1.1.8
+=============
+
+No change since 1.1.7; released to keep pace with libmongoc's version.
+
+-- A. Jesse Jiryu Davis
+
+
 Libbson-1.1.7
 =============
 
@@ -33,6 +76,7 @@ Thanks to everyone who contributed to this version of Libbson.
  * Hendrik Dahlkamp
 
 -- A. Jesse Jiryu Davis
+
 
 Libbson-1.1.6
 =============

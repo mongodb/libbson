@@ -737,5 +737,6 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/json/read/file", test_json_reader_new_from_file);
    TestSuite_Add (suite, "/bson/json/read/bad_path", test_json_reader_new_from_bad_path);
    TestSuite_Add (suite, "/bson/json/read/invalid", test_bson_json_read_invalid);
+   TestSuite_Add (suite, "/bson/json/read/invalid", test_bson_json_read_invalid);
    TestSuite_Add (suite, "/bson/json/read/$numberLong", test_bson_json_number_long);
 }
