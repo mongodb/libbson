@@ -53,12 +53,6 @@ libbson_la_CPPFLAGS = \
 	-I$(top_srcdir)/src/yajl \
 	-I$(top_builddir)/src/bson
 
-if !ENABLE_DEBUG
-libbson_la_CPPFLAGS += \
-	-DBSON_DISABLE_ASSERT \
-	-DBSON_DISABLE_CHECKS
-endif
-
 libbson_la_CFLAGS = \
 	$(MAINTAINER_CFLAGS) \
 	$(OPTIMIZE_CFLAGS) \

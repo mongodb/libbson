@@ -137,11 +137,14 @@
 #define bson_str_empty0(s) (!s || !s[0])
 
 
-#ifndef BSON_DISABLE_ASSERT
-#  define BSON_ASSERT(s) assert ((s))
-#else
-#  define BSON_ASSERT(s)
-#endif
+#define BSON_ASSERT(test) \
+   do { \
+      if (!(BSON_LIKELY(test))) { \
+         fprintf (stderr, "%s:%d %s(): precondition failed: %s\n", \
+                  __FILE__, __LINE__, __FUNCTION__, #test); \
+         abort (); \
+      } \
+   } while (0)
 
 
 #define BSON_STATIC_ASSERT(s) BSON_STATIC_ASSERT_ (s, __LINE__)
