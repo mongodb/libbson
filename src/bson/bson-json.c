@@ -316,9 +316,6 @@ _bson_json_read_set_error (bson_json_reader_t *reader, /* IN */
 {
    va_list ap;
 
-   BSON_ASSERT (reader);
-   BSON_ASSERT (fmt);
-
    if (reader->error) {
       reader->error->domain = BSON_ERROR_JSON;
       reader->error->code = BSON_JSON_ERROR_READ_INVALID_PARAM;
@@ -337,8 +334,6 @@ static void
 _bson_json_buf_ensure (bson_json_buf_t *buf, /* IN */
                        size_t           len) /* IN */
 {
-   BSON_ASSERT (buf);
-
    if (buf->n_bytes < len) {
       bson_free (buf->buf);
 
@@ -351,8 +346,6 @@ _bson_json_buf_ensure (bson_json_buf_t *buf, /* IN */
 static void
 _bson_json_read_fixup_key (bson_json_reader_bson_t *bson) /* IN */
 {
-   BSON_ASSERT (bson);
-
    if (bson->n >= 0 && STACK_IS_ARRAY) {
       _bson_json_buf_ensure (&bson->key_buf, 12);
       bson->key_buf.len = bson_uint32_to_string (STACK_I, &bson->key,
@@ -1097,8 +1090,8 @@ bson_json_reader_read (bson_json_reader_t *reader, /* IN */
    bool read_something = false;
    int ret = 0;
 
-   bson_return_val_if_fail (reader, -1);
-   bson_return_val_if_fail (bson, -1);
+   BSON_ASSERT (reader);
+   BSON_ASSERT (bson);
 
    p = &reader->producer;
    yh = reader->yh;
@@ -1286,7 +1279,7 @@ bson_new_from_json (const uint8_t *data,  /* IN */
    bson_t *bson;
    int r;
 
-   bson_return_val_if_fail (data, NULL);
+   BSON_ASSERT (data);
 
    if (len < 0) {
       len = (ssize_t)strlen ((const char *)data);
@@ -1316,8 +1309,8 @@ bson_init_from_json (bson_t       *bson,  /* OUT */
    bson_json_reader_t *reader;
    int r;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (data, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (data);
 
    if (len < 0) {
       len = strlen (data);
@@ -1387,7 +1380,7 @@ bson_json_reader_new_from_fd (int fd,                /* IN */
 {
    bson_json_reader_handle_fd_t *handle;
 
-   bson_return_val_if_fail (fd != -1, NULL);
+   BSON_ASSERT (fd != -1);
 
    handle = bson_malloc0 (sizeof *handle);
    handle->fd = fd;
@@ -1409,7 +1402,7 @@ bson_json_reader_new_from_file (const char   *path,  /* IN */
    char *errmsg;
    int fd = -1;
 
-   bson_return_val_if_fail (path, NULL);
+   BSON_ASSERT (path);
 
 #ifdef BSON_OS_WIN32
    _sopen_s (&fd, path, (_O_RDONLY | _O_BINARY), _SH_DENYNO, _S_IREAD);

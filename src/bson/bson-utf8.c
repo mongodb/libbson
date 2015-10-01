@@ -125,7 +125,7 @@ bson_utf8_validate (const char *utf8,       /* IN */
    unsigned i;
    unsigned j;
 
-   bson_return_val_if_fail (utf8, false);
+   BSON_ASSERT (utf8);
 
    for (i = 0; i < utf8_len; i += seq_length) {
       _bson_utf8_get_sequence (&utf8[i], &seq_length, &first_mask);
@@ -269,7 +269,7 @@ bson_utf8_escape_for_json (const char *utf8,     /* IN */
    bool length_provided = true;
    const char *end;
 
-   bson_return_val_if_fail (utf8, NULL);
+   BSON_ASSERT (utf8);
 
    str = bson_string_new (NULL);
 
@@ -359,7 +359,7 @@ bson_utf8_get_char (const char *utf8) /* IN */
    uint8_t num;
    int i;
 
-   bson_return_val_if_fail (utf8, -1);
+   BSON_ASSERT (utf8);
 
    _bson_utf8_get_sequence (utf8, &num, &mask);
    c = (*utf8) & mask;
@@ -398,7 +398,7 @@ bson_utf8_next_char (const char *utf8) /* IN */
    uint8_t mask;
    uint8_t num;
 
-   bson_return_val_if_fail (utf8, NULL);
+   BSON_ASSERT (utf8);
 
    _bson_utf8_get_sequence (utf8, &num, &mask);
 
@@ -435,8 +435,8 @@ bson_utf8_from_unichar (
       char            utf8[BSON_ENSURE_ARRAY_PARAM_SIZE(6)], /* OUT */
       uint32_t       *len)                                   /* OUT */
 {
-   bson_return_if_fail (utf8);
-   bson_return_if_fail (len);
+   BSON_ASSERT (utf8);
+   BSON_ASSERT (len);
 
    if (unichar <= 0x7F) {
       utf8[0] = unichar;

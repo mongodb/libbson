@@ -163,9 +163,9 @@ bson_writer_begin (bson_writer_t  *writer, /* IN */
    bson_impl_alloc_t *b;
    bool grown = false;
 
-   bson_return_val_if_fail (writer, false);
-   bson_return_val_if_fail (writer->ready, false);
-   bson_return_val_if_fail (bson, false);
+   BSON_ASSERT (writer);
+   BSON_ASSERT (writer->ready);
+   BSON_ASSERT (bson);
 
    writer->ready = false;
 
@@ -230,8 +230,8 @@ bson_writer_begin (bson_writer_t  *writer, /* IN */
 void
 bson_writer_end (bson_writer_t *writer) /* IN */
 {
-   bson_return_if_fail (writer);
-   bson_return_if_fail (!writer->ready);
+   BSON_ASSERT (writer);
+   BSON_ASSERT (!writer->ready);
 
    writer->offset += writer->b.len;
    memset (&writer->b, 0, sizeof (bson_t));
@@ -261,7 +261,7 @@ bson_writer_end (bson_writer_t *writer) /* IN */
 void
 bson_writer_rollback (bson_writer_t *writer) /* IN */
 {
-   bson_return_if_fail (writer);
+   BSON_ASSERT (writer);
 
    if (writer->b.len) {
       memset (&writer->b, 0, sizeof (bson_t));

@@ -273,7 +273,7 @@ bson_zero_free (void  *mem,  /* IN */
 void
 bson_mem_set_vtable (const bson_mem_vtable_t *vtable)
 {
-   bson_return_if_fail (vtable);
+   BSON_ASSERT (vtable);
 
    if (!vtable->malloc ||
        !vtable->calloc ||
