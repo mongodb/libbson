@@ -1,6 +1,9 @@
 EXAMPLE_CFLAGS = \
 	-I$(top_srcdir)/src/bson \
 	-I$(top_builddir)/src/bson
+EXAMPLE_STREAMING_CFLAGS = $(EXAMPLE_CFLAGS) \
+	$(SOCKET_CFLAGS)
+EXAMPLE_STREAMING_LDFLAGS = $(SOCKET_LDFLAGS)
 
 
 noinst_PROGRAMS += bson-to-json
@@ -41,5 +44,5 @@ bson_metrics_LDADD = -lm libbson-1.0.la
 
 noinst_PROGRAMS += bson-streaming-reader
 bson_streaming_reader_SOURCES = examples/bson-streaming-reader.c
-bson_streaming_reader_CPPFLAGS = $(EXAMPLE_CFLAGS)
-bson_streaming_reader_LDADD = libbson-1.0.la
+bson_streaming_reader_CPPFLAGS = $(EXAMPLE_STREAMING_CFLAGS)
+bson_streaming_reader_LDADD = $(EXAMPLE_STREAMING_LDFLAGS) libbson-1.0.la
