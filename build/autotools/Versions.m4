@@ -1,7 +1,7 @@
 m4_define([bson_major_version], [1])
 m4_define([bson_minor_version], [2])
 m4_define([bson_micro_version], [0])
-m4_define([bson_prerelease_version], [rc0])
+m4_define([bson_prerelease_version], [dev])
 
 m4_define(
     [bson_version],
