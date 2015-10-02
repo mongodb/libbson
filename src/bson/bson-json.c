@@ -965,7 +965,7 @@ _bson_json_read_start_array (void *_ctx) /* IN */
    bson_json_reader_bson_t *bson = &reader->bson;
 
    if (bson->n < 0) {
-      STACK_PUSH_ARRAY ();
+      STACK_PUSH_ARRAY (NULL);
    } else {
       _bson_json_read_fixup_key (bson);
       key = bson->key;
