@@ -20,6 +20,8 @@ set (CPACK_RESOURCE_FILE_LICENSE "${SOURCE_DIR}/COPYING")
 set (CPACK_PACKAGE_VERSION_MAJOR ${BSON_MAJOR_VERSION})
 set (CPACK_PACKAGE_VERSION_MINOR ${BSON_MINOR_VERSION})
 
+option(BSON_BUILD_TESTS "Build bson tests." ON)
+
 include (CPack)
 
 TEST_BIG_ENDIAN(BSON_BIG_ENDIAN)
@@ -185,34 +187,36 @@ else()
     target_link_libraries (bson_static ws2_32)
 endif()
 
-enable_testing()
+if (BSON_BUILD_TESTS)
+    enable_testing()
 
-add_executable(test-libbson
-   ${SOURCE_DIR}/tests/TestSuite.c
-   ${SOURCE_DIR}/tests/TestSuite.h
-   ${SOURCE_DIR}/tests/test-libbson.c
-   ${SOURCE_DIR}/tests/test-atomic.c
-   ${SOURCE_DIR}/tests/test-bson.c
-   ${SOURCE_DIR}/tests/test-endian.c
-   ${SOURCE_DIR}/tests/test-clock.c
-   ${SOURCE_DIR}/tests/test-error.c
-   ${SOURCE_DIR}/tests/test-iso8601.c
-   ${SOURCE_DIR}/tests/test-iter.c
-   ${SOURCE_DIR}/tests/test-json.c
-   ${SOURCE_DIR}/tests/test-oid.c
-   ${SOURCE_DIR}/tests/test-reader.c
-   ${SOURCE_DIR}/tests/test-string.c
-   ${SOURCE_DIR}/tests/test-utf8.c
-   ${SOURCE_DIR}/tests/test-value.c
-   ${SOURCE_DIR}/tests/test-writer.c
-   ${SOURCE_DIR}/tests/test-bcon-basic.c
-   ${SOURCE_DIR}/tests/test-bcon-extract.c
-)
+    add_executable(test-libbson
+       ${SOURCE_DIR}/tests/TestSuite.c
+       ${SOURCE_DIR}/tests/TestSuite.h
+       ${SOURCE_DIR}/tests/test-libbson.c
+       ${SOURCE_DIR}/tests/test-atomic.c
+       ${SOURCE_DIR}/tests/test-bson.c
+       ${SOURCE_DIR}/tests/test-endian.c
+       ${SOURCE_DIR}/tests/test-clock.c
+       ${SOURCE_DIR}/tests/test-error.c
+       ${SOURCE_DIR}/tests/test-iso8601.c
+       ${SOURCE_DIR}/tests/test-iter.c
+       ${SOURCE_DIR}/tests/test-json.c
+       ${SOURCE_DIR}/tests/test-oid.c
+       ${SOURCE_DIR}/tests/test-reader.c
+       ${SOURCE_DIR}/tests/test-string.c
+       ${SOURCE_DIR}/tests/test-utf8.c
+       ${SOURCE_DIR}/tests/test-value.c
+       ${SOURCE_DIR}/tests/test-writer.c
+       ${SOURCE_DIR}/tests/test-bcon-basic.c
+       ${SOURCE_DIR}/tests/test-bcon-extract.c
+    )
 
-target_link_libraries(test-libbson bson_static)
-add_test(NAME test-libbson COMMAND test-libbson)
+    target_link_libraries(test-libbson bson_static)
+    add_test(NAME test-libbson COMMAND test-libbson)
 
-file(COPY ${SOURCE_DIR}/tests/binary DESTINATION ${PROJECT_BINARY_DIR}/tests)
+    file(COPY ${SOURCE_DIR}/tests/binary DESTINATION ${PROJECT_BINARY_DIR}/tests)
+endif()
 
 install(
   TARGETS bson_shared bson_static
