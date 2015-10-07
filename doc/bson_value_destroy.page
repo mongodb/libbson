@@ -20,7 +20,7 @@ bson_value_destroy (bson_value_t *value);
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>value</code></p></td><td><p>A <link xref="bson_value_t">bson_value_t</link>.</p></td></tr>
+      <tr><td><p><code>value</code></p></td><td><p>A <code xref="bson_value_t">bson_value_t</code>.</p></td></tr>
     </table>
   </section>
 

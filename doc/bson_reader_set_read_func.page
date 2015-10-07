@@ -21,8 +21,8 @@ bson_reader_set_read_func (bson_reader_t          *reader,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>reader</code></p></td><td><p>A <link xref="bson_reader_t">bson_reader_t</link>.</p></td></tr>
-      <tr><td><p><code>func</code></p></td><td><p>A <link xref="bson_reader_read_func_t">bson_reader_read_func_t</link>.</p></td></tr>
+      <tr><td><p><code>reader</code></p></td><td><p>A <code xref="bson_reader_t">bson_reader_t</code>.</p></td></tr>
+      <tr><td><p><code>func</code></p></td><td><p>A <code xref="bson_reader_read_func_t">bson_reader_read_func_t</code>.</p></td></tr>
     </table>
   </section>
 

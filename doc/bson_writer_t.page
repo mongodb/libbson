@@ -29,7 +29,7 @@ void           bson_writer_destroy (bson_writer_t      *writer);]]></code></syno
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_writer_t">bson_writer_t</link> API provides an abstraction for serializing many BSON documents to a single memory region. The memory region may be dynamically allocated and re-allocated as more memory is demanded. This can be useful when building network packets from a high-level language. For example, you can serialize a Python Dictionary directly to a single buffer destined for a TCP packet.</p>
+    <p>The <code xref="bson_writer_t">bson_writer_t</code> API provides an abstraction for serializing many BSON documents to a single memory region. The memory region may be dynamically allocated and re-allocated as more memory is demanded. This can be useful when building network packets from a high-level language. For example, you can serialize a Python Dictionary directly to a single buffer destined for a TCP packet.</p>
   </section>
 
   <links type="topic" groups="function" style="2column">

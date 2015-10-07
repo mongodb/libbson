@@ -49,6 +49,7 @@ typedef struct _bson_mem_vtable_t
 
 
 void  bson_mem_set_vtable (const bson_mem_vtable_t *vtable);
+void  bson_mem_restore_vtable (void);
 void *bson_malloc         (size_t  num_bytes);
 void *bson_malloc0        (size_t  num_bytes);
 void *bson_realloc        (void   *mem,

@@ -41,3 +41,14 @@ if test "$bson_cv_need_braces_on_pthread_once_init" = yes; then
               [PTHREAD_ONCE_INIT needs braces])
 fi
 AC_SUBST([BSON_PTHREAD_ONCE_INIT_NEEDS_BRACES])
+
+# Solaris needs to link against socket libs.
+# This is only used in our streaming bson examples
+if test "$os_solaris" = "yes"; then
+    SOCKET_CFLAGS="$CFLAGS -D__EXTENSIONS__"
+    SOCKET_CFLAGS="$CFLAGS -D_XOPEN_SOURCE=1"
+    SOCKET_CFLAGS="$CFLAGS -D_XOPEN_SOURCE_EXTENDED=1"
+    SOCKET_LDFLAGS="$LDFLAGS -lsocket -lnsl"
+    AC_SUBST(SOCKET_CFLAGS)
+    AC_SUBST(SOCKET_LDFLAGS)
+fi

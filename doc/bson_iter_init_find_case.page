@@ -22,8 +22,8 @@ bson_iter_init_find_case (bson_iter_t  *iter,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>iter</p></td><td><p>A <link xref="bson_iter_t">bson_iter_t</link>.</p></td></tr>
-      <tr><td><p>bson</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
+      <tr><td><p>iter</p></td><td><p>A <code xref="bson_iter_t">bson_iter_t</code>.</p></td></tr>
+      <tr><td><p>bson</p></td><td><p>A <code xref="bson_t">bson_t</code>.</p></td></tr>
       <tr><td><p>key</p></td><td><p>A key to locate after initializing the iter.</p></td></tr>
     </table>
   </section>

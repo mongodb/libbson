@@ -74,7 +74,7 @@ typedef struct _bson_value_t
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_value_t">bson_value_t</link> structure is a boxed type for encapsulating a runtime determined type.</p>
+    <p>The <code xref="bson_value_t">bson_value_t</code> structure is a boxed type for encapsulating a runtime determined type.</p>
   </section>
 
   <links type="topic" groups="function" style="2column">

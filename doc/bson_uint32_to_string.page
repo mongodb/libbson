@@ -32,7 +32,7 @@ bson_uint32_to_string (uint32_t     value,
     <p>Converts <code>value</code> to a string.</p>
     <p>If <code>value</code> is from 0 to 999, it will use a constant string in the data section of the library.</p>
     <p>If not, a string will be formatted using <code>str</code> and <code>snprintf()</code>.</p>
-    <p>_strptr_ will always be set. It will either point to <code>str</code> or a constant string. You will want to use this as your key.</p>
+    <p><code>strptr</code> will always be set. It will either point to <code>str</code> or a constant string. You will want to use this as your key.</p>
   </section>
 
   <section id="return">

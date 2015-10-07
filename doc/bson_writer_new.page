@@ -34,8 +34,8 @@ bson_writer_new (uint8_t         **buf,
 
   <section id="description">
     <title>Description</title>
-    <p>Creates a new instance of <link xref="bson_writer_t">bson_writer_t</link> using the <code>buffer</code>, <code>length</code>, <code>offset</code>, and _realloc()_ function supplied.</p>
-    <p>The caller is expected to clean up the structure when finished using <link xref="bson_writer_destroy">bson_writer_destroy()</link>.</p>
+    <p>Creates a new instance of <code xref="bson_writer_t">bson_writer_t</code> using the <code>buffer</code>, <code>length</code>, <code>offset</code>, and _realloc()_ function supplied.</p>
+    <p>The caller is expected to clean up the structure when finished using <code xref="bson_writer_destroy">bson_writer_destroy()</code>.</p>
   </section>
 
   <section id="return">

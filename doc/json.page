@@ -9,7 +9,7 @@
   <section id="to-json">
     <info><link type="guide" xref="index#json"/></info>
     <title>Converting BSON to JSON</title>
-    <p>There are often times where you might want to convert a BSON document to JSON. It is convenient for debugging as well as an interchange format. To help with this, Libbson contains the function <link xref="bson_as_json">bson_as_json()</link>.</p>
+    <p>There are often times where you might want to convert a BSON document to JSON. It is convenient for debugging as well as an interchange format. To help with this, Libbson contains the function <code xref="bson_as_json">bson_as_json()</code>.</p>
     <example>
       <title>Convert to JSON</title>
       <code mime="text/x-csrc"><![CDATA[bson_t *b;
@@ -30,8 +30,8 @@ bson_destroy (b);]]></code>
   <section id="from-json">
     <title>Converting JSON to BSON</title>
     <info><link type="guide" xref="index#json"/></info>
-    <p>Converting back from JSON is also useful and common enough that we added <link xref="bson_init_from_json">bson_init_from_json()</link> and <link xref="bson_new_from_json">bson_new_from_json()</link>.</p>
-    <p>The following example creates a new <link xref="bson_t">bson_t</link> from the JSON string <code>{"a":1}</code>.</p>
+    <p>Converting back from JSON is also useful and common enough that we added <code xref="bson_init_from_json">bson_init_from_json()</code> and <code xref="bson_new_from_json">bson_new_from_json()</code>.</p>
+    <p>The following example creates a new <code xref="bson_t">bson_t</code> from the JSON string <code>{"a":1}</code>.</p>
     <example>
       <title>Convert from JSON</title>
       <code mime="text/x-csrc"><![CDATA[bson_t *b;
@@ -50,7 +50,7 @@ if (!b) {
   <section id="streaming-json-parsing">
     <title>Streaming JSON Parsing</title>
     <info><link type="guide" xref="index#json"/></info>
-    <p>Libbson provides <link xref="bson_json_reader_t">bson_json_reader_t</link> to allow for parsing a sequence of JSON documents into BSON. The interface is similar to <link xref="bson_reader_t">bson_reader_t</link> but expects the input to be in the <link href="http://docs.mongodb.org/manual/reference/mongodb-extended-json/">MongoDB extended JSON</link> format.</p>
+    <p>Libbson provides <code xref="bson_json_reader_t">bson_json_reader_t</code> to allow for parsing a sequence of JSON documents into BSON. The interface is similar to <code xref="bson_reader_t">bson_reader_t</code> but expects the input to be in the <link href="http://docs.mongodb.org/manual/reference/mongodb-extended-json/">MongoDB extended JSON</link> format.</p>
     <example>
       <title><file>json-to-bson.c</file></title>
       <code mime="text/x-csrc"><include parse="text" href="../examples/json-to-bson.c" xmlns="http://www.w3.org/2001/XInclude" /></code>

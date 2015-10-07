@@ -22,7 +22,7 @@ bson_json_reader_new_from_file (const char   *filename,
     <title>Parameters</title>
     <table>
       <tr><td><p><code>filename</code></p></td><td><p>A file-name in the system file-name encoding.</p></td></tr>
-      <tr><td><p><code>error</code></p></td><td><p>A <link xref="bson_error_t">bson_error_t</link>.</p></td></tr>
+      <tr><td><p><code>error</code></p></td><td><p>A <code xref="bson_error_t">bson_error_t</code>.</p></td></tr>
     </table>
   </section>
 

@@ -19,12 +19,12 @@ bson_new (void);
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_new">bson_new()</link> function shall create a new <link xref="bson_t">bson_t</link> structure on the heap. It should be freed with <link xref="bson_destroy">bson_destroy()</link> when it is no longer in use.</p>
+    <p>The <code xref="bson_new">bson_new()</code> function shall create a new <code xref="bson_t">bson_t</code> structure on the heap. It should be freed with <code xref="bson_destroy">bson_destroy()</code> when it is no longer in use.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>A newly allocated <link xref="bson_t">bson_t</link> that should be freed with <link xref="bson_destroy">bson_destroy()</link>.</p>
+    <p>A newly allocated <code xref="bson_t">bson_t</code> that should be freed with <code xref="bson_destroy">bson_destroy()</code>.</p>
   </section>
 
 </page>

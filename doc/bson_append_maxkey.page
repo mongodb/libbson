@@ -22,7 +22,7 @@ bson_append_maxkey (bson_t     *bson,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>bson</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
+      <tr><td><p>bson</p></td><td><p>A <code xref="bson_t">bson_t</code>.</p></td></tr>
       <tr><td><p>key</p></td><td><p>An ASCII C string containing the name of the field.</p></td></tr>
       <tr><td><p>key_length</p></td><td><p>The length of <code>key</code> in bytes, or -1 to determine the length with <code>strlen()</code>.</p></td></tr>
     </table>
@@ -30,7 +30,7 @@ bson_append_maxkey (bson_t     *bson,
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_append_maxkey">bson_append_maxkey()</link> function shall append an element of type BSON_TYPE_MAXKEY to a bson document. This is primarily used in queries and unlikely to be used when storing a document to MongoDB.</p>
+    <p>The <code xref="bson_append_maxkey">bson_append_maxkey()</code> function shall append an element of type BSON_TYPE_MAXKEY to a bson document. This is primarily used in queries and unlikely to be used when storing a document to MongoDB.</p>
   </section>
 
   <section id="return">

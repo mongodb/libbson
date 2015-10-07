@@ -22,7 +22,7 @@ bson_utf8_from_unichar (bson_unichar_t unichar,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>unichar</code></p></td><td><p>A <link xref="bson_unichar_t">bson_unichar_t</link>.</p></td></tr>
+      <tr><td><p><code>unichar</code></p></td><td><p>A <code xref="bson_unichar_t">bson_unichar_t</code>.</p></td></tr>
       <tr><td><p><code>utf8</code></p></td><td><p>A location for the utf8 sequence.</p></td></tr>
       <tr><td><p><code>len</code></p></td><td><p>A location for the number of bytes in the resulting utf8 sequence.</p></td></tr>
     </table>

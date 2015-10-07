@@ -23,7 +23,7 @@
    printf ("Validation failed.\n");
 }]]></code></synopsis>
 
-    <p>For more information see the API reference for <link xref="bson_utf8_validate">bson_utf8_validate()</link>.</p>
+    <p>For more information see the API reference for <code xref="bson_utf8_validate">bson_utf8_validate()</code>.</p>
 
   </section>
 

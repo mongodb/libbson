@@ -20,7 +20,7 @@ bson_writer_rollback (bson_writer_t *writer);
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>writer</code></p></td><td><p>A <link xref="bson_writer_t">bson_writer_t</link>.</p></td></tr>
+      <tr><td><p><code>writer</code></p></td><td><p>A <code xref="bson_writer_t">bson_writer_t</code>.</p></td></tr>
     </table>
   </section>
 

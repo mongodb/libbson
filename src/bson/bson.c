@@ -107,10 +107,6 @@ _bson_impl_inline_grow (bson_impl_inline_t *impl, /* IN */
    uint8_t *data;
    size_t req;
 
-   BSON_ASSERT (impl);
-   BSON_ASSERT (!(impl->flags & BSON_FLAG_RDONLY));
-   BSON_ASSERT (!(impl->flags & BSON_FLAG_CHILD));
-
    if (((size_t)impl->len + size) <= sizeof impl->data) {
       return true;
    }
@@ -162,8 +158,6 @@ _bson_impl_alloc_grow (bson_impl_alloc_t *impl, /* IN */
 {
    size_t req;
 
-   BSON_ASSERT (impl);
-
    /*
     * Determine how many bytes we need for this document in the buffer
     * including necessary trailing bytes for parent documents.
@@ -207,9 +201,6 @@ static bool
 _bson_grow (bson_t   *bson, /* IN */
             uint32_t  size) /* IN */
 {
-   BSON_ASSERT (bson);
-   BSON_ASSERT (!(bson->flags & BSON_FLAG_RDONLY));
-
    if ((bson->flags & BSON_FLAG_INLINE)) {
       return _bson_impl_inline_grow ((bson_impl_inline_t *)bson, size);
    }
@@ -315,12 +306,8 @@ _bson_append_va (bson_t        *bson,        /* IN */
    uint32_t data_len;
    uint8_t *buf;
 
-   BSON_ASSERT (bson);
    BSON_ASSERT (!(bson->flags & BSON_FLAG_IN_CHILD));
    BSON_ASSERT (!(bson->flags & BSON_FLAG_RDONLY));
-   BSON_ASSERT (n_pairs);
-   BSON_ASSERT (first_len);
-   BSON_ASSERT (first_data);
 
    if (BSON_UNLIKELY (!_bson_grow (bson, n_bytes))) {
       return false;
@@ -387,7 +374,6 @@ _bson_append (bson_t        *bson,        /* IN */
    va_list args;
    bool ok;
 
-   BSON_ASSERT (bson);
    BSON_ASSERT (n_pairs);
    BSON_ASSERT (first_len);
    BSON_ASSERT (first_data);
@@ -423,7 +409,7 @@ _bson_append (bson_t        *bson,        /* IN */
  *       @key_type MUST be either BSON_TYPE_DOCUMENT or BSON_TYPE_ARRAY.
  *
  * Returns:
- *       true if successful; otherwise false indiciating INT_MAX overflow.
+ *       true if successful; otherwise false indicating INT_MAX overflow.
  *
  * Side effects:
  *       @child is initialized if true is returned.
@@ -443,7 +429,6 @@ _bson_append_bson_begin (bson_t      *bson,        /* IN */
    bson_impl_alloc_t *aparent = (bson_impl_alloc_t *)bson;
    bson_impl_alloc_t *achild = (bson_impl_alloc_t *)child;
 
-   BSON_ASSERT (bson);
    BSON_ASSERT (!(bson->flags & BSON_FLAG_RDONLY));
    BSON_ASSERT (!(bson->flags & BSON_FLAG_IN_CHILD));
    BSON_ASSERT (key);
@@ -523,7 +508,7 @@ _bson_append_bson_begin (bson_t      *bson,        /* IN */
  *       Complete a call to _bson_append_bson_begin.
  *
  * Returns:
- *       true if successful; otherwise false indiciating INT_MAX overflow.
+ *       true if successful; otherwise false indicating INT_MAX overflow.
  *
  * Side effects:
  *       @child is destroyed and no longer valid after calling this
@@ -593,9 +578,9 @@ bson_append_array_begin (bson_t     *bson,         /* IN */
                          int         key_length,   /* IN */
                          bson_t     *child)        /* IN */
 {
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
-   bson_return_val_if_fail (child, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
+   BSON_ASSERT (child);
 
    return _bson_append_bson_begin (bson, key, key_length, BSON_TYPE_ARRAY,
                                    child);
@@ -613,7 +598,7 @@ bson_append_array_begin (bson_t     *bson,         /* IN */
  *       function.
  *
  * Returns:
- *       true if successful; otherwise false indiciating INT_MAX overflow.
+ *       true if successful; otherwise false indicating INT_MAX overflow.
  *
  * Side effects:
  *       @child is invalid after calling this function.
@@ -625,8 +610,8 @@ bool
 bson_append_array_end (bson_t *bson,   /* IN */
                        bson_t *child)  /* IN */
 {
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (child, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (child);
 
    return _bson_append_bson_end (bson, child);
 }
@@ -662,9 +647,9 @@ bson_append_document_begin (bson_t     *bson,         /* IN */
                             int         key_length,   /* IN */
                             bson_t     *child)        /* IN */
 {
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
-   bson_return_val_if_fail (child, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
+   BSON_ASSERT (child);
 
    return _bson_append_bson_begin (bson, key, key_length, BSON_TYPE_DOCUMENT,
                                    child);
@@ -694,8 +679,8 @@ bool
 bson_append_document_end (bson_t *bson,   /* IN */
                           bson_t *child)  /* IN */
 {
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (child, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (child);
 
    return _bson_append_bson_end (bson, child);
 }
@@ -712,7 +697,7 @@ bson_append_document_end (bson_t *bson,   /* IN */
  *       since few buffers need to be malloced.
  *
  * Returns:
- *       true if successful; otherwise false indiciating INT_MAX overflow.
+ *       true if successful; otherwise false indicating INT_MAX overflow.
  *
  * Side effects:
  *       None.
@@ -728,9 +713,9 @@ bson_append_array (bson_t       *bson,       /* IN */
 {
    static const uint8_t type = BSON_TYPE_ARRAY;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
-   bson_return_val_if_fail (array, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
+   BSON_ASSERT (array);
 
    if (key_length < 0) {
       key_length = (int)strlen (key);
@@ -799,9 +784,9 @@ bson_append_binary (bson_t         *bson,       /* IN */
    uint32_t deprecated_length_le;
    uint8_t subtype8 = 0;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
-   bson_return_val_if_fail (binary, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
+   BSON_ASSERT (binary);
 
    if (key_length < 0) {
       key_length = (int)strlen (key);
@@ -863,8 +848,8 @@ bson_append_bool (bson_t     *bson,       /* IN */
    static const uint8_t type = BSON_TYPE_BOOL;
    uint8_t byte = !!value;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
 
    if (key_length < 0) {
       key_length = (int)strlen (key);
@@ -911,9 +896,9 @@ bson_append_code (bson_t     *bson,       /* IN */
    uint32_t length;
    uint32_t length_le;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
-   bson_return_val_if_fail (javascript, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
+   BSON_ASSERT (javascript);
 
    if (key_length < 0) {
       key_length = (int)strlen (key);
@@ -962,9 +947,9 @@ bson_append_code_with_scope (bson_t       *bson,         /* IN */
    uint32_t js_length_le;
    uint32_t js_length;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
-   bson_return_val_if_fail (javascript, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
+   BSON_ASSERT (javascript);
 
    if (bson_empty0 (scope)) {
       return bson_append_code (bson, key, key_length, javascript);
@@ -1021,10 +1006,10 @@ bson_append_dbpointer (bson_t           *bson,       /* IN */
    uint32_t length;
    uint32_t length_le;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
-   bson_return_val_if_fail (collection, false);
-   bson_return_val_if_fail (oid, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
+   BSON_ASSERT (collection);
+   BSON_ASSERT (oid);
 
    if (key_length < 0) {
       key_length = (int)strlen (key);
@@ -1074,9 +1059,9 @@ bson_append_document (bson_t       *bson,       /* IN */
 {
    static const uint8_t type = BSON_TYPE_DOCUMENT;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
-   bson_return_val_if_fail (value, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
+   BSON_ASSERT (value);
 
    if (key_length < 0) {
       key_length = (int)strlen (key);
@@ -1099,8 +1084,8 @@ bson_append_double (bson_t     *bson,
 {
    static const uint8_t type = BSON_TYPE_DOUBLE;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
 
    if (key_length < 0) {
       key_length = (int)strlen (key);
@@ -1128,8 +1113,8 @@ bson_append_int32 (bson_t      *bson,
    static const uint8_t type = BSON_TYPE_INT32;
    uint32_t value_le;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
 
    if (key_length < 0) {
       key_length = (int)strlen (key);
@@ -1155,8 +1140,8 @@ bson_append_int64 (bson_t      *bson,
    static const uint8_t type = BSON_TYPE_INT64;
    uint64_t value_le;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
 
    if (key_length < 0) {
       key_length = (int)strlen (key);
@@ -1181,8 +1166,8 @@ bson_append_iter (bson_t            *bson,
 {
    bool ret = false;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (iter, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (iter);
 
    if (!key) {
       key = bson_iter_key (iter);
@@ -1349,8 +1334,8 @@ bson_append_maxkey (bson_t     *bson,
 {
    static const uint8_t type = BSON_TYPE_MAXKEY;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
 
    if (key_length < 0) {
       key_length = (int)strlen (key);
@@ -1371,8 +1356,8 @@ bson_append_minkey (bson_t     *bson,
 {
    static const uint8_t type = BSON_TYPE_MINKEY;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
 
    if (key_length < 0) {
       key_length = (int)strlen (key);
@@ -1393,8 +1378,8 @@ bson_append_null (bson_t     *bson,
 {
    static const uint8_t type = BSON_TYPE_NULL;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
 
    if (key_length < 0) {
       key_length = (int)strlen (key);
@@ -1416,9 +1401,9 @@ bson_append_oid (bson_t           *bson,
 {
    static const uint8_t type = BSON_TYPE_OID;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
-   bson_return_val_if_fail (value, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
+   BSON_ASSERT (value);
 
    if (key_length < 0) {
       key_length = (int)strlen (key);
@@ -1444,8 +1429,8 @@ bson_append_regex (bson_t     *bson,
    uint32_t regex_len;
    uint32_t options_len;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
 
    if (key_length < 0) {
       key_length = (int)strlen (key);
@@ -1482,8 +1467,8 @@ bson_append_utf8 (bson_t     *bson,
    static const uint8_t type = BSON_TYPE_UTF8;
    uint32_t length_le;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
 
    if (BSON_UNLIKELY (!value)) {
       return bson_append_null (bson, key, key_length);
@@ -1520,8 +1505,8 @@ bson_append_symbol (bson_t     *bson,
    static const uint8_t type = BSON_TYPE_SYMBOL;
    uint32_t length_le;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
 
    if (!value) {
       return bson_append_null (bson, key, key_length);
@@ -1560,8 +1545,8 @@ bson_append_time_t (bson_t     *bson,
    struct timeval tv = { value, 0 };
 #endif
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
 
    return bson_append_timeval (bson, key, key_length, &tv);
 }
@@ -1577,8 +1562,8 @@ bson_append_timestamp (bson_t       *bson,
    static const uint8_t type = BSON_TYPE_TIMESTAMP;
    uint64_t value;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
 
    if (key_length < 0) {
       key_length =(int)strlen (key);
@@ -1601,9 +1586,9 @@ bson_append_now_utc (bson_t     *bson,
                      const char *key,
                      int         key_length)
 {
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
-   bson_return_val_if_fail (key_length >= -1, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
+   BSON_ASSERT (key_length >= -1);
 
    return bson_append_time_t (bson, key, key_length, time (NULL));
 }
@@ -1618,8 +1603,8 @@ bson_append_date_time (bson_t      *bson,
    static const uint8_t type = BSON_TYPE_DATE_TIME;
    uint64_t value_le;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
 
    if (key_length < 0) {
       key_length =(int)strlen (key);
@@ -1644,9 +1629,9 @@ bson_append_timeval (bson_t         *bson,
 {
    uint64_t unix_msec;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
-   bson_return_val_if_fail (value, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
+   BSON_ASSERT (value);
 
    unix_msec = (((uint64_t)value->tv_sec) * 1000UL) +
                                   (value->tv_usec / 1000UL);
@@ -1661,8 +1646,8 @@ bson_append_undefined (bson_t     *bson,
 {
    static const uint8_t type = BSON_TYPE_UNDEFINED;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
 
    if (key_length < 0) {
       key_length =(int)strlen (key);
@@ -1685,9 +1670,9 @@ bson_append_value (bson_t             *bson,
    bson_t local;
    bool ret = false;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
-   bson_return_val_if_fail (value, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
+   BSON_ASSERT (value);
 
    switch (value->value_type) {
    case BSON_TYPE_DOUBLE:
@@ -1797,7 +1782,7 @@ bson_init (bson_t *bson)
 {
    bson_impl_inline_t *impl = (bson_impl_inline_t *)bson;
 
-   bson_return_if_fail (bson);
+   BSON_ASSERT (bson);
 
    impl->flags = BSON_FLAG_INLINE | BSON_FLAG_STATIC;
    impl->len = 5;
@@ -1814,7 +1799,7 @@ bson_reinit (bson_t *bson)
 {
    uint8_t *data;
 
-   bson_return_if_fail (bson);
+   BSON_ASSERT (bson);
 
    data = _bson_data (bson);
 
@@ -1836,8 +1821,8 @@ bson_init_static (bson_t        *bson,
    bson_impl_alloc_t *impl = (bson_impl_alloc_t *)bson;
    uint32_t len_le;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (data, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (data);
 
    if ((length < 5) || (length > INT_MAX)) {
       return false;
@@ -1897,7 +1882,7 @@ bson_sized_new (size_t size)
    bson_impl_inline_t *impl_i;
    bson_t *b;
 
-   bson_return_val_if_fail (size <= INT32_MAX, NULL);
+   BSON_ASSERT (size <= INT32_MAX);
 
    b = bson_malloc (sizeof *b);
    impl_a = (bson_impl_alloc_t *)b;
@@ -1936,7 +1921,7 @@ bson_new_from_data (const uint8_t *data,
    uint32_t len_le;
    bson_t *bson;
 
-   bson_return_val_if_fail (data, NULL);
+   BSON_ASSERT (data);
 
    if ((length < 5) || (length > INT_MAX) || data [length - 1]) {
       return NULL;
@@ -1967,8 +1952,8 @@ bson_new_from_buffer (uint8_t           **buf,
    uint32_t length;
    bson_t *bson;
 
-   bson_return_val_if_fail (buf, NULL);
-   bson_return_val_if_fail (buf_len, NULL);
+   BSON_ASSERT (buf);
+   BSON_ASSERT (buf_len);
 
    if (!realloc_func) {
       realloc_func = bson_realloc_ctx;
@@ -2015,7 +2000,7 @@ bson_copy (const bson_t *bson)
 {
    const uint8_t *data;
 
-   bson_return_val_if_fail (bson, NULL);
+   BSON_ASSERT (bson);
 
    data = _bson_data (bson);
    return bson_new_from_data (data, bson->len);
@@ -2030,8 +2015,8 @@ bson_copy_to (const bson_t *src,
    bson_impl_alloc_t *adst;
    size_t len;
 
-   bson_return_if_fail (src);
-   bson_return_if_fail (dst);
+   BSON_ASSERT (src);
+   BSON_ASSERT (dst);
 
    if ((src->flags & BSON_FLAG_INLINE)) {
       memcpy (dst, src, sizeof *dst);
@@ -2115,9 +2100,9 @@ bson_copy_to_excluding (const bson_t *src,
 {
    va_list args;
 
-   bson_return_if_fail (src);
-   bson_return_if_fail (dst);
-   bson_return_if_fail (first_exclude);
+   BSON_ASSERT (src);
+   BSON_ASSERT (dst);
+   BSON_ASSERT (first_exclude);
 
    bson_init (dst);
 
@@ -2134,9 +2119,9 @@ bson_copy_to_excluding_noinit (const bson_t *src,
 {
     va_list args;
 
-    bson_return_if_fail (src);
-    bson_return_if_fail (dst);
-    bson_return_if_fail (first_exclude);
+    BSON_ASSERT (src);
+    BSON_ASSERT (dst);
+    BSON_ASSERT (first_exclude);
 
     va_start (args, first_exclude);
     _bson_copy_to_excluding_va (src, dst, first_exclude, args);
@@ -2167,7 +2152,7 @@ bson_destroy_with_steal (bson_t   *bson,
 {
    uint8_t *ret = NULL;
 
-   bson_return_val_if_fail (bson, NULL);
+   BSON_ASSERT (bson);
 
    if (length) {
       *length = bson->len;
@@ -2205,7 +2190,7 @@ bson_destroy_with_steal (bson_t   *bson,
 const uint8_t *
 bson_get_data (const bson_t *bson)
 {
-   bson_return_val_if_fail (bson, NULL);
+   BSON_ASSERT (bson);
 
    return _bson_data (bson);
 }
@@ -2217,7 +2202,7 @@ bson_count_keys (const bson_t *bson)
    uint32_t count = 0;
    bson_iter_t iter;
 
-   bson_return_val_if_fail (bson, 0);
+   BSON_ASSERT (bson);
 
    if (bson_iter_init (&iter, bson)) {
       while (bson_iter_next (&iter)) {
@@ -2236,8 +2221,8 @@ bson_has_field (const bson_t *bson,
    bson_iter_t iter;
    bson_iter_t child;
 
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
 
    if (NULL != strchr (key, '.')) {
       return (bson_iter_init (&iter, bson) &&
@@ -2394,8 +2379,6 @@ _bson_as_json_visit_oid (const bson_iter_t *iter,
 {
    bson_json_state_t *state = data;
    char str[25];
-
-   bson_return_val_if_fail (oid, false);
 
    bson_oid_to_string (oid, str);
    bson_string_append (state->str, "{ \"$oid\" : \"");
@@ -2743,7 +2726,7 @@ bson_as_json (const bson_t *bson,
    bson_json_state_t state;
    bson_iter_t iter;
 
-   bson_return_val_if_fail (bson, NULL);
+   BSON_ASSERT (bson);
 
    if (length) {
       *length = 0;
@@ -2795,7 +2778,7 @@ bson_array_as_json (const bson_t *bson,
    bson_json_state_t state;
    bson_iter_t iter;
 
-   bson_return_val_if_fail (bson, NULL);
+   BSON_ASSERT (bson);
 
    if (length) {
       *length = 0;

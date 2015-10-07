@@ -46,7 +46,7 @@ BSON_BEGIN_DECLS
 #  define bson_once                       pthread_once
 #  define BSON_ONCE_FUN(n)                void n(void)
 #  define BSON_ONCE_RETURN                return
-#  ifdef _PTHREAD_ONCE_INIT_NEEDS_BRACES
+#  ifdef BSON_PTHREAD_ONCE_INIT_NEEDS_BRACES
 #    define BSON_ONCE_INIT                {PTHREAD_ONCE_INIT}
 #  else
 #    define BSON_ONCE_INIT                PTHREAD_ONCE_INIT

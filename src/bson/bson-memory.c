@@ -273,7 +273,7 @@ bson_zero_free (void  *mem,  /* IN */
 void
 bson_mem_set_vtable (const bson_mem_vtable_t *vtable)
 {
-   bson_return_if_fail (vtable);
+   BSON_ASSERT (vtable);
 
    if (!vtable->malloc ||
        !vtable->calloc ||
@@ -286,3 +286,21 @@ bson_mem_set_vtable (const bson_mem_vtable_t *vtable)
 
    gMemVtable = *vtable;
 }
+
+void
+bson_mem_restore_vtable (void)
+{
+   bson_mem_vtable_t vtable = {
+      malloc,
+      calloc,
+#ifdef __APPLE__
+      reallocf,
+#else
+      realloc,
+#endif
+      free,
+   };
+
+   bson_mem_set_vtable(&vtable);
+}
+

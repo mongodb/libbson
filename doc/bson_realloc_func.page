@@ -30,7 +30,7 @@ typedef void *(*bson_realloc_func) (void   *mem,
 
   <section id="description">
     <title>Description</title>
-    <p>This is a prototype for pluggable realloc functions used through the Libbson library. If you wish to use a custom allocator this is one way to do it. Additionally, <link xref="bson_realloc_ctx">bson_realloc_ctx()</link> is a default implementation of this prototype.</p>
+    <p>This is a prototype for pluggable realloc functions used through the Libbson library. If you wish to use a custom allocator this is one way to do it. Additionally, <code xref="bson_realloc_ctx">bson_realloc_ctx()</code> is a default implementation of this prototype.</p>
   </section>
 
 </page>

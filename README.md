@@ -2,8 +2,8 @@
 
 libbson is a library providing useful routines related to building, parsing,
 and iterating BSON documents.  It is a useful base for those wanting to write
-high-performance C extensions to higher level languages such as python, ruby,
-or perl.
+high-performance C extensions to higher level languages such as Python, PHP,
+Ruby, or Perl.
 
 
 ## Building
@@ -23,6 +23,7 @@ platform here, we would be happy to hear from you.
  * Solaris
  * FreeBSD 10
  * Windows Vista, 7, 8
+ * OS X 10.8
 
 ### Supported Architectures
 
@@ -57,6 +58,15 @@ apt-get install git-core automake autoconf libtool gcc
 
 ```sh
 pkg install git automake autoconf libtool gcc pkgconf
+```
+
+#### OS X
+
+You'll need to have [XCode](https://developer.apple.com/xcode/download/) (at least
+the command-line package) and we recommend using [Homebrew](http://brew.sh/) for
+other dependencies.
+```sh
+brew install git automake autoconf libtool pkgconfig
 ```
 
 #### SmartOS

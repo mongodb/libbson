@@ -29,12 +29,12 @@ BSON_ALIGNED_END (128);]]></code></synopsis>
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_t">bson_t</link> structure represents a BSON document. This structure manages the underlying BSON encoded buffer. For mutable documents, it can append new data to the document.</p>
+    <p>The <code xref="bson_t">bson_t</code> structure represents a BSON document. This structure manages the underlying BSON encoded buffer. For mutable documents, it can append new data to the document.</p>
   </section>
 
   <section id="perf">
     <title>Performance Notes</title>
-    <p>The <link xref="bson_t">bson_t</link> structure attepts to use an inline allocation within the structure to speed up performance of small documents. When this internal buffer has been exhausted, a heap allocated buffer will be dynamically allocated. Therefore, it is essential to call <code>bson_destroy()</code> on allocated documents.</p>
+    <p>The <code xref="bson_t">bson_t</code> structure attepts to use an inline allocation within the structure to speed up performance of small documents. When this internal buffer has been exhausted, a heap allocated buffer will be dynamically allocated. Therefore, it is essential to call <code xref="bson_destroy">bson_destroy()</code> on allocated documents.</p>
   </section>
 
   <links type="topic" groups="function" style="2column">

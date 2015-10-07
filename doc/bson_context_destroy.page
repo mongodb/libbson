@@ -20,14 +20,14 @@ bson_context_destroy (bson_context_t *context);
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>context</code></p></td><td><p>A <link xref="bson_context_t">bson_context_t</link>.</p></td></tr>
+      <tr><td><p><code>context</code></p></td><td><p>A <code xref="bson_context_t">bson_context_t</code>.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
     <p>The <code>bson_context_destroy()</code> function shall release all resources associated with <code>context</code>.</p>
-    <p>This should be called when you are no longer using a <link xref="bson_context_t">bson_context_t</link> that you have allocated with <link xref="bson_context_new">bson_context_new()</link>.</p>
+    <p>This should be called when you are no longer using a <code xref="bson_context_t">bson_context_t</code> that you have allocated with <code xref="bson_context_new">bson_context_new()</code>.</p>
   </section>
 
 </page>

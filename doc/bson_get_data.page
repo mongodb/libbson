@@ -20,13 +20,13 @@ bson_get_data (const bson_t *bson);
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>bson</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
+      <tr><td><p>bson</p></td><td><p>A <code xref="bson_t">bson_t</code>.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_get_data">bson_get_data()</link> function shall return the raw buffer of a bson document. This can be used in conjunction with the <code>len</code> property of a <link xref="bson_t">bson_t</link> if you want to copy the raw buffer around.</p>
+    <p>The <code xref="bson_get_data">bson_get_data()</code> function shall return the raw buffer of a bson document. This can be used in conjunction with the <code>len</code> property of a <code xref="bson_t">bson_t</code> if you want to copy the raw buffer around.</p>
   </section>
 
   <section id="return">

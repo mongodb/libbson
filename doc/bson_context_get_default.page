@@ -19,6 +19,6 @@ bson_context_get_default (void) BSON_GNUC_CONST;
 
   <section id="return">
     <title>Returns</title>
-    <p>The <code>bson_context_get_default()</code> function shall return the default, thread-safe, <link xref="bson_context_t">bson_context_t</link> for the process.</p>
+    <p>The <code>bson_context_get_default()</code> function shall return the default, thread-safe, <code xref="bson_context_t">bson_context_t</code> for the process.</p>
   </section>
 </page>

@@ -104,16 +104,32 @@
 #  define BSON_ABS(a) (((a) < 0) ? ((a) * -1) : (a))
 #endif
 
-
-#if defined(_MSC_VER)
-#  define BSON_ALIGNED_BEGIN(_N) __declspec (align (_N))
-#  define BSON_ALIGNED_END(_N)
-#elif defined(__SUNPRO_C)
-#  define BSON_ALIGNED_BEGIN(_N)
-#  define BSON_ALIGNED_END(_N) __attribute__((aligned (_N)))
+#ifdef _MSC_VER
+#  ifdef _WIN64
+#    define BSON_ALIGN_OF_PTR 8
+#  else
+#    define BSON_ALIGN_OF_PTR 4
+#  endif
 #else
-#  define BSON_ALIGNED_BEGIN(_N)
-#  define BSON_ALIGNED_END(_N) __attribute__((aligned (_N)))
+#  define BSON_ALIGN_OF_PTR (sizeof(void *))
+#endif
+
+#ifdef BSON_EXTRA_ALIGN
+#  if defined(_MSC_VER)
+#    define BSON_ALIGNED_BEGIN(_N) __declspec (align (_N))
+#    define BSON_ALIGNED_END(_N)
+#  else
+#    define BSON_ALIGNED_BEGIN(_N)
+#    define BSON_ALIGNED_END(_N) __attribute__((aligned (_N)))
+#  endif
+#else
+#  if defined(_MSC_VER)
+#    define BSON_ALIGNED_BEGIN(_N) __declspec (align ((_N) > BSON_ALIGN_OF_PTR ? BSON_ALIGN_OF_PTR : (_N) ))
+#    define BSON_ALIGNED_END(_N)
+#  else
+#    define BSON_ALIGNED_BEGIN(_N)
+#    define BSON_ALIGNED_END(_N) __attribute__((aligned ((_N) > BSON_ALIGN_OF_PTR ? BSON_ALIGN_OF_PTR : (_N) )))
+#  endif
 #endif
 
 
@@ -121,11 +137,14 @@
 #define bson_str_empty0(s) (!s || !s[0])
 
 
-#ifndef BSON_DISABLE_ASSERT
-#  define BSON_ASSERT(s) assert ((s))
-#else
-#  define BSON_ASSERT(s)
-#endif
+#define BSON_ASSERT(test) \
+   do { \
+      if (!(BSON_LIKELY(test))) { \
+         fprintf (stderr, "%s:%d %s(): precondition failed: %s\n", \
+                  __FILE__, __LINE__, __FUNCTION__, #test); \
+         abort (); \
+      } \
+   } while (0)
 
 
 #define BSON_STATIC_ASSERT(s) BSON_STATIC_ASSERT_ (s, __LINE__)
@@ -183,34 +202,6 @@
 #  define BSON_INLINE __inline
 #else
 #  define BSON_INLINE __inline__
-#endif
-
-
-#ifndef BSON_DISABLE_CHECKS
-#  define bson_return_if_fail(test) \
-   do { \
-      if (!(test)) { \
-         fprintf (stderr, "%s(): precondition failed: %s\n", \
-                  __FUNCTION__, #test); \
-         return; \
-      } \
-   } while (0)
-#else
-#  define bson_return_if_fail(test)
-#endif
-
-
-#ifndef BSON_DISABLE_CHECKS
-#  define bson_return_val_if_fail(test, val) \
-   do { \
-      if (!(test)) { \
-         fprintf (stderr, "%s(): precondition failed: %s\n", \
-                  __FUNCTION__, #test); \
-         return (val); \
-      } \
-   } while (0)
-#else
-#  define bson_return_val_if_fail(test, val)
 #endif
 
 

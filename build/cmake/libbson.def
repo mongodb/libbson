@@ -42,6 +42,7 @@ bson_as_json
 bson_ascii_strtoll
 bson_bcon_magic
 bson_bcone_magic
+bson_check_version
 bson_compare
 bson_concat
 bson_context_destroy
@@ -61,6 +62,7 @@ bson_get_major_version
 bson_get_micro_version
 bson_get_minor_version
 bson_get_monotonic_time
+bson_get_version
 bson_gettimeofday
 bson_has_field
 bson_init
@@ -116,6 +118,7 @@ bson_md5_init
 bson_md5_finish
 bson_md5_append
 bson_mem_set_vtable
+bson_mem_restore_vtable
 bson_new
 bson_new_from_buffer
 bson_new_from_data

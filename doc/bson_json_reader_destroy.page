@@ -20,7 +20,7 @@ bson_json_reader_destroy (bson_json_reader_t *reader);
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>reader</code></p></td><td><p>A <link xref="bson_json_reader_t">bson_json_reader_t</link>.</p></td></tr>
+      <tr><td><p><code>reader</code></p></td><td><p>A <code xref="bson_json_reader_t">bson_json_reader_t</code>.</p></td></tr>
     </table>
   </section>
 

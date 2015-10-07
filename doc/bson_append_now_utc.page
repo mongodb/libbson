@@ -22,7 +22,7 @@ bson_append_now_utc (bson_t     *bson,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>bson</p></td><td><p>A <link xref="bson_t">bson_t</link>.</p></td></tr>
+      <tr><td><p>bson</p></td><td><p>A <code xref="bson_t">bson_t</code>.</p></td></tr>
       <tr><td><p>key</p></td><td><p>An ASCII C string containing the name of the field.</p></td></tr>
       <tr><td><p>key_length</p></td><td><p>The length of <code>key</code> in bytes, or -1 to determine the length with <code>strlen()</code>.</p></td></tr>
     </table>
@@ -30,8 +30,8 @@ bson_append_now_utc (bson_t     *bson,
 
   <section id="description">
     <title>Description</title>
-    <p>The <link xref="bson_append_now_utc">bson_append_now_utc()</link> function is a helper to get the current date and time in UTC and append it to <code>bson</code> as a BSON_TYPE_DATE_TIME element.</p>
-    <p>This function calls <link xref="bson_append_date_time">bson_append_date_time()</link> internally.</p>
+    <p>The <code xref="bson_append_now_utc">bson_append_now_utc()</code> function is a helper to get the current date and time in UTC and append it to <code>bson</code> as a BSON_TYPE_DATE_TIME element.</p>
+    <p>This function calls <code xref="bson_append_date_time">bson_append_date_time()</code> internally.</p>
   </section>
 
   <section id="return">

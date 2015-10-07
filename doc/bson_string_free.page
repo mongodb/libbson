@@ -21,7 +21,7 @@ bson_string_free (bson_string_t *string,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>string</code></p></td><td><p>A <link xref="bson_string_t">bson_string_t</link>.</p></td></tr>
+      <tr><td><p><code>string</code></p></td><td><p>A <code xref="bson_string_t">bson_string_t</code>.</p></td></tr>
       <tr><td><p><code>free_segment</code></p></td><td><p>A bool indicating if <code>str->str</code> should be returned.</p></td></tr>
     </table>
   </section>

@@ -35,7 +35,7 @@ void           bson_reader_destroy         (bson_reader_t *reader);
 
   <section id="description">
     <title>Description</title>
-    <p><link xref="bson_reader_t">bson_reader_t</link> is a structure used for reading a sequence of BSON documents. The sequence can come from a file-descriptor, memory region, or custom callbacks.</p>
+    <p><code xref="bson_reader_t">bson_reader_t</code> is a structure used for reading a sequence of BSON documents. The sequence can come from a file-descriptor, memory region, or custom callbacks.</p>
   </section>
 
   <links type="topic" groups="function" style="2column">

@@ -20,17 +20,17 @@ bson_context_new (bson_context_flags_t flags);
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>flags</code></p></td><td><p>A <link xref="bson_context_t">bson_context_flags_t</link>.</p></td></tr>
+      <tr><td><p><code>flags</code></p></td><td><p>A <code xref="bson_context_t">bson_context_flags_t</code>.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>Creates a new <link xref="bson_context_t">bson_context_t</link>. This is rarely needed as <link xref="bson_context_get_default">bson_context_get_default()</link> serves most use-cases.</p>
+    <p>Creates a new <code xref="bson_context_t">bson_context_t</code>. This is rarely needed as <code xref="bson_context_get_default">bson_context_get_default()</code> serves most use-cases.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>A newly allocated <link xref="bson_context_t">bson_context_t</link> that should be freed with <link xref="bson_context_destroy">bson_context_destroy</link>.</p>
+    <p>A newly allocated <code xref="bson_context_t">bson_context_t</code> that should be freed with <code xref="bson_context_destroy">bson_context_destroy</code>.</p>
   </section>
 </page>

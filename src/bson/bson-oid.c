@@ -160,7 +160,7 @@ bson_oid_init (bson_oid_t     *oid,     /* OUT */
 {
    uint32_t now = (uint32_t)(time (NULL));
 
-   bson_return_if_fail (oid);
+   BSON_ASSERT (oid);
 
    if (!context) {
       context = bson_context_get_default ();
@@ -202,8 +202,8 @@ void
 bson_oid_init_from_data (bson_oid_t    *oid,  /* OUT */
                          const uint8_t *data) /* IN */
 {
-   bson_return_if_fail (oid);
-   bson_return_if_fail (data);
+   BSON_ASSERT (oid);
+   BSON_ASSERT (data);
 
    memcpy (oid, data, 12);
 }
@@ -234,8 +234,8 @@ void
 bson_oid_init_from_string (bson_oid_t *oid, /* OUT */
                            const char *str) /* IN */
 {
-   bson_return_if_fail (oid);
-   bson_return_if_fail (str);
+   BSON_ASSERT (oid);
+   BSON_ASSERT (str);
 
    bson_oid_init_from_string_unsafe (oid, str);
 }
@@ -260,7 +260,7 @@ bson_oid_init_from_string (bson_oid_t *oid, /* OUT */
 time_t
 bson_oid_get_time_t (const bson_oid_t *oid) /* IN */
 {
-   bson_return_val_if_fail (oid, 0);
+   BSON_ASSERT (oid);
 
    return bson_oid_get_time_t_unsafe (oid);
 }
@@ -294,8 +294,8 @@ bson_oid_to_string
     char              str[BSON_ENSURE_ARRAY_PARAM_SIZE(25)]) /* OUT */
 {
 #if !defined(__i386__) && !defined(__x86_64__)
-   bson_return_if_fail (oid);
-   bson_return_if_fail (str);
+   BSON_ASSERT (oid);
+   BSON_ASSERT (str);
 
    bson_snprintf (str, 25,
                   "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
@@ -315,8 +315,8 @@ bson_oid_to_string
    uint16_t *dst;
    uint8_t *id = (uint8_t *)oid;
 
-   bson_return_if_fail (oid);
-   bson_return_if_fail (str);
+   BSON_ASSERT (oid);
+   BSON_ASSERT (str);
 
    dst = (uint16_t *)(void *)str;
    dst[0] = gHexCharPairs[id[0]];
@@ -356,7 +356,7 @@ bson_oid_to_string
 uint32_t
 bson_oid_hash (const bson_oid_t *oid) /* IN */
 {
-   bson_return_val_if_fail (oid, 5381);
+   BSON_ASSERT (oid);
 
    return bson_oid_hash_unsafe (oid);
 }
@@ -384,8 +384,8 @@ int
 bson_oid_compare (const bson_oid_t *oid1, /* IN */
                   const bson_oid_t *oid2) /* IN */
 {
-   bson_return_val_if_fail (oid1, 0);
-   bson_return_val_if_fail (oid2, 0);
+   BSON_ASSERT (oid1);
+   BSON_ASSERT (oid2);
 
    return bson_oid_compare_unsafe (oid1, oid2);
 }
@@ -412,8 +412,8 @@ bool
 bson_oid_equal (const bson_oid_t *oid1, /* IN */
                 const bson_oid_t *oid2) /* IN */
 {
-   bson_return_val_if_fail (oid1, false);
-   bson_return_val_if_fail (oid2, false);
+   BSON_ASSERT (oid1);
+   BSON_ASSERT (oid2);
 
    return bson_oid_equal_unsafe (oid1, oid2);
 }
@@ -443,8 +443,8 @@ void
 bson_oid_copy (const bson_oid_t *src, /* IN */
                bson_oid_t       *dst) /* OUT */
 {
-   bson_return_if_fail (src);
-   bson_return_if_fail (dst);
+   BSON_ASSERT (src);
+   BSON_ASSERT (dst);
 
    bson_oid_copy_unsafe (src, dst);
 }
@@ -477,7 +477,7 @@ bson_oid_is_valid (const char *str,    /* IN */
 {
    size_t i;
 
-   bson_return_val_if_fail (str, false);
+   BSON_ASSERT (str);
 
    if ((length == 25) && (str [24] == '\0')) {
       length = 24;

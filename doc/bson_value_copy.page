@@ -21,14 +21,14 @@ bson_value_copy (const bson_value_t *src,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>src</code></p></td><td><p>A <link xref="bson_value_t">bson_value_t</link> to copy from.</p></td></tr>
-      <tr><td><p><code>dst</code></p></td><td><p>A <link xref="bson_value_t">bson_value_t</link> to copy into.</p></td></tr>
+      <tr><td><p><code>src</code></p></td><td><p>A <code xref="bson_value_t">bson_value_t</code> to copy from.</p></td></tr>
+      <tr><td><p><code>dst</code></p></td><td><p>A <code xref="bson_value_t">bson_value_t</code> to copy into.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>This function will copy the boxed content in <code>src</code> into <code>dst</code>. <code>dst</code> must be freed with <link xref="bson_value_destroy">bson_value_destroy()</link> when no longer in use.</p>
+    <p>This function will copy the boxed content in <code>src</code> into <code>dst</code>. <code>dst</code> must be freed with <code xref="bson_value_destroy">bson_value_destroy()</code> when no longer in use.</p>
   </section>
 
 </page>

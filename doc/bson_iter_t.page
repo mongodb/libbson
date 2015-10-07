@@ -25,9 +25,9 @@ typedef struct
 
   <section id="description">
     <title>Description</title>
-    <p><link xref="bson_iter_t">bson_iter_t</link> is a structure used to iterate through the elements of a <link xref="bson_t">bson_t</link>. It is meant to be used on the stack and can be discarded at any time as it contains no external allocation. The contents of the structure should be considered private and may change between releases, however the structure size will not change.</p>
+    <p><code xref="bson_iter_t">bson_iter_t</code> is a structure used to iterate through the elements of a <code xref="bson_t">bson_t</code>. It is meant to be used on the stack and can be discarded at any time as it contains no external allocation. The contents of the structure should be considered private and may change between releases, however the structure size will not change.</p>
 
-    <p>The <link xref="bson_t">bson_t</link> <em>MUST</em> be valid for the lifetime of the iter and it is an error to modify the <link xref="bson_t">bson_t</link> while using the iter.</p>
+    <p>The <code xref="bson_t">bson_t</code> <em>MUST</em> be valid for the lifetime of the iter and it is an error to modify the <code xref="bson_t">bson_t</code> while using the iter.</p>
   </section>
 
   <links type="topic" groups="function" style="2column">
