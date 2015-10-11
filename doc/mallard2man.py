@@ -29,6 +29,7 @@ page to a groff styled man page.
 """
 
 import os
+import re
 import sys
 
 import codecs
@@ -55,6 +56,10 @@ TABLE = '{http://projectmallard.org/1.0/}table'
 TR = '{http://projectmallard.org/1.0/}tr'
 TD = '{http://projectmallard.org/1.0/}td'
 OUTPUT = '{http://projectmallard.org/1.0/}output'
+
+# Matches "-" but not "\-".
+bare_dash = re.compile(r'(?<!\\)-')
+
 
 class Convert(object):
     title = None
@@ -90,7 +95,7 @@ class Convert(object):
         return self.parent_map[ele]
 
     def _extract(self):
-        # Try to extract the title and subtitle.
+        # Extract the title and subtitle.
         for child in self.root.getchildren():
             if child.tag == TITLE:
                 self.title = child.text.strip()
@@ -121,7 +126,16 @@ class Convert(object):
             self.outFile.write(line)
             self.outFile.write('\n')
 
+    def _escape(self, text):
+        # Avoid "hyphen-used-as-minus-sign" lintian warning about man pages.
+        # We'll replace all "-" with "\(hy", which is an explicit hyphen, but
+        # leave alone the first line's "name \- description" text.
+        return bare_dash.sub(r"\(hy", text)
+
     def _write(self, text):
+        self._write_noescape(self._escape(text))
+
+    def _write_noescape(self, text):
         self.outFile.write(text)
 
     def _writeCommand(self, text):
@@ -153,11 +167,7 @@ class Convert(object):
         title = self.title.replace('()','').upper()
         self._write('.TH "%s" "%s" "%s" "%s"\n' % (title, self.section, date, GROUP))
         self._write('.SH NAME\n')
-
-        if self.subtitle:
-            self._write('%s \\- %s\n' % (self.title, self.subtitle))
-        else:
-            self._write('%s\n' % self.title)
+        self._write_noescape('%s \\- %s\n' % (self.title, self.subtitle))
 
     def _generateSection(self, section):
         # Try to render the title first
