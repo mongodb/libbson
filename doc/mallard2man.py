@@ -203,7 +203,7 @@ class Convert(object):
         is_synopsis = self._get_parent(code).tag.endswith('synopsis')
         if text and '\n' not in text and not is_synopsis:
             text = text.replace('()', '(%s)' % self.section)
-            self._writeCommand('.BR ' + text)
+            self._writeCommand('.B ' + text)
         else:
             self._writeCommand('.nf')
             self._writeLine(code.text)
@@ -241,7 +241,7 @@ class Convert(object):
             self._generateElement(child)
 
     def _generateEM(self, em):
-        self._writeCommand('.BR %s' % em.text)
+        self._writeCommand('.B %s' % em.text)
 
     def _generateOutput(self, output):
         self._generateCode(output)
@@ -312,14 +312,14 @@ class Convert(object):
         if text and '()' in text:
             text = text.replace('()', '(%s)' % self.section)
         if text:
-            self._writeCommand('.BR ' + text)
+            self._writeCommand('.B ' + text)
 
     def _generateSections(self):
         for section in self.sections:
             self._generateElement(section)
 
     def _generateFooter(self):
-        self._write('\n.BR')
+        self._write('\n.B')
         self._write('\n.SH COLOPHON')
         self._write('\nThis page is part of %s.' % GROUP)
         self._write('\nPlease report any bugs at\n')
