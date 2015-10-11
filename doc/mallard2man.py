@@ -57,8 +57,8 @@ TR = '{http://projectmallard.org/1.0/}tr'
 TD = '{http://projectmallard.org/1.0/}td'
 OUTPUT = '{http://projectmallard.org/1.0/}output'
 
-# Matches "-" but not "\-".
-bare_dash = re.compile(r'(?<!\\)-')
+# Matches "\" and "-", but not "\-".
+replaceables = re.compile(r'(\\(?!-))|((?<!\\)-)')
 
 
 class Convert(object):
@@ -126,11 +126,21 @@ class Convert(object):
             self.outFile.write(line)
             self.outFile.write('\n')
 
+    def _escape_char(self, match):
+        c = match.group(0)
+        if c == "-":
+            return r"\(hy"
+        elif c == "\\":
+            return "\\e"
+
+        assert False, "invalid char passed to _escape_char: %r" % c
+
     def _escape(self, text):
-        # Avoid "hyphen-used-as-minus-sign" lintian warning about man pages.
-        # We'll replace all "-" with "\(hy", which is an explicit hyphen, but
-        # leave alone the first line's "name \- description" text.
-        return bare_dash.sub(r"\(hy", text)
+        # Avoid "hyphen-used-as-minus-sign" lintian warning about man pages,
+        # and escape text like "\0" as "\\0". We'll replace all "-" with "\(hy",
+        # which is an explicit hyphen, but leave alone the first line's
+        # "name \- description" text.
+        return replaceables.sub(self._escape_char, text)
 
     def _write(self, text):
         self._write_noescape(self._escape(text))
