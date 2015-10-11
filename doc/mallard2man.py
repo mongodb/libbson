@@ -69,6 +69,9 @@ class Convert(object):
         self.section = section
         self.sections = []
 
+        # Map: section id -> section element.
+        self.sections_map = {}
+
     def _parse(self):
         self.tree = ElementTree.ElementTree()
         self.tree.parse(open(self.inFile))
@@ -87,14 +90,29 @@ class Convert(object):
         return self.parent_map[ele]
 
     def _extract(self):
-        # Try to extract the title.
+        # Try to extract the title and subtitle.
         for child in self.root.getchildren():
             if child.tag == TITLE:
                 self.title = child.text.strip()
             elif child.tag == SUBTITLE:
                 self.subtitle = child.text.strip()
             elif child.tag == SECTION:
+                if child.get('id'):
+                    self.sections_map[child.get('id')] = child
                 self.sections.append(child)
+
+        if not self.subtitle and 'description' in self.sections_map:
+            # No "subtitle" element, use description section title as subtitle.
+            self.subtitle = self._section_text(self.sections_map['description'])
+
+    def _section_text(self, section):
+        # Find <section id="description"><p>some text</p></section>.
+        for child in section:
+            if child.tag != TITLE:
+                return self._textify_elem(child)
+
+    def _textify_elem(self, elem):
+        return ''.join(elem.itertext()).strip()
 
     def _writeComment(self, text=''):
         lines = text.split('\n')

@@ -28,8 +28,13 @@ bson_check_version (int required_major,
     </table>
   </section>
 
+  <section id="description">
+    <title>Description</title>
+    <p>Check at runtime if this release of libbson meets a required version.</p>
+  </section>
+
   <section id="return">
     <title>Returns</title>
-	<p>True if libbson's version is greater than or equal to the required version.</p>
+    <p>True if libbson's version is greater than or equal to the required version.</p>
   </section>
 </page>

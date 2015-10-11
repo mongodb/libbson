@@ -17,8 +17,13 @@ bson_get_version (void);
 ]]></code></synopsis>
   </section>
 
+  <section id="description">
+    <title>Description</title>
+    <p>A string representation of Libbson's version, formatted something like "1.2.3" or "1.2.3-dev".</p>
+  </section>
+
   <section id="return">
     <title>Returns</title>
-    <p>A string representation of Libbson's version, formatted something like "1.2.3" or "1.2.3-dev".</p>
+    <p>A string you must not modify or free.</p>
   </section>
 </page>
