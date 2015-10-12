@@ -211,6 +211,11 @@ static yajl_alloc_funcs gYajlAllocFuncs = {
 };
 
 
+static void
+_noop (void)
+{
+}
+
 #define STACK_ELE(_delta, _name) (bson->stack[(_delta) + bson->n]._name)
 #define STACK_BSON(_delta) \
       (((_delta) + bson->n) == 0 ? bson->bson : &STACK_ELE (_delta, bson))
@@ -958,7 +963,7 @@ _bson_json_read_start_array (void *_ctx) /* IN */
    bson_json_reader_bson_t *bson = &reader->bson;
 
    if (bson->n < 0) {
-      STACK_PUSH_ARRAY ();
+      STACK_PUSH_ARRAY (_noop ());
    } else {
       _bson_json_read_fixup_key (bson);
       key = bson->key;
