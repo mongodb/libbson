@@ -1,3 +1,29 @@
+Libbson 1.2.0
+=============
+
+It is my pleasure to announce to you the release of Libbson-1.2.0.
+
+Changes since the previous stable release, 1.1.11:
+
+  * Add bson_mem_restore_vtable(), the inverse of bson_mem_set_vtable().
+  * Enable runtime asserts in release build.
+  * Fixed compiler warnings and build failures on various platforms.
+  * Improvements to the formatting and contents of the documentation.
+
+Thanks to everyone who contributed to the development of this release.
+
+  * A. Jesse Jiryu Davis
+  * Hannes Magnusson
+  * Jason Carey
+  * Kyle Suarez
+  * Derick Rethans
+  * David Hatch
+
+Peace,
+
+  A. Jesse Jiryu Davis
+
+
 Libbson 1.2.0-rc0
 ==================
 
