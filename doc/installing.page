@@ -88,10 +88,6 @@ Documentation:
   man                                              : yes
   HTML                                             : yes
   Yelp                                             : no
-
-Bindings:
-  Python (experimental)                            : no</output></screen>
-
     <p>We can now build libbson with the venerable <code>make</code> program.</p>
 
     <screen><output style="prompt">$ </output><input>make</input></screen>
