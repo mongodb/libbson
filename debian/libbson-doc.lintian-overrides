@@ -1,0 +1,2 @@
+# yelp-build embeds jQuery and jQuery.Syntax, so we can't use libjs-jquery
+libbson-doc: embedded-javascript-library

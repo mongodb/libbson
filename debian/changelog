@@ -1,0 +1,5 @@
+libbson (1.2.1-1) experimental; urgency=low
+
+  * Initial release (Closes: #798695)
+
+ -- A. Jesse Jiryu Davis <jesse@mongodb.com>  Fri, 16 Oct 2015 14:52:26 -0400

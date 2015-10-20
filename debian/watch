@@ -1,0 +1,4 @@
+version=3
+
+https://github.com/mongodb/libbson/releases /mongodb/libbson/releases/download/\d\S*/libbson-(\d\S*)\.tar\.gz
+
