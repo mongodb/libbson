@@ -1,5 +1,5 @@
 Name:           libbson
-Version:        1.2.0-beta
+Version:        1.2.0
 Release:        1%{?dist}
 Summary:        BSON library
 
@@ -56,8 +56,23 @@ find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 
 %changelog
 
-* Tue Apr 7 2015 A. Jesse Jiryu Davis <jesse@mongodb.com> - 1.2.0-beta-1
-- Beta release
+* Tue October 13 2015 A. Jesse Jiryu Davis <jesse@mongodb.com> - 1.2.0-1
+- Release 1.2.0
+
+* Wed September 23 2015 A. Jesse Jiryu Davis <jesse@mongodb.com> - 1.1.11-1
+- Release 1.1.11
+
+* Tue July 21 2015 A. Jesse Jiryu Davis <jesse@mongodb.com> - 1.1.10-1
+- Release 1.1.10
+
+* Sun June 28 2015 A. Jesse Jiryu Davis <jesse@mongodb.com> - 1.1.9-1
+- Release 1.1.9
+
+* Sun June 21 2015 A. Jesse Jiryu Davis <jesse@mongodb.com> - 1.1.8-1
+- Release 1.1.8
+
+* Tue June 9 2015 A. Jesse Jiryu Davis <jesse@mongodb.com> - 1.1.7-1
+- Release 1.1.7
 
 * Tue May 18 2015 A. Jesse Jiryu Davis <jesse@mongodb.com> - 1.1.6-1
 - Release 1.1.6

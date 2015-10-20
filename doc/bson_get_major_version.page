@@ -17,6 +17,11 @@ bson_get_major_version (void);
 ]]></code></synopsis>
   </section>
 
+  <section id="description">
+    <title>Description</title>
+    <p>Get the first number in libbson's MAJOR.MINOR.MICRO release version.</p>
+  </section>
+
   <section id="return">
     <title>Returns</title>
     <p>The value of <code>BSON_MAJOR_VERSION</code> when Libbson was compiled.</p>

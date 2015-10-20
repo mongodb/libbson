@@ -4,8 +4,7 @@
 
   <title>Streaming BSON</title>
 
-  <p>Libbson provides mechanisms to stream BSON documents to and from file-descriptors. This can be convenient if you want to do stream oriented processing.</p>
-  <p><code xref="bson_reader_t">bson_reader_t</code> provides a streaming reader which can be initialized with a file-descriptor or memory region. Similarly, <code xref="bson_writer_t">bson_writer_t</code> provides a streaming writer which can be initialized with a file-descriptor or memory region.</p>
+  <p><code xref="bson_reader_t">bson_reader_t</code> provides a streaming reader which can be initialized with a filedescriptor or memory region. <code xref="bson_writer_t">bson_writer_t</code> provides a streaming writer which can be initialized with a memory region. (Streaming BSON to a file descriptor is not yet supported.)</p>
 
   <section id="reader">
     <title>Reading from a BSON Stream</title>

@@ -4,26 +4,26 @@
       style="function"
       xmlns:api="http://projectmallard.org/experimental/api/"
       xmlns:ui="http://projectmallard.org/experimental/ui/"
-      id="bson_get_minor_version">
+      id="bson_get_version">
   <info>
     <link type="guide" xref="version" group="function"/>
   </info>
-  <title>bson_get_minor_version()</title>
+  <title>bson_get_version()</title>
 
   <section id="synopsis">
     <title>Synopsis</title>
-    <synopsis><code mime="text/x-csrc"><![CDATA[int
-bson_get_minor_version (void);
+    <synopsis><code mime="text/x-csrc"><![CDATA[const char *
+bson_get_version (void);
 ]]></code></synopsis>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>Get the middle number in libbson's MAJOR.MINOR.MICRO release version.</p>
+    <p>A string representation of Libbson's version, formatted something like "1.2.3" or "1.2.3-dev".</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>The value of <code>BSON_MINOR_VERSION</code> when Libbson was compiled.</p>
+    <p>A string you must not modify or free.</p>
   </section>
 </page>

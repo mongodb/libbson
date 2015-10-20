@@ -16,6 +16,7 @@ extern void test_reader_install       (TestSuite *suite);
 extern void test_string_install       (TestSuite *suite);
 extern void test_utf8_install         (TestSuite *suite);
 extern void test_value_install        (TestSuite *suite);
+extern void test_version_install      (TestSuite *suite);
 extern void test_writer_install       (TestSuite *suite);
 
 
@@ -43,6 +44,7 @@ main (int argc,
    test_string_install (&suite);
    test_utf8_install (&suite);
    test_value_install (&suite);
+   test_version_install (&suite);
    test_writer_install (&suite);
 
    ret = TestSuite_Run (&suite);
