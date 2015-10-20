@@ -95,8 +95,6 @@ _bson_reader_handle_fill_buffer (bson_reader_handle_t *reader) /* IN */
 {
    ssize_t ret;
 
-   BSON_ASSERT (reader);
-
    /*
     * Handle first read specially.
     */
@@ -137,8 +135,8 @@ _bson_reader_handle_fill_buffer (bson_reader_handle_t *reader) /* IN */
       reader->end += ret;
    }
 
-   bson_return_if_fail (reader->offset == 0);
-   bson_return_if_fail (reader->end <= reader->len);
+   BSON_ASSERT (reader->offset == 0);
+   BSON_ASSERT (reader->end <= reader->len);
 }
 
 
@@ -172,8 +170,8 @@ bson_reader_new_from_handle (void                       *handle,
 {
    bson_reader_handle_t *real;
 
-   bson_return_val_if_fail (handle, NULL);
-   bson_return_val_if_fail (rf, NULL);
+   BSON_ASSERT (handle);
+   BSON_ASSERT (rf);
 
    real = bson_malloc0 (sizeof *real);
    real->type = BSON_READER_HANDLE;
@@ -302,7 +300,7 @@ bson_reader_new_from_fd (int  fd,               /* IN */
 {
    bson_reader_handle_fd_t *handle;
 
-   bson_return_val_if_fail (fd != -1, NULL);
+   BSON_ASSERT (fd != -1);
 
    handle = bson_malloc0 (sizeof *handle);
    handle->fd = fd;
@@ -346,7 +344,7 @@ bson_reader_set_read_func (bson_reader_t          *reader, /* IN */
 {
    bson_reader_handle_t *real = (bson_reader_handle_t *)reader;
 
-   bson_return_if_fail (reader->type == BSON_READER_HANDLE);
+   BSON_ASSERT (reader->type == BSON_READER_HANDLE);
 
    real->read_func = func;
 }
@@ -377,7 +375,7 @@ bson_reader_set_destroy_func (bson_reader_t             *reader, /* IN */
 {
    bson_reader_handle_t *real = (bson_reader_handle_t *)reader;
 
-   bson_return_if_fail (reader->type == BSON_READER_HANDLE);
+   BSON_ASSERT (reader->type == BSON_READER_HANDLE);
 
    real->destroy_func = func;
 }
@@ -403,8 +401,6 @@ static void
 _bson_reader_handle_grow_buffer (bson_reader_handle_t *reader) /* IN */
 {
    size_t size;
-
-   bson_return_if_fail (reader);
 
    size = reader->len * 2;
    reader->data = bson_realloc (reader->data, size);
@@ -432,8 +428,6 @@ static off_t
 _bson_reader_handle_tell (bson_reader_handle_t *reader) /* IN */
 {
    off_t off;
-
-   bson_return_val_if_fail (reader, -1);
 
    off = (off_t)reader->bytes_read;
    off -= (off_t)reader->end;
@@ -468,8 +462,6 @@ _bson_reader_handle_read (bson_reader_handle_t *reader,      /* IN */
                           bool                 *reached_eof) /* IN */
 {
    int32_t blen;
-
-   bson_return_val_if_fail (reader, NULL);
 
    if (reached_eof) {
       *reached_eof = false;
@@ -544,7 +536,7 @@ bson_reader_new_from_data (const uint8_t *data,   /* IN */
 {
    bson_reader_data_t *real;
 
-   bson_return_val_if_fail (data, NULL);
+   BSON_ASSERT (data);
 
    real = (bson_reader_data_t*)bson_malloc0 (sizeof *real);
    real->type = BSON_READER_DATA;
@@ -578,8 +570,6 @@ _bson_reader_data_read (bson_reader_data_t *reader,      /* IN */
                         bool               *reached_eof) /* IN */
 {
    int32_t blen;
-
-   bson_return_val_if_fail (reader, NULL);
 
    if (reached_eof) {
       *reached_eof = false;
@@ -634,8 +624,6 @@ _bson_reader_data_read (bson_reader_data_t *reader,      /* IN */
 static off_t
 _bson_reader_data_tell (bson_reader_data_t *reader) /* IN */
 {
-   bson_return_val_if_fail (reader, -1);
-
    return (off_t)reader->offset;
 }
 
@@ -660,7 +648,7 @@ _bson_reader_data_tell (bson_reader_data_t *reader) /* IN */
 void
 bson_reader_destroy (bson_reader_t *reader) /* IN */
 {
-   bson_return_if_fail (reader);
+   BSON_ASSERT (reader);
 
    switch (reader->type) {
    case 0:
@@ -722,7 +710,7 @@ const bson_t *
 bson_reader_read (bson_reader_t *reader,      /* IN */
                   bool          *reached_eof) /* OUT */
 {
-   bson_return_val_if_fail (reader, NULL);
+   BSON_ASSERT (reader);
 
    switch (reader->type) {
    case BSON_READER_HANDLE:
@@ -760,7 +748,7 @@ bson_reader_read (bson_reader_t *reader,      /* IN */
 off_t
 bson_reader_tell (bson_reader_t *reader) /* IN */
 {
-   bson_return_val_if_fail (reader, -1);
+   BSON_ASSERT (reader);
 
    switch (reader->type) {
    case BSON_READER_HANDLE:
@@ -803,7 +791,7 @@ bson_reader_new_from_file (const char   *path,  /* IN */
    char *errmsg;
    int fd;
 
-   bson_return_val_if_fail (path, NULL);
+   BSON_ASSERT (path);
 
 #ifdef BSON_OS_WIN32
    if (_sopen_s (&fd, path, (_O_RDONLY | _O_BINARY), _SH_DENYNO, 0) != 0) {

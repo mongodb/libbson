@@ -25,8 +25,8 @@ void
 bson_value_copy (const bson_value_t *src, /* IN */
                  bson_value_t       *dst) /* OUT */
 {
-   bson_return_if_fail (src);
-   bson_return_if_fail (dst);
+   BSON_ASSERT (src);
+   BSON_ASSERT (dst);
 
    dst->value_type = src->value_type;
 

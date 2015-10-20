@@ -7,6 +7,7 @@ libbson_1_0_la_LIBADD = \
 	-lm
 libbson_1_0_la_LDFLAGS = \
 	$(OPTIMIZE_LDFLAGS) \
+	$(COVERAGE_LDFLAGS) \
 	$(BSON_LT_LDFLAGS) \
 	-no-undefined \
 	-rpath $(libdir)

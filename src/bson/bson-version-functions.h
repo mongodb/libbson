@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 MongoDB, Inc.
+ * Copyright 2015 MongoDB, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,25 +15,23 @@
  */
 
 
-#include "bson-version.h"
+#if !defined (BSON_INSIDE) && !defined (BSON_COMPILATION)
+#error "Only <bson.h> can be included directly."
+#endif
 
 
-int
-bson_get_major_version (void)
-{
-   return BSON_MAJOR_VERSION;
-}
+#ifndef BSON_VERSION_FUNCTIONS_H
+#define BSON_VERSION_FUNCTIONS_H
+
+#include "bson-types.h"
+
+int bson_get_major_version (void);
+int bson_get_minor_version (void);
+int bson_get_micro_version (void);
+const char *bson_get_version (void);
+bool bson_check_version (int required_major,
+                           int required_minor,
+                           int required_micro);
 
 
-int
-bson_get_minor_version (void)
-{
-   return BSON_MINOR_VERSION;
-}
-
-
-int
-bson_get_micro_version (void)
-{
-   return BSON_MICRO_VERSION;
-}
+#endif /* BSON_VERSION_FUNCTIONS_H */

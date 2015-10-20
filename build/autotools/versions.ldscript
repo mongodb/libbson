@@ -191,5 +191,7 @@ LIBBSON_1.1 {
 
 LIBBSON_1.2 {
     global:
+        bson_get_version;
+        bson_check_version;
         bson_mem_restore_vtable;
 } LIBBSON_1.1;

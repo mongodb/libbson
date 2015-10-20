@@ -13,6 +13,11 @@
   <title>Libbson Versioning</title>
   <subtitle>Versioning Macros and Functions</subtitle>
 
+  <p>
+    The following preprocessor macros can be used to perform various checks based on the version of the library you are compiling against.
+    This may be useful if you only want to enable a feature on a certain version of the library.
+  </p>
+
   <section id="synopsis">
     <title>Synopsis</title>
     <synopsis><code mime="text/x-csrc"><![CDATA[
@@ -21,22 +26,22 @@
 #define BSON_MAJOR_VERSION (1)
 #define BSON_MINOR_VERSION (2)
 #define BSON_MICRO_VERSION (0)
-#define BSON_VERSION_S     "1.2.0-beta"
+#define BSON_VERSION_S     "1.2.0"
 
 #define BSON_VERSION_HEX (BSON_MAJOR_VERSION << 24 | \
                           BSON_MINOR_VERSION << 16 | \
                           BSON_MICRO_VERSION << 8)
-
-int bson_get_major_version (void);
-int bson_get_minor_version (void);
-int bson_get_micro_version (void);
 ]]></code></synopsis>
   </section>
 
-  <section id="description">
-    <title>Description</title>
-    <p>Libbson contains various compile time macros and runtime functions to help you determine what version of Libbson you are running on. This can be useful if you need to handle code fragments differently based on the Libbson version.</p>
-  </section>
+  <listing>
+    <title>Compile-Time Version Check</title>
+    <desc>Only compile a block on Libbson 1.1.0 and newer.</desc>
+    <code mime="text/x-csrc"><![CDATA[#if BSON_CHECK_VERSION(1, 1, 0)
+static void do_something (void) {
+}
+#endif]]></code>
+  </listing>
 
   <links type="topic" groups="function" style="2column">
     <title>Functions</title>

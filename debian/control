@@ -1,0 +1,60 @@
+Source: libbson
+Priority: optional
+Maintainer: A. Jesse Jiryu Davis <jesse@mongodb.com>
+Build-Depends: debhelper (>= 9), dh-autoreconf, yelp-tools, yelp-xsl, libyajl-dev
+Standards-Version: 3.9.6
+Section: libs
+Homepage: https://github.com/mongodb/libbson
+Vcs-Git: https://github.com/mongodb/libbson.git
+Vcs-Browser: https://github.com/mongodb/libbson/tree/debian
+
+Package: libbson-dev
+Section: libdevel
+Architecture: any
+Depends: libbson-1.0-0 (= ${binary:Version}), ${misc:Depends}
+Description: Library to parse and generate BSON documents - dev files
+ libbson parses and generates BSON documents, the data format for
+ MongoDB. It is a dependency for libmongoc, the MongoDB client library,
+ for which it provides BSON support as well as platform-compatibility
+ functions and macros.
+ .
+ This package contains all files necessary to develop applications which
+ use libbson.
+
+Package: libbson-1.0-0
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Library to parse and generate BSON documents - runtime files
+ libbson parses and generates BSON documents, the data format for
+ MongoDB. It is a dependency for libmongoc, the MongoDB client library,
+ for which it provides BSON support as well as platform-compatibility
+ functions and macros.
+ .
+ This package contains the libbson runtime libraries, for applications that
+ have been built with libbson.
+
+Package: libbson-dbg
+Section: debug
+Priority: extra
+Architecture: any
+Depends: libbson-1.0-0 (= ${binary:Version}), ${misc:Depends}
+Description: Library to parse and generate BSON documents - debug symbols
+ libbson parses and generates BSON documents, the data format for
+ MongoDB. It is a dependency for libmongoc, the MongoDB client library,
+ for which it provides BSON support as well as platform-compatibility
+ functions and macros.
+ .
+ This package contains the debugging symbols for libbson.
+
+Package: libbson-doc
+Section: doc
+Architecture: all
+Depends: ${misc:Depends}
+Description: Library to parse and generate BSON documents - documentation
+ libbson parses and generates BSON documents, the data format for
+ MongoDB. It is a dependency for libmongoc, the MongoDB client library,
+ for which it provides BSON support as well as platform-compatibility
+ functions and macros.
+ .
+ This package contains the man pages for libbson.
+

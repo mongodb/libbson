@@ -107,7 +107,7 @@ bson_string_free (bson_string_t *string,       /* IN */
 {
    char *ret = NULL;
 
-   bson_return_val_if_fail (string, NULL);
+   BSON_ASSERT (string);
 
    if (!free_segment) {
       ret = string->str;
@@ -143,8 +143,8 @@ bson_string_append (bson_string_t *string, /* IN */
 {
    uint32_t len;
 
-   bson_return_if_fail (string);
-   bson_return_if_fail (str);
+   BSON_ASSERT (string);
+   BSON_ASSERT (str);
 
    len = (uint32_t)strlen (str);
 
@@ -296,8 +296,8 @@ bson_string_truncate (bson_string_t *string, /* IN */
 {
    uint32_t alloc;
 
-   bson_return_if_fail (string);
-   bson_return_if_fail (len < INT_MAX);
+   BSON_ASSERT (string);
+   BSON_ASSERT (len < INT_MAX);
 
    alloc = len + 1;
 
@@ -381,7 +381,7 @@ bson_strdupv_printf (const char *format, /* IN */
    int len = 32;
    int n;
 
-   bson_return_val_if_fail (format, NULL);
+   BSON_ASSERT (format);
 
    buf = bson_malloc0 (len);
 
@@ -429,7 +429,7 @@ bson_strdup_printf (const char *format, /* IN */
    va_list args;
    char *ret;
 
-   bson_return_val_if_fail (format, NULL);
+   BSON_ASSERT (format);
 
    va_start (args, format);
    ret = bson_strdupv_printf (format, args);
@@ -461,7 +461,7 @@ bson_strndup (const char *str,     /* IN */
 {
    char *ret;
 
-   bson_return_val_if_fail (str, NULL);
+   BSON_ASSERT (str);
 
    ret = bson_malloc (n_bytes + 1);
    memcpy (ret, str, n_bytes);

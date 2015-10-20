@@ -41,8 +41,8 @@ bool
 bson_iter_init (bson_iter_t  *iter, /* OUT */
                 const bson_t *bson) /* IN */
 {
-   bson_return_val_if_fail (iter, false);
-   bson_return_val_if_fail (bson, false);
+   BSON_ASSERT (iter);
+   BSON_ASSERT (bson);
 
    if (BSON_UNLIKELY (bson->len < 5)) {
       memset (iter, 0, sizeof *iter);
@@ -89,8 +89,8 @@ bson_iter_recurse (const bson_iter_t *iter,  /* IN */
    const uint8_t *data = NULL;
    uint32_t len = 0;
 
-   bson_return_val_if_fail (iter, false);
-   bson_return_val_if_fail (child, false);
+   BSON_ASSERT (iter);
+   BSON_ASSERT (child);
 
    if (ITER_TYPE (iter) == BSON_TYPE_DOCUMENT) {
       bson_iter_document (iter, &len, &data);
@@ -138,9 +138,9 @@ bson_iter_init_find (bson_iter_t  *iter, /* INOUT */
                      const bson_t *bson, /* IN */
                      const char   *key)  /* IN */
 {
-   bson_return_val_if_fail (iter, false);
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
+   BSON_ASSERT (iter);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
 
    return bson_iter_init (iter, bson) && bson_iter_find (iter, key);
 }
@@ -167,9 +167,9 @@ bson_iter_init_find_case (bson_iter_t  *iter, /* INOUT */
                           const bson_t *bson, /* IN */
                           const char   *key)  /* IN */
 {
-   bson_return_val_if_fail (iter, false);
-   bson_return_val_if_fail (bson, false);
-   bson_return_val_if_fail (key, false);
+   BSON_ASSERT (iter);
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
 
    return bson_iter_init (iter, bson) && bson_iter_find_case (iter, key);
 }
@@ -197,9 +197,6 @@ _bson_iter_find_with_len (bson_iter_t *iter,   /* INOUT */
                           int          keylen) /* IN */
 {
    const char *ikey;
-
-   bson_return_val_if_fail (iter, false);
-   bson_return_val_if_fail (key, false);
 
    if (keylen == 0) {
       return false;
@@ -243,8 +240,8 @@ bool
 bson_iter_find (bson_iter_t *iter, /* INOUT */
                 const char  *key)  /* IN */
 {
-   bson_return_val_if_fail (iter, false);
-   bson_return_val_if_fail (key, false);
+   BSON_ASSERT (iter);
+   BSON_ASSERT (key);
 
    return _bson_iter_find_with_len (iter, key, -1);
 }
@@ -272,8 +269,8 @@ bool
 bson_iter_find_case (bson_iter_t *iter, /* INOUT */
                      const char  *key)  /* IN */
 {
-   bson_return_val_if_fail (iter, false);
-   bson_return_val_if_fail (key, false);
+   BSON_ASSERT (iter);
+   BSON_ASSERT (key);
 
    while (bson_iter_next (iter)) {
 #ifdef BSON_OS_WIN32
@@ -316,9 +313,9 @@ bson_iter_find_descendant (bson_iter_t *iter,       /* INOUT */
    const char *dot;
    size_t sublen;
 
-   bson_return_val_if_fail (iter, false);
-   bson_return_val_if_fail (dotkey, false);
-   bson_return_val_if_fail (descendant, false);
+   BSON_ASSERT (iter);
+   BSON_ASSERT (dotkey);
+   BSON_ASSERT (descendant);
 
    if ((dot = strchr (dotkey, '.'))) {
       sublen = dot - dotkey;
@@ -363,7 +360,7 @@ bson_iter_find_descendant (bson_iter_t *iter,       /* INOUT */
 const char *
 bson_iter_key (const bson_iter_t *iter) /* IN */
 {
-   bson_return_val_if_fail (iter, NULL);
+   BSON_ASSERT (iter);
 
    return bson_iter_key_unsafe (iter);
 }
@@ -389,9 +386,9 @@ bson_iter_key (const bson_iter_t *iter) /* IN */
 bson_type_t
 bson_iter_type (const bson_iter_t *iter) /* IN */
 {
-   bson_return_val_if_fail (iter, BSON_TYPE_EOD);
-   bson_return_val_if_fail (iter->raw, BSON_TYPE_EOD);
-   bson_return_val_if_fail (iter->len, BSON_TYPE_EOD);
+   BSON_ASSERT (iter);
+   BSON_ASSERT (iter->raw);
+   BSON_ASSERT (iter->len);
 
    return bson_iter_type_unsafe (iter);
 }
@@ -425,7 +422,7 @@ bson_iter_next (bson_iter_t *iter) /* INOUT */
    uint32_t o;
    unsigned int len;
 
-   bson_return_val_if_fail (iter, false);
+   BSON_ASSERT (iter);
 
    if (!iter->raw) {
       return false;
@@ -738,8 +735,8 @@ bson_iter_binary (const bson_iter_t  *iter,        /* IN */
 {
    bson_subtype_t backup;
 
-   bson_return_if_fail (iter);
-   bson_return_if_fail (!binary || binary_len);
+   BSON_ASSERT (iter);
+   BSON_ASSERT (!binary || binary_len);
 
    if (ITER_TYPE (iter) == BSON_TYPE_BINARY) {
       if (!subtype) {
@@ -795,7 +792,7 @@ bson_iter_binary (const bson_iter_t  *iter,        /* IN */
 bool
 bson_iter_bool (const bson_iter_t *iter) /* IN */
 {
-   bson_return_val_if_fail (iter, 0);
+   BSON_ASSERT (iter);
 
    if (ITER_TYPE (iter) == BSON_TYPE_BOOL) {
       return bson_iter_bool_unsafe (iter);
@@ -828,7 +825,7 @@ bson_iter_bool (const bson_iter_t *iter) /* IN */
 bool
 bson_iter_as_bool (const bson_iter_t *iter) /* IN */
 {
-   bson_return_val_if_fail (iter, 0);
+   BSON_ASSERT (iter);
 
    switch ((int)ITER_TYPE (iter)) {
    case BSON_TYPE_BOOL:
@@ -869,7 +866,7 @@ bson_iter_as_bool (const bson_iter_t *iter) /* IN */
 double
 bson_iter_double (const bson_iter_t *iter) /* IN */
 {
-   bson_return_val_if_fail (iter, 0);
+   BSON_ASSERT (iter);
 
    if (ITER_TYPE (iter) == BSON_TYPE_DOUBLE) {
       return bson_iter_double_unsafe (iter);
@@ -898,7 +895,7 @@ bson_iter_double (const bson_iter_t *iter) /* IN */
 int32_t
 bson_iter_int32 (const bson_iter_t *iter) /* IN */
 {
-   bson_return_val_if_fail (iter, 0);
+   BSON_ASSERT (iter);
 
    if (ITER_TYPE (iter) == BSON_TYPE_INT32) {
       return bson_iter_int32_unsafe (iter);
@@ -928,7 +925,7 @@ bson_iter_int32 (const bson_iter_t *iter) /* IN */
 int64_t
 bson_iter_int64 (const bson_iter_t *iter) /* IN */
 {
-   bson_return_val_if_fail (iter, 0);
+   BSON_ASSERT (iter);
 
    if (ITER_TYPE (iter) == BSON_TYPE_INT64) {
       return bson_iter_int64_unsafe (iter);
@@ -962,7 +959,7 @@ bson_iter_int64 (const bson_iter_t *iter) /* IN */
 int64_t
 bson_iter_as_int64 (const bson_iter_t *iter) /* IN */
 {
-   bson_return_val_if_fail (iter, 0);
+   BSON_ASSERT (iter);
 
    switch ((int)ITER_TYPE (iter)) {
    case BSON_TYPE_BOOL:
@@ -999,7 +996,7 @@ bson_iter_as_int64 (const bson_iter_t *iter) /* IN */
 const bson_oid_t *
 bson_iter_oid (const bson_iter_t *iter) /* IN */
 {
-   bson_return_val_if_fail (iter, NULL);
+   BSON_ASSERT (iter);
 
    if (ITER_TYPE (iter) == BSON_TYPE_OID) {
       return bson_iter_oid_unsafe (iter);
@@ -1033,7 +1030,7 @@ bson_iter_regex (const bson_iter_t *iter,    /* IN */
    const char *ret = NULL;
    const char *ret_options = NULL;
 
-   bson_return_val_if_fail (iter, NULL);
+   BSON_ASSERT (iter);
 
    if (ITER_TYPE (iter) == BSON_TYPE_REGEX) {
       ret = (const char *)(iter->raw + iter->d1);
@@ -1073,7 +1070,7 @@ const char *
 bson_iter_utf8 (const bson_iter_t *iter,   /* IN */
                 uint32_t          *length) /* OUT */
 {
-   bson_return_val_if_fail (iter, NULL);
+   BSON_ASSERT (iter);
 
    if (ITER_TYPE (iter) == BSON_TYPE_UTF8) {
       if (length) {
@@ -1117,7 +1114,7 @@ bson_iter_dup_utf8 (const bson_iter_t *iter,   /* IN */
    const char *str;
    char *ret = NULL;
 
-   bson_return_val_if_fail (iter, NULL);
+   BSON_ASSERT (iter);
 
    if ((str = bson_iter_utf8 (iter, &local_length))) {
       ret = bson_malloc0 (local_length + 1);
@@ -1159,7 +1156,7 @@ const char *
 bson_iter_code (const bson_iter_t *iter,   /* IN */
                 uint32_t          *length) /* OUT */
 {
-   bson_return_val_if_fail (iter, NULL);
+   BSON_ASSERT (iter);
 
    if (ITER_TYPE (iter) == BSON_TYPE_CODE) {
       if (length) {
@@ -1212,7 +1209,7 @@ bson_iter_codewscope (const bson_iter_t  *iter,      /* IN */
 {
    uint32_t len;
 
-   bson_return_val_if_fail (iter, NULL);
+   BSON_ASSERT (iter);
 
    if (ITER_TYPE (iter) == BSON_TYPE_CODEWSCOPE) {
       if (length) {
@@ -1278,7 +1275,7 @@ bson_iter_dbpointer (const bson_iter_t  *iter,           /* IN */
                      const char        **collection,     /* OUT */
                      const bson_oid_t  **oid)            /* OUT */
 {
-   bson_return_if_fail (iter);
+   BSON_ASSERT (iter);
 
    if (collection) {
       *collection = NULL;
@@ -1338,7 +1335,7 @@ bson_iter_symbol (const bson_iter_t *iter,   /* IN */
    const char *ret = NULL;
    uint32_t ret_length = 0;
 
-   bson_return_val_if_fail (iter, NULL);
+   BSON_ASSERT (iter);
 
    if (ITER_TYPE (iter) == BSON_TYPE_SYMBOL) {
       ret = (const char *)(iter->raw + iter->d2);
@@ -1373,7 +1370,7 @@ bson_iter_symbol (const bson_iter_t *iter,   /* IN */
 int64_t
 bson_iter_date_time (const bson_iter_t *iter) /* IN */
 {
-   bson_return_val_if_fail (iter, 0);
+   BSON_ASSERT (iter);
 
    if (ITER_TYPE (iter) == BSON_TYPE_DATE_TIME) {
       return bson_iter_int64_unsafe (iter);
@@ -1403,7 +1400,7 @@ bson_iter_date_time (const bson_iter_t *iter) /* IN */
 time_t
 bson_iter_time_t (const bson_iter_t *iter) /* IN */
 {
-   bson_return_val_if_fail (iter, 0);
+   BSON_ASSERT (iter);
 
    if (ITER_TYPE (iter) == BSON_TYPE_DATE_TIME) {
       return bson_iter_time_t_unsafe (iter);
@@ -1444,7 +1441,7 @@ bson_iter_timestamp (const bson_iter_t *iter,      /* IN */
    uint32_t ret_timestamp = 0;
    uint32_t ret_increment = 0;
 
-   bson_return_if_fail (iter);
+   BSON_ASSERT (iter);
 
    if (ITER_TYPE (iter) == BSON_TYPE_TIMESTAMP) {
       memcpy (&encoded, iter->raw + iter->d1, sizeof (encoded));
@@ -1488,7 +1485,7 @@ void
 bson_iter_timeval (const bson_iter_t *iter,  /* IN */
                    struct timeval    *tv)    /* OUT */
 {
-   bson_return_if_fail (iter);
+   BSON_ASSERT (iter);
 
    if (ITER_TYPE (iter) == BSON_TYPE_DATE_TIME) {
       bson_iter_timeval_unsafe (iter, tv);
@@ -1547,9 +1544,9 @@ bson_iter_document (const bson_iter_t  *iter,         /* IN */
                     uint32_t           *document_len, /* OUT */
                     const uint8_t     **document)     /* OUT */
 {
-   bson_return_if_fail (iter);
-   bson_return_if_fail (document_len);
-   bson_return_if_fail (document);
+   BSON_ASSERT (iter);
+   BSON_ASSERT (document_len);
+   BSON_ASSERT (document);
 
    *document = NULL;
    *document_len = 0;
@@ -1609,9 +1606,9 @@ bson_iter_array (const bson_iter_t  *iter,      /* IN */
                  uint32_t           *array_len, /* OUT */
                  const uint8_t     **array)     /* OUT */
 {
-   bson_return_if_fail (iter);
-   bson_return_if_fail (array_len);
-   bson_return_if_fail (array);
+   BSON_ASSERT (iter);
+   BSON_ASSERT (array_len);
+   BSON_ASSERT (array);
 
    *array = NULL;
    *array_len = 0;
@@ -1691,8 +1688,8 @@ bson_iter_visit_all (bson_iter_t          *iter,    /* INOUT */
 {
    const char *key;
 
-   bson_return_val_if_fail (iter, false);
-   bson_return_val_if_fail (visitor, false);
+   BSON_ASSERT (iter);
+   BSON_ASSERT (visitor);
 
    while (bson_iter_next (iter)) {
       key = bson_iter_key_unsafe (iter);
@@ -1952,7 +1949,7 @@ void
 bson_iter_overwrite_bool (bson_iter_t *iter,  /* IN */
                           bool         value) /* IN */
 {
-   bson_return_if_fail (iter);
+   BSON_ASSERT (iter);
    value = !!value;
 
    if (ITER_TYPE (iter) == BSON_TYPE_BOOL) {
@@ -1982,7 +1979,7 @@ void
 bson_iter_overwrite_int32 (bson_iter_t *iter,  /* IN */
                            int32_t      value) /* IN */
 {
-   bson_return_if_fail (iter);
+   BSON_ASSERT (iter);
 
    if (ITER_TYPE (iter) == BSON_TYPE_INT32) {
 #if BSON_BYTE_ORDER != BSON_LITTLE_ENDIAN
@@ -2014,7 +2011,7 @@ void
 bson_iter_overwrite_int64 (bson_iter_t *iter,   /* IN */
                            int64_t      value)  /* IN */
 {
-   bson_return_if_fail (iter);
+   BSON_ASSERT (iter);
 
    if (ITER_TYPE (iter) == BSON_TYPE_INT64) {
 #if BSON_BYTE_ORDER != BSON_LITTLE_ENDIAN
@@ -2046,7 +2043,7 @@ void
 bson_iter_overwrite_double (bson_iter_t *iter,  /* IN */
                             double       value) /* IN */
 {
-   bson_return_if_fail (iter);
+   BSON_ASSERT (iter);
 
    if (ITER_TYPE (iter) == BSON_TYPE_DOUBLE) {
       value = BSON_DOUBLE_TO_LE (value);
@@ -2079,7 +2076,7 @@ bson_iter_value (bson_iter_t *iter) /* IN */
 {
    bson_value_t *value;
 
-   bson_return_val_if_fail (iter, NULL);
+   BSON_ASSERT (iter);
 
    value = &iter->value;
    value->value_type = ITER_TYPE (iter);

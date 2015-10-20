@@ -91,29 +91,4 @@
          (BSON_MAJOR_VERSION == (major) && BSON_MINOR_VERSION == (minor) && \
           BSON_MICRO_VERSION >= (micro)))
 
-
-/**
- * bson_get_major_version:
- *
- * Helper function to return the runtime major version of the library.
- */
-int bson_get_major_version (void);
-
-
-/**
- * bson_get_minor_version:
- *
- * Helper function to return the runtime minor version of the library.
- */
-int bson_get_minor_version (void);
-
-
-/**
- * bson_get_micro_version:
- *
- * Helper function to return the runtime micro version of the library.
- */
-int bson_get_micro_version (void);
-
-
 #endif /* BSON_VERSION_H */

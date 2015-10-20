@@ -92,7 +92,7 @@ main (int   argc,
 
    json = bson_as_json(bson, NULL);
    printf("%s\n", json);
-   free(json);
+   bson_free(json);
 
    bson_destroy(bson);
 

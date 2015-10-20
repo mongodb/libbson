@@ -30,7 +30,7 @@ bson_utf8_validate (const char *utf8,
 
   <section id="description">
     <title>Description</title>
-    <p>Validates that the content within <code>utf8</code> is valid UTF-8. If <code>allow_null</code> is <code>true</code>, then embedded NULL bytes are allowed (<code>\0></code>).</p>
+    <p>Validates that the content within <code>utf8</code> is valid UTF-8. If <code>allow_null</code> is <code>true</code>, then embedded NULL bytes are allowed (<code>\0</code>).</p>
   </section>
 
   <section id="return">

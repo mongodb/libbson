@@ -27,6 +27,7 @@ INST_H_FILES = \
 	src/bson/bson-utf8.h \
 	src/bson/bson-value.h \
 	src/bson/bson-version.h \
+	src/bson/bson-version-functions.h \
 	src/bson/bson-writer.h
 
 if OS_WIN32
@@ -52,15 +53,10 @@ libbson_la_CPPFLAGS = \
 	-I$(top_srcdir)/src/yajl \
 	-I$(top_builddir)/src/bson
 
-if !ENABLE_DEBUG
-libbson_la_CPPFLAGS += \
-	-DBSON_DISABLE_ASSERT \
-	-DBSON_DISABLE_CHECKS
-endif
-
 libbson_la_CFLAGS = \
 	$(MAINTAINER_CFLAGS) \
 	$(OPTIMIZE_CFLAGS) \
+	$(COVERAGE_CFLAGS) \
 	$(PTHREAD_CFLAGS)
 
 libbson_la_SOURCES = \
@@ -84,7 +80,7 @@ libbson_la_SOURCES = \
 	src/bson/bson-timegm.c \
 	src/bson/bson-utf8.c \
 	src/bson/bson-value.c \
-	src/bson/bson-version.c \
+	src/bson/bson-version-functions.c \
 	src/bson/bson-writer.c
 
 libbson_la_LIBADD =

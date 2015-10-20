@@ -903,9 +903,6 @@ bcon_extract_ctx_va (bson_t             *bson,
             STACK_PUSH_DOC (bson_iter_recurse (&current_iter,
                                                STACK_ITER_CHILD));
             break;
-         case BCON_TYPE_DOC_END:
-            STACK_POP_DOC (_noop ());
-            break;
          case BCON_TYPE_ARRAY_START:
 
             if (bson_iter_type (&current_iter) !=
@@ -913,9 +910,6 @@ bcon_extract_ctx_va (bson_t             *bson,
 
             STACK_PUSH_ARRAY (bson_iter_recurse (&current_iter,
                                                  STACK_ITER_CHILD));
-            break;
-         case BCON_TYPE_ARRAY_END:
-            STACK_POP_ARRAY (_noop ());
             break;
          default:
 

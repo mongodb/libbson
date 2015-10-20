@@ -1,0 +1,172 @@
+Author: A. Jesse Jiryu Davis <jesse@mongodb.com>
+Description: Use system yajl instead of yajl embedded with libbson
+--- libbson.git.orig/src/bson/bson-json.c
++++ libbson.git/src/bson/bson-json.c
+@@ -26,8 +26,7 @@
+ #include "bson-iso8601-private.h"
+ #include "b64_pton.h"
+ 
+-#include <yajl/yajl_parser.h>
+-#include <yajl/yajl_bytestack.h>
++#include <yajl/yajl_parse.h>
+ 
+ #ifdef _WIN32
+ # include <io.h>
+@@ -167,6 +166,7 @@
+ {
+    bson_json_reader_producer_t  producer;
+    bson_json_reader_bson_t      bson;
++   bool                         allow_multiple;
+    yajl_handle                  yh;
+    bson_error_t                *error;
+ };
+@@ -1012,6 +1012,34 @@
+ };
+ 
+ 
++static yajl_handle
++_bson_json_reader_yajl_handle (bson_json_reader_t *reader)
++{
++   if (!reader->yh) {
++      reader->yh = yajl_alloc (&read_cbs, &gYajlAllocFuncs, reader);
++      yajl_option opt = yajl_dont_validate_strings;
++
++      if (reader->allow_multiple) {
++         opt |= yajl_allow_multiple_values;
++      }
++
++      yajl_config (reader->yh, opt, 1);
++   }
++
++   return reader->yh;
++}
++
++
++static void
++_bson_json_reader_yajl_handle_clear (bson_json_reader_t *reader)
++{
++   if (reader->yh) {
++      yajl_free (reader->yh);
++      reader->yh = NULL;
++   }
++}
++
++
+ static int
+ _bson_json_read_parse_error (bson_json_reader_t *reader, /* IN */
+                              yajl_status         ys,     /* IN */
+@@ -1046,9 +1074,7 @@
+    }
+ 
+    p->bytes_parsed += yajl_get_bytes_consumed (yh);
+-
+-   yh->stateStack.used = 0;
+-   yajl_bs_push (yh->stateStack, yajl_state_start);
++   _bson_json_reader_yajl_handle_clear (reader);
+ 
+    return r;
+ }
+@@ -1094,7 +1120,7 @@
+    BSON_ASSERT (bson);
+ 
+    p = &reader->producer;
+-   yh = reader->yh;
++   yh = _bson_json_reader_yajl_handle (reader);
+ 
+    reader->bson.bson = bson;
+    reader->bson.n = -1;
+@@ -1180,13 +1206,8 @@
+    p->buf = bson_malloc (buf_size);
+    p->buf_size = buf_size ? buf_size : BSON_JSON_DEFAULT_BUF_SIZE;
+ 
+-   r->yh = yajl_alloc (&read_cbs, &gYajlAllocFuncs, r);
+-
+-   yajl_config (r->yh,
+-                yajl_dont_validate_strings |
+-                (allow_multiple ?  yajl_allow_multiple_values : 0)
+-                , 1);
+-
++   r->allow_multiple = allow_multiple;
++   _bson_json_reader_yajl_handle (r);
+    return r;
+ }
+ 
+@@ -1209,7 +1230,7 @@
+       bson_free (b->bson_type_buf[i].buf);
+    }
+ 
+-   yajl_free (reader->yh);
++   _bson_json_reader_yajl_handle_clear (reader);
+ 
+    bson_free (reader);
+ }
+--- libbson.git.orig/tests/test-json.c
++++ libbson.git/tests/test-json.c
+@@ -497,6 +497,30 @@
+    assert (!b);
+ }
+ 
++static void
++test_bson_json_multiple_errors (void)
++{
++   const char *json;
++   bson_json_reader_t *reader;
++   int i;
++   int r;
++   bson_t bson = BSON_INITIALIZER;
++   bson_error_t error;
++
++   json = ("{1{'err'}");
++   reader = bson_json_data_reader_new (true, 0);
++   bson_json_data_reader_ingest(reader, (uint8_t *)json, strlen(json));
++
++   for (i = 0; i < 4; i++) {
++      r = bson_json_reader_read (reader, &bson, &error);
++      ASSERT_CMPINT (r, <, 0);
++      bson_reinit (&bson);
++   }
++
++   bson_json_reader_destroy (reader);
++   bson_destroy (&bson);
++}
++
+ static ssize_t
+ test_bson_json_read_bad_cb_helper(void *_ctx, uint8_t * buf, size_t len)
+ {
+@@ -732,6 +756,7 @@
+    TestSuite_Add (suite, "/bson/json/date", test_bson_json_date);
+    TestSuite_Add (suite, "/bson/json/read/missing_complex", test_bson_json_read_missing_complex);
+    TestSuite_Add (suite, "/bson/json/read/invalid_json", test_bson_json_read_invalid_json);
++   TestSuite_Add (suite, "/bson/json/read/multiple_errors", test_bson_json_multiple_errors);
+    TestSuite_Add (suite, "/bson/json/read/bad_cb", test_bson_json_read_bad_cb);
+    TestSuite_Add (suite, "/bson/json/read/invalid", test_bson_json_read_invalid);
+    TestSuite_Add (suite, "/bson/json/read/file", test_json_reader_new_from_file);
+--- libbson.git.orig/src/Makefile.am
++++ libbson.git/src/Makefile.am
+@@ -3,7 +3,7 @@
+ libbson_1_0_la_SOURCES =
+ libbson_1_0_la_LIBADD = \
+ 	libbson.la \
+-	libyajl.la \
++	-lyajl
+ 	-lm
+ libbson_1_0_la_LDFLAGS = \
+ 	$(OPTIMIZE_LDFLAGS) \
+@@ -19,7 +19,6 @@
+ endif
+ 
+ include src/bson/Makefile.am
+-include src/yajl/Makefile.am
+ 
+ pkgconfigdir = $(libdir)/pkgconfig
+ pkgconfig_DATA = $(top_builddir)/src/libbson-1.0.pc
+--- libbson.git.orig/src/bson/Makefile.am
++++ libbson.git/src/bson/Makefile.am
+@@ -50,7 +50,6 @@
+ 	-DBSON_COMPILATION \
+ 	-I$(top_srcdir)/src \
+ 	-I$(top_srcdir)/src/bson \
+-	-I$(top_srcdir)/src/yajl \
+ 	-I$(top_builddir)/src/bson
+ 
+ libbson_la_CFLAGS = \
