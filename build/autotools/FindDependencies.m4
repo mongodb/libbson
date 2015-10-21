@@ -37,10 +37,8 @@ AC_CACHE_CHECK([whether PTHREAD_ONCE_INIT needs braces],
     [bson_cv_need_braces_on_pthread_once_init=no],
     [bson_cv_need_braces_on_pthread_once_init=yes])])
 if test "$bson_cv_need_braces_on_pthread_once_init" = yes; then
-    AC_DEFINE(BSON_PTHREAD_ONCE_INIT_NEEDS_BRACES, 1,
-              [PTHREAD_ONCE_INIT needs braces])
+    AC_SUBST(BSON_PTHREAD_ONCE_INIT_NEEDS_BRACES, 1)
 fi
-AC_SUBST([BSON_PTHREAD_ONCE_INIT_NEEDS_BRACES])
 
 # Solaris needs to link against socket libs.
 # This is only used in our streaming bson examples
