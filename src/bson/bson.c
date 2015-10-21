@@ -846,7 +846,7 @@ bson_append_bool (bson_t     *bson,       /* IN */
                   bool        value)      /* IN */
 {
    static const uint8_t type = BSON_TYPE_BOOL;
-   uint8_t byte = !!value;
+   uint8_t abyte = !!value;
 
    BSON_ASSERT (bson);
    BSON_ASSERT (key);
@@ -860,7 +860,7 @@ bson_append_bool (bson_t     *bson,       /* IN */
                         1, &type,
                         key_length, key,
                         1, &gZero,
-                        1, &byte);
+                        1, &abyte);
 }
 
 
