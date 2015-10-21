@@ -24,6 +24,16 @@
 #endif
 
 
+#if defined(__MINGW32__)
+# if defined(__USE_MINGW_ANSI_STDIO)
+#  if __USE_MINGW_ANSI_STDIO < 1
+#   error "__USE_MINGW_ANSI_STDIO > 0 is required for correct PRI* macros"
+#  endif
+# else
+#  define __USE_MINGW_ANSI_STDIO 1
+# endif
+#endif
+
 #include "bson-config.h"
 #include "bson-macros.h"
 

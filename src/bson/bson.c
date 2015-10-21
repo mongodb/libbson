@@ -15,14 +15,14 @@
  */
 
 
+#include "bson.h"
+#include "b64_ntop.h"
+#include "bson-private.h"
+#include "bson-string.h"
+
 #include <stdarg.h>
 #include <string.h>
 #include <math.h>
-
-#include "b64_ntop.h"
-#include "bson.h"
-#include "bson-private.h"
-#include "bson-string.h"
 
 
 #ifndef BSON_MAX_RECURSION
