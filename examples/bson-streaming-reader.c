@@ -15,14 +15,19 @@
  */
 
 #include <bson.h>
-#include <netdb.h>
-#include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/socket.h>
-#include <sys/types.h>
 #include <unistd.h>
+#ifdef _WIN32
+# include <winsock2.h>
+# include <ws2tcpip.h>
+#else
+# include <netdb.h>
+# include <netinet/in.h>
+# include <sys/socket.h>
+# include <sys/types.h>
+#endif
 
 
 #define DEFAULT_PORT "5000"
