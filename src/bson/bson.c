@@ -2317,7 +2317,7 @@ _bson_as_json_visit_int64 (const bson_iter_t *iter,
 {
    bson_json_state_t *state = data;
 
-   bson_string_append_printf (state->str, "%" PRIi64, v_int64);
+   bson_string_append_printf (state->str, "%" PRId64, v_int64);
 
    return false;
 }
@@ -2439,7 +2439,7 @@ _bson_as_json_visit_date_time (const bson_iter_t *iter,
    bson_json_state_t *state = data;
 
    bson_string_append (state->str, "{ \"$date\" : ");
-   bson_string_append_printf (state->str, "%" PRIi64, msec_since_epoch);
+   bson_string_append_printf (state->str, "%" PRId64, msec_since_epoch);
    bson_string_append (state->str, " }");
 
    return false;
