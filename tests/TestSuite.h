@@ -32,6 +32,12 @@ extern "C" {
 #endif
 #define ASSERT assert
 
+#if __STDC_VERSION__ < 199901L
+#  define TEST_FUNC __FUNCTION__
+#else
+#  define TEST_FUNC __func__
+#endif
+
 
 #ifdef ASSERT_CMPINT
 # undef ASSERT_CMPINT
@@ -42,7 +48,7 @@ extern "C" {
          fprintf(stderr, "FAIL\n\nAssert Failure: %d %s %d\n" \
                          "%s:%d  %s()\n", \
                          a, #eq, b, \
-                         __FILE__, __LINE__, __FUNCTION__); \
+                         __FILE__, __LINE__, TEST_FUNC); \
          abort(); \
       } \
    } while (0)
