@@ -5,10 +5,6 @@ OPTIMIZE_LDFLAGS=""
 AS_IF([test "$enable_optimizations" != "no"], [
     check_link_flag([-Wl,-Bsymbolic], [OPTIMIZE_LDFLAGS="$OPTIMIZE_LDFLAGS -Wl,-Bsymbolic"])
     CFLAGS="$CFLAGS -O2"
-
-    if test "$c_compiler" = "gcc"; then
-        CFLAGS="$CFLAGS -D_FORTIFY_SOURCE=2"
-    fi
 ])
 
 # Enable Link-Time-Optimization
