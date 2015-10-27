@@ -32,7 +32,7 @@ EXTRA_DIST += CMakeLists.txt
 dist-hook:
 	@if test -d "$(srcdir)/.git"; then                              \
           (cd "$(srcdir)" &&                                            \
-           $(top_srcdir)/missing --run git log --stat ) > ChangeLog.tmp \
+           $(top_srcdir)/build/autotools/missing --run git log --stat ) > ChangeLog.tmp \
            && mv -f ChangeLog.tmp $(top_distdir)/ChangeLog              \
            || (rm -f ChangeLog.tmp;                                     \
                echo Failed to generate ChangeLog >&2);                  \
