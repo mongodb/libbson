@@ -32,7 +32,9 @@ extern "C" {
 #endif
 #define ASSERT assert
 
-#if defined(__STDC_VERSION__) && __STDC_VERSION__ < 199901L
+#if defined(_WIN32)
+#  define TEST_FUNC __FUNCTION__
+#elif defined(__STDC_VERSION__) && __STDC_VERSION__ < 199901L
 #  define TEST_FUNC __FUNCTION__
 #else
 #  define TEST_FUNC __func__
