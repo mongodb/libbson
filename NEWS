@@ -1,13 +1,15 @@
-Libbson-1.2.2
-=============
-
 Libbson-1.2.1
 =============
 
 It is my pleasure to announce to you the release of Libbson-1.2.1.
 
-Changes since the previous stable release, 1.2.0 are solely in the content
-and format of documentation.
+  * Fixed compiler warnings and build failures on MinGW.
+  * Improve content and format of HTML documentation and man pages.
+
+Thanks to everyone who contributed to the development of this release.
+
+  * A. Jesse Jiryu Davis
+  * Hannes Magnusson
 
 Peace,
 
