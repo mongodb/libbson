@@ -6,92 +6,16 @@ and iterating BSON documents.
 
 ## Building
 
-Libbson tries to support a variety of operation systems and architectures.
-The following are known to work. If your platform is not listed here, it may
-still work, we simply haven't tested it. If you would like us to add your
-platform here, we would be happy to hear from you.
+Detailed installation instructions are in the manual:
+http://api.mongodb.org/libbson/current/installing.html
 
-### Supported Operating Systems
-
- * RHEL/CentOS 5, 6, 7beta
- * SLES 11 SP3
- * Ubuntu 12.04 LTS
- * Debian 7
- * SmartOS
- * Solaris
- * FreeBSD 10
- * Windows Vista, 7, 8
- * OS X 10.8
-
-### Supported Architectures
-
- * x86
- * x86_64/amd64
- * SPARC
- * ARM
- * PowerPC
-
-### Supported Compilers
-
- * GCC 4.1 and newer
- * Clang 3.3 and newer
- * Visual Studio (MSVC) 2010 and newer
- * Oracle Solaris Studio (5.7 and newer, Solaris 10)
-
-### Dependencies
-
-#### Fedora / RedHat Enterprise / CentOS
+### From Tarball
 
 ```sh
-yum install git automake autoconf libtool gcc
-```
-
-#### Debian / Ubuntu
-
-```sh
-apt-get install git-core automake autoconf libtool gcc
-```
-
-#### FreeBSD
-
-```sh
-pkg install git automake autoconf libtool gcc pkgconf
-```
-
-#### OS X
-
-You'll need to have [XCode](https://developer.apple.com/xcode/download/) (at least
-the command-line package) and we recommend using [Homebrew](http://brew.sh/) for
-other dependencies.
-```sh
-brew install git automake autoconf libtool pkgconfig
-```
-
-#### SmartOS
-
-```sh
-pkgin install git automake autoconf libtool gcc47 gmake pkg-config
-export PATH=/opt/local/gcc47/bin:$PATH
-```
-
-#### Windows Vista and Higher
-
-Builds on Windows Vista and Higher require cmake to build Visual Studio project files.
-Alternatively, you can use cygwin or mingw with the automake based build.
-
-```sh
-git clone git://github.com/mongodb/libbson.git
-cd libbson
-cmake.exe -G "Visual Studio 10 Win64" "-DCMAKE_INSTALL_PREFIX=C:\install\path"
-msbuild.exe ALL_BUILD.vcxproj
-msbuild.exe INSTALL.vcxproj
-```
-
-For the adventurous, you can cross-compile for Windows from Fedora easily using mingw.
-
-```sh
-sudo yum install mingw64-gcc automake autoconf libtool
-./configure --host=x86_64-w64-mingw32
+tar xzf libbson-$ver.tar.gz
+./configure
+make
+sudo make install
 ```
 
 ### From Git
@@ -100,21 +24,6 @@ sudo yum install mingw64-gcc automake autoconf libtool
 git clone git://github.com/mongodb/libbson.git
 cd libbson/
 ./autogen.sh
-make
-sudo make install
-```
-
-You can run the unit tests with
-
-```sh
-make test
-```
-
-### From Tarball
-
-```sh
-tar xzf libbson-$ver.tar.gz
-./configure
 make
 sudo make install
 ```
