@@ -57,12 +57,12 @@
     <section id="unix-build">
       <title>Building from a release tarball</title>
       <p>Unless you intend on contributing to libbson, you will want to build from a release tarball.</p>
-      <p>The most recent release of libbson is 1.2.0 and can be <link href="https://github.com/mongodb/libbson/releases/download/1.2.0/libbson-1.2.0.tar.gz">downloaded here</link>. The following snippet will download and extract the code, and configure it:</p>
+      <p>The most recent release of libbson is 1.2.1 and can be <link href="https://github.com/mongodb/libbson/releases/download/1.2.1/libbson-1.2.1.tar.gz">downloaded here</link>. The following snippet will download and extract the code, and configure it:</p>
 
       <screen>
-$ wget https://github.com/mongodb/libbson/releases/download/1.2.0/libbson-1.2.0.tar.gz
-$ tar xzf libbson-1.2.0.tar.gz
-$ cd libbson-1.2.0
+$ wget https://github.com/mongodb/libbson/releases/download/1.2.1/libbson-1.2.1.tar.gz
+$ tar xzf libbson-1.2.1.tar.gz
+$ cd libbson-1.2.1
 $ ./configure</screen>
       <p>If <code>configure</code> completed successfully, you'll see something like the following describing your build configuration.</p>
       <screen>libbson was configured with the following options:
@@ -116,9 +116,9 @@ $ make man html</screen>
       <title>Building on OS X</title>
       <p>Download the latest release tarball:</p>
       <screen>
-$ curl -LO https://github.com/mongodb/libbson/releases/download/1.2.0/libbson-1.2.0.tar.gz
-$ tar xzf libbson-1.2.0.tar.gz
-$ cd libbson-1.2.0</screen>
+$ curl -LO https://github.com/mongodb/libbson/releases/download/1.2.1/libbson-1.2.1.tar.gz
+$ tar xzf libbson-1.2.1.tar.gz
+$ cd libbson-1.2.1</screen>
       <p>Build and install the library:</p>
       <screen>
 $ ./configure
@@ -142,7 +142,7 @@ $ make man html</screen>
 
     <p>Let's start by generating Visual Studio project files for libbson. The following assumes we are compiling for 64-bit Windows using Visual Studio 2010 Express which can be freely downloaded from Microsoft.</p>
 
-    <screen><output style="prompt">&gt; </output><input>cd libbson-1.2.0</input>
+    <screen><output style="prompt">&gt; </output><input>cd libbson-1.2.1</input>
 <output style="prompt">&gt; </output><input>cmake -G "Visual Studio 2010 Win64" "-DCMAKE_INSTALL_PREFIX=C:\libbson"</input>
 <output style="prompt">&gt; </output><input>msbuild.exe ALL_BUILD.vcxproj</input>
 <output style="prompt">&gt; </output><input>msbuild.exe INSTALL.vcxproj</input></screen>

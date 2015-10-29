@@ -25,8 +25,8 @@
 
 #define BSON_MAJOR_VERSION (1)
 #define BSON_MINOR_VERSION (2)
-#define BSON_MICRO_VERSION (0)
-#define BSON_VERSION_S     "1.2.0"
+#define BSON_MICRO_VERSION (1)
+#define BSON_VERSION_S     "1.2.1"
 
 #define BSON_VERSION_HEX (BSON_MAJOR_VERSION << 24 | \
                           BSON_MINOR_VERSION << 16 | \

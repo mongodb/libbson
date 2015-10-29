@@ -1,11 +1,11 @@
 Name:           libbson
-Version:        1.2.0
+Version:        1.2.1
 Release:        1%{?dist}
 Summary:        BSON library
 
 License:        ASL 2.0
 URL:            https://github.com/mongodb/libbson
-Source0:        https://github.com/mongodb/libbson/releases/download/1.2.0-beta/libbson-1.2.0-beta.tar.gz
+Source0:        https://github.com/mongodb/libbson/releases/download/1.2.1/libbson-1.2.1.tar.gz
 BuildRequires:  automake
 
 %description
@@ -52,6 +52,9 @@ find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 %{_prefix}/share/man/man3/*
 
 %changelog
+
+* Thu October 29 2015 A. Jesse Jiryu Davis <jesse@mongodb.com> - 1.2.1-1
+- Release 1.2.1
 
 * Tue October 13 2015 A. Jesse Jiryu Davis <jesse@mongodb.com> - 1.2.0-1
 - Release 1.2.0
