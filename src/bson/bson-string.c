@@ -562,7 +562,7 @@ bson_strncpy (char       *dst,  /* IN */
               size_t      size) /* IN */
 {
 #ifdef _MSC_VER
-   strcpy_s (dst, size, src);
+   strncpy_s (dst, size, src, _TRUNCATE);
 #else
    strncpy (dst, src, size);
    dst[size - 1] = '\0';

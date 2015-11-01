@@ -215,6 +215,18 @@ test_bson_ascii_strtoll (void)
 }
 
 
+static void
+test_bson_strncpy (void)
+{
+   char buf[5];
+
+   bson_strncpy (buf, "foo", sizeof buf);
+   assert_cmpstr ("foo", buf);
+   bson_strncpy (buf, "foobar", sizeof buf);
+   assert_cmpstr ("foob", buf);
+}
+
+
 void
 test_string_install (TestSuite *suite)
 {
@@ -227,4 +239,5 @@ test_string_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/string/strdup_printf", test_bson_strdup_printf);
    TestSuite_Add (suite, "/bson/string/strndup", test_bson_strndup);
    TestSuite_Add (suite, "/bson/string/ascii_strtoll", test_bson_ascii_strtoll);
+   TestSuite_Add (suite, "/bson/string/strncpy", test_bson_strncpy);
 }
