@@ -74,6 +74,7 @@ else ()
    if (NOT BSON_HAVE_STDBOOL_H)
       set(BSON_HAVE_STDBOOL_H 0)
    endif ()
+   set (BSON_EXTRA_ALIGN 1)
 endif ()
 
 set (BSON_HAVE_ATOMIC_32_ADD_AND_FETCH 1)
