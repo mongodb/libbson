@@ -6,6 +6,14 @@ AC_CHECK_FUNC(strnlen, [AC_SUBST(BSON_HAVE_STRNLEN, 1)])
 AC_SUBST(BSON_HAVE_SNPRINTF, 0)
 AC_CHECK_FUNC(snprintf, [AC_SUBST(BSON_HAVE_SNPRINTF, 1)])
 
+# Check for _set_output_format (unlikely, only Visual Studio 2013 and older)
+AC_SUBST(BSON_NEEDS_SET_OUTPUT_FORMAT, 0)
+AC_CHECK_FUNCS(_set_output_format, [AC_SUBST(BSON_NEEDS_SET_OUTPUT_FORMAT, 1)])
+
+# Check for struct timespec
+AC_SUBST(BSON_HAVE_TIMESPEC, 0)
+AC_CHECK_TYPES([struct timespec], [AC_SUBST(BSON_HAVE_TIMESPEC, 1)])
+
 # Check for clock_gettime and if it needs -lrt
 AC_SUBST(BSON_HAVE_CLOCK_GETTIME, 0)
 AC_SEARCH_LIBS([clock_gettime], [rt], [AC_SUBST(BSON_HAVE_CLOCK_GETTIME, 1)])

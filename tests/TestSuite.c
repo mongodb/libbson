@@ -85,7 +85,7 @@
 # define AtomicInt_DecrementAndTest(p) (bson_atomic_int_add(p, -1) == 0)
 
 
-#if defined(_MSC_VER) && _MSC_VER < 1900
+#if !defined(BSON_HAVE_TIMESPEC)
 struct timespec
 {
    time_t tv_sec;

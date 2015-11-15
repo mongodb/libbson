@@ -80,6 +80,23 @@
 
 
 /*
+ * Define to 1 if you have _set_output_format (VS2013 and older).
+ */
+#define BSON_NEEDS_SET_OUTPUT_FORMAT @BSON_NEEDS_SET_OUTPUT_FORMAT@
+#if BSON_NEEDS_SET_OUTPUT_FORMAT != 1
+# undef BSON_NEEDS_SET_OUTPUT_FORMAT
+#endif
+
+/*
+ * Define to 1 if you have struct timespec available on your platform.
+ */
+#define BSON_HAVE_TIMESPEC @BSON_HAVE_TIMESPEC@
+#if BSON_HAVE_TIMESPEC != 1
+# undef BSON_HAVE_TIMESPEC
+#endif
+
+
+/*
  * Define to 1 if you want extra aligned types in libbson
  */
 #define BSON_EXTRA_ALIGN @BSON_EXTRA_ALIGN@

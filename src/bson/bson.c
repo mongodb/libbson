@@ -15,11 +15,6 @@
  */
 
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1400 && _MSC_VER < 1900)
-#define NEEDS_SET_TWO_DIGIT_EXPONENT
-#include <stdio.h> // _set_output_format and _TWO_DIGIT_EXPONENT Added in vs2005 and removed in vs2015.
-#endif
-
 #include "bson.h"
 #include "b64_ntop.h"
 #include "bson-private.h"
@@ -2336,13 +2331,13 @@ _bson_as_json_visit_double (const bson_iter_t *iter,
 {
    bson_json_state_t *state = data;
 
-#ifdef NEEDS_SET_TWO_DIGIT_EXPONENT
+#if BSON_NEEDS_SET_OUTPUT_FORMAT
    unsigned int current_format = _set_output_format(_TWO_DIGIT_EXPONENT);
 #endif
 
    bson_string_append_printf (state->str, "%.15g", v_double);
 
-#ifdef NEEDS_SET_TWO_DIGIT_EXPONENT
+#if BSON_NEEDS_SET_OUTPUT_FORMAT
    _set_output_format(current_format);
 #endif
 
