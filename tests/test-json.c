@@ -147,14 +147,17 @@ test_bson_as_json_double (void)
 static void
 test_bson_as_json_utf8 (void)
 {
+   /* euro currency symbol */
+#define EU "\xe2\x82\xac"
+#define FIVE_EUROS EU EU EU EU EU
    size_t len;
    bson_t *b;
    char *str;
 
    b = bson_new();
-   assert(bson_append_utf8(b, "€€€€€", -1, "€€€€€", -1));
+   assert(bson_append_utf8(b, FIVE_EUROS, -1, FIVE_EUROS, -1));
    str = bson_as_json(b, &len);
-   assert(!strcmp(str, "{ \"€€€€€\" : \"€€€€€\" }"));
+   assert(!strcmp(str, "{ \"" FIVE_EUROS "\" : \"" FIVE_EUROS "\" }"));
    bson_free(str);
    bson_destroy(b);
 }
