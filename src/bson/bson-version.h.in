@@ -49,6 +49,13 @@
 
 
 /**
+ * BSON_PRERELEASE_VERSION:
+ *
+ * BSON prerelease version component (e.g. rc0 if %BSON_VERSION is 1.2.3-rc0)
+ */
+#define BSON_PRERELEASE_VERSION (@BSON_PRERELEASE_VERSION@)
+
+/**
  * BSON_VERSION:
  *
  * BSON version.

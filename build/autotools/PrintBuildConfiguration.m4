@@ -23,7 +23,7 @@ EOF
 fi
 
 echo "
-libbson was configured with the following options:
+libbson $BSON_VERSION was configured with the following options:
 
 Build configuration:
   Enable debugging (slow)                          : ${enable_debug}
