@@ -99,6 +99,7 @@ sudo yum install mingw64-gcc automake autoconf libtool
 ```sh
 git clone git://github.com/mongodb/libbson.git
 cd libbson/
+git checkout x.y.z  # To build a particular release
 ./autogen.sh
 make
 sudo make install
