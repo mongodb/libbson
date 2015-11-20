@@ -33,7 +33,9 @@ bsondoc_DATA = \
 
 EXTRA_DIST += $(bsondoc_DATA)
 
-EXTRA_DIST += CMakeLists.txt
+EXTRA_DIST += CMakeLists.txt \
+    VERSION_CURRENT \
+    VERSION_RELEASED
 
 dist-hook:
 	@if test -d "$(srcdir)/.git"; then                              \
