@@ -2331,13 +2331,13 @@ _bson_as_json_visit_double (const bson_iter_t *iter,
 {
    bson_json_state_t *state = data;
 
-#if BSON_NEEDS_SET_OUTPUT_FORMAT
+#ifdef BSON_NEEDS_SET_OUTPUT_FORMAT
    unsigned int current_format = _set_output_format(_TWO_DIGIT_EXPONENT);
 #endif
 
    bson_string_append_printf (state->str, "%.15g", v_double);
 
-#if BSON_NEEDS_SET_OUTPUT_FORMAT
+#ifdef BSON_NEEDS_SET_OUTPUT_FORMAT
    _set_output_format(current_format);
 #endif
 
