@@ -120,6 +120,8 @@ Documentation:
 <output style="prompt">&gt; </output><input>msbuild.exe INSTALL.vcxproj</input></screen>
 
     <p>You should now see libbson installed in <code>C:\libbson</code></p>.
+    <p>You can disable building the tests with:</p>.
+    <screen><output style="prompt">&gt; </output><input>cmake -G "Visual Studio 2010 Win64" "-DCMAKE_INSTALL_PREFIX=C:\libbson" "-DENABLE_TESTS:BOOL=OFF"</input></screen>
   </section>
 
 </page>
