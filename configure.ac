@@ -12,7 +12,7 @@ AC_CONFIG_AUX_DIR([build/autotools])
 AC_SUBST(ACLOCAL_AMFLAGS, "-I build/autotools")
 
 BSON_API_VERSION=1.0
-AC_SUBST([BSON_API_VERSION], [bson_api_version])
+AC_SUBST(BSON_API_VERSION)
 
 m4_include([build/autotools/CheckCompiler.m4])
 m4_include([build/autotools/CheckHeaders.m4])
