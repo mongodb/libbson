@@ -2256,7 +2256,7 @@ bson_compare (const bson_t *bson,
    ret = memcmp (data1, data2, BSON_MIN (len1, len2));
 
    if (ret == 0) {
-      ret = len1 - len2;
+      ret = (int64_t) (len1 - len2);
    }
 
    return (ret < 0) ? -1 : (ret > 0);
