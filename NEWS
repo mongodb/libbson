@@ -1,6 +1,15 @@
 Libbson-1.2.2
 =============
 
+It is my pleasure to announce to you the release of Libbson-1.2.2. This is a
+patch release with an improvement to the build system, it is released mainly
+to keep pace with libmongoc's version.
+
+Peace,
+
+  A. Jesse Jiryu Davis
+
+
 Libbson-1.2.1
 =============
 
