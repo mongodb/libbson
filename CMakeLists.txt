@@ -2,19 +2,30 @@ cmake_minimum_required(VERSION 2.8)
 
 project (libbson)
 
+option(ENABLE_TESTS "Build libbson tests." ON)
+
 include(CheckFunctionExists)
 include(CheckIncludeFile)
+include(CheckStructHasMember)
+include(CheckSymbolExists)
 include(TestBigEndian)
 include(InstallRequiredSystemLibraries)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/build/cmake)
+
+# Set BSON_MAJOR_VERSION, BSON_MINOR_VERSION, etc.
+include(LoadVersion)
+LoadVersion(${PROJECT_SOURCE_DIR}/VERSION_CURRENT BSON)
+LoadVersion(${PROJECT_SOURCE_DIR}/VERSION_RELEASED BSON_RELEASED)
+
+message("Current version (from VERSION_CURRENT file): ${BSON_VERSION}")
+if (NOT ${BSON_VERSION} STREQUAL ${BSON_RELEASED_VERSION})
+   message("Previous release (from VERSION_RELEASED file): ${BSON_RELEASED_VERSION}")
+endif()
+
 set (SOURCE_DIR "${PROJECT_SOURCE_DIR}/")
 
-set (BSON_MAJOR_VERSION 1)
-set (BSON_MINOR_VERSION 2)
-set (BSON_MICRO_VERSION 2)
-set (BSON_PRERELEASE_VERSION dev)
 set (BSON_API_VERSION 1.0)
-set (BSON_VERSION 1.2.2-dev)
 
 set (CPACK_RESOURCE_FILE_LICENSE "${SOURCE_DIR}/COPYING")
 set (CPACK_PACKAGE_VERSION_MAJOR ${BSON_MAJOR_VERSION})
@@ -34,10 +45,31 @@ if (RT_LIBRARY)
    set(CMAKE_REQUIRED_LIBRARIES ${RT_LIBRARY})
 endif()
 
+# See https://public.kitware.com/Bug/view.php?id=15659
+CHECK_SYMBOL_EXISTS(snprintf stdio.h BSON_HAVE_SNPRINTF)
+if (NOT BSON_HAVE_SNPRINTF)
+  set(BSON_HAVE_SNPRINTF 0)
+else ()
+  set(BSON_HAVE_SNPRINTF 1)
+endif ()
+
+CHECK_FUNCTION_EXISTS(_set_output_format BSON_NEEDS_SET_OUTPUT_FORMAT)
+if (NOT BSON_NEEDS_SET_OUTPUT_FORMAT)
+  set(BSON_NEEDS_SET_OUTPUT_FORMAT 0)
+endif ()
+
+CHECK_STRUCT_HAS_MEMBER("struct timespec" tv_sec time.h BSON_HAVE_TIMESPEC)
+if (NOT BSON_HAVE_TIMESPEC)
+  message(STATUS "    no timespec struct")
+  set(BSON_HAVE_TIMESPEC 0)
+else ()
+  message(STATUS "    struct timespec found")
+  set(BSON_HAVE_TIMESPEC 1)
+endif ()
+
 if (MSVC)
    set (BSON_OS 2)
    set (BSON_HAVE_CLOCK_GETTIME 0)
-   set (BSON_HAVE_SNPRINTF 0)
    set (BSON_HAVE_STDBOOL_H 0)
    set (BSON_HAVE_STRNLEN 0)
    set (BSON_EXTRA_ALIGN 1)
@@ -53,14 +85,11 @@ else ()
    if (NOT BSON_HAVE_STRNLEN)
       set(BSON_HAVE_STRNLEN 0)
    endif ()
-   CHECK_FUNCTION_EXISTS(snprintf BSON_HAVE_SNPRINTF)
-   if (NOT BSON_HAVE_SNPRINTF)
-      set(BSON_HAVE_SNPRINTF 0)
-   endif ()
    CHECK_INCLUDE_FILE(stdbool.h BSON_HAVE_STDBOOL_H)
    if (NOT BSON_HAVE_STDBOOL_H)
       set(BSON_HAVE_STDBOOL_H 0)
    endif ()
+   set (BSON_EXTRA_ALIGN 1)
 endif ()
 
 set (BSON_HAVE_ATOMIC_32_ADD_AND_FETCH 1)
@@ -187,36 +216,38 @@ else()
     target_link_libraries (bson_static ws2_32)
 endif()
 
-enable_testing()
+if (ENABLE_TESTS)
+    enable_testing()
 
-add_executable(test-libbson
-   ${SOURCE_DIR}/tests/TestSuite.c
-   ${SOURCE_DIR}/tests/TestSuite.h
-   ${SOURCE_DIR}/tests/test-libbson.c
-   ${SOURCE_DIR}/tests/test-atomic.c
-   ${SOURCE_DIR}/tests/test-bson.c
-   ${SOURCE_DIR}/tests/test-endian.c
-   ${SOURCE_DIR}/tests/test-clock.c
-   ${SOURCE_DIR}/tests/test-error.c
-   ${SOURCE_DIR}/tests/test-iso8601.c
-   ${SOURCE_DIR}/tests/test-iter.c
-   ${SOURCE_DIR}/tests/test-json.c
-   ${SOURCE_DIR}/tests/test-oid.c
-   ${SOURCE_DIR}/tests/test-reader.c
-   ${SOURCE_DIR}/tests/test-string.c
-   ${SOURCE_DIR}/tests/test-utf8.c
-   ${SOURCE_DIR}/tests/test-value.c
-   ${SOURCE_DIR}/tests/test-version.c
-   ${SOURCE_DIR}/tests/test-writer.c
-   ${SOURCE_DIR}/tests/test-bcon-basic.c
-   ${SOURCE_DIR}/tests/test-bcon-extract.c
-)
+    add_executable(test-libbson
+       ${SOURCE_DIR}/tests/TestSuite.c
+       ${SOURCE_DIR}/tests/TestSuite.h
+       ${SOURCE_DIR}/tests/test-libbson.c
+       ${SOURCE_DIR}/tests/test-atomic.c
+       ${SOURCE_DIR}/tests/test-bson.c
+       ${SOURCE_DIR}/tests/test-endian.c
+       ${SOURCE_DIR}/tests/test-clock.c
+       ${SOURCE_DIR}/tests/test-error.c
+       ${SOURCE_DIR}/tests/test-iso8601.c
+       ${SOURCE_DIR}/tests/test-iter.c
+       ${SOURCE_DIR}/tests/test-json.c
+       ${SOURCE_DIR}/tests/test-oid.c
+       ${SOURCE_DIR}/tests/test-reader.c
+       ${SOURCE_DIR}/tests/test-string.c
+       ${SOURCE_DIR}/tests/test-utf8.c
+       ${SOURCE_DIR}/tests/test-value.c
+       ${SOURCE_DIR}/tests/test-version.c
+       ${SOURCE_DIR}/tests/test-writer.c
+       ${SOURCE_DIR}/tests/test-bcon-basic.c
+       ${SOURCE_DIR}/tests/test-bcon-extract.c
+    )
 
-target_link_libraries(test-libbson bson_static)
-add_test(NAME test-libbson COMMAND test-libbson)
+    target_link_libraries(test-libbson bson_static)
+    add_test(NAME test-libbson COMMAND test-libbson)
 
-file(COPY ${SOURCE_DIR}/tests/binary ${SOURCE_DIR}/tests/json
-     DESTINATION ${PROJECT_BINARY_DIR}/tests)
+    file(COPY ${SOURCE_DIR}/tests/binary ${SOURCE_DIR}/tests/json
+         DESTINATION ${PROJECT_BINARY_DIR}/tests)
+endif ()  # ENABLE_TESTS
 
 install(
   TARGETS bson_shared bson_static
