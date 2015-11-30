@@ -30,13 +30,13 @@ bson_parse_version(bson, m4_esyscmd_s(cat VERSION_CURRENT))
 # Parse most recent stable release, like "x.y.z", from VERSION_RELEASED file.
 bson_parse_version(bson_released, m4_esyscmd_s(cat VERSION_RELEASED))
 
-echo "Current version (from VERSION_CURRENT file): bson_version"
+AC_MSG_NOTICE([Current version (from VERSION_CURRENT file): $BSON_VERSION])
 
 m4_ifset([bson_released_prerelease_version],
-         [AC_ERROR([RELEASED_VERSION file has prerelease version "bson_released_version"])])
+         [AC_ERROR([RELEASED_VERSION file has prerelease version $BSON_RELEASED_VERSION])])
 
 if test "x$bson_version" != "x$bson_released_version"; then
-    echo "Previous release (from VERSION_RELEASED file): bson_released_version"
+    AC_MSG_NOTICE([Most recent release (from VERSION_RELEASED file): $BSON_RELEASED_VERSION])
     m4_ifset([bson_prerelease_version], [], [
         AC_ERROR([Current version must be a prerelease (with "-dev", "-beta", etc.) or equal to previous release])
     ])
@@ -49,7 +49,8 @@ m4_define([bson_released_binary_age],
           [m4_eval(100 * bson_released_minor_version +
                    bson_released_micro_version)])
 
-echo "libbson interface age bson_released_interface_age"
+AC_SUBST([BSON_RELEASED_INTERFACE_AGE], [bson_released_interface_age])
+AC_MSG_NOTICE([libbson interface age $BSON_RELEASED_INTERFACE_AGE])
 
 m4_define([lt_current],
           [m4_eval(100 * bson_released_minor_version +
