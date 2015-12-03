@@ -23,11 +23,6 @@ m4_include([build/autotools/Endian.m4])
 
 m4_include([build/autotools/SetupLibtool.m4])
 LT_INIT
-BSON_LT_CURRENT=lt_current
-BSON_LT_REVISION=lt_revision
-BSON_LT_AGE=lt_age
-BSON_LT_VERSION="$BSON_LT_CURRENT:$BSON_LT_REVISION:$BSON_LT_AGE"
-BSON_LT_LDFLAGS="-version-info $BSON_LT_VERSION"
 
 m4_include([build/autotools/ReadCommandLineArguments.m4])
 m4_include([build/autotools/FindDependencies.m4])
