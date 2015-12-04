@@ -867,6 +867,7 @@ _bson_json_read_end_map (void *_ctx) /* IN */
       case BSON_TYPE_CODEWSCOPE:
       case BSON_TYPE_INT32:
       case BSON_TYPE_TIMESTAMP:
+      case BSON_TYPE_DBPOINTER:
       default:
          _bson_json_read_set_error (reader, "Unknown type %d", bson->bson_type);
          return 0;
