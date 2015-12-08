@@ -1,3 +1,35 @@
+Libbson-1.3.0
+=============
+
+It is my pleasure to announce to you the release of Libbson-1.3.0. Since the
+release candidate 1.3.0-rc0, the only changes have been fixes for compiler
+warnings and errors on various platforms.
+
+All changes since the previous stable release, 1.2.1:
+
+  * Fix potential crash in bson_strncpy on Windows.
+  * Parse DBRefs correctly from JSON.
+  * CMake option to disable building tests: "cmake -DENABLE_TESTS:BOOL=OFF".
+  * Refactor the build system to declare library version in one place.
+  * Fix compiler warnings and errors, especially with Visual Studio 2015
+    and IBM XL C.
+  * Combine environment's CFLAGS with configure options when building.
+
+Thanks to everyone who contributed to the development of this release.
+
+  * A. Jesse Jiryu Davis
+  * Hannes Magnusson
+  * Mark Benvenuto
+  * Petr Písař
+  * xpol
+  * Jose Sebastian Battig
+  * Jeroen Ooms
+
+Peace,
+
+  A. Jesse Jiryu Davis
+
+
 Libbson-1.3.0-rc0
 =================
 
