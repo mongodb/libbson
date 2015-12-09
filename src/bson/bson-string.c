@@ -528,7 +528,7 @@ bson_strnlen (const char *s,      /* IN */
 
    for (i = 0; i < maxlen; i++) {
       if (s [i] == '\0') {
-         return i + 1;
+         return i;
       }
    }
 

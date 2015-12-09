@@ -161,6 +161,15 @@ test_bson_strndup (void)
 }
 
 
+static void
+test_bson_strnlen (void)
+{
+   char *s = "test";
+
+   ASSERT_CMPINT ((int) strlen (s), ==, (int) bson_strnlen (s, 100));
+}
+
+
 typedef struct
 {
    const char *str;
@@ -240,4 +249,5 @@ test_string_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/string/strndup", test_bson_strndup);
    TestSuite_Add (suite, "/bson/string/ascii_strtoll", test_bson_ascii_strtoll);
    TestSuite_Add (suite, "/bson/string/strncpy", test_bson_strncpy);
+   TestSuite_Add (suite, "/bson/string/strnlen", test_bson_strnlen);
 }
