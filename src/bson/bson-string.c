@@ -521,7 +521,7 @@ size_t
 bson_strnlen (const char *s,      /* IN */
               size_t      maxlen) /* IN */
 {
-#ifdef HAVE_STRNLEN
+#ifdef BSON_HAVE_STRNLEN
    return strnlen (s, maxlen);
 #else
    size_t i;
