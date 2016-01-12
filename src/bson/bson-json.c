@@ -1130,8 +1130,8 @@ bson_json_reader_new (void                 *data,           /* IN */
    p->data = data;
    p->cb = cb;
    p->dcb = dcb;
-   p->buf = bson_malloc (buf_size);
    p->buf_size = buf_size ? buf_size : BSON_JSON_DEFAULT_BUF_SIZE;
+   p->buf = bson_malloc (p->buf_size);
 
    r->yh = yajl_alloc (&read_cbs, &gYajlAllocFuncs, r);
 
