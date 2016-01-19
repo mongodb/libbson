@@ -25,7 +25,7 @@ test_date (const char *str,
    }
 
    if (v != millis) {
-      fprintf (stderr, "parsed value not correct: %" PRIi64 " != %" PRIi64 "\n",
+      fprintf (stderr, "parsed value not correct: %" PRId64 " != %" PRId64 "\n",
                millis, v);
       abort ();
    }

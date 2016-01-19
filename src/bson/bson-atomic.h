@@ -80,7 +80,7 @@ BSON_BEGIN_DECLS
 # include <mbarrier.h>
 # define bson_memory_barrier() __machine_rw_barrier()
 #elif defined(__xlC__)
-# define __sync()
+# define bson_memory_barrier() __sync()
 #else
 # define __BSON_NEED_BARRIER 1
 # warning "Unknown compiler, using lock for compiler barrier."

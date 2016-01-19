@@ -147,14 +147,17 @@ test_bson_as_json_double (void)
 static void
 test_bson_as_json_utf8 (void)
 {
+   /* euro currency symbol */
+#define EU "\xe2\x82\xac"
+#define FIVE_EUROS EU EU EU EU EU
    size_t len;
    bson_t *b;
    char *str;
 
    b = bson_new();
-   assert(bson_append_utf8(b, "€€€€€", -1, "€€€€€", -1));
+   assert(bson_append_utf8(b, FIVE_EUROS, -1, FIVE_EUROS, -1));
    str = bson_as_json(b, &len);
-   assert(!strcmp(str, "{ \"€€€€€\" : \"€€€€€\" }"));
+   assert(!strcmp(str, "{ \"" FIVE_EUROS "\" : \"" FIVE_EUROS "\" }"));
    bson_free(str);
    bson_destroy(b);
 }
@@ -345,7 +348,7 @@ test_bson_json_read(void)
       }, \n\
       \"ref\" : { \n\
         \"$ref\" : \"foo\", \n\
-        \"$id\" : \"000000000000000000000000\" \n\
+        \"$id\" : {\"$oid\": \"000000000000000000000000\"} \n\
       }, \n\
       \"undefined\" : { \n\
         \"$undefined\" : true \n\
@@ -383,7 +386,7 @@ test_bson_json_read(void)
       "binary", BCON_BIN(BSON_SUBTYPE_BINARY, (const uint8_t *)"deadbeef", 8),
       "regex", BCON_REGEX("foo|bar", "ism"),
       "date", BCON_DATE_TIME(10000),
-      "ref", BCON_DBPOINTER("foo", &oid),
+      "ref", "{", "$ref", BCON_UTF8("foo"), "$id", BCON_OID(&oid), "}",
       "undefined", BCON_UNDEFINED,
       "minkey", BCON_MINKEY,
       "maxkey", BCON_MAXKEY,
@@ -573,6 +576,98 @@ test_bson_json_number_long (void)
    assert (!bson_init_from_json (&b, json2, -1, &error));
 }
 
+static const bson_oid_t *
+oid_zero (void)
+{
+   static bool initialized = false;
+   static bson_oid_t oid;
+
+   if (!initialized) {
+      bson_oid_init_from_string (&oid, "000000000000000000000000");
+      initialized = true;
+   }
+
+   return &oid;
+}
+
+static void
+test_bson_json_dbref (void)
+{
+   bson_error_t error;
+
+   const char *json_with_objectid =
+      "{ \"key\": {"
+      "\"$ref\": \"collection\","
+      "\"$id\": {\"$oid\": \"000000000000000000000000\"}}}";
+
+   bson_t *bson_with_objectid = BCON_NEW (
+      "key", "{",
+      "$ref", BCON_UTF8 ("collection"),
+      "$id", BCON_OID (oid_zero ()), "}");
+
+   const char *json_with_int_id = "{ \"key\": {"
+      "\"$ref\": \"collection\","
+      "\"$id\": 1}}}";
+
+   bson_t *bson_with_int_id = BCON_NEW (
+      "key", "{",
+      "$ref", BCON_UTF8 ("collection"),
+      "$id", BCON_INT32 (1), "}");
+
+   const char *json_with_subdoc_id = "{ \"key\": {"
+      "\"$ref\": \"collection\","
+      "\"$id\": {\"a\": 1}}}";
+
+   bson_t *bson_with_subdoc_id = BCON_NEW (
+      "key", "{",
+      "$ref", BCON_UTF8 ("collection"),
+      "$id", "{", "a", BCON_INT32 (1), "}", "}");
+
+   const char *json_with_metadata = "{ \"key\": {"
+      "\"$ref\": \"collection\","
+      "\"$id\": 1,"
+      "\"meta\": true}}";
+
+   bson_t *bson_with_metadata = BCON_NEW (
+      "key", "{",
+      "$ref", BCON_UTF8 ("collection"),
+      "$id", BCON_INT32 (1),
+      "meta", BCON_BOOL (true), "}");
+
+   bson_t b;
+   bool r;
+
+   typedef struct {
+      const char *json;
+      bson_t *expected_bson;
+   } dbref_test_t;
+
+   dbref_test_t tests[] = {
+      {json_with_objectid, bson_with_objectid},
+      {json_with_int_id, bson_with_int_id},
+      {json_with_subdoc_id, bson_with_subdoc_id},
+      {json_with_metadata, bson_with_metadata},
+   };
+
+   int n_tests = sizeof (tests) / sizeof (dbref_test_t);
+   int i;
+
+   for (i = 0; i < n_tests; i++) {
+      r = bson_init_from_json (&b, tests[i].json, -1, &error);
+      if (!r) {
+         fprintf (stderr, "%s\n", error.message);
+      }
+
+      assert (r);
+      bson_eq_bson (&b, tests[i].expected_bson);
+      bson_destroy (&b);
+   }
+
+   for (i = 0; i < n_tests; i++) {
+      bson_destroy (tests[i].expected_bson);
+   }
+}
+
 static void
 test_bson_json_inc (void)
 {
@@ -739,4 +834,5 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/json/read/invalid", test_bson_json_read_invalid);
    TestSuite_Add (suite, "/bson/json/read/invalid", test_bson_json_read_invalid);
    TestSuite_Add (suite, "/bson/json/read/$numberLong", test_bson_json_number_long);
+   TestSuite_Add (suite, "/bson/json/read/dbref", test_bson_json_dbref);
 }

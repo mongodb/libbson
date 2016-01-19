@@ -137,11 +137,19 @@
 #define bson_str_empty0(s) (!s || !s[0])
 
 
+#if defined(_WIN32)
+#  define BSON_FUNC __FUNCTION__
+#elif defined(__STDC_VERSION__) && __STDC_VERSION__ < 199901L
+#  define BSON_FUNC __FUNCTION__
+#else
+#  define BSON_FUNC __func__
+#endif
+
 #define BSON_ASSERT(test) \
    do { \
       if (!(BSON_LIKELY(test))) { \
          fprintf (stderr, "%s:%d %s(): precondition failed: %s\n", \
-                  __FILE__, __LINE__, __FUNCTION__, #test); \
+                  __FILE__, __LINE__, BSON_FUNC, #test); \
          abort (); \
       } \
    } while (0)

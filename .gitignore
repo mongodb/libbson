@@ -10,7 +10,6 @@ bson-metrics
 bson-to-json
 bson-validate
 ChangeLog
-*.cmake
 CMakeFiles
 CMakeCache.txt
 compile

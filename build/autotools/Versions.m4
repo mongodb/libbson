@@ -1,20 +1,37 @@
-m4_define([bson_major_version], [1])
-m4_define([bson_minor_version], [2])
-m4_define([bson_micro_version], [1])
-m4_define([bson_prerelease_version], [])
+BSON_CURRENT_FILE=${srcdir}/VERSION_CURRENT
+BSON_VERSION=$(cat $BSON_CURRENT_FILE)
+BSON_MAJOR_VERSION=$(cut -d- -f1 $BSON_CURRENT_FILE | cut -d. -f1)
+BSON_MINOR_VERSION=$(cut -d- -f1 $BSON_CURRENT_FILE | cut -d. -f2)
+BSON_MICRO_VERSION=$(cut -d- -f1 $BSON_CURRENT_FILE | cut -d. -f3)
+BSON_PRERELEASE_VERSION=$(cut -s -d- -f2 $BSON_CURRENT_FILE)
+AC_SUBST(BSON_VERSION)
+AC_SUBST(BSON_MAJOR_VERSION)
+AC_SUBST(BSON_MINOR_VERSION)
+AC_SUBST(BSON_MICRO_VERSION)
+AC_SUBST(BSON_PRERELEASE_VERSION)
 
-m4_define(
-    [bson_version],
-    m4_ifset(
-        [bson_prerelease_version],
-        [bson_major_version.bson_minor_version.bson_micro_version-bson_prerelease_version],
-        [bson_major_version.bson_minor_version.bson_micro_version]))
+BSON_RELEASED_FILE=${srcdir}/VERSION_RELEASED
+BSON_RELEASED_VERSION=$(cat $BSON_RELEASED_FILE)
+BSON_RELEASED_MAJOR_VERSION=$(cut -d- -f1 $BSON_RELEASED_FILE | cut -d. -f1)
+BSON_RELEASED_MINOR_VERSION=$(cut -d- -f1 $BSON_RELEASED_FILE | cut -d. -f2)
+BSON_RELEASED_MICRO_VERSION=$(cut -d- -f1 $BSON_RELEASED_FILE | cut -d. -f3)
+BSON_RELEASED_PRERELEASE_VERSION=$(cut -s -d- -f2 $BSON_RELEASED_FILE)
+AC_SUBST(BSON_RELEASED_VERSION)
+AC_SUBST(BSON_RELEASED_MAJOR_VERSION)
+AC_SUBST(BSON_RELEASED_MINOR_VERSION)
+AC_SUBST(BSON_RELEASED_MICRO_VERSION)
+AC_SUBST(BSON_RELEASED_PRERELEASE_VERSION)
 
-# bump up by 1 for every micro release with no API changes, otherwise
-# set to 0. after release, bump up by 1
-m4_define([bson_interface_age], [1])
-m4_define([bson_binary_age], [m4_eval(100 * bson_minor_version + bson_micro_version)])
+AC_MSG_NOTICE([Current version (from VERSION_CURRENT file): $BSON_VERSION])
 
-m4_define([lt_current], [m4_eval(100 * bson_minor_version + bson_micro_version - bson_interface_age)])
-m4_define([lt_revision], [bson_interface_age])
-m4_define([lt_age], [m4_eval(bson_binary_age - bson_interface_age)])
+if test "x$BSON_RELEASED_PRERELEASE_VERSION" != "x"; then
+   AC_ERROR([RELEASED_VERSION file has prerelease version $BSON_RELEASED_VERSION])
+fi
+
+if test "x$BSON_VERSION" != "x$BSON_RELEASED_VERSION"; then
+   AC_MSG_NOTICE([Most recent release (from VERSION_RELEASED file): $BSON_RELEASED_VERSION])
+   if test "x$BSON_PRERELEASE_VERSION" = "x"; then
+      AC_ERROR([Current version ($BSON_PRERELEASE_VERSION) must be a prerelease (with "-dev", "-beta", etc.) or equal to previous release])
+   fi
+fi
+

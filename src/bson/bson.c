@@ -15,14 +15,14 @@
  */
 
 
+#include "bson.h"
+#include "b64_ntop.h"
+#include "bson-private.h"
+#include "bson-string.h"
+
 #include <stdarg.h>
 #include <string.h>
 #include <math.h>
-
-#include "b64_ntop.h"
-#include "bson.h"
-#include "bson-private.h"
-#include "bson-string.h"
 
 
 #ifndef BSON_MAX_RECURSION
@@ -734,7 +734,7 @@ bson_append_array (bson_t       *bson,       /* IN */
             fprintf (stderr,
                      "%s(): invalid array detected. first element of array "
                      "parameter is not \"0\".\n",
-                     __FUNCTION__);
+                     BSON_FUNC);
          }
       }
    }
@@ -846,7 +846,7 @@ bson_append_bool (bson_t     *bson,       /* IN */
                   bool        value)      /* IN */
 {
    static const uint8_t type = BSON_TYPE_BOOL;
-   uint8_t byte = !!value;
+   uint8_t abyte = !!value;
 
    BSON_ASSERT (bson);
    BSON_ASSERT (key);
@@ -860,7 +860,7 @@ bson_append_bool (bson_t     *bson,       /* IN */
                         1, &type,
                         key_length, key,
                         1, &gZero,
-                        1, &byte);
+                        1, &abyte);
 }
 
 
@@ -2256,7 +2256,7 @@ bson_compare (const bson_t *bson,
    ret = memcmp (data1, data2, BSON_MIN (len1, len2));
 
    if (ret == 0) {
-      ret = len1 - len2;
+      ret = (int64_t) (len1 - len2);
    }
 
    return (ret < 0) ? -1 : (ret > 0);
@@ -2317,7 +2317,7 @@ _bson_as_json_visit_int64 (const bson_iter_t *iter,
 {
    bson_json_state_t *state = data;
 
-   bson_string_append_printf (state->str, "%" PRIi64, v_int64);
+   bson_string_append_printf (state->str, "%" PRId64, v_int64);
 
    return false;
 }
@@ -2331,13 +2331,13 @@ _bson_as_json_visit_double (const bson_iter_t *iter,
 {
    bson_json_state_t *state = data;
 
-#ifdef _MSC_VER
+#ifdef BSON_NEEDS_SET_OUTPUT_FORMAT
    unsigned int current_format = _set_output_format(_TWO_DIGIT_EXPONENT);
 #endif
 
    bson_string_append_printf (state->str, "%.15g", v_double);
 
-#ifdef _MSC_VER
+#ifdef BSON_NEEDS_SET_OUTPUT_FORMAT
    _set_output_format(current_format);
 #endif
 
@@ -2439,7 +2439,7 @@ _bson_as_json_visit_date_time (const bson_iter_t *iter,
    bson_json_state_t *state = data;
 
    bson_string_append (state->str, "{ \"$date\" : ");
-   bson_string_append_printf (state->str, "%" PRIi64, msec_since_epoch);
+   bson_string_append_printf (state->str, "%" PRId64, msec_since_epoch);
    bson_string_append (state->str, " }");
 
    return false;
