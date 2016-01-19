@@ -80,10 +80,6 @@ Copyright: 2008 Steven G. Johnson <stevenj@alum.mit.edu>
            2011 Daniel Richard G. <skunk@iSKUNK.ORG>
 License: GPL-3+
 
-Files: build/autotools/m4/ax_python.m4
-Copyright: 2008 Michael Tindal
-License: GPL-2+
-
 Files: build/autotools/m4/ax_check_link_flag.m4 build/autotools/m4/ax_check_compile_flag.m4
 Copyright: 2008 Guido U. Draheim <guidod@gmx.de>
            2011 Maarten Bosmans <mkbosmans@gmail.com>
