@@ -25,7 +25,7 @@ BSON_APPEND_UTF8 (&b, "key", "value");]]></code></example>
 BSON_APPEND_INT32 (&b, "a", 1);
 BSON_APPEND_UTF8 (&b, "hello", "world");
 BSON_APPEND_BOOL (&b, "bool", true);]]></code></example>
-    <p>Notice that we ommitted the call to <code xref="bson_init">bson_init()</code>. By specifying <code>BSON_INITIALIZER</code> we can remove the need to initialize the structure to a base state.</p>
+    <p>Notice that we omitted the call to <code xref="bson_init">bson_init()</code>. By specifying <code>BSON_INITIALIZER</code> we can remove the need to initialize the structure to a base state.</p>
   </section>
 
   <section id="subdocs">
