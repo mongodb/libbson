@@ -710,7 +710,7 @@ mark_invalid:
  *       @subtype.  The length of @binary in bytes is stored in @binary_len.
  *
  *       @binary should not be modified or freed and is only valid while
- *       @iter is on the current field.
+ *       @iter's bson_t is valid and unmodified.
  *
  * Parameters:
  *       @iter: A bson_iter_t
