@@ -701,7 +701,8 @@ bson_ascii_strtoll (const char  *s,
         c = *++tok;
     }
 
-    if (c == '0' && tok[1] != '\0') {
+    if (c == '0' && tok[1] != '\0' &&
+       (isdigit (tok[1]) || tok[1] == 'x' || tok[1] == 'X')) {
         /* Hex, octal or binary -- maybe. */
 
         c = *++tok;

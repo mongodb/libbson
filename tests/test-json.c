@@ -576,6 +576,25 @@ test_bson_json_number_long (void)
    assert (!bson_init_from_json (&b, json2, -1, &error));
 }
 
+static void
+test_bson_json_number_long_zero (void)
+{
+   bson_error_t error;
+   bson_iter_t iter;
+   const char *json = "{ \"key\": { \"$numberLong\": \"0\" }}";
+   bson_t b;
+   bool r;
+
+   r = bson_init_from_json (&b, json, -1, &error);
+   if (!r) fprintf (stderr, "%s\n", error.message);
+   assert (r);
+   assert (bson_iter_init (&iter, &b));
+   assert (bson_iter_find (&iter, "key"));
+   assert (BSON_ITER_HOLDS_INT64 (&iter));
+   assert (bson_iter_int64 (&iter) == 0);
+   bson_destroy (&b);
+}
+
 static const bson_oid_t *
 oid_zero (void)
 {
@@ -834,5 +853,6 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/json/read/invalid", test_bson_json_read_invalid);
    TestSuite_Add (suite, "/bson/json/read/invalid", test_bson_json_read_invalid);
    TestSuite_Add (suite, "/bson/json/read/$numberLong", test_bson_json_number_long);
+   TestSuite_Add (suite, "/bson/json/read/$numberLong/zero", test_bson_json_number_long_zero);
    TestSuite_Add (suite, "/bson/json/read/dbref", test_bson_json_dbref);
 }
