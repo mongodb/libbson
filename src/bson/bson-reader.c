@@ -513,7 +513,7 @@ _bson_reader_handle_read (bson_reader_handle_t *reader,      /* IN */
  *
  * bson_reader_new_from_data --
  *
- *       Allocates and initializes a new bson_reader_t that will the memory
+ *       Allocates and initializes a new bson_reader_t that reads the memory
  *       provided as a stream of BSON documents.
  *
  * Parameters:
@@ -811,4 +811,29 @@ bson_reader_new_from_file (const char   *path,  /* IN */
    }
 
    return bson_reader_new_from_fd (fd, true);
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_reader_reset --
+ *
+ *       Restore the reader to its initial state. Valid only for readers
+ *       created with bson_reader_new_from_data.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+void
+bson_reader_reset (bson_reader_t *reader)
+{
+   bson_reader_data_t *real = (bson_reader_data_t *) reader;
+
+   if (real->type != BSON_READER_DATA) {
+      fprintf (stderr, "Reader type cannot be reset\n");
+      return;
+   }
+
+   real->offset = 0;
 }

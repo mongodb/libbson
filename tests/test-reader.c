@@ -244,6 +244,37 @@ test_reader_grow_buffer (void)
 }
 
 
+static void
+test_reader_reset (void)
+{
+   uint8_t buffer[10];
+   bson_reader_t *reader;
+   bool eof;
+
+   memset (buffer, 0, sizeof buffer);
+
+   /* two empty bson documents, length prefix indicates 5 bytes */
+   buffer[0] = buffer[5] = 5;
+
+   reader = bson_reader_new_from_data (buffer, sizeof buffer);
+
+   assert (bson_reader_read(reader, &eof)->len == 5 && !eof);
+   assert (bson_reader_read(reader, &eof)->len == 5 && !eof);
+   assert (!bson_reader_read(reader, &eof) && eof);
+   assert (bson_reader_tell (reader) == 10);
+
+   bson_reader_reset (reader);
+
+   assert (bson_reader_tell (reader) == 0);
+   assert (bson_reader_read(reader, &eof)->len == 5 && !eof);
+   assert (bson_reader_read(reader, &eof)->len == 5 && !eof);
+   assert (!bson_reader_read(reader, &eof) && eof);
+   assert (bson_reader_tell (reader) == 10);
+
+   bson_reader_destroy(reader);
+}
+
+
 void
 test_reader_install (TestSuite *suite)
 {
@@ -255,4 +286,5 @@ test_reader_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/reader/new_from_handle_corrupt",
                   test_reader_from_handle_corrupt);
    TestSuite_Add (suite, "/bson/reader/grow_buffer", test_reader_grow_buffer);
+   TestSuite_Add (suite, "/bson/reader/reset", test_reader_reset);
 }
