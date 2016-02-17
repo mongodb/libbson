@@ -60,7 +60,7 @@ pkg install git automake autoconf libtool gcc pkgconf
 
 #### OS X
 
-You'll need to have [XCode](https://developer.apple.com/xcode/download/) (at least
+You'll need to have [Xcode](https://developer.apple.com/xcode/download/) (at least
 the command-line package) and we recommend using [Homebrew](http://brew.sh/) for
 other dependencies.
 ```sh
