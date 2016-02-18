@@ -18,9 +18,16 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
 export DPKG_GENSYMBOLS_CHECK_LEVEL=4
 
+ifeq ($(shell if dpkg --compare-versions 9.20160114 le $$(dpkg-query -f'$${Version}' -W debhelper); then echo dbgsym; fi),dbgsym)
+  DBGSYM_EXCLUDE_PACKAGES := -Nlibbson-dbg
+  DBSYM_DH_STRIP_OPTIONS := --dbgsym-migration='libbson-dbg'
+else
+  DBSYM_DH_STRIP_OPTIONS := --dbg-package=libbson-dbg
+endif
+
 # main packaging script based on dh7 syntax
 %:
-	dh $@ --with autoreconf
+	dh $@ --with autoreconf $(DBGSYM_EXCLUDE_PACKAGES)
 
 override_dh_auto_configure:
 	dh_auto_configure -- \
@@ -37,5 +44,4 @@ override_dh_auto_clean:
 	[ ! -f README ] || /bin/rm -f README
 
 override_dh_strip:
-	dh_strip -a --dbg-package=libbson-dbg
-
+	dh_strip $(DBSYM_DH_STRIP_OPTIONS)
