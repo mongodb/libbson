@@ -1,7 +1,11 @@
 Source: libbson
 Priority: optional
 Maintainer: A. Jesse Jiryu Davis <jesse@mongodb.com>
-Build-Depends: debhelper (>= 9), dh-autoreconf, yelp-tools, yelp-xsl, libyajl-dev
+Build-Depends: debhelper (>= 9),
+               dh-autoreconf,
+               libyajl-dev,
+               yelp-tools,
+               yelp-xsl
 Standards-Version: 3.9.6
 Section: libs
 Homepage: https://github.com/mongodb/libbson
@@ -11,7 +15,8 @@ Vcs-Browser: https://github.com/mongodb/libbson/tree/debian
 Package: libbson-dev
 Section: libdevel
 Architecture: any
-Depends: libbson-1.0-0 (= ${binary:Version}), ${misc:Depends}
+Depends: libbson-1.0-0 (= ${binary:Version}),
+         ${misc:Depends}
 Description: Library to parse and generate BSON documents - dev files
  libbson parses and generates BSON documents, the data format for
  MongoDB. It is a dependency for libmongoc, the MongoDB client library,
@@ -23,7 +28,8 @@ Description: Library to parse and generate BSON documents - dev files
 
 Package: libbson-1.0-0
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${misc:Depends},
+         ${shlibs:Depends}
 Description: Library to parse and generate BSON documents - runtime files
  libbson parses and generates BSON documents, the data format for
  MongoDB. It is a dependency for libmongoc, the MongoDB client library,
@@ -37,7 +43,8 @@ Package: libbson-dbg
 Section: debug
 Priority: extra
 Architecture: any
-Depends: libbson-1.0-0 (= ${binary:Version}), ${misc:Depends}
+Depends: libbson-1.0-0 (= ${binary:Version}),
+         ${misc:Depends}
 Description: Library to parse and generate BSON documents - debug symbols
  libbson parses and generates BSON documents, the data format for
  MongoDB. It is a dependency for libmongoc, the MongoDB client library,
@@ -57,4 +64,3 @@ Description: Library to parse and generate BSON documents - documentation
  functions and macros.
  .
  This package contains the man pages for libbson.
-
