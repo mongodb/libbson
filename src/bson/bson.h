@@ -370,6 +370,11 @@ void
 bson_destroy (bson_t *bson);
 
 
+bool
+bson_steal (bson_t *dst,
+            bson_t *src);
+
+
 /**
  * bson_destroy_with_steal:
  * @bson: A #bson_t.

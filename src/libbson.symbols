@@ -149,6 +149,7 @@ bson_reinit
 bson_set_error
 bson_sized_new
 bson_snprintf
+bson_steal
 bson_strdup
 bson_strdup_printf
 bson_strdupv_printf

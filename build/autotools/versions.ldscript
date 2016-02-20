@@ -205,3 +205,8 @@ LIBBSON_1.3 {
         bson_iter_decimal128;
         bson_iter_overwrite_decimal128;
 } LIBBSON_1.2;
+
+LIBBSON_1.4 {
+    global:
+        bson_steal;
+} LIBBSON_1.3;

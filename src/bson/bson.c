@@ -2189,6 +2189,48 @@ bson_destroy (bson_t *bson)
 }
 
 
+bool
+bson_steal (bson_t *dst,
+            bson_t *src)
+{
+   uint8_t *data;
+   uint32_t length;
+   bson_impl_inline_t *src_inline;
+   bson_impl_inline_t *dst_inline;
+   bson_impl_alloc_t *alloc;
+
+   BSON_ASSERT (dst);
+   BSON_ASSERT (src);
+
+   bson_init (dst);
+
+   if (src->flags & (BSON_FLAG_CHILD | BSON_FLAG_IN_CHILD | BSON_FLAG_RDONLY)) {
+      return false;
+   }
+
+   if (src->flags & BSON_FLAG_INLINE) {
+      src_inline = (bson_impl_inline_t *) src;
+      dst_inline = (bson_impl_inline_t *) dst;
+      dst_inline->len = src_inline->len;
+      memcpy (dst_inline->data, src_inline->data, sizeof src_inline->data);
+
+      /* for consistency, src is always invalid after steal, even if inline */
+      src->len = 0;
+      return true;
+   }
+
+   memcpy (dst, src, sizeof (bson_t));
+   alloc = (bson_impl_alloc_t *) dst;
+   alloc->flags |= BSON_FLAG_STATIC;
+   alloc->buf = &alloc->alloc;
+   alloc->buflen = &alloc->alloclen;
+
+   src->len = 0;
+
+   return true;
+}
+
+
 uint8_t *
 bson_destroy_with_steal (bson_t   *bson,
                          bool      steal,
