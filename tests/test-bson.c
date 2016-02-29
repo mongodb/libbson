@@ -1613,6 +1613,34 @@ test_next_power_of_two (void)
 }
 
 
+
+void
+visit_corrupt (const bson_iter_t *iter,
+               void              *data)
+{
+   *((bool *) data) = true;
+}
+
+
+static void
+test_bson_visit_invalid_field (void)
+{
+   /* key is invalid utf-8 char: {"\x80": 1} */
+   const char data[] =
+      "\x0c\x00\x00\x00\x10\x80\x00\x01\x00\x00\x00\x00";
+   bson_t b;
+   bson_iter_t iter;
+   bson_visitor_t visitor = { 0 };
+   visitor.visit_corrupt = visit_corrupt;
+   bool visited = false;
+
+   assert (bson_init_static (&b, (const uint8_t *) data, sizeof data - 1));
+   assert (bson_iter_init (&iter, &b));
+   assert (!bson_iter_visit_all (&iter, &visitor, (void *) &visited));
+   assert (visited);
+}
+
+
 typedef struct {
    bool visited;
    const char *key;
@@ -1758,6 +1786,7 @@ test_bson_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/clear", test_bson_clear);
    TestSuite_Add (suite, "/bson/destroy_with_steal", test_bson_destroy_with_steal);
    TestSuite_Add (suite, "/bson/has_field", test_bson_has_field);
+   TestSuite_Add (suite, "/bson/visit_invalid_field", test_bson_visit_invalid_field);
    TestSuite_Add (suite, "/bson/unsupported_type",
                   test_bson_visit_unsupported_type);
    TestSuite_Add (suite, "/bson/unsupported_type/bad_key",

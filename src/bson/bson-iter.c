@@ -1742,7 +1742,7 @@ bson_iter_visit_all (bson_iter_t          *iter,    /* INOUT */
    while (_bson_iter_next_internal (iter, &key, &bson_type, &unsupported)) {
       if (*key && !bson_utf8_validate (key, strlen (key), false)) {
          iter->err_off = iter->off;
-         return true;
+         break;
       }
 
       if (VISIT_BEFORE (iter, key, data)) {
