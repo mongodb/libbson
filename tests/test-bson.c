@@ -1613,6 +1613,97 @@ test_next_power_of_two (void)
 }
 
 
+typedef struct {
+   bool visited;
+   const char *key;
+   uint32_t type_code;
+} unsupported_type_test_data_t;
+
+
+void
+visit_unsupported_type (const bson_iter_t *iter,
+                        const char        *key,
+                        uint32_t           type_code,
+                        void              *data)
+{
+   unsupported_type_test_data_t *context;
+
+   context = (unsupported_type_test_data_t *) data;
+   context->visited = true;
+   context->key = key;
+   context->type_code = type_code;
+}
+
+
+static void
+test_bson_visit_unsupported_type (void)
+{
+   /* {k: 1}, but instead of BSON type 0x10 (int32), use unknown type 0x33 */
+   const char data[] =
+      "\x0c\x00\x00\x00\x33k\x00\x01\x00\x00\x00\x00";
+   bson_t b;
+   bson_iter_t iter;
+   unsupported_type_test_data_t context = { 0 };
+   bson_visitor_t visitor = { 0 };
+
+   visitor.visit_unsupported_type = visit_unsupported_type;
+
+   assert (bson_init_static (&b, (const uint8_t *) data, sizeof data - 1));
+   assert (bson_iter_init (&iter, &b));
+   bson_iter_visit_all (&iter, &visitor, (void *) &context);
+   assert (!bson_iter_next (&iter));
+   assert (context.visited);
+   assert (!strcmp (context.key, "k"));
+   assert (context.type_code == '\x33');
+}
+
+
+static void
+test_bson_visit_unsupported_type_bad_key (void)
+{
+   /* key is invalid utf-8 char, '\x80' */
+   const char data[] =
+      "\x0c\x00\x00\x00\x33\x80\x00\x01\x00\x00\x00\x00";
+   bson_t b;
+   bson_iter_t iter;
+   unsupported_type_test_data_t context = { 0 };
+   bson_visitor_t visitor = { 0 };
+
+   visitor.visit_unsupported_type = visit_unsupported_type;
+
+   assert (bson_init_static (&b, (const uint8_t *) data, sizeof data - 1));
+   assert (bson_iter_init (&iter, &b));
+   bson_iter_visit_all (&iter, &visitor, (void *) &context);
+   assert (!bson_iter_next (&iter));
+
+   /* unsupported type error wasn't reported, because the bson is corrupt */
+   assert (!context.visited);
+}
+
+
+static void
+test_bson_visit_unsupported_type_empty_key (void)
+{
+   /* {"": 1}, but instead of BSON type 0x10 (int32), use unknown type 0x33 */
+   const char data[] =
+      "\x0b\x00\x00\x00\x33\x00\x01\x00\x00\x00\x00";
+   bson_t b;
+   bson_iter_t iter;
+   unsupported_type_test_data_t context = { 0 };
+   bson_visitor_t visitor = { 0 };
+
+   visitor.visit_unsupported_type = visit_unsupported_type;
+
+   assert (bson_init_static (&b, (const uint8_t *) data, sizeof data - 1));
+   assert (bson_iter_init (&iter, &b));
+   bson_iter_visit_all (&iter, &visitor, (void *) &context);
+   assert (!bson_iter_next (&iter));
+   assert (context.visited);
+   assert (!strcmp (context.key, ""));
+   assert (context.type_code == '\x33');
+}
+
+
 void
 test_bson_install (TestSuite *suite)
 {
@@ -1667,6 +1758,12 @@ test_bson_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/clear", test_bson_clear);
    TestSuite_Add (suite, "/bson/destroy_with_steal", test_bson_destroy_with_steal);
    TestSuite_Add (suite, "/bson/has_field", test_bson_has_field);
+   TestSuite_Add (suite, "/bson/unsupported_type",
+                  test_bson_visit_unsupported_type);
+   TestSuite_Add (suite, "/bson/unsupported_type/bad_key",
+                  test_bson_visit_unsupported_type_bad_key);
+   TestSuite_Add (suite, "/bson/unsupported_type/empty_key",
+                  test_bson_visit_unsupported_type_empty_key);
 
    TestSuite_Add (suite, "/util/next_power_of_two", test_next_power_of_two);
 }

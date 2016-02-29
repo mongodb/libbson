@@ -397,26 +397,31 @@ bson_iter_type (const bson_iter_t *iter) /* IN */
 /*
  *--------------------------------------------------------------------------
  *
- * bson_iter_next --
+ * _bson_iter_next_internal --
  *
- *       Advances @iter to the next field of the underlying BSON document.
- *       If all fields have been exhausted, then %false is returned.
+ *       Internal function to advance @iter to the next field and retrieve
+ *       the key and BSON type before error-checking.
  *
- *       It is a programming error to use @iter after this function has
- *       returned false.
- *
- * Returns:
- *       true if the iter was advanced to the next record.
- *       otherwise false and @iter should be considered invalid.
+ * Return:
+ *       true if an element was decoded, else false.
  *
  * Side effects:
- *       @iter may be invalidated.
+ *       @key and @bson_type are set.
+ *
+ *       If the return value is false:
+ *        - @iter is invalidated: @iter->raw is NULLed
+ *        - @unsupported is set to true if the bson type is unsupported
+ *        - otherwise if the BSON is corrupt, @iter->err_off is nonzero
+ *        - otherwise @bson_type is set to BSON_TYPE_EOD
  *
  *--------------------------------------------------------------------------
  */
 
-bool
-bson_iter_next (bson_iter_t *iter) /* INOUT */
+static bool
+_bson_iter_next_internal (bson_iter_t  *iter,         /* INOUT */
+                          const char  **key,          /* OUT */
+                          uint32_t     *bson_type,    /* OUT */
+                          bool         *unsupported)  /* OUT */
 {
    const uint8_t *data;
    uint32_t o;
@@ -424,7 +429,11 @@ bson_iter_next (bson_iter_t *iter) /* INOUT */
 
    BSON_ASSERT (iter);
 
+   *unsupported = false;
+
    if (!iter->raw) {
+      *key = NULL;
+      *bson_type = BSON_TYPE_EOD;
       return false;
    }
 
@@ -450,7 +459,10 @@ bson_iter_next (bson_iter_t *iter) /* INOUT */
 
 fill_data_fields:
 
-   switch (ITER_TYPE (iter)) {
+   *key = bson_iter_key_unsafe (iter);
+   *bson_type = ITER_TYPE (iter);
+
+   switch (*bson_type) {
    case BSON_TYPE_DATE_TIME:
    case BSON_TYPE_DOUBLE:
    case BSON_TYPE_INT64:
@@ -672,8 +684,10 @@ fill_data_fields:
       iter->d1 = -1;
       iter->next_off = o;
       break;
-   case BSON_TYPE_EOD:
    default:
+      *unsupported = true;
+      /* FALL THROUGH */
+   case BSON_TYPE_EOD:
       iter->err_off = o;
       goto mark_invalid;
    }
@@ -698,6 +712,38 @@ mark_invalid:
    iter->next_off = 0;
 
    return false;
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_iter_next --
+ *
+ *       Advances @iter to the next field of the underlying BSON document.
+ *       If all fields have been exhausted, then %false is returned.
+ *
+ *       It is a programming error to use @iter after this function has
+ *       returned false.
+ *
+ * Returns:
+ *       true if the iter was advanced to the next record.
+ *       otherwise false and @iter should be considered invalid.
+ *
+ * Side effects:
+ *       @iter may be invalidated.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+bool
+bson_iter_next (bson_iter_t *iter) /* INOUT */
+{
+   uint32_t bson_type;
+   const char *key;
+   bool unsupported;
+
+   return _bson_iter_next_internal (iter, &key, &bson_type, &unsupported);
 }
 
 
@@ -1686,14 +1732,14 @@ bson_iter_visit_all (bson_iter_t          *iter,    /* INOUT */
                      const bson_visitor_t *visitor, /* IN */
                      void                 *data)    /* IN */
 {
+   uint32_t bson_type;
    const char *key;
+   bool unsupported;
 
    BSON_ASSERT (iter);
    BSON_ASSERT (visitor);
 
-   while (bson_iter_next (iter)) {
-      key = bson_iter_key_unsafe (iter);
-
+   while (_bson_iter_next_internal (iter, &key, &bson_type, &unsupported)) {
       if (*key && !bson_utf8_validate (key, strlen (key), false)) {
          iter->err_off = iter->off;
          return true;
@@ -1703,7 +1749,7 @@ bson_iter_visit_all (bson_iter_t          *iter,    /* INOUT */
          return true;
       }
 
-      switch (bson_iter_type (iter)) {
+      switch (bson_type) {
       case BSON_TYPE_DOUBLE:
 
          if (VISIT_DOUBLE (iter, key, bson_iter_double (iter), data)) {
@@ -1919,6 +1965,13 @@ bson_iter_visit_all (bson_iter_t          *iter,    /* INOUT */
    }
 
    if (iter->err_off) {
+      if (unsupported &&
+            visitor->visit_unsupported_type &&
+            bson_utf8_validate (key, strlen (key), false)) {
+         visitor->visit_unsupported_type (iter, key, bson_type, data);
+         return false;
+      }
+
       VISIT_CORRUPT (iter, data);
    }
 
