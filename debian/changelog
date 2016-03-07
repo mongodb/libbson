@@ -1,3 +1,15 @@
+libbson (1.3.1-2~1.gbp62a106) UNRELEASED; urgency=medium
+
+  ** SNAPSHOT build @62a106725a3eebbfc6ff0a832735585ed4dbc149 **
+
+  [ A. Jesse Jiryu Davis ]
+  * Remove obsolete copyrights entry.
+
+  [ Ondřej Surý ]
+  * Remove -dbg package and add a simple BC compatible dbgsym support
+
+ -- A. Jesse Jiryu Davis <jesse@mongodb.com>  Fri, 19 Feb 2016 10:36:29 +0100
+
 libbson (1.3.1-1) experimental; urgency=low
 
   * New upstream release
