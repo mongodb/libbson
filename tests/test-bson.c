@@ -1631,9 +1631,9 @@ test_bson_visit_invalid_field (void)
    bson_t b;
    bson_iter_t iter;
    bson_visitor_t visitor = { 0 };
-   visitor.visit_corrupt = visit_corrupt;
    bool visited = false;
 
+   visitor.visit_corrupt = visit_corrupt;
    assert (bson_init_static (&b, (const uint8_t *) data, sizeof data - 1));
    assert (bson_iter_init (&iter, &b));
    assert (!bson_iter_visit_all (&iter, &visitor, (void *) &visited));
