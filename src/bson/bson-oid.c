@@ -293,7 +293,8 @@ bson_oid_to_string
    (const bson_oid_t *oid,                                   /* IN */
     char              str[BSON_ENSURE_ARRAY_PARAM_SIZE(25)]) /* OUT */
 {
-#if !defined(__i386__) && !defined(__x86_64__)
+#if !defined(__i386__) && !defined(__x86_64__) && \
+    !defined(_M_IX86) && !defined(_M_X64)
    BSON_ASSERT (oid);
    BSON_ASSERT (str);
 
