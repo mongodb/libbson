@@ -64,7 +64,7 @@ You'll need to have [XCode](https://developer.apple.com/xcode/download/) (at lea
 the command-line package) and we recommend using [Homebrew](http://brew.sh/) for
 other dependencies.
 ```sh
-brew install git automake autoconf libtool pkgconfig
+brew install automake autoconf libtool pkgconfig
 ```
 
 #### SmartOS
