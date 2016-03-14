@@ -21,5 +21,5 @@ YELP_HTML_FILES = \
 	doc/html/yelp-note.png \
 	doc/html/yelp.js
 
-EXTRA_DIST += BUILT_HTML_FILES
-EXTRA_DIST += YELP_HTML_FILES
+EXTRA_DIST += $(BUILT_HTML_FILES)
+EXTRA_DIST += $(YELP_HTML_FILES)
