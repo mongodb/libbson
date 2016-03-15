@@ -5,6 +5,9 @@
       xmlns:api="http://projectmallard.org/experimental/api/"
       xmlns:ui="http://projectmallard.org/experimental/ui/"
       id="bson_uint32_to_string">
+  <info>
+    <link type="guide" xref="index#api-reference" />
+  </info>
   <title>bson_uint32_to_string()</title>
 
   <section id="synopsis">
