@@ -1,7 +1,7 @@
 <page xmlns="http://projectmallard.org/1.0/"
       type="topic"
       id="json">
-
+  <info><link type="guide" xref="index#json" /></info>
   <title>JSON</title>
 
   <p>Libbson provides routines for converting to and from the JSON format. In particular, it supports the <link href="http://docs.mongodb.org/manual/reference/mongodb-extended-json/">MongoDB extended JSON</link> format.</p>
