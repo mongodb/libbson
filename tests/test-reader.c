@@ -103,6 +103,44 @@ test_reader_from_data_overflow (void)
    bson_reader_destroy(reader);
 }
 
+static void
+test_reader_from_data_document_length_too_large (void)
+{
+   bson_reader_t *reader;
+   uint8_t *buffer;
+   bool eof = false;
+
+   buffer = bson_malloc0(5);
+   buffer[0] = 6;
+
+   reader = bson_reader_new_from_data(buffer, 5);
+   assert(!bson_reader_read(reader, &eof));
+   assert_cmpint(eof, ==, false);
+
+   bson_free(buffer);
+
+   bson_reader_destroy(reader);
+}
+
+static void
+test_reader_from_data_document_length_too_small (void)
+{
+   bson_reader_t *reader;
+   uint8_t *buffer;
+   bool eof = false;
+
+   buffer = bson_malloc0(5);
+   buffer[0] = 4;
+
+   reader = bson_reader_new_from_data(buffer, 5);
+   assert(!bson_reader_read(reader, &eof));
+   assert_cmpint(eof, ==, false);
+
+   bson_free(buffer);
+
+   bson_reader_destroy(reader);
+}
+
 static ssize_t
 test_reader_from_handle_read(void * handle, void * buf, size_t len)
 {
@@ -281,6 +319,10 @@ test_reader_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/reader/new_from_data", test_reader_from_data);
    TestSuite_Add (suite, "/bson/reader/new_from_data_overflow",
                   test_reader_from_data_overflow);
+   TestSuite_Add (suite, "/bson/reader/new_from_data_document_length_too_large",
+                  test_reader_from_data_document_length_too_large);
+   TestSuite_Add (suite, "/bson/reader/new_from_data_document_length_too_small",
+                  test_reader_from_data_document_length_too_small);
    TestSuite_Add (suite, "/bson/reader/new_from_handle", test_reader_from_handle);
    TestSuite_Add (suite, "/bson/reader/tell", test_reader_tell);
    TestSuite_Add (suite, "/bson/reader/new_from_handle_corrupt",
