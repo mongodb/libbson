@@ -6,6 +6,7 @@ extern void test_bcon_basic_install   (TestSuite *suite);
 extern void test_bcon_extract_install (TestSuite *suite);
 extern void test_bson_install         (TestSuite *suite);
 extern void test_clock_install        (TestSuite *suite);
+extern void test_dec128_install       (TestSuite *suite);
 extern void test_endian_install       (TestSuite *suite);
 extern void test_error_install        (TestSuite *suite);
 extern void test_iso8601_install      (TestSuite *suite);
@@ -34,6 +35,7 @@ main (int argc,
    test_bcon_extract_install (&suite);
    test_bson_install (&suite);
    test_clock_install (&suite);
+   test_dec128_install (&suite);
    test_error_install (&suite);
    test_endian_install (&suite);
    test_iso8601_install (&suite);

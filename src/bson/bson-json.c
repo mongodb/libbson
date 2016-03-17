@@ -68,6 +68,7 @@ typedef enum
    BSON_JSON_LF_MINKEY,
    BSON_JSON_LF_MAXKEY,
    BSON_JSON_LF_INT64,
+   BSON_JSON_LF_DEC128
 } bson_json_read_bson_state_t;
 
 
@@ -124,6 +125,9 @@ typedef union
    struct {
       int64_t value;
    } v_int64;
+   struct {
+      bson_dec128_t value;
+   } v_dec128;
 } bson_json_bson_data_t;
 
 
@@ -455,6 +459,7 @@ _bson_json_read_integer (void    *_ctx, /* IN */
       case BSON_JSON_LF_TYPE:
       case BSON_JSON_LF_UNDEFINED:
       case BSON_JSON_LF_INT64:
+      case BSON_JSON_LF_DEC128:
       default:
          _bson_json_read_set_error (reader,
                                     "Invalid special type for integer read %d",
@@ -592,6 +597,25 @@ _bson_json_read_string (void                *_ctx, /* IN */
             }
          }
          break;
+      case BSON_JSON_LF_DEC128:
+         {
+            bson_dec128_t dec128;
+            /* bson_dec128_from_string requires a null-padded string. */
+            char *string = bson_malloc(vlen + 1);
+            memcpy(string, val, vlen);
+            string[vlen] = '\0';
+            bson_dec128_from_string(string, &dec128);
+
+            if (bson->read_state == BSON_JSON_IN_BSON_TYPE) {
+               bson->bson_type_data.v_dec128.value = dec128;
+            } else {
+               bson_free(string);
+               goto BAD_PARSE;
+            }
+
+            bson_free(string);
+         }
+         break;
       case BSON_JSON_LF_TIMESTAMP_T:
       case BSON_JSON_LF_TIMESTAMP_I:
       case BSON_JSON_LF_UNDEFINED:
@@ -656,7 +680,8 @@ _is_known_key (const char *key, size_t len)
           IS_KEY ("$maxKey") ||
           IS_KEY ("$minKey") ||
           IS_KEY ("$timestamp") ||
-          IS_KEY ("$numberLong"));
+          IS_KEY ("$numberLong")) ||
+          IS_KEY ("$numberDecimal");
 
 #undef IS_KEY
 
@@ -698,6 +723,7 @@ _bson_json_read_map_key (void          *_ctx, /* IN */
       if HANDLE_OPTION ("$minKey", BSON_TYPE_MINKEY, BSON_JSON_LF_MINKEY) else
       if HANDLE_OPTION ("$maxKey", BSON_TYPE_MAXKEY, BSON_JSON_LF_MAXKEY) else
       if HANDLE_OPTION ("$numberLong", BSON_TYPE_INT64, BSON_JSON_LF_INT64) else
+      if HANDLE_OPTION ("$numberDecimal", BSON_TYPE_DEC128, BSON_JSON_LF_DEC128) else
       if (len == strlen ("$timestamp") &&
           memcmp (val, "$timestamp", len) == 0) {
          bson->bson_type = BSON_TYPE_TIMESTAMP;
@@ -871,6 +897,10 @@ _bson_json_read_end_map (void *_ctx) /* IN */
          return bson_append_int64 (STACK_BSON_CHILD, bson->key,
                                    (int)bson->key_buf.len,
                                    bson->bson_type_data.v_int64.value);
+      case BSON_TYPE_DEC128:
+         return bson_append_dec128 (STACK_BSON_CHILD, bson->key,
+                                    (int)bson->key_buf.len,
+                                    &bson->bson_type_data.v_dec128.value);
       case BSON_TYPE_EOD:
       case BSON_TYPE_DOUBLE:
       case BSON_TYPE_UTF8:

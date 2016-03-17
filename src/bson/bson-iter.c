@@ -16,6 +16,7 @@
 
 
 #include "bson-iter.h"
+#include "bson-dec128.h"
 
 
 #define ITER_TYPE(i) ((bson_type_t) *((i)->raw + (i)->type))
@@ -677,6 +678,9 @@ fill_data_fields:
    case BSON_TYPE_INT32:
       iter->next_off = o + 4;
       break;
+   case BSON_TYPE_DEC128:
+      iter->next_off = o + 16;
+      break;
    case BSON_TYPE_MAXKEY:
    case BSON_TYPE_MINKEY:
    case BSON_TYPE_NULL:
@@ -1019,6 +1023,38 @@ bson_iter_as_int64 (const bson_iter_t *iter) /* IN */
    default:
       return 0;
    }
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_iter_dec128 --
+ *
+ *       This function retrieves the current field of type %BSON_TYPE_DEC128.
+ *       The result is valid while @iter is valid, and is stored in @dec.
+ *
+ * Returns:
+ *
+ *       True on success, false on failure.
+ *
+ * Side Effects:
+ *    None.
+ *
+ *--------------------------------------------------------------------------
+ */
+bool
+bson_iter_dec128 (const bson_iter_t *iter,      /* IN */
+                  bson_dec128_t     *dec)       /* OUT */
+{
+   bson_return_val_if_fail (iter, false);
+
+   if (ITER_TYPE (iter) == BSON_TYPE_DEC128) {
+      bson_iter_dec128_unsafe (iter, dec);
+      return true;
+   }
+
+   return false;
 }
 
 
@@ -1689,6 +1725,7 @@ bson_iter_array (const bson_iter_t  *iter,      /* IN */
 #define VISIT_INT32 VISIT_FIELD (int32)
 #define VISIT_TIMESTAMP VISIT_FIELD (timestamp)
 #define VISIT_INT64 VISIT_FIELD (int64)
+#define VISIT_DEC128 VISIT_FIELD (dec128)
 #define VISIT_MAXKEY VISIT_FIELD (maxkey)
 #define VISIT_MINKEY VISIT_FIELD (minkey)
 
@@ -1940,6 +1977,16 @@ bson_iter_visit_all (bson_iter_t          *iter,    /* INOUT */
          }
 
          break;
+      case BSON_TYPE_DEC128:
+         {
+            bson_dec128_t dec;
+            bson_iter_dec128 (iter, &dec);
+
+            if (VISIT_DEC128 (iter, key, &dec, data)) {
+               return true;
+            }
+         }
+         break;
       case BSON_TYPE_MAXKEY:
 
          if (VISIT_MAXKEY (iter, bson_iter_key_unsafe (iter), data)) {
@@ -2108,6 +2155,41 @@ bson_iter_overwrite_double (bson_iter_t *iter,  /* IN */
 /*
  *--------------------------------------------------------------------------
  *
+ * bson_iter_overwrite_dec128 --
+ *
+ *       Overwrites the current BSON_TYPE_DEC128 field with a new value.
+ *       This is performed in-place and therefore no keys are moved.
+ *
+ * Returns:
+ *    None.
+ *
+ * Side effects:
+ *    None.
+ *
+ *--------------------------------------------------------------------------
+ */
+void
+bson_iter_overwrite_dec128 (bson_iter_t   *iter,   /* IN */
+                            bson_dec128_t *value)  /* IN */
+{
+   bson_return_if_fail (iter);
+
+   if (ITER_TYPE (iter) == BSON_TYPE_DEC128) {
+#if BSON_BYTE_ORDER != BSON_LITTLE_ENDIAN
+      uint64_t data[2];
+      data[0] = BSON_UINT64_TO_LE (value->low);
+      data[1] = BSON_UINT64_TO_LE (value->high);
+      memcpy ((void *)(iter->raw + iter->d1), data, sizeof (data));
+#else
+      memcpy ((void *)(iter->raw + iter->d1), value, sizeof (*value));
+#endif
+   }
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
  * bson_iter_value --
  *
  *       Retrieves a bson_value_t containing the boxed value of the current
@@ -2212,6 +2294,9 @@ bson_iter_value (bson_iter_t *iter) /* IN */
       break;
    case BSON_TYPE_INT64:
       value->value.v_int64 = bson_iter_int64 (iter);
+      break;
+   case BSON_TYPE_DEC128:
+      bson_iter_dec128 (iter, &(value->value.v_dec128));
       break;
    case BSON_TYPE_NULL:
    case BSON_TYPE_UNDEFINED:

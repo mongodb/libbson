@@ -20,6 +20,9 @@ static void
 test_bson_as_json (void)
 {
    bson_oid_t oid;
+   bson_dec128_t dec128;
+   dec128.high = 0x3040000000000000ULL;
+   dec128.low  = 0x000000000000000B;
    bson_t *b;
    bson_t *b2;
    char *str;
@@ -45,6 +48,7 @@ test_bson_as_json (void)
    assert(bson_append_minkey(b, "minkey", -1));
    assert(bson_append_maxkey(b, "maxkey", -1));
    assert(bson_append_symbol(b, "symbol", -1, "var a = {};", -1));
+   assert(bson_append_dec128(b, "dec128", -1, &dec128));
 
    b2 = bson_new();
    assert(bson_append_int32(b2, "0", -1, 60));
@@ -139,6 +143,29 @@ test_bson_as_json_double (void)
                   " \"baz\" : -1,"
                   " \"quux\" : 1.0001,"
                   " \"huge\" : 1e+99 }");
+   bson_free(str);
+   bson_destroy(b);
+}
+
+
+static void
+test_bson_as_json_dec128 (void)
+{
+   size_t len;
+   bson_t *b;
+   bson_dec128_t dec128; // 11
+   dec128.high = 0x3040000000000000ULL;
+   dec128.low  = 0x000000000000000B;
+   char *str;
+
+   b = bson_new ();
+   assert (bson_append_dec128 (b, "dec128", -1, &dec128));
+   str = bson_as_json (b, &len);
+   ASSERT_CMPSTR (str,
+                  "{ "
+                     "\"dec128\" : { \"$numberDecimal\" : \"11\" }"
+                  " }");
+
    bson_free(str);
    bson_destroy(b);
 }
@@ -363,13 +390,17 @@ test_bson_json_read(void)
         \"$timestamp\" : { \n\
            \"t\" : 100, \n\
            \"i\" : 1000 \n\
-        } \n\
+        }, \n\
+      \"decimal\" : { \n\
+         \"$numberDecimal\" : \"123.5\"\n\
       } \n\
    } { \"after\": \"b\" } { \"twice\" : true }";
 
    bson_oid_t oid;
    bson_t * first, *second, *third;
+   bson_dec128_t dec;
 
+   bson_dec128_from_string("123.5", &dec);
    bson_oid_init_from_string(&oid, "000000000000000000000000");
 
    first = BCON_NEW(
@@ -390,7 +421,8 @@ test_bson_json_read(void)
       "undefined", BCON_UNDEFINED,
       "minkey", BCON_MINKEY,
       "maxkey", BCON_MAXKEY,
-      "timestamp", BCON_TIMESTAMP(100, 1000)
+      "timestamp", BCON_TIMESTAMP(100, 1000),
+      "decimal", BCON_DEC128(&dec)
    );
 
    second = BCON_NEW("after", "b");
@@ -688,6 +720,27 @@ test_bson_json_dbref (void)
 }
 
 static void
+test_bson_json_number_decimal (void) {
+   bson_error_t error;
+   bson_iter_t iter;
+   bson_dec128_t dec128;
+   const char *json = "{ \"key\" : { \"$numberDecimal\": \"11\" }}";
+   bson_t b;
+   bool r;
+
+   r = bson_init_from_json (&b, json, -1, &error);
+   if (!r) fprintf (stderr, "%s\n", error.message);
+   assert(r);
+   assert (bson_iter_init (&iter, &b));
+   assert (bson_iter_find (&iter, "key"));
+   assert (BSON_ITER_HOLDS_DEC128 (&iter));
+   bson_iter_dec128 (&iter, &dec128);
+   assert (dec128.low == 11);
+   assert (dec128.high == 0x3040000000000000ULL);
+   bson_destroy (&b);
+}
+
+static void
 test_bson_json_inc (void)
 {
    /* test that reproduces a bug with special mode checking.  Specifically,
@@ -855,6 +908,7 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/as_json/int32", test_bson_as_json_int32);
    TestSuite_Add (suite, "/bson/as_json/int64", test_bson_as_json_int64);
    TestSuite_Add (suite, "/bson/as_json/double", test_bson_as_json_double);
+   TestSuite_Add (suite, "/bson/as_json/dec128", test_bson_as_json_dec128);
    TestSuite_Add (suite, "/bson/as_json/utf8", test_bson_as_json_utf8);
    TestSuite_Add (suite, "/bson/as_json/stack_overflow", test_bson_as_json_stack_overflow);
    TestSuite_Add (suite, "/bson/as_json/corrupt", test_bson_corrupt);
@@ -867,6 +921,7 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/json/inc", test_bson_json_inc);
    TestSuite_Add (suite, "/bson/json/array", test_bson_json_array);
    TestSuite_Add (suite, "/bson/json/date", test_bson_json_date);
+   TestSuite_Add (suite, "/bson/json/read/$numberDecimal", test_bson_json_number_decimal);
    TestSuite_Add (suite, "/bson/json/read/missing_complex", test_bson_json_read_missing_complex);
    TestSuite_Add (suite, "/bson/json/read/invalid_json", test_bson_json_read_invalid_json);
    TestSuite_Add (suite, "/bson/json/read/bad_cb", test_bson_json_read_bad_cb);

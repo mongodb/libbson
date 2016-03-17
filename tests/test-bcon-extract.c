@@ -32,6 +32,23 @@ test_double (void)
 }
 
 static void
+test_dec128 (void)
+{
+   bson_dec128_t val;
+   bson_dec128_t dec;
+
+   bson_dec128_from_string("12", &dec);
+   bson_t *bcon = BCON_NEW ("foo", BCON_DEC128(&dec));
+
+   assert (BCON_EXTRACT (bcon, "foo", BCONE_DEC128 (val)));
+
+   assert (val.low == 0xCULL);
+   assert (val.high == 0x3040000000000000ULL);
+
+   bson_destroy (bcon);
+}
+
+static void
 test_binary (void)
 {
    bson_subtype_t subtype;
@@ -494,6 +511,7 @@ test_bcon_extract_install (TestSuite *suite)
 {
    TestSuite_Add (suite, "/bson/bcon/extract/test_utf8", test_utf8);
    TestSuite_Add (suite, "/bson/bcon/extract/test_double", test_double);
+   TestSuite_Add (suite, "bson/bcon/extract/test_dec128", test_dec128);
    TestSuite_Add (suite, "/bson/bcon/extract/test_binary", test_binary);
    TestSuite_Add (suite, "/bson/bcon/extract/test_undefined", test_undefined);
    TestSuite_Add (suite, "/bson/bcon/extract/test_oid", test_oid);

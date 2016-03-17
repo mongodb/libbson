@@ -21,7 +21,7 @@
 #ifndef BCON_H_
 #define BCON_H_
 
-#include <bson.h>
+#include "bson.h"
 
 
 BSON_BEGIN_DECLS
@@ -56,6 +56,7 @@ BCON_ENSURE_DECLARE (int32, int32_t)
 BCON_ENSURE_DECLARE (int32_ptr, int32_t *)
 BCON_ENSURE_DECLARE (int64, int64_t)
 BCON_ENSURE_DECLARE (int64_ptr, int64_t *)
+BCON_ENSURE_DECLARE (const_dec128_ptr, const bson_dec128_t *)
 BCON_ENSURE_DECLARE (bool, bool)
 BCON_ENSURE_DECLARE (bool_ptr, bool *)
 BCON_ENSURE_DECLARE (bson_type, bson_type_t)
@@ -107,6 +108,8 @@ BCON_ENSURE_DECLARE (const_bson_iter_ptr, const bson_iter_t *)
    BCON_ENSURE (int32, (_increment))
 #define BCON_INT64(_val) \
    BCON_MAGIC, BCON_TYPE_INT64, BCON_ENSURE (int64, (_val))
+#define BCON_DEC128(_val) \
+   BCON_MAGIC, BCON_TYPE_DEC128, BCON_ENSURE (const_dec128_ptr, (_val))
 #define BCON_MAXKEY BCON_MAGIC, BCON_TYPE_MAXKEY
 #define BCON_MINKEY BCON_MAGIC, BCON_TYPE_MINKEY
 #define BCON(_val) \
@@ -159,6 +162,8 @@ BCON_ENSURE_DECLARE (const_bson_iter_ptr, const bson_iter_t *)
    BCON_ENSURE_STORAGE (int32_ptr, (_increment))
 #define BCONE_INT64(_val) BCONE_MAGIC, BCON_TYPE_INT64, \
    BCON_ENSURE_STORAGE (int64_ptr, (_val))
+#define BCONE_DEC128(_val) BCONE_MAGIC, BCON_TYPE_DEC128, \
+   BCON_ENSURE_STORAGE (const_dec128_ptr, (_val))
 #define BCONE_MAXKEY BCONE_MAGIC, BCON_TYPE_MAXKEY
 #define BCONE_MINKEY BCONE_MAGIC, BCON_TYPE_MINKEY
 #define BCONE_SKIP(_val) BCONE_MAGIC, BCON_TYPE_SKIP, \
@@ -189,6 +194,7 @@ typedef enum
    BCON_TYPE_INT32,
    BCON_TYPE_TIMESTAMP,
    BCON_TYPE_INT64,
+   BCON_TYPE_DEC128,
    BCON_TYPE_MAXKEY,
    BCON_TYPE_MINKEY,
    BCON_TYPE_BCON,

@@ -29,6 +29,7 @@ test_value_basic (void)
    bson_value_t copy;
    bson_iter_t iter;
    bson_oid_t oid;
+   bson_dec128_t dec;
    bson_t other = BSON_INITIALIZER;
    bson_t *doc;
    bson_t sub = BSON_INITIALIZER;
@@ -36,8 +37,10 @@ test_value_basic (void)
    int i;
 
    bson_oid_init (&oid, NULL);
+   bson_dec128_from_string("123.5", &dec);
 
    doc = BCON_NEW ("double", BCON_DOUBLE (123.4),
+                   "dec128", BCON_DEC128 (&dec),
                    "utf8", "this is my string",
                    "document", BCON_DOCUMENT (&sub),
                    "array", BCON_DOCUMENT (&sub),
@@ -61,7 +64,7 @@ test_value_basic (void)
    r = bson_iter_init (&iter, doc);
    assert (r);
 
-   for (i = 0; i < 20; i++) {
+   for (i = 0; i < 21; i++) {
       r = bson_iter_next (&iter);
       assert (r);
 

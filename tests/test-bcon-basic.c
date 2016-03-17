@@ -38,6 +38,25 @@ test_double (void)
 }
 
 static void
+test_dec128 (void)
+{
+   bson_t bcon, expected;
+   bson_dec128_t dec;
+   bson_dec128_from_string("120E20", &dec);
+
+   bson_init (&bcon);
+   bson_init (&expected);
+
+   bson_append_dec128 (&expected, "foo", -1, &dec);
+   BCON_APPEND(&bcon, "foo", BCON_DEC128(&dec));
+
+   bson_eq_bson (&bcon, &expected);
+
+   bson_destroy (&bcon);
+   bson_destroy (&expected);
+}
+
+static void
 test_binary (void)
 {
    bson_t bcon, expected;
@@ -627,6 +646,7 @@ test_bcon_basic_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/bcon/test_int32", test_int32);
    TestSuite_Add (suite, "/bson/bcon/test_timestamp", test_timestamp);
    TestSuite_Add (suite, "/bson/bcon/test_int64", test_int64);
+   TestSuite_Add (suite, "/bson/bcon/test_dec128", test_dec128);
    TestSuite_Add (suite, "/bson/bcon/test_maxkey", test_maxkey);
    TestSuite_Add (suite, "/bson/bcon/test_minkey", test_minkey);
    TestSuite_Add (suite, "/bson/bcon/test_bson_document", test_bson_document);

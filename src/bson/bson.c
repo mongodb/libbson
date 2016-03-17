@@ -1159,6 +1159,34 @@ bson_append_int64 (bson_t      *bson,
 
 
 bool
+bson_append_dec128 (bson_t              *bson,
+                    const char          *key,
+                    int                  key_length,
+                    const bson_dec128_t *value)
+{
+   static const uint8_t type = BSON_TYPE_DEC128;
+   uint64_t value_le[2];
+
+   bson_return_val_if_fail (bson, false);
+   bson_return_val_if_fail (key, false);
+
+   if (key_length < 0) {
+      key_length = (int)strlen (key);
+   }
+
+   value_le[0] = BSON_UINT64_TO_LE (value->low);
+   value_le[1] = BSON_UINT64_TO_LE (value->high);
+
+   return _bson_append (bson, 4,
+                        (1 + key_length + 1 + 16),
+                        1, &type,
+                        key_length, key,
+                        1, &gZero,
+                        16, value_le);
+}
+
+
+bool
 bson_append_iter (bson_t            *bson,
                   const char        *key,
                   int                key_length,
@@ -1312,6 +1340,17 @@ bson_append_iter (bson_t            *bson,
       break;
    case BSON_TYPE_INT64:
       ret = bson_append_int64 (bson, key, key_length, bson_iter_int64 (iter));
+      break;
+   case BSON_TYPE_DEC128:
+      {
+         bson_dec128_t dec;
+
+         if (!bson_iter_dec128 (iter, &dec)) {
+            return false;
+         }
+
+         ret = bson_append_dec128 (bson, key, key_length, &dec);
+      }
       break;
    case BSON_TYPE_MAXKEY:
       ret = bson_append_maxkey (bson, key, key_length);
@@ -1761,6 +1800,9 @@ bson_append_value (bson_t             *bson,
       break;
    case BSON_TYPE_INT64:
       ret = bson_append_int64 (bson, key, key_length, value->value.v_int64);
+      break;
+   case BSON_TYPE_DEC128:
+      ret = bson_append_dec128 (bson, key, key_length, &(value->value.v_dec128));
       break;
    case BSON_TYPE_MAXKEY:
       ret = bson_append_maxkey (bson, key, key_length);
@@ -2324,6 +2366,24 @@ _bson_as_json_visit_int64 (const bson_iter_t *iter,
 
 
 static bool
+_bson_as_json_visit_dec128 (const bson_iter_t   *iter,
+                            const char          *key,
+                            const bson_dec128_t *value,
+                            void                *data)
+{
+   bson_json_state_t *state = data;
+   char dec128_string[BSON_DEC128_STRING];
+   bson_dec128_to_string(value, dec128_string);
+
+   bson_string_append (state->str, "{ \"$numberDecimal\" : \"");
+   bson_string_append (state->str, dec128_string);
+   bson_string_append (state->str, "\" }");
+
+   return false;
+}
+
+
+static bool
 _bson_as_json_visit_double (const bson_iter_t *iter,
                             const char        *key,
                             double             v_double,
@@ -2658,6 +2718,7 @@ static const bson_visitor_t bson_as_json_visitors = {
    _bson_as_json_visit_int32,
    _bson_as_json_visit_timestamp,
    _bson_as_json_visit_int64,
+   _bson_as_json_visit_dec128,
    _bson_as_json_visit_maxkey,
    _bson_as_json_visit_minkey,
 };
