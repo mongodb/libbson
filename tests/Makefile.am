@@ -22,7 +22,10 @@ test_libbson_SOURCES = \
 	tests/test-version.c \
 	tests/test-writer.c \
 	tests/test-bcon-basic.c \
-	tests/test-bcon-extract.c
+	tests/test-bcon-extract.c \
+	tests/test-type.c \
+	tests/json-test.c \
+	tests/json-test.h
 
 test_libbson_CPPFLAGS = \
 	-I$(top_srcdir)/src \
@@ -149,4 +152,9 @@ EXTRA_DIST += \
 	tests/binary/test8.bson \
 	tests/binary/test9.bson \
 	tests/binary/trailingnull.bson \
-	tests/json/test.json
+	tests/json/test.json \
+	tests/json/type/array.json \
+	tests/json/type/boolean.json \
+	tests/json/type/corrupted.json \
+	tests/json/type/decimal128.json \
+	tests/json/type/int32.json

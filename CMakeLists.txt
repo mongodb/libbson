@@ -240,6 +240,8 @@ if (ENABLE_TESTS)
        ${SOURCE_DIR}/tests/test-writer.c
        ${SOURCE_DIR}/tests/test-bcon-basic.c
        ${SOURCE_DIR}/tests/test-bcon-extract.c
+       ${SOURCE_DIR}/tests/test-type.c
+       ${SOURCE_DIR}/tests/json-test.c
     )
 
     target_link_libraries(test-libbson bson_static)
