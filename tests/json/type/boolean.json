@@ -1,0 +1,21 @@
+{
+    "description": "Boolean",
+    "valid": [
+        {
+            "description": "True",
+            "subject": "090000000862000100",
+            "string": "true",
+            "extjson": {
+                "b": true
+            }
+        },
+        {
+            "description": "False",
+            "subject": "090000000862000000",
+            "string": "false",
+            "extjson": {
+                "b": false
+            }
+        }
+    ]
+}

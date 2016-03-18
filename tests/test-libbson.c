@@ -19,6 +19,7 @@ extern void test_utf8_install         (TestSuite *suite);
 extern void test_value_install        (TestSuite *suite);
 extern void test_version_install      (TestSuite *suite);
 extern void test_writer_install       (TestSuite *suite);
+extern void test_bson_type_install    (TestSuite *suite);
 
 
 int
@@ -48,6 +49,7 @@ main (int argc,
    test_value_install (&suite);
    test_version_install (&suite);
    test_writer_install (&suite);
+   test_bson_type_install (&suite);
 
    ret = TestSuite_Run (&suite);
 
