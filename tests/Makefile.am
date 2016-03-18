@@ -45,6 +45,12 @@ test_libbson_LDADD = \
 check: test
 
 
+if OS_DARWIN
+DEBUGGER = lldb --
+else
+DEBUGGER = gdb --args
+endif
+
 TEST_ARGS = 
 if OS_DARWIN
 TEST_ARGS += -f -p
@@ -61,6 +67,9 @@ endif
 
 valgrind: $(TEST_PROGS)
 	$(LIBTOOL) --mode=execute valgrind --leak-check=full ./test-libbson -f -p
+
+debug: $(TEST_PROGS)
+	$(LIBTOOL) --mode=execute $(DEBUGGER) ./test-libbson $(TEST_ARGS)
 
 DISTCLEANFILES += test.log
 
