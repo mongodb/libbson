@@ -40,3 +40,5 @@ test-libbson
 test.log
 .DS_Store
 xcuserdata
+tags
+.lvimrc
