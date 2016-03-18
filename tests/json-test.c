@@ -122,7 +122,7 @@ collect_tests_from_dir (char (*paths)[MAX_TEST_NAME_LENGTH] /* OUT */,
             paths_index = collect_tests_from_dir(paths, child_path, paths_index,
                                                  max_paths);
          }
-      } else if (strstr(entry->d_name, ".json")) {
+      } else if (strncmp (entry->d_name + (strlen(entry->d_name)-5), ".json", 5) == 0) {
          /* if this is a JSON test, collect its path */
          assemble_path(dir_path, entry->d_name, paths[paths_index++]);
       }

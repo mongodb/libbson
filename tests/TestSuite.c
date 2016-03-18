@@ -257,7 +257,6 @@ TestSuite_Init (TestSuite *suite,
          suite->flags |= TEST_NOFORK;
       } else if (0 == strcmp ("--threads", argv [i])) {
          suite->flags |= TEST_THREADS;
-         _Print_StdErr ("--threads is an experimental probably-not-working option\n");
       } else if (0 == strcmp ("-F", argv [i])) {
          if (argc - 1 == i) {
             _Print_StdErr ("-F requires a filename argument.\n");

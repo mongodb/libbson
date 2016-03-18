@@ -54,9 +54,10 @@ else
 DEBUGGER = gdb --args
 endif
 
-TEST_ARGS = 
 if OS_DARWIN
-TEST_ARGS += -f -p
+TEST_ARGS = --no-fork
+else
+TEST_ARGS = --threads --no-fork
 endif
 
 
@@ -69,7 +70,7 @@ if CAN_ABI_CHECK
 endif
 
 valgrind: $(TEST_PROGS)
-	$(LIBTOOL) --mode=execute valgrind --leak-check=full ./test-libbson -f -p
+	$(LIBTOOL) --mode=execute valgrind --leak-check=full ./test-libbson --no-fork
 
 debug: $(TEST_PROGS)
 	$(LIBTOOL) --mode=execute $(DEBUGGER) ./test-libbson $(TEST_ARGS)
