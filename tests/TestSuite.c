@@ -46,10 +46,15 @@
 #include "TestSuite.h"
 
 
+static int test_flags;
+
+
 #define TEST_VERBOSE   (1 << 0)
 #define TEST_NOFORK    (1 << 1)
 #define TEST_HELPONLY  (1 << 2)
-#define TEST_NOTHREADS (1 << 3)
+#define TEST_THREADS    (1 << 3)
+#define TEST_DEBUGOUTPUT (1 << 4)
+#define TEST_VALGRIND  (1 << 5)
 
 
 #define NANOSEC_PER_SEC 1000000000UL
@@ -128,6 +133,32 @@ snprintf (char *str,
    return r;
 }
 #endif
+
+
+void
+_Print_StdOut (const char *format,
+               ...)
+{
+   va_list ap;
+
+   va_start (ap, format);
+   vprintf (format, ap);
+   fflush (stdout);   
+   va_end (ap);
+}
+
+
+void
+_Print_StdErr (const char *format,
+               ...)
+{
+   va_list ap;
+
+   va_start (ap, format);
+   vfprintf (stderr, format, ap);
+   fflush (stderr);
+   va_end (ap);
+}
 
 
 void
@@ -220,13 +251,16 @@ TestSuite_Init (TestSuite *suite,
    for (i = 0; i < argc; i++) {
       if (0 == strcmp ("-v", argv [i])) {
          suite->flags |= TEST_VERBOSE;
-      } else if (0 == strcmp ("-f", argv [i])) {
+      } else if (0 == strcmp ("-d", argv [i])) {
+         suite->flags |= TEST_DEBUGOUTPUT;
+      } else if (0 == strcmp ("--no-fork", argv [i])) {
          suite->flags |= TEST_NOFORK;
-      } else if (0 == strcmp ("-p", argv [i])) {
-         suite->flags |= TEST_NOTHREADS;
+      } else if (0 == strcmp ("--threads", argv [i])) {
+         suite->flags |= TEST_THREADS;
+         _Print_StdErr ("--threads is an experimental probably-not-working option\n");
       } else if (0 == strcmp ("-F", argv [i])) {
          if (argc - 1 == i) {
-            fprintf (stderr, "-F requires a filename argument.\n");
+            _Print_StdErr ("-F requires a filename argument.\n");
             exit (EXIT_FAILURE);
          }
          filename = argv [++i];
@@ -239,7 +273,7 @@ TestSuite_Init (TestSuite *suite,
             suite->outfile = fopen (filename, "w");
 #endif
             if (!suite->outfile) {
-               fprintf (stderr, "Failed to open log file: %s\n", filename);
+               _Print_StdErr ("Failed to open log file: %s\n", filename);
             }
          }
       } else if ((0 == strcmp ("-h", argv [i])) ||
@@ -247,12 +281,15 @@ TestSuite_Init (TestSuite *suite,
          suite->flags |= TEST_HELPONLY;
       } else if ((0 == strcmp ("-l", argv [i]))) {
          if (argc - 1 == i) {
-            fprintf (stderr, "-l requires an argument.\n");
+            _Print_StdErr ("-l requires an argument.\n");
             exit (EXIT_FAILURE);
          }
          suite->testname = strdup (argv [++i]);
       }
    }
+   
+   /* HACK: copy flags to global var */
+   test_flags = suite->flags;
 }
 
 
@@ -262,30 +299,52 @@ TestSuite_CheckDummy (void)
    return 1;
 }
 
+static void
+TestSuite_AddHelper (void *cb_)
+{
+   TestFunc cb = (TestFunc)cb_;
+
+   cb();
+}
 
 void
 TestSuite_Add (TestSuite  *suite, /* IN */
                const char *name,  /* IN */
                TestFunc    func)  /* IN */
 {
-   TestSuite_AddFull (suite, name, func, TestSuite_CheckDummy);
+   TestSuite_AddFull (suite, name, TestSuite_AddHelper, NULL, (void *)func, TestSuite_CheckDummy);
+}
+
+
+void
+TestSuite_AddWC (TestSuite  *suite, /* IN */
+                 const char *name,  /* IN */
+                 TestFuncWC  func,  /* IN */
+                 TestFuncDtor dtor,  /* IN */
+                 void       *ctx)   /* IN */
+{
+   TestSuite_AddFull (suite, name, func, dtor, ctx, TestSuite_CheckDummy);
 }
 
 
 void
 TestSuite_AddFull (TestSuite  *suite,   /* IN */
                    const char *name,    /* IN */
-                   TestFunc    func,    /* IN */
+                   TestFuncWC  func,    /* IN */
+                   TestFuncDtor dtor,    /* IN */
+                   void       *ctx,
                    int (*check) (void)) /* IN */
 {
    Test *test;
    Test *iter;
 
-   test = calloc (1, sizeof *test);
+   test = (Test *)calloc (1, sizeof *test);
    test->name = strdup (name);
    test->func = func;
    test->check = check;
    test->next = NULL;
+   test->dtor = dtor;
+   test->ctx = ctx;
    TestSuite_SeedRand (suite, test);
 
    if (!suite->tests) {
@@ -325,7 +384,9 @@ TestSuite_RunFuncInChild (TestSuite *suite, /* IN */
       dup2 (fd, STDOUT_FILENO);
       close (fd);
       srand (test->seed);
-      test->func ();
+      test->func (test->ctx);
+
+      TestSuite_Destroy (suite);
       exit (0);
    }
 
@@ -338,7 +399,7 @@ TestSuite_RunFuncInChild (TestSuite *suite, /* IN */
 #endif
 
 
-static void
+static int
 TestSuite_RunTest (TestSuite *suite,       /* IN */
                    Test *test,             /* IN */
                    Mutex *mutex, /* IN */
@@ -347,9 +408,9 @@ TestSuite_RunTest (TestSuite *suite,       /* IN */
    struct timespec ts1;
    struct timespec ts2;
    struct timespec ts3;
-   char name[64];
-   char buf[256];
-   int status;
+   char name[MAX_TEST_NAME_LENGTH];
+   char buf[MAX_TEST_NAME_LENGTH + 500];
+   int status = 0;
 
    snprintf (name, sizeof name, "%s%s", suite->name, test->name);
    name [sizeof name - 1] = '\0';
@@ -361,14 +422,24 @@ TestSuite_RunTest (TestSuite *suite,       /* IN */
        * TODO: If not verbose, close()/dup(/dev/null) for stdout.
        */
 
+      /* Tracing is superduper slow */
 #if defined(_WIN32)
       srand (test->seed);
-      test->func ();
+
+      if (suite->flags & TEST_DEBUGOUTPUT) {
+         _Print_StdOut ("Begin %s\n", name);
+      }
+
+      test->func (test->ctx);
       status = 0;
 #else
+      if (suite->flags & TEST_DEBUGOUTPUT) {
+         _Print_StdOut ("Begin %s\n", name);
+      }
+      
       if ((suite->flags & TEST_NOFORK)) {
          srand (test->seed);
-         test->func ();
+         test->func (test->ctx);
          status = 0;
       } else {
          status = TestSuite_RunFuncInChild (suite, test);
@@ -381,35 +452,44 @@ TestSuite_RunTest (TestSuite *suite,       /* IN */
       Mutex_Lock (mutex);
       snprintf (buf, sizeof buf,
                 "    { \"status\": \"%s\", "
-                      "\"name\": \"%s\", "
+                      "\"test_file\": \"%s\", "
                       "\"seed\": \"%u\", "
+                      "\"start\": %u.%09u, "
+                      "\"end\": %u.%09u, "
                       "\"elapsed\": %u.%09u }%s\n",
                (status == 0) ? "PASS" : "FAIL",
                name,
                test->seed,
+               (unsigned)ts1.tv_sec,
+               (unsigned)ts1.tv_nsec,
+               (unsigned)ts2.tv_sec,
+               (unsigned)ts2.tv_nsec,
                (unsigned)ts3.tv_sec,
                (unsigned)ts3.tv_nsec,
                ((*count) == 1) ? "" : ",");
       buf [sizeof buf - 1] = 0;
-      fprintf (stdout, "%s", buf);
+      _Print_StdOut ("%s", buf);
       if (suite->outfile) {
          fprintf (suite->outfile, "%s", buf);
          fflush (suite->outfile);
       }
       Mutex_Unlock (mutex);
    } else {
+      status = 0;
       Mutex_Lock (mutex);
       snprintf (buf, sizeof buf,
-                "    { \"status\": \"SKIP\", \"name\": \"%s\" },\n",
+                "    { \"status\": \"SKIP\", \"test_file\": \"%s\" },\n",
                 test->name);
       buf [sizeof buf - 1] = '\0';
-      fprintf (stdout, "%s", buf);
+      _Print_StdOut ("%s", buf);
       if (suite->outfile) {
          fprintf (suite->outfile, "%s", buf);
          fflush (suite->outfile);
       }
       Mutex_Unlock (mutex);
    }
+
+   return status ? 1 : 0;
 }
 
 
@@ -425,9 +505,11 @@ TestSuite_PrintHelp (TestSuite *suite, /* IN */
 "Options:\n"
 "    -h, --help   Show this help menu.\n"
 "    -f           Do not fork() before running tests.\n"
-"    -l NAME      Run test by name.\n"
+"    -l NAME      Run test by name, e.g. \"/Client/command\" or \"/Client/*\".\n"
 "    -p           Do not run tests in parallel.\n"
 "    -v           Be verbose with logs.\n"
+"    -F FILENAME  Write test results (JSON) to FILENAME.\n"
+"    -d           Print debug output (useful if a test hangs).\n"
 "\n"
 "Tests:\n",
             suite->prgname);
@@ -441,8 +523,7 @@ TestSuite_PrintHelp (TestSuite *suite, /* IN */
 
 
 static void
-TestSuite_PrintJsonHeader (TestSuite *suite, /* IN */
-                           FILE *stream)     /* IN */
+TestSuite_PrintJsonSystemHeader (FILE *stream)
 {
 #ifdef _WIN32
 #  define INFO_BUFFER_SIZE 32767
@@ -464,7 +545,6 @@ TestSuite_PrintJsonHeader (TestSuite *suite, /* IN */
    }
 
    fprintf (stream,
-            "{\n"
             "  \"host\": {\n"
             "    \"sysname\": \"Windows\",\n"
             "    \"release\": \"%ld.%ld (%ld)\",\n"
@@ -473,24 +553,16 @@ TestSuite_PrintJsonHeader (TestSuite *suite, /* IN */
             "      \"pagesize\": %ld,\n"
             "      \"npages\": %d\n"
             "    }\n"
-            "  },\n"
-            "  \"options\": {\n"
-            "    \"parallel\": \"%s\",\n"
-            "    \"fork\": \"%s\"\n"
-            "  },\n"
-            "  \"tests\": [\n",
+            "  },\n",
             major_version, minor_version, build,
             si.dwProcessorType,
             si.dwPageSize,
-            0,
-            (suite->flags & TEST_NOTHREADS) ? "false" : "true",
-            (suite->flags & TEST_NOFORK) ? "false" : "true");
+            0
+   );
 #else
    struct utsname u;
    uint64_t pagesize;
    uint64_t npages = 0;
-
-   ASSERT (suite);
 
    if (uname (&u) == -1) {
       perror ("uname()");
@@ -502,9 +574,7 @@ TestSuite_PrintJsonHeader (TestSuite *suite, /* IN */
 #  if defined(_SC_PHYS_PAGES)
    npages = sysconf (_SC_PHYS_PAGES);
 #  endif
-
    fprintf (stream,
-            "{\n"
             "  \"host\": {\n"
             "    \"sysname\": \"%s\",\n"
             "    \"release\": \"%s\",\n"
@@ -513,20 +583,33 @@ TestSuite_PrintJsonHeader (TestSuite *suite, /* IN */
             "      \"pagesize\": %"PRIu64",\n"
             "      \"npages\": %"PRIu64"\n"
             "    }\n"
-            "  },\n"
-            "  \"options\": {\n"
-            "    \"parallel\": \"%s\",\n"
-            "    \"fork\": \"%s\"\n"
-            "  },\n"
-            "  \"tests\": [\n",
+            "  },\n",
             u.sysname,
             u.release,
             u.machine,
             pagesize,
-            npages,
-            (suite->flags & TEST_NOTHREADS) ? "false" : "true",
-            (suite->flags & TEST_NOFORK) ? "false" : "true");
+            npages
+   );
 #endif
+}
+
+static void
+TestSuite_PrintJsonHeader (TestSuite *suite, /* IN */
+                           FILE *stream)     /* IN */
+{
+   ASSERT (suite);
+
+   fprintf (stream, "{\n");
+   TestSuite_PrintJsonSystemHeader (stream);
+   fprintf (stream,
+            "  \"options\": {\n"
+            "    \"parallel\": %s,\n"
+            "    \"fork\": %s\n"
+            "  },\n"
+            "  \"results\": [\n",
+            (suite->flags & TEST_THREADS) ? "true" : "false",
+            (suite->flags & TEST_NOFORK) ? "false" : "true"
+   );
 
    fflush (stream);
 }
@@ -552,18 +635,19 @@ typedef struct
 static void *
 TestSuite_ParallelWorker (void *data) /* IN */
 {
-   ParallelInfo *info = data;
+   ParallelInfo *info = (ParallelInfo *)data;
+   int status;
 
    ASSERT (info);
 
-   TestSuite_RunTest (info->suite, info->test, info->mutex, info->count);
+   status = TestSuite_RunTest (info->suite, info->test, info->mutex, info->count);
 
    if (AtomicInt_DecrementAndTest (info->count)) {
       TestSuite_PrintJsonFooter (stdout);
       if (info->suite->outfile) {
          TestSuite_PrintJsonFooter (info->suite->outfile);
       }
-      exit (0);
+      exit (status);
    }
 
    return NULL;
@@ -588,12 +672,12 @@ TestSuite_RunParallel (TestSuite *suite) /* IN */
       count++;
    }
 
-   threads = calloc (count, sizeof *threads);
+   threads = (Thread *)calloc (count, sizeof *threads);
 
    Memory_Barrier ();
 
    for (test = suite->tests, i = 0; test; test = test->next, i++) {
-      info = calloc (1, sizeof *info);
+      info = (ParallelInfo *)calloc (1, sizeof *info);
       info->suite = suite;
       info->test = test;
       info->count = &count;
@@ -607,18 +691,19 @@ TestSuite_RunParallel (TestSuite *suite) /* IN */
    sleep (30);
 #endif
 
-   fprintf (stderr, "Timed out, aborting!\n");
+   _Print_StdErr ("Timed out, aborting!\n");
 
    abort ();
 }
 
 
-static void
+static int
 TestSuite_RunSerial (TestSuite *suite) /* IN */
 {
    Test *test;
    Mutex mutex;
    int count = 0;
+   int status = 0;
 
    Mutex_Init (&mutex);
 
@@ -627,7 +712,7 @@ TestSuite_RunSerial (TestSuite *suite) /* IN */
    }
 
    for (test = suite->tests; test; test = test->next) {
-      TestSuite_RunTest (suite, test, &mutex, &count);
+      status += TestSuite_RunTest (suite, test, &mutex, &count);
       count--;
    }
 
@@ -637,10 +722,12 @@ TestSuite_RunSerial (TestSuite *suite) /* IN */
    }
 
    Mutex_Destroy (&mutex);
+
+   return status;
 }
 
 
-static void
+static int
 TestSuite_RunNamed (TestSuite *suite,     /* IN */
                     const char *testname) /* IN */
 {
@@ -648,6 +735,9 @@ TestSuite_RunNamed (TestSuite *suite,     /* IN */
    char name[128];
    Test *test;
    int count = 1;
+   bool star = strlen (testname) && testname[strlen (testname) - 1] == '*';
+   bool match;
+   int status = 0;
 
    ASSERT (suite);
    ASSERT (testname);
@@ -658,9 +748,15 @@ TestSuite_RunNamed (TestSuite *suite,     /* IN */
       snprintf (name, sizeof name, "%s%s",
                 suite->name, test->name);
       name [sizeof name - 1] = '\0';
+      if (star) {
+         /* e.g. testname is "/Client*" and name is "/Client/authenticate" */
+         match = (0 == strncmp (name, testname, strlen (testname) - 1));
+      } else {
+         match = (0 == strcmp (name, testname));
+      }
 
-      if (0 == strcmp (name, testname)) {
-         TestSuite_RunTest (suite, test, &mutex, &count);
+      if (match) {
+         status += TestSuite_RunTest (suite, test, &mutex, &count);
       }
    }
 
@@ -670,12 +766,15 @@ TestSuite_RunNamed (TestSuite *suite,     /* IN */
    }
 
    Mutex_Destroy (&mutex);
+   return status;
 }
 
 
 int
 TestSuite_Run (TestSuite *suite) /* IN */
 {
+   int failures = 0;
+
    if ((suite->flags & TEST_HELPONLY)) {
       TestSuite_PrintHelp (suite, stderr);
       return 0;
@@ -688,11 +787,11 @@ TestSuite_Run (TestSuite *suite) /* IN */
 
    if (suite->tests) {
       if (suite->testname) {
-         TestSuite_RunNamed (suite, suite->testname);
-      } else if ((suite->flags & TEST_NOTHREADS)) {
-         TestSuite_RunSerial (suite);
-      } else {
+         failures += TestSuite_RunNamed (suite, suite->testname);
+      } else if ((suite->flags & TEST_THREADS)) {
          TestSuite_RunParallel (suite);
+      } else {
+         failures += TestSuite_RunSerial (suite);
       }
    } else {
       TestSuite_PrintJsonFooter (stdout);
@@ -701,7 +800,7 @@ TestSuite_Run (TestSuite *suite) /* IN */
       }
    }
 
-   return 0;
+   return failures;
 }
 
 
@@ -713,6 +812,10 @@ TestSuite_Destroy (TestSuite *suite)
 
    for (test = suite->tests; test; test = tmp) {
       tmp = test->next;
+
+      if (test->dtor) {
+         test->dtor(test->ctx);
+      }
       free (test->name);
       free (test);
    }
@@ -724,4 +827,18 @@ TestSuite_Destroy (TestSuite *suite)
    free (suite->name);
    free (suite->prgname);
    free (suite->testname);
+}
+
+
+int
+test_suite_debug_output (void)
+{
+   return 0 != (test_flags & TEST_DEBUGOUTPUT);
+}
+
+
+int
+test_suite_valgrind (void)
+{
+   return 0 != (test_flags & TEST_VALGRIND);
 }
