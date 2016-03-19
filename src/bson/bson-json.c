@@ -818,6 +818,16 @@ _bson_json_read_append_timestamp (bson_json_reader_t      *reader, /* IN */
 }
 
 
+static void
+_bad_extended_json (bson_json_reader_t *reader)
+{
+   bson_set_error (reader->error,
+                   BSON_ERROR_JSON,
+                   BSON_JSON_ERROR_READ_CORRUPT_JS,
+                   "Invalid MongoDB extended JSON");
+}
+
+
 static int
 _bson_json_read_end_map (void *_ctx) /* IN */
 {
@@ -832,6 +842,12 @@ _bson_json_read_end_map (void *_ctx) /* IN */
    }
 
    if (bson->read_state == BSON_JSON_IN_BSON_TYPE) {
+      if (!bson->key) {
+         /* invalid, like {$numberLong: "1"} at the document top level */
+         _bad_extended_json (reader);
+         return false;
+      }
+
       bson->read_state = BSON_JSON_REGULAR;
       switch (bson->bson_type) {
       case BSON_TYPE_REGEX:
@@ -874,12 +890,22 @@ _bson_json_read_end_map (void *_ctx) /* IN */
          break;
       }
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_TIMESTAMP_VALUES) {
+      if (!bson->key) {
+         _bad_extended_json (reader);
+         return false;
+      }
+
       bson->read_state = BSON_JSON_IN_BSON_TYPE_TIMESTAMP_ENDMAP;
 
       return _bson_json_read_append_timestamp (reader, bson);
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_TIMESTAMP_ENDMAP) {
       bson->read_state = BSON_JSON_REGULAR;
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_DATE_NUMBERLONG) {
+      if (!bson->key) {
+         _bad_extended_json (reader);
+         return false;
+      }
+
       bson->read_state = BSON_JSON_IN_BSON_TYPE_DATE_ENDMAP;
 
       return _bson_json_read_append_date_time(reader, bson);
