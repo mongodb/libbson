@@ -59,6 +59,15 @@ AC_ARG_ENABLE(debug_symbols,
     ])
 AC_MSG_RESULT([$enable_debug_symbols])
 
+# Check for enabling decimal floating point
+AC_ARG_ENABLE(decimal-bid,
+   AS_HELP_STRING([--enable-decimal-bid], Enable decimal floating point native types (default=yes on supported systems). Only supported on compilers with BID formatted _Decimal128.]),
+   [
+      enable_decimal=$enableval
+      AC_MSG_CHECKING([whether to force enable native decimal floating point])
+      AC_MSG_RESULT([$enable_decimal])
+   ])
+
 # use strict compiler flags only on development releases
 m4_define([maintainer_flags_default], [m4_ifset([BSON_PRERELEASE_VERSION], [yes], [no])])
 AC_ARG_ENABLE([maintainer-flags],

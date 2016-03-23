@@ -34,6 +34,7 @@ Build configuration:
   Code coverage support                            : ${enable_coverage}
   Cross Compiling                                  : ${enable_crosscompile}
   Big endian                                       : ${enable_bigendian}
+  Compile with native _Decimal128 (BID) support    : ${enable_decimal}
   Link Time Optimization (experimental)            : ${enable_lto}
 
 Documentation:

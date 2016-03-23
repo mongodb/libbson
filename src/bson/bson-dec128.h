@@ -23,8 +23,10 @@
 # error "Only <bson.h> can be included directly."
 #endif
 
+#include <string.h>
 
 #include "bson-macros.h"
+#include "bson-config.h"
 #include "bson-types.h"
 
 
@@ -53,6 +55,25 @@ bson_dec128_to_string (const bson_dec128_t *dec,
 void
 bson_dec128_from_string (const char    *string,
                          bson_dec128_t *dec);
+
+
+#ifdef BSON_HAVE_DECIMAL128
+static _Decimal128 BSON_INLINE
+bson_dec128_to_decimal128 (bson_dec128_t *dec)
+{
+   _Decimal128 dec128;
+   memcpy (&dec128, dec, sizeof(dec128));
+   return dec128;
+}
+
+
+static void BSON_INLINE
+bson_decimal128_to_dec128 (_Decimal128 dec128,
+                           bson_dec128_t *dec)
+{
+   memcpy (dec, &dec128, sizeof(dec128));
+}
+#endif
 
 
 BSON_END_DECLS

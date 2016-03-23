@@ -137,6 +137,29 @@ test_bson_iter_mixed (void)
 
 
 static void
+test_bson_iter_decimal128 (void *ctx) {
+#ifdef BSON_HAVE_DECIMAL128
+   bson_iter_t iter;
+   bson_t *b = bson_new();
+   _Decimal128 value = 1234.23E-40DL;
+   _Decimal128 v2;
+
+   assert(bson_append_decimal128(b, "foo", -1, value));
+   assert(bson_iter_init(&iter, b));
+   assert(bson_iter_next(&iter));
+   assert(BSON_ITER_HOLDS_DEC128(&iter));
+   v2 = bson_iter_decimal128(&iter);
+
+   assert (v2 == value);
+
+   bson_destroy(b);
+#else
+   assert (0);
+#endif
+}
+
+
+static void
 test_bson_iter_overflow (void)
 {
    bson_iter_t iter;
@@ -424,6 +447,31 @@ test_bson_iter_overwrite_dec128 (void)
 
 
 static void
+test_bson_iter_overwrite_decimal128 (void *ctx)
+{
+#ifdef BSON_HAVE_DECIMAL128
+   bson_iter_t iter;
+   bson_t b;
+   _Decimal128 value = 1.0DL;
+   _Decimal128 new_value = 2.0DL;
+   _Decimal128 iter_value;
+
+   bson_init(&b);
+   assert(bson_append_decimal128(&b, "key", -1, value));
+   assert(bson_iter_init_find(&iter, &b, "key"));
+   assert(BSON_ITER_HOLDS_DEC128(&iter));
+   bson_iter_overwrite_decimal128(&iter, new_value);
+   assert(bson_iter_init_find(&iter, &b, "key"));
+   assert(BSON_ITER_HOLDS_DEC128(&iter));
+   iter_value = bson_iter_decimal128(&iter);
+   assert (iter_value == new_value);
+   bson_destroy(&b);
+#else
+   assert (0);
+#endif
+}
+
+static void
 test_bson_iter_overwrite_double (void)
 {
    bson_iter_t iter;
@@ -571,6 +619,7 @@ test_iter_install (TestSuite *suite)
 {
    TestSuite_Add (suite, "/bson/iter/test_string", test_bson_iter_utf8);
    TestSuite_Add (suite, "/bson/iter/test_mixed", test_bson_iter_mixed);
+   TestSuite_AddFull (suite, "/bson/iter/test_decimal128", test_bson_iter_decimal128, NULL, NULL, should_run_decimal_test);
    TestSuite_Add (suite, "/bson/iter/test_overflow", test_bson_iter_overflow);
    TestSuite_Add (suite, "/bson/iter/test_timeval", test_bson_iter_timeval);
    TestSuite_Add (suite, "/bson/iter/test_trailing_null", test_bson_iter_trailing_null);
@@ -583,6 +632,7 @@ test_iter_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/iter/test_overwrite_double", test_bson_iter_overwrite_double);
    TestSuite_Add (suite, "/bson/iter/test_overwrite_bool", test_bson_iter_overwrite_bool);
    TestSuite_Add (suite, "/bson/iter/test_bson_iter_overwrite_dec128", test_bson_iter_overwrite_dec128);
+   TestSuite_AddFull (suite, "/bson/iter/test_bson_iter_overwrite_decimal128", test_bson_iter_overwrite_decimal128, NULL, NULL, should_run_decimal_test);
    TestSuite_Add (suite, "/bson/iter/recurse", test_bson_iter_recurse);
    TestSuite_Add (suite, "/bson/iter/init_find_case", test_bson_iter_init_find_case);
    TestSuite_Add (suite, "/bson/iter/find_descendant", test_bson_iter_find_descendant);

@@ -141,6 +141,11 @@ BSON_BEGIN_DECLS
 #define BSON_APPEND_DEC128(b, key, val) \
    bson_append_dec128 (b, key, (int)strlen (key), val)
 
+#ifdef BSON_HAVE_DECIMAL128
+#define BSON_APPEND_DECIMAL128(b, key, val) \
+   bson_append_decimal128 (b, key, (int)strlen (key), val)
+#endif
+
 #define BSON_APPEND_MAXKEY(b,key) \
       bson_append_maxkey (b, key, (int) strlen (key))
 
@@ -788,6 +793,25 @@ bson_append_dec128 (bson_t              *bson,
                     const char          *key,
                     int                  key_length,
                     const bson_dec128_t *value);
+
+
+#ifdef BSON_HAVE_DECIMAL128
+/**
+ * bson_append_decimal128:
+ * @bson: A bson_t to append to.
+ * @key: the key for the field.
+ * @value: The _Decimal128 value.
+ *
+ * Appends a new field of type BSON_TYPE_DEC128 to @bson.
+ *
+ * Returns: true if successful; false if append would overflow max size.
+ */
+bool
+bson_append_decimal128 (bson_t     *bson,
+                        const char *key,
+                        int         key_length,
+                        _Decimal128 value);
+#endif
 
 
 /**

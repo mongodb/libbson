@@ -16,6 +16,7 @@
 
 
 #include "bson-iter.h"
+#include "bson-config.h"
 #include "bson-dec128.h"
 
 
@@ -1026,6 +1027,39 @@ bson_iter_as_int64 (const bson_iter_t *iter) /* IN */
 }
 
 
+#ifdef BSON_HAVE_DECIMAL128
+/*
+ *------------------------------------------------------------------------------
+ *
+ * bson_iter_decimal128 --
+ *
+ *    This function retrieves the current field of type %BSON_TYPE_DEC128.
+ *
+ * Returns:
+ *
+ *    A native _Decimal128.
+ *
+ * Side Effects:
+ *
+ *    None.
+ *
+ *------------------------------------------------------------------------------
+ */
+_Decimal128
+bson_iter_decimal128 (const bson_iter_t *iter) /* IN */
+{
+   _Decimal128 fail = 0.0DL;
+   BSON_ASSERT(iter);
+
+   if (ITER_TYPE (iter) == BSON_TYPE_DEC128) {
+      return bson_iter_decimal128_unsafe (iter);
+   }
+
+   return fail;
+}
+#endif
+
+
 /*
  *--------------------------------------------------------------------------
  *
@@ -1047,7 +1081,7 @@ bool
 bson_iter_dec128 (const bson_iter_t *iter,      /* IN */
                   bson_dec128_t     *dec)       /* OUT */
 {
-   bson_return_val_if_fail (iter, false);
+   BSON_ASSERT (iter);
 
    if (ITER_TYPE (iter) == BSON_TYPE_DEC128) {
       bson_iter_dec128_unsafe (iter, dec);
@@ -1726,6 +1760,9 @@ bson_iter_array (const bson_iter_t  *iter,      /* IN */
 #define VISIT_TIMESTAMP VISIT_FIELD (timestamp)
 #define VISIT_INT64 VISIT_FIELD (int64)
 #define VISIT_DEC128 VISIT_FIELD (dec128)
+#ifdef BSON_HAVE_DECIMAL128
+#define VISIT_DECIMAL128 VISIT_FIELD (decimal128)
+#endif
 #define VISIT_MAXKEY VISIT_FIELD (maxkey)
 #define VISIT_MINKEY VISIT_FIELD (minkey)
 
@@ -1986,6 +2023,13 @@ bson_iter_visit_all (bson_iter_t          *iter,    /* INOUT */
                return true;
             }
          }
+
+#ifdef BSON_HAVE_DECIMAL128
+         if (VISIT_DECIMAL128 (iter, key, bson_iter_decimal128 (iter), data)) {
+            return true;
+         }
+#endif
+
          break;
       case BSON_TYPE_MAXKEY:
 
@@ -2172,7 +2216,7 @@ void
 bson_iter_overwrite_dec128 (bson_iter_t   *iter,   /* IN */
                             bson_dec128_t *value)  /* IN */
 {
-   bson_return_if_fail (iter);
+   BSON_ASSERT (iter);
 
    if (ITER_TYPE (iter) == BSON_TYPE_DEC128) {
 #if BSON_BYTE_ORDER != BSON_LITTLE_ENDIAN
@@ -2185,6 +2229,37 @@ bson_iter_overwrite_dec128 (bson_iter_t   *iter,   /* IN */
 #endif
    }
 }
+
+
+#ifdef BSON_HAVE_DECIMAL128
+/*
+ *---------------------------------------------------------------------------
+ *
+ * bson_iter_overwrite_decimal128 --
+ *
+ *    Overwrites the current BSON_TYPE_DEC128 field with a new value.
+ *    This is performed in-place.
+ *
+ * Returns:
+ *    None.
+ *
+ * Side effects:
+ *    None.
+ *
+ *---------------------------------------------------------------------------
+ */
+void
+bson_iter_overwrite_decimal128 (bson_iter_t *iter, /* IN */
+                                _Decimal128 value) /* IN */
+{
+   bson_dec128_t d;
+
+   BSON_ASSERT (iter);
+
+   bson_decimal128_to_dec128(value, &d);
+   return bson_iter_overwrite_dec128 (iter, &d);
+}
+#endif
 
 
 /*

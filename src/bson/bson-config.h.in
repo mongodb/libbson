@@ -104,5 +104,12 @@
 # undef BSON_EXTRA_ALIGN
 #endif
 
+/*
+ * Define to 1 if _Decimal128 (BID format) is available on your platform.
+ */
+#define BSON_HAVE_DECIMAL128 @BSON_HAVE_DECIMAL128@
+#if BSON_HAVE_DECIMAL128 != 1
+# undef BSON_HAVE_DECIMAL128
+#endif
 
 #endif /* BSON_CONFIG_H */
