@@ -49,22 +49,6 @@ test_dec128 (void)
 }
 
 static void
-test_decimal128 (void *ctx)
-{
-#ifdef BSON_HAVE_DECIMAL128
-   _Decimal128 val;
-   bson_t *bcon = BCON_NEW ("foo", BCON_DECIMAL128 (1.2DL));
-
-   assert (BCON_EXTRACT (bcon, "foo", BCONE_DECIMAL128 (val)));
-   assert (val == 1.2DL);
-
-   bson_destroy (bcon);
-#else
-   assert (0);
-#endif
-}
-
-static void
 test_binary (void)
 {
    bson_subtype_t subtype;
@@ -528,7 +512,6 @@ test_bcon_extract_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/bcon/extract/test_utf8", test_utf8);
    TestSuite_Add (suite, "/bson/bcon/extract/test_double", test_double);
    TestSuite_Add (suite, "/bson/bcon/extract/test_dec128", test_dec128);
-   TestSuite_AddFull (suite, "/bson/bcon/extract/test_decimal128", test_decimal128, NULL, NULL, should_run_decimal_test);
    TestSuite_Add (suite, "/bson/bcon/extract/test_binary", test_binary);
    TestSuite_Add (suite, "/bson/bcon/extract/test_undefined", test_undefined);
    TestSuite_Add (suite, "/bson/bcon/extract/test_oid", test_oid);

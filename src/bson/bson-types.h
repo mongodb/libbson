@@ -507,17 +507,8 @@ typedef struct
                                    const char          *key,
                                    const bson_dec128_t *v_dec128,
                                    void                *data);
-#ifdef BSON_HAVE_DECIMAL128
-   bool (*visit_decimal128)       (const bson_iter_t *iter,
-                                   const char        *key,
-                                   _Decimal128        v_dec128,
-                                   void               *data);
-#endif
-#ifdef BSON_HAVE_DECIMAL128
-   void *padding[6];
-#else
+
    void *padding[7];
-#endif
 } bson_visitor_t
 BSON_ALIGNED_END (8);
 

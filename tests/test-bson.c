@@ -514,24 +514,6 @@ test_bson_append_dec128 (void)
 
 
 static void
-test_bson_append_decimal128 (void *ctx)
-{
-#ifdef BSON_HAVE_DECIMAL128
-   bson_t *b;
-   bson_t *b2;
-   _Decimal128 value = 1E-6176DL;
-
-   b = bson_new();
-   assert(bson_append_decimal128(b, "a", -1, value));
-   b2 = get_bson("test58.bson");
-   assert_bson_equal(b, b2);
-   bson_destroy(b);
-   bson_destroy(b2);
-#endif
-}
-
-
-static void
 test_bson_append_iter (void)
 {
    bson_iter_t iter;
@@ -1509,9 +1491,6 @@ test_bson_macros (void)
    BSON_APPEND_TIMESTAMP (&b, "20", 123, 0);
    BSON_APPEND_UNDEFINED (&b, "21");
    BSON_APPEND_DEC128 (&b, "22", &dec);
-#ifdef BSON_HAVE_DECIMAL128
-   BSON_APPEND_DECIMAL128 (&b, "23", 123.4DL);
-#endif
 
    bson_destroy (&b);
    bson_destroy (&ar);
@@ -1796,7 +1775,6 @@ test_bson_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/append_int32", test_bson_append_int32);
    TestSuite_Add (suite, "/bson/append_int64", test_bson_append_int64);
    TestSuite_Add (suite, "/bson/append_dec128", test_bson_append_dec128);
-   TestSuite_AddFull (suite, "/bson/append_decimal128", test_bson_append_decimal128, NULL, NULL, should_run_decimal_test);
    TestSuite_Add (suite, "/bson/append_iter", test_bson_append_iter);
    TestSuite_Add (suite, "/bson/append_maxkey", test_bson_append_maxkey);
    TestSuite_Add (suite, "/bson/append_minkey", test_bson_append_minkey);

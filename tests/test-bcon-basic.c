@@ -57,28 +57,6 @@ test_dec128 (void)
 }
 
 static void
-test_decimal128 (void *ctx)
-{
-#ifdef BSON_HAVE_DECIMAL128
-   bson_t bcon, expected;
-   _Decimal128 dec = 128.0E2DL;
-
-   bson_init (&bcon);
-   bson_init (&expected);
-
-   bson_append_decimal128(&expected, "foo", -1, dec);
-   BCON_APPEND(&bcon, "foo", BCON_DECIMAL128(dec));
-
-   bson_eq_bson (&bcon, &expected);
-
-   bson_destroy (&bcon);
-   bson_destroy (&expected);
-#else
-   assert (0);
-#endif
-}
-
-static void
 test_binary (void)
 {
    bson_t bcon, expected;
@@ -669,7 +647,6 @@ test_bcon_basic_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/bcon/test_timestamp", test_timestamp);
    TestSuite_Add (suite, "/bson/bcon/test_int64", test_int64);
    TestSuite_Add (suite, "/bson/bcon/test_dec128", test_dec128);
-   TestSuite_AddFull (suite, "/bson/bcon/test_decimal128", test_decimal128, NULL, NULL, should_run_decimal_test);
    TestSuite_Add (suite, "/bson/bcon/test_maxkey", test_maxkey);
    TestSuite_Add (suite, "/bson/bcon/test_minkey", test_minkey);
    TestSuite_Add (suite, "/bson/bcon/test_bson_document", test_bson_document);
