@@ -52,7 +52,7 @@ bson_decimal128_to_string (const bson_decimal128_t *dec,
 
 
 /* Note: @string must be ASCII characters only! */
-void
+bool
 bson_decimal128_from_string (const char        *string,
                              bson_decimal128_t *dec);
 

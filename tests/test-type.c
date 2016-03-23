@@ -214,7 +214,7 @@ test_bson_type (
 			 bson_decimal128_t d;
 			 const char *input = bson_iter_utf8 (&test, &length);
 
-			 bson_decimal128_from_string (input, &d);
+			 ASSERT (!bson_decimal128_from_string (input, &d));
 			 ASSERT (IS_NAN (d));
 		 }
 	  }

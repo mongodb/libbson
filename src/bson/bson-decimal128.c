@@ -369,15 +369,15 @@ _mul_64x64 (uint64_t              left,    /* IN */
  *    Note: @string must be ASCII only!
  *
  * Returns:
- *    The &bson_decimal128_t converted from @string at @dec.  The value is NaN if
- *    @str was invalid.
+ *    true on success, or false on failure. @dec will be NaN if @str was invalid
+ *    The &bson_decimal128_t converted from @string at @dec.
  *
  * Side effects:
  *    None.
  *
  *------------------------------------------------------------------------------
  */
-void
+bool
 bson_decimal128_from_string (const char        *string, /* IN */
                              bson_decimal128_t *dec) /* OUT */
 {
@@ -432,13 +432,24 @@ bson_decimal128_from_string (const char        *string, /* IN */
 
             if (*str_read == 'f' || *str_read == 'F') {
                BSON_DECIMAL128_SET_INF (*dec, is_negative);
-               return;
+               return true;
+            }
+         }
+      } else if (*str_read == 'N') {
+         str_read++;
+
+         if (*str_read == 'a') {
+            str_read++;
+
+            if (*str_read == 'N') {
+               BSON_DECIMAL128_SET_NAN (*dec);
+               return true;
             }
          }
       }
 
       BSON_DECIMAL128_SET_NAN (*dec);
-      return;
+      return false;
    }
 
    /* Read digits */
@@ -494,7 +505,7 @@ bson_decimal128_from_string (const char        *string, /* IN */
 
       if (!read_exponent || nread == 0) {
          BSON_DECIMAL128_SET_NAN (*dec);
-         return;
+         return false;
       }
 
 #undef SSCANF
@@ -502,7 +513,7 @@ bson_decimal128_from_string (const char        *string, /* IN */
 
    if (*str_read) {
       BSON_DECIMAL128_SET_NAN (*dec);
-      return;
+      return false;
    }
 
    /* Done reading input. */
@@ -543,7 +554,7 @@ bson_decimal128_from_string (const char        *string, /* IN */
 
       if (last_digit - first_digit > BSON_DECIMAL128_MAX_DIGITS) {
          BSON_DECIMAL128_SET_INF (*dec, is_negative);
-         return;
+         return true;
       }
 
       exponent--;
@@ -568,7 +579,7 @@ bson_decimal128_from_string (const char        *string, /* IN */
          exponent++;
       } else {
          BSON_DECIMAL128_SET_INF (*dec, is_negative);
-         return;
+         return true;
       }
    }
 
@@ -616,7 +627,7 @@ bson_decimal128_from_string (const char        *string, /* IN */
                      digits[d_idx] = 1;
                   } else {
                      BSON_DECIMAL128_SET_INF (*dec, is_negative);
-                     return;
+                     return true;
                   }
                }
             } else {
@@ -688,4 +699,6 @@ bson_decimal128_from_string (const char        *string, /* IN */
    if (is_negative) {
 	   dec->high |= 0x8000000000000000ull;
    }
+
+   return true;
 }
