@@ -496,16 +496,16 @@ test_bson_append_int64 (void)
 
 
 static void
-test_bson_append_dec128 (void)
+test_bson_append_decimal128 (void)
 {
    bson_t *b;
    bson_t *b2;
-   bson_dec128_t value;
+   bson_decimal128_t value;
    value.high = 0;
    value.low = 1;
 
    b = bson_new();
-   assert(bson_append_dec128(b, "a", -1, &value));
+   assert(bson_append_decimal128(b, "a", -1, &value));
    b2 = get_bson("test58.bson");
    assert_bson_equal(b, b2);
    bson_destroy(b);
@@ -1452,7 +1452,7 @@ test_bson_macros (void)
    const uint8_t data [] = { 1, 2, 3, 4 };
    bson_t b = BSON_INITIALIZER;
    bson_t ar = BSON_INITIALIZER;
-   bson_dec128_t dec;
+   bson_decimal128_t dec;
    dec.high = 0x3040000000000000ULL;
    dec.low = 0x0ULL;
    bson_oid_t oid;
@@ -1490,7 +1490,7 @@ test_bson_macros (void)
    BSON_APPEND_DATE_TIME (&b, "19", 123);
    BSON_APPEND_TIMESTAMP (&b, "20", 123, 0);
    BSON_APPEND_UNDEFINED (&b, "21");
-   BSON_APPEND_DEC128 (&b, "22", &dec);
+   BSON_APPEND_DECIMAL128 (&b, "22", &dec);
 
    bson_destroy (&b);
    bson_destroy (&ar);
@@ -1774,7 +1774,7 @@ test_bson_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/append_double", test_bson_append_double);
    TestSuite_Add (suite, "/bson/append_int32", test_bson_append_int32);
    TestSuite_Add (suite, "/bson/append_int64", test_bson_append_int64);
-   TestSuite_Add (suite, "/bson/append_dec128", test_bson_append_dec128);
+   TestSuite_Add (suite, "/bson/append_decimal128", test_bson_append_decimal128);
    TestSuite_Add (suite, "/bson/append_iter", test_bson_append_iter);
    TestSuite_Add (suite, "/bson/append_maxkey", test_bson_append_maxkey);
    TestSuite_Add (suite, "/bson/append_minkey", test_bson_append_minkey);

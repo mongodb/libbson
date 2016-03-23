@@ -15,8 +15,8 @@
  */
 
 
-#ifndef BSON_DEC128_H
-#define BSON_DEC128_H
+#ifndef BSON_DECIMAL128_H
+#define BSON_DECIMAL128_H
 
 
 #if !defined (BSON_INSIDE) && !defined (BSON_COMPILATION)
@@ -40,38 +40,38 @@
  * 2  for exponent indicator and sign
  * 4  for exponent digits
  */
-#define BSON_DEC128_STRING 43
+#define BSON_DECIMAL128_STRING 43
 
 
 BSON_BEGIN_DECLS
 
 
 void
-bson_dec128_to_string (const bson_dec128_t *dec,
-                       char                *str);
+bson_decimal128_to_string (const bson_decimal128_t *dec,
+                           char                    *str);
 
 
 /* Note: @string must be ASCII characters only! */
 void
-bson_dec128_from_string (const char    *string,
-                         bson_dec128_t *dec);
+bson_decimal128_from_string (const char        *string,
+                             bson_decimal128_t *dec);
 
 
 #ifdef BSON_HAVE_DECIMAL128
 static _Decimal128 BSON_INLINE
-bson_dec128_to_decimal128 (bson_dec128_t *dec)
+bson_decimal128_to_Decimal128 (bson_decimal128_t *dec)
 {
-   _Decimal128 dec128;
-   memcpy (&dec128, dec, sizeof(dec128));
-   return dec128;
+   _Decimal128 decimal128;
+   memcpy (&decimal128, dec, sizeof(decimal128));
+   return decimal128;
 }
 
 
 static void BSON_INLINE
-bson_decimal128_to_dec128 (_Decimal128 dec128,
-                           bson_dec128_t *dec)
+bson_Decimal128_to_decimal128 (_Decimal128        decimal128,
+                               bson_decimal128_t *dec)
 {
-   memcpy (dec, &dec128, sizeof(dec128));
+   memcpy (dec, &decimal128, sizeof(decimal128));
 }
 #endif
 
@@ -79,4 +79,4 @@ bson_decimal128_to_dec128 (_Decimal128 dec128,
 BSON_END_DECLS
 
 
-#endif /* BSON_DEC128_H */
+#endif /* BSON_DECIMAL128_H */

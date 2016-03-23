@@ -94,13 +94,13 @@ test_bson_type_bool (const bson_t *input, const char *expected, const bson_t *js
 void
 test_bson_type_decimal128 (const bson_t *input, const char *expected, const bson_t *json)
 {
-   char bid_string[BSON_DEC128_STRING];
+   char bid_string[BSON_DECIMAL128_STRING];
    bson_t *bson;
    uint64_t low_le;
    uint64_t high_le;
    uint8_t bytes[24];
    int n;
-   bson_dec128_t d;
+   bson_decimal128_t d;
    bson_iter_t iter;
 
    BSON_ASSERT (input);
@@ -108,14 +108,14 @@ test_bson_type_decimal128 (const bson_t *input, const char *expected, const bson
    BSON_ASSERT (json);
 
    ASSERT (bson_iter_init_find(&iter, input, "d")
-		   && BSON_ITER_HOLDS_DEC128(&iter));
-   ASSERT (bson_iter_dec128(&iter, &d));
+		   && BSON_ITER_HOLDS_DECIMAL128(&iter));
+   ASSERT (bson_iter_decimal128(&iter, &d));
 
-   bson_dec128_to_string (&d, bid_string);
+   bson_decimal128_to_string (&d, bid_string);
 
    ASSERT_CMPSTR (bid_string, expected);
 
-   bson = BCON_NEW ("d", BCON_DEC128 (&d));
+   bson = BCON_NEW ("d", BCON_DECIMAL128 (&d));
 
    ASSERT_CMPSTR (bson_as_json (bson, NULL), bson_as_json (json, NULL));
    bson_free (bson);
@@ -211,10 +211,10 @@ test_bson_type (
 
 		 if (bson_iter_find (&test, "subject") && BSON_ITER_HOLDS_UTF8 (&test)) {
 			 int length;
-			 bson_dec128_t d;
+			 bson_decimal128_t d;
 			 const char *input = bson_iter_utf8 (&test, &length);
 
-			 bson_dec128_from_string (input, &d);
+			 bson_decimal128_from_string (input, &d);
 			 ASSERT (IS_NAN (d));
 		 }
 	  }

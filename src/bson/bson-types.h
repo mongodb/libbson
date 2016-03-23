@@ -160,14 +160,14 @@ typedef struct
 
 
 /**
- * bson_dec128_t:
+ * bson_decimal128_t:
  *
  * @high The high-order bytes of the decimal128.  This field contains sign,
  *       combination bits, exponent, and part of the coefficient continuation.
  * @low  The low-order bytes of the decimal128.  This field contains the second
  *       part of the coefficient continuation.
  *
- * This structure is a boxed type containing the value for the BSON dec128
+ * This structure is a boxed type containing the value for the BSON decimal128
  * type.  The structure stores the 128 bits such that they correspond to the
  * native format for the IEEE decimal128 type, if it is implemented.
  **/
@@ -180,7 +180,7 @@ typedef struct
    uint64_t high;
    uint64_t low;
 #endif
-} bson_dec128_t;
+} bson_decimal128_t;
 
 
 BSON_STATIC_ASSERT (sizeof (bson_oid_t) == 12);
@@ -235,7 +235,7 @@ typedef enum
    BSON_TYPE_INT32 = 0x10,
    BSON_TYPE_TIMESTAMP = 0x11,
    BSON_TYPE_INT64 = 0x12,
-   BSON_TYPE_DEC128 = 0x13,
+   BSON_TYPE_DECIMAL128 = 0x13,
    BSON_TYPE_MAXKEY = 0x7F,
    BSON_TYPE_MINKEY = 0xFF,
 } bson_type_t;
@@ -326,7 +326,7 @@ typedef struct _bson_value_t
          char           *symbol;
          uint32_t        len;
       } v_symbol;
-      bson_dec128_t v_dec128;
+      bson_decimal128_t  v_decimal128;
    } value;
 } bson_value_t
 BSON_ALIGNED_END (8);
@@ -503,10 +503,10 @@ typedef struct
                                    const char        *key,
                                    uint32_t           type_code,
                                    void              *data);
-   bool (*visit_dec128)           (const bson_iter_t   *iter,
-                                   const char          *key,
-                                   const bson_dec128_t *v_dec128,
-                                   void                *data);
+   bool (*visit_decimal128)       (const bson_iter_t       *iter,
+                                   const char              *key,
+                                   const bson_decimal128_t *v_decimal128,
+                                   void                    *data);
 
    void *padding[7];
 } bson_visitor_t

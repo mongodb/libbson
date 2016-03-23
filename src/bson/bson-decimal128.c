@@ -20,20 +20,20 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "bson-dec128.h"
+#include "bson-decimal128.h"
 #include "bson-types.h"
 #include "bson-macros.h"
 #include "bson-string.h"
 
 
-#define BSON_DEC128_EXPONENT_MAX 6111
-#define BSON_DEC128_EXPONENT_MIN -6176
-#define BSON_DEC128_EXPONENT_BIAS 6176
-#define BSON_DEC128_MAX_DIGITS 34
+#define BSON_DECIMAL128_EXPONENT_MAX 6111
+#define BSON_DECIMAL128_EXPONENT_MIN -6176
+#define BSON_DECIMAL128_EXPONENT_BIAS 6176
+#define BSON_DECIMAL128_MAX_DIGITS 34
 
-#define BSON_DEC128_SET_NAN(dec) \
+#define BSON_DECIMAL128_SET_NAN(dec) \
    do { (dec).high = 0x7c00000000000000ull; (dec).low = 0; } while (0);
-#define BSON_DEC128_SET_INF(dec, isneg) \
+#define BSON_DECIMAL128_SET_INF(dec, isneg) \
    do { \
       (dec).high = 0x7800000000000000ull + 0x8000000000000000ull * (isneg); \
       (dec).low = 0; \
@@ -104,13 +104,13 @@ _bson_uint128_divide1B (_bson_uint128_t  value,    /* IN */
 /**
  *------------------------------------------------------------------------------
  *
- * bson_dec128_to_string --
+ * bson_decimal128_to_string --
  *
  *    This function converts a BID formatted decimal128 value to string,
- *    accepting a &bson_dec128_t as @dec.  The string is stored at @str.
+ *    accepting a &bson_decimal128_t as @dec.  The string is stored at @str.
  *
  * @dec : The BID formatted decimal to convert.
- * @str : The output decimal128 string. At least %BSON_DEC128_STRING characters.
+ * @str : The output decimal128 string. At least %BSON_DECIMAL128_STRING characters.
  *
  * Returns:
  *    None.
@@ -121,8 +121,8 @@ _bson_uint128_divide1B (_bson_uint128_t  value,    /* IN */
  *------------------------------------------------------------------------------
  */
 void
-bson_dec128_to_string (const bson_dec128_t *dec,        /* IN  */
-                       char                *str)        /* OUT */
+bson_decimal128_to_string (const bson_decimal128_t *dec,        /* IN  */
+                           char                    *str)        /* OUT */
 {
    uint32_t COMBINATION_MASK = 0x1f;   /* Extract least significant 5 bits */
    uint32_t EXPONENT_MASK = 0x3fff;    /* Extract least significant 14 bits */
@@ -356,20 +356,20 @@ _mul_64x64 (uint64_t              left,    /* IN */
 /**
  *------------------------------------------------------------------------------
  *
- * bson_dec128_from_string --
+ * bson_decimal128_from_string --
  *
  *    This function converts @string in the format [+-]ddd[.]ddd[E][+-]dddd to
- *    dec128.  Out of range values are converted to +/-Infinity.  Invalid
+ *    decimal128.  Out of range values are converted to +/-Infinity.  Invalid
  *    strings are converted to NaN.
  *
  *    If more digits are provided than the available precision allows,
- *    round to the nearest expressable dec128 with ties going to even will
+ *    round to the nearest expressable decimal128 with ties going to even will
  *    occur.
  *
  *    Note: @string must be ASCII only!
  *
  * Returns:
- *    The &bson_dec128_t converted from @string at @dec.  The value is NaN if
+ *    The &bson_decimal128_t converted from @string at @dec.  The value is NaN if
  *    @str was invalid.
  *
  * Side effects:
@@ -378,8 +378,8 @@ _mul_64x64 (uint64_t              left,    /* IN */
  *------------------------------------------------------------------------------
  */
 void
-bson_dec128_from_string (const char    *string, /* IN */
-                         bson_dec128_t *dec) /* OUT */
+bson_decimal128_from_string (const char        *string, /* IN */
+                             bson_decimal128_t *dec) /* OUT */
 {
    _bson_uint128_6464_t significand = { 0 };
 
@@ -397,7 +397,7 @@ bson_dec128_from_string (const char    *string, /* IN */
    size_t radix_position = 0; /* The number of the digits after radix */
    size_t first_nonzero = 0;  /* The index of the first non-zero in *str* */
 
-   uint16_t digits[BSON_DEC128_MAX_DIGITS] = { 0 };
+   uint16_t digits[BSON_DECIMAL128_MAX_DIGITS] = { 0 };
    uint16_t ndigits_stored = 0;      /* The number of digits in digits */
    uint16_t *digits_insert = digits;  /* Insertion pointer for digits */
    size_t first_digit = 0;      /* The index of the first non-zero digit */
@@ -431,13 +431,13 @@ bson_dec128_from_string (const char    *string, /* IN */
             str_read++;
 
             if (*str_read == 'f' || *str_read == 'F') {
-               BSON_DEC128_SET_INF (*dec, is_negative);
+               BSON_DECIMAL128_SET_INF (*dec, is_negative);
                return;
             }
          }
       }
 
-      BSON_DEC128_SET_NAN (*dec);
+      BSON_DECIMAL128_SET_NAN (*dec);
       return;
    }
 
@@ -445,7 +445,7 @@ bson_dec128_from_string (const char    *string, /* IN */
    while (isdigit (*str_read) || *str_read == '.') {
       if (*str_read == '.') {
          if (saw_radix) {
-            BSON_DEC128_SET_NAN (*dec);
+            BSON_DECIMAL128_SET_NAN (*dec);
          }
 
          saw_radix = true;
@@ -478,7 +478,7 @@ bson_dec128_from_string (const char    *string, /* IN */
    }
 
    if (saw_radix && !ndigits_read) {
-      BSON_DEC128_SET_NAN (*dec);
+      BSON_DECIMAL128_SET_NAN (*dec);
    }
 
    /* Read exponent if exists */
@@ -493,7 +493,7 @@ bson_dec128_from_string (const char    *string, /* IN */
       str_read += nread;
 
       if (!read_exponent || nread == 0) {
-         BSON_DEC128_SET_NAN (*dec);
+         BSON_DECIMAL128_SET_NAN (*dec);
          return;
       }
 
@@ -501,7 +501,7 @@ bson_dec128_from_string (const char    *string, /* IN */
    }
 
    if (*str_read) {
-      BSON_DEC128_SET_NAN (*dec);
+      BSON_DECIMAL128_SET_NAN (*dec);
       return;
    }
 
@@ -531,29 +531,29 @@ bson_dec128_from_string (const char    *string, /* IN */
 
    /* Overflow prevention */
    if (exponent <= radix_position && radix_position - exponent > (1 << 14)) {
-      exponent = BSON_DEC128_EXPONENT_MIN;
+      exponent = BSON_DECIMAL128_EXPONENT_MIN;
    } else {
       exponent -= radix_position;
    }
 
    /* Attempt to normalize the exponent */
-   while (exponent > BSON_DEC128_EXPONENT_MAX) {
+   while (exponent > BSON_DECIMAL128_EXPONENT_MAX) {
       /* Shift exponent to significand and decrease */
       last_digit++;
 
-      if (last_digit - first_digit > BSON_DEC128_MAX_DIGITS) {
-         BSON_DEC128_SET_INF (*dec, is_negative);
+      if (last_digit - first_digit > BSON_DECIMAL128_MAX_DIGITS) {
+         BSON_DECIMAL128_SET_INF (*dec, is_negative);
          return;
       }
 
       exponent--;
    }
 
-   while (exponent < BSON_DEC128_EXPONENT_MIN ||
+   while (exponent < BSON_DECIMAL128_EXPONENT_MIN ||
           ndigits_stored < ndigits) {
       /* Shift last digit */
       if (last_digit == 0) {
-         exponent = BSON_DEC128_EXPONENT_MIN;
+         exponent = BSON_DECIMAL128_EXPONENT_MIN;
          significant_digits = 0; /* signal zero value. */
          break;
       }
@@ -564,10 +564,10 @@ bson_dec128_from_string (const char    *string, /* IN */
          last_digit--; /* adjust to round */
       }
 
-      if (exponent < BSON_DEC128_EXPONENT_MAX) {
+      if (exponent < BSON_DECIMAL128_EXPONENT_MAX) {
          exponent++;
       } else {
-         BSON_DEC128_SET_INF (*dec, is_negative);
+         BSON_DECIMAL128_SET_INF (*dec, is_negative);
          return;
       }
    }
@@ -579,7 +579,7 @@ bson_dec128_from_string (const char    *string, /* IN */
       /* If we have seen a radix point, 'string' is 1 longer than we have
        * documented with ndigits_read, so inc the position of the first nonzero
        * digit and the position that digits are read to. */
-      if (saw_radix && exponent == BSON_DEC128_EXPONENT_MIN) {
+      if (saw_radix && exponent == BSON_DECIMAL128_EXPONENT_MIN) {
          first_nonzero++;
          end_of_string++;
       }
@@ -611,11 +611,11 @@ bson_dec128_from_string (const char    *string, /* IN */
                digits[d_idx] = 0;
 
                if (d_idx == 0) { /* overflowed most significant digit */
-                  if (exponent < BSON_DEC128_EXPONENT_MAX) {
+                  if (exponent < BSON_DECIMAL128_EXPONENT_MAX) {
                      exponent++;
                      digits[d_idx] = 1;
                   } else {
-                     BSON_DEC128_SET_INF (*dec, is_negative);
+                     BSON_DECIMAL128_SET_INF (*dec, is_negative);
                      return;
                   }
                }
@@ -669,7 +669,7 @@ bson_dec128_from_string (const char    *string, /* IN */
    }
 
 
-   biased_exponent = (exponent + (int16_t)BSON_DEC128_EXPONENT_BIAS);
+   biased_exponent = (exponent + (int16_t)BSON_DECIMAL128_EXPONENT_BIAS);
 
    /* Encode combination, exponent, and significand. */
    if ((significand.high >> 49) & 1) {
@@ -685,5 +685,7 @@ bson_dec128_from_string (const char    *string, /* IN */
    dec->low = significand.low;
 
    /* Encode sign */
-   if (is_negative) { dec->high |= 0x8000000000000000ull; }
+   if (is_negative) {
+	   dec->high |= 0x8000000000000000ull;
+   }
 }

@@ -30,7 +30,7 @@
 #include "bson-atomic.h"
 #include "bson-context.h"
 #include "bson-clock.h"
-#include "bson-dec128.h"
+#include "bson-decimal128.h"
 #include "bson-error.h"
 #include "bson-iter.h"
 #include "bson-json.h"
@@ -138,8 +138,8 @@ BSON_BEGIN_DECLS
 #define BSON_APPEND_MINKEY(b,key) \
       bson_append_minkey (b, key, (int) strlen (key))
 
-#define BSON_APPEND_DEC128(b, key, val) \
-   bson_append_dec128 (b, key, (int)strlen (key), val)
+#define BSON_APPEND_DECIMAL128(b, key, val) \
+   bson_append_decimal128 (b, key, (int)strlen (key), val)
 
 #define BSON_APPEND_MAXKEY(b,key) \
       bson_append_maxkey (b, key, (int) strlen (key))
@@ -774,20 +774,20 @@ bson_append_int64 (bson_t      *bson,
 
 
 /**
- * bson_append_dec128:
+ * bson_append_decimal128:
  * @bson: A bson_t.
  * @key: The key for the field.
- * @value: The bson_dec128_t dec128 value.
+ * @value: The bson_decimal128_t decimal128 value.
  *
- * Appends a new field of type BSON_TYPE_DEC128 to @bson.
+ * Appends a new field of type BSON_TYPE_DECIMAL128 to @bson.
  *
  * Returns: true if successful; false if append would overflow max size.
  */
 bool
-bson_append_dec128 (bson_t              *bson,
-                    const char          *key,
-                    int                  key_length,
-                    const bson_dec128_t *value);
+bson_append_decimal128 (bson_t                  *bson,
+                        const char              *key,
+                        int                      key_length,
+                        const bson_decimal128_t *value);
 
 
 /**

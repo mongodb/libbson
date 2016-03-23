@@ -87,13 +87,14 @@ static void
 test_bson_iter_mixed (void)
 {
    bson_iter_t iter;
+   bson_decimal128_t iter_value;
    bson_t *b;
    bson_t *b2;
 
    b = bson_new();
    b2 = bson_new();
 
-   bson_dec128_t value;
+   bson_decimal128_t value;
    value.high = 0;
    value.low = 1;
 
@@ -103,7 +104,7 @@ test_bson_iter_mixed (void)
    assert(bson_append_int32(b, "2", -1, 1234));
    assert(bson_append_int64(b, "3", -1, 4567));
    assert(bson_append_time_t(b, "4", -1, 123456));
-   assert(bson_append_dec128(b, "5", -1, &value));
+   assert(bson_append_decimal128(b, "5", -1, &value));
    assert(bson_iter_init(&iter, b));
    assert(bson_iter_next(&iter));
    assert(BSON_ITER_HOLDS_CODE(&iter));
@@ -116,7 +117,7 @@ test_bson_iter_mixed (void)
    assert(bson_iter_next(&iter));
    assert(BSON_ITER_HOLDS_DATE_TIME(&iter));
    assert(bson_iter_next(&iter));
-   assert(BSON_ITER_HOLDS_DEC128(&iter));
+   assert(BSON_ITER_HOLDS_DECIMAL128(&iter));
    assert(!bson_iter_next(&iter));
    assert(bson_iter_init_find(&iter, b, "3"));
    assert(!strcmp(bson_iter_key(&iter), "3"));
@@ -126,9 +127,8 @@ test_bson_iter_mixed (void)
    assert(bson_iter_time_t(&iter) == 123456);
    assert(bson_iter_date_time(&iter) == 123456000);
    assert(bson_iter_next(&iter));
-   // This test uses memcmp because libbson lacks dec128 comparison.
-   bson_dec128_t iter_value;
-   bson_iter_dec128(&iter, &iter_value);
+   // This test uses memcmp because libbson lacks decimal128 comparison.
+   bson_iter_decimal128(&iter, &iter_value);
    assert(memcmp(&iter_value, &value, sizeof(value)) == 0);
    assert(!bson_iter_next(&iter));
    bson_destroy(b);
@@ -287,7 +287,7 @@ test_bson_iter_fuzz (void)
          case BSON_TYPE_INT32:
          case BSON_TYPE_TIMESTAMP:
          case BSON_TYPE_INT64:
-         case BSON_TYPE_DEC128:
+         case BSON_TYPE_DECIMAL128:
          case BSON_TYPE_MAXKEY:
          case BSON_TYPE_MINKEY:
             break;
@@ -396,13 +396,13 @@ test_bson_iter_overwrite_int64 (void)
 
 
 static void
-test_bson_iter_overwrite_dec128 (void)
+test_bson_iter_overwrite_decimal128 (void)
 {
    bson_iter_t iter;
    bson_t b;
-   bson_dec128_t value;
-   bson_dec128_t new_value;
-   bson_dec128_t iter_value;
+   bson_decimal128_t value;
+   bson_decimal128_t new_value;
+   bson_decimal128_t iter_value;
 
    value.high = 0;
    value.low = 1;
@@ -411,13 +411,13 @@ test_bson_iter_overwrite_dec128 (void)
    new_value.low = 2;
 
    bson_init(&b);
-   assert(bson_append_dec128(&b, "key", -1, &value));
+   assert(bson_append_decimal128(&b, "key", -1, &value));
    assert(bson_iter_init_find(&iter, &b, "key"));
-   assert(BSON_ITER_HOLDS_DEC128(&iter));
-   bson_iter_overwrite_dec128(&iter, &new_value);
+   assert(BSON_ITER_HOLDS_DECIMAL128(&iter));
+   bson_iter_overwrite_decimal128(&iter, &new_value);
    assert(bson_iter_init_find(&iter, &b, "key"));
-   assert(BSON_ITER_HOLDS_DEC128(&iter));
-   assert(bson_iter_dec128(&iter, &iter_value));
+   assert(BSON_ITER_HOLDS_DECIMAL128(&iter));
+   assert(bson_iter_decimal128(&iter, &iter_value));
    assert(memcmp(&iter_value, &new_value, sizeof(new_value)) == 0);
    bson_destroy(&b);
 }
@@ -582,7 +582,7 @@ test_iter_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/iter/test_overwrite_int64", test_bson_iter_overwrite_int64);
    TestSuite_Add (suite, "/bson/iter/test_overwrite_double", test_bson_iter_overwrite_double);
    TestSuite_Add (suite, "/bson/iter/test_overwrite_bool", test_bson_iter_overwrite_bool);
-   TestSuite_Add (suite, "/bson/iter/test_bson_iter_overwrite_dec128", test_bson_iter_overwrite_dec128);
+   TestSuite_Add (suite, "/bson/iter/test_bson_iter_overwrite_decimal128", test_bson_iter_overwrite_decimal128);
    TestSuite_Add (suite, "/bson/iter/recurse", test_bson_iter_recurse);
    TestSuite_Add (suite, "/bson/iter/init_find_case", test_bson_iter_init_find_case);
    TestSuite_Add (suite, "/bson/iter/find_descendant", test_bson_iter_find_descendant);

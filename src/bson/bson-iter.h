@@ -87,8 +87,8 @@ BSON_BEGIN_DECLS
 #define BSON_ITER_HOLDS_INT64(iter) \
    (bson_iter_type ((iter)) == BSON_TYPE_INT64)
 
-#define BSON_ITER_HOLDS_DEC128(iter) \
-   (bson_iter_type (iter)) == BSON_TYPE_DEC128
+#define BSON_ITER_HOLDS_DECIMAL128(iter) \
+   (bson_iter_type (iter)) == BSON_TYPE_DECIMAL128
 
 #define BSON_ITER_HOLDS_MAXKEY(iter) \
    (bson_iter_type ((iter)) == BSON_TYPE_MAXKEY)
@@ -306,21 +306,21 @@ bson_iter_oid_unsafe (const bson_iter_t *iter)
 
 
 bool
-bson_iter_dec128 (const bson_iter_t *iter,
-                  bson_dec128_t     *dec);
+bson_iter_decimal128 (const bson_iter_t *iter,
+                      bson_decimal128_t *dec);
 
 
 /**
- * bson_iter_dec128_unsafe:
+ * bson_iter_decimal128_unsafe:
  * @iter: A #bson_iter_t.
  *
- * Similar to bson_iter_dec128() but performs no integrity checks.
+ * Similar to bson_iter_decimal128() but performs no integrity checks.
  *
- * Returns: A #bson_dec128_t.
+ * Returns: A #bson_decimal128_t.
  */
 static BSON_INLINE void
-bson_iter_dec128_unsafe (const bson_iter_t *iter,
-                         bson_dec128_t     *dec)
+bson_iter_decimal128_unsafe (const bson_iter_t *iter,
+                             bson_decimal128_t *dec)
 {
    uint64_t low_le;
    uint64_t high_le;
@@ -510,8 +510,8 @@ bson_iter_overwrite_double (bson_iter_t *iter,
 
 
 void
-bson_iter_overwrite_dec128 (bson_iter_t   *iter,
-                            bson_dec128_t *value);
+bson_iter_overwrite_decimal128 (bson_iter_t       *iter,
+                                bson_decimal128_t *value);
 
 
 void

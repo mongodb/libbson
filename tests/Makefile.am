@@ -10,7 +10,7 @@ test_libbson_SOURCES = \
 	tests/test-bson.c \
 	tests/test-endian.c \
 	tests/test-clock.c \
-	tests/test-dec128.c \
+	tests/test-decimal128.c \
 	tests/test-error.c \
 	tests/test-iso8601.c \
 	tests/test-iter.c \
