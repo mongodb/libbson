@@ -37,6 +37,7 @@ TEST_BIG_ENDIAN(BSON_BIG_ENDIAN)
 
 # These need proper checks like automake.
 set (BSON_PTHREAD_ONCE_INIT_NEEDS_BRACES 0)
+set (BSON_HAVE_DECIMAL128 0)
 
 #librt needed on linux for clock_gettime
 find_library(RT_LIBRARY rt)
