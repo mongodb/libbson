@@ -196,3 +196,10 @@ LIBBSON_1.2 {
         bson_check_version;
         bson_mem_restore_vtable;
 } LIBBSON_1.1;
+
+LIBBSON_1.3 {
+    global:
+        bson_iter_decimal128;
+        bson_iter_overwrite_decimal128;
+        bson_append_decimal128;
+} LIBBSON_1.2;
