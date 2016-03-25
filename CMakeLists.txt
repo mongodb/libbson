@@ -131,6 +131,7 @@ set (SOURCES
    ${SOURCE_DIR}/src/bson/bson-atomic.c
    ${SOURCE_DIR}/src/bson/bson-clock.c
    ${SOURCE_DIR}/src/bson/bson-context.c
+   ${SOURCE_DIR}/src/bson/bson-decimal128.c
    ${SOURCE_DIR}/src/bson/bson-error.c
    ${SOURCE_DIR}/src/bson/bson-iso8601.c
    ${SOURCE_DIR}/src/bson/bson-iter.c
@@ -166,6 +167,7 @@ set (HEADERS
    ${SOURCE_DIR}/src/bson/bson-clock.h
    ${SOURCE_DIR}/src/bson/bson-compat.h
    ${SOURCE_DIR}/src/bson/bson-context.h
+   ${SOURCE_DIR}/src/bson/bson-decimal128.h
    ${SOURCE_DIR}/src/bson/bson-endian.h
    ${SOURCE_DIR}/src/bson/bson-error.h
    ${SOURCE_DIR}/src/bson/bson.h
@@ -228,6 +230,7 @@ if (ENABLE_TESTS)
        ${SOURCE_DIR}/tests/test-bson.c
        ${SOURCE_DIR}/tests/test-endian.c
        ${SOURCE_DIR}/tests/test-clock.c
+       ${SOURCE_DIR}/tests/test-decimal128.c
        ${SOURCE_DIR}/tests/test-error.c
        ${SOURCE_DIR}/tests/test-iso8601.c
        ${SOURCE_DIR}/tests/test-iter.c
@@ -243,6 +246,13 @@ if (ENABLE_TESTS)
        ${SOURCE_DIR}/tests/test-bcon-extract.c
        ${SOURCE_DIR}/tests/test-type.c
        ${SOURCE_DIR}/tests/json-test.c
+       ${SOURCE_DIR}/tests/json-test.c
+       ${SOURCE_DIR}/tests/json-test.h
+       ${SOURCE_DIR}/tests/json/type/array.json
+       ${SOURCE_DIR}/tests/json/type/boolean.json
+       ${SOURCE_DIR}/tests/json/type/corrupted.json
+       ${SOURCE_DIR}/tests/json/type/decimal128.json
+       ${SOURCE_DIR}/tests/json/type/int32.json
     )
 
     target_link_libraries(test-libbson bson_static)
