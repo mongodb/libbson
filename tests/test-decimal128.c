@@ -281,7 +281,7 @@ test_decimal128_from_string__invalid_inputs (void) {
    bson_decimal128_from_string ("E+02", &dec);
    assert (IS_NAN (dec));
    bson_decimal128_from_string ("e+02", &dec);
-   IS_NAN (dec);
+   assert (IS_NAN (dec));
 }
 
 
