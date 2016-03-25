@@ -21,14 +21,14 @@ test_bson_as_json (void)
 {
    bson_oid_t oid;
    bson_decimal128_t decimal128;
-   decimal128.high = 0x3040000000000000ULL;
-   decimal128.low  = 0x000000000000000B;
    bson_t *b;
    bson_t *b2;
    char *str;
    size_t len;
    int i;
 
+   decimal128.high = 0x3040000000000000ULL;
+   decimal128.low  = 0x000000000000000B;
    bson_oid_init_from_string(&oid, "123412341234abcdabcdabcd");
 
    b = bson_new();
@@ -153,10 +153,10 @@ test_bson_as_json_decimal128 (void)
 {
    size_t len;
    bson_t *b;
+   char *str;
    bson_decimal128_t decimal128; // 11
    decimal128.high = 0x3040000000000000ULL;
    decimal128.low  = 0x000000000000000B;
-   char *str;
 
    b = bson_new ();
    assert (bson_append_decimal128 (b, "decimal128", -1, &decimal128));

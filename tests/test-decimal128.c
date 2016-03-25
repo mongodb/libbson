@@ -438,6 +438,7 @@ test_decimal128_from_string__exponent_normalization (void) {
    bson_decimal128_t one_normalize;
    bson_decimal128_t no_normalize;
    bson_decimal128_t a_disaster;
+   bson_decimal128_t zero;
 
    bson_decimal128_from_string ("1000000000000000000000000000000000000000", &trailing_zeros);
    bson_decimal128_from_string ("10000000000000000000000000000000000", &one_normalize);
@@ -460,7 +461,6 @@ test_decimal128_from_string__exponent_normalization (void) {
       "0000000000000000000000000000000000",
    &a_disaster);
 
-   bson_decimal128_t zero;
    bson_decimal128_from_string ("1E-6177", &zero);
 
    assert (decimal128_equal (&trailing_zeros, 0x304c314dc6448d93, 0x38c15b0a00000000));

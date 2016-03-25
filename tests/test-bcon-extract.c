@@ -36,9 +36,10 @@ test_decimal128 (void)
 {
    bson_decimal128_t val;
    bson_decimal128_t dec;
+   bson_t *bcon;
 
    bson_decimal128_from_string("12", &dec);
-   bson_t *bcon = BCON_NEW ("foo", BCON_DECIMAL128 (&dec));
+   bcon = BCON_NEW ("foo", BCON_DECIMAL128 (&dec));
 
    assert (BCON_EXTRACT (bcon, "foo", BCONE_DECIMAL128 (val)));
 

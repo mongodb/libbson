@@ -1453,11 +1453,12 @@ test_bson_macros (void)
    bson_t b = BSON_INITIALIZER;
    bson_t ar = BSON_INITIALIZER;
    bson_decimal128_t dec;
-   dec.high = 0x3040000000000000ULL;
-   dec.low = 0x0ULL;
    bson_oid_t oid;
    struct timeval tv;
    time_t t;
+
+   dec.high = 0x3040000000000000ULL;
+   dec.low = 0x0ULL;
 
    t = time (NULL);
 #ifdef BSON_OS_WIN32

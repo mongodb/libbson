@@ -88,13 +88,13 @@ test_bson_iter_mixed (void)
 {
    bson_iter_t iter;
    bson_decimal128_t iter_value;
+   bson_decimal128_t value;
    bson_t *b;
    bson_t *b2;
 
    b = bson_new();
    b2 = bson_new();
 
-   bson_decimal128_t value;
    value.high = 0;
    value.low = 1;
 
