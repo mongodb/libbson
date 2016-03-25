@@ -507,12 +507,14 @@ test_decimal128_from_string__round (void) {
    bson_decimal128_t round_propagate_large;
    bson_decimal128_t not_inf;
    bson_decimal128_t round_propagate_inf;
+   char up_literal_string[6180];
+
+   memset (up_literal_string, '0', sizeof up_literal_string);
 
    bson_decimal128_from_string ("10E-6177", &truncate);
    bson_decimal128_from_string ("15E-6177", &up);
 
    // Test rounding with 'max exponent' range of characters: 0.000...00015
-   char up_literal_string[6180] = {[0 ... sizeof up_literal_string - 1] = '0'};
    up_literal_string[1] = '.';
    up_literal_string[6177] = '1';
    up_literal_string[6178] = '5';
