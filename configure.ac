@@ -44,8 +44,8 @@ AC_CONFIG_FILES([
     src/libbson-1.0.pc
     src/bson/bson-config.h
     src/bson/bson-version.h
-    doc/installing.page
-    doc/version.page
+    doc/bson_installing.page
+    doc/bson_version.page
 ])
 
 m4_include([build/autotools/PrintBuildConfiguration.m4])
