@@ -35,12 +35,6 @@ typedef void (*test_bson_type_valid_cb)(const bson_t *input, const char *expecte
 # define SSCANF sscanf
 #endif
 
-int _make_char (char h, char l){
-	int high = strtoll (&h, NULL, 16) * 16;
-	int low = strtoll (&l, NULL, 16);
-	return high+low;
-}
-
 void
 test_bson_type_int32 (const bson_t *input, const char *expected, const bson_t *json)
 {
@@ -163,17 +157,19 @@ test_bson_type (
 		 _test_bson_type_print_description(&test);
 		 if (bson_iter_find (&test, "subject") && BSON_ITER_HOLDS_UTF8 (&test)) {
 			 const char *input = NULL;
-			 int length;
-			 int i;
-			 char *doc = NULL;
+			 unsigned int byte;
+			 uint8_t *doc = NULL;
+			 uint32_t length;
 			 int x = 0;
+			 int i = 0;
 
 			 input = bson_iter_utf8 (&test, &length);
 			 doc = bson_malloc (length / 2);
-			 for (i = 0; i < length; i+=2){
-				 doc[x++] = (char)_make_char(input[i], input[i+1]);
+			 while (SSCANF(&input[i], "%2x", &byte) == 1) {
+				 doc[x++] = byte;
+				 i += 2;
 			 }
-			 if (bson_init_static (&bson_input, doc, x)) {
+			 if (i == length && bson_init_static (&bson_input, doc, x)) {
 				 if (test_suite_debug_output ()) {
 					 fprintf (stderr, "%s\n", bson_as_json (&bson_input, NULL));
 					 fflush (stderr);
@@ -210,7 +206,7 @@ test_bson_type (
 		 _test_bson_type_print_description (&test);
 
 		 if (bson_iter_find (&test, "subject") && BSON_ITER_HOLDS_UTF8 (&test)) {
-			 int length;
+			 uint32_t length;
 			 bson_decimal128_t d;
 			 const char *input = bson_iter_utf8 (&test, &length);
 
