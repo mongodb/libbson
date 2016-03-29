@@ -61,7 +61,7 @@ AC_MSG_RESULT([$enable_debug_symbols])
 
 # Check for enabling decimal floating point
 AC_ARG_ENABLE(decimal-bid,
-   AS_HELP_STRING([--enable-decimal-bid], Enable decimal floating point native types (default=yes on supported systems). Only supported on compilers with BID formatted _Decimal128.]),
+   AS_HELP_STRING([--enable-decimal-bid], [Enable decimal floating point native types (default=yes on supported systems). Only supported on compilers with BID formatted _Decimal128.]),
    [
       enable_decimal=$enableval
       AC_MSG_CHECKING([whether to force enable native decimal floating point])
