@@ -172,7 +172,7 @@ bson_decimal128_to_string (const bson_decimal128_t *dec,        /* IN  */
    if (BSON_UNLIKELY ((combination >> 3) == 3)) {
       /* Check for 'special' values */
       if (combination == COMBINATION_INFINITY) {  /* Infinity */
-         strcpy (str_out, "Infinity");
+         strcpy (str_out, "Inf");
          return;
       } else if (combination == COMBINATION_NAN) { /* NaN */
          /* str, not str_out, to erase the sign */

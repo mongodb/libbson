@@ -24,10 +24,10 @@
 
 #ifdef _MSC_VER
 #define PATH_MAX 1024
-#define realpath(path, expanded) GetFullPathName(path, PATH_MAX, expanded, NULL)
+#define realpath(path, expanded) GetFullPathName (path, PATH_MAX, expanded, NULL)
 #endif
 
-typedef void (*test_bson_type_valid_cb)(const bson_t *input, const char *expected, const bson_t *json);
+typedef void (*test_bson_type_valid_cb)(const bson_t *input, const char *expected, const bson_t *json, bool roundtrip_json);
 
 #ifdef _MSC_VER
 # define SSCANF sscanf_s
@@ -36,7 +36,10 @@ typedef void (*test_bson_type_valid_cb)(const bson_t *input, const char *expecte
 #endif
 
 void
-test_bson_type_int32 (const bson_t *input, const char *expected, const bson_t *json)
+test_bson_type_int32 (const bson_t *input,
+                      const char   *expected,
+                      const bson_t *json,
+                      bool          roundtrip_json)
 {
    int32_t number1, number2;
    bson_t *bson;
@@ -49,9 +52,9 @@ test_bson_type_int32 (const bson_t *input, const char *expected, const bson_t *j
 
    SSCANF (expected, "%d", &number2);
 
-   ASSERT (bson_iter_init_find(&iter, input, "i")
-		   && BSON_ITER_HOLDS_INT32(&iter));
-   number1 = bson_iter_int32(&iter);
+   ASSERT (bson_iter_init_find (&iter, input, "i"));
+   ASSERT (BSON_ITER_HOLDS_INT32 (&iter));
+   number1 = bson_iter_int32 (&iter);
 
    ASSERT_CMPINT32 (number1, ==, number2);
 
@@ -62,7 +65,10 @@ test_bson_type_int32 (const bson_t *input, const char *expected, const bson_t *j
 }
 
 void
-test_bson_type_bool (const bson_t *input, const char *expected, const bson_t *json)
+test_bson_type_bool (const bson_t *input,
+                     const char   *expected,
+                     const bson_t *json,
+                     bool          roundtrip_json)
 {
    bool b;
    bson_t *bson;
@@ -73,9 +79,9 @@ test_bson_type_bool (const bson_t *input, const char *expected, const bson_t *js
    BSON_ASSERT (json);
 
 
-   ASSERT (bson_iter_init_find(&iter, input, "b")
-		   && BSON_ITER_HOLDS_BOOL(&iter));
-   b = bson_iter_bool(&iter);
+   ASSERT (bson_iter_init_find (&iter, input, "b"));
+   ASSERT (BSON_ITER_HOLDS_BOOL (&iter));
+   b = bson_iter_bool (&iter);
 
    ASSERT_CMPSTR (expected, b ? "true" : "false");
 
@@ -86,49 +92,60 @@ test_bson_type_bool (const bson_t *input, const char *expected, const bson_t *js
 }
 
 void
-test_bson_type_decimal128 (const bson_t *input, const char *expected, const bson_t *json)
+test_bson_type_decimal128 (const bson_t *input,
+                           const char   *expected,
+                           const bson_t *json,
+                           bool          roundtrip_json)
 {
-   char bid_string[BSON_DECIMAL128_STRING];
+   char bson_string[BSON_DECIMAL128_STRING];
+   char json_string[BSON_DECIMAL128_STRING];
    bson_t *bson;
-   uint64_t low_le;
-   uint64_t high_le;
-   uint8_t bytes[24];
-   int n;
-   bson_decimal128_t d;
+   bson_decimal128_t bson_decimal128;
+   bson_decimal128_t json_decimal128;
    bson_iter_t iter;
 
    BSON_ASSERT (input);
    BSON_ASSERT (expected);
    BSON_ASSERT (json);
 
-   ASSERT (bson_iter_init_find(&iter, input, "d")
-		   && BSON_ITER_HOLDS_DECIMAL128(&iter));
-   ASSERT (bson_iter_decimal128(&iter, &d));
+   ASSERT (bson_iter_init_find (&iter, input, "d"));
+   ASSERT (BSON_ITER_HOLDS_DECIMAL128 (&iter));
+   ASSERT (bson_iter_decimal128 (&iter, &bson_decimal128));
 
-   bson_decimal128_to_string (&d, bid_string);
+   bson_decimal128_to_string (&bson_decimal128, bson_string);
+   ASSERT_CMPSTR (bson_string, expected);
 
-   ASSERT_CMPSTR (bid_string, expected);
+   bson = BCON_NEW ("d", BCON_DECIMAL128 (&bson_decimal128));
 
-   bson = BCON_NEW ("d", BCON_DECIMAL128 (&d));
+   ASSERT (bson_iter_init_find (&iter, input, "d"));
+   ASSERT (BSON_ITER_HOLDS_DECIMAL128 (&iter));
+   ASSERT (bson_iter_decimal128 (&iter, &json_decimal128));
 
-   ASSERT_CMPSTR (bson_as_json (bson, NULL), bson_as_json (json, NULL));
+   bson_decimal128_to_string (&json_decimal128, json_string);
+   ASSERT_CMPSTR (json_string, expected);
+   ASSERT_CMPSTR (json_string, bson_string);
+
+
+   if (roundtrip_json) {
+      ASSERT_CMPSTR (bson_as_json (bson, NULL), bson_as_json (json, NULL));
+   }
    bson_free (bson);
 }
 
 static void
 _test_bson_type_print_description (bson_iter_t *iter)
 {
-	if (bson_iter_find (iter, "description") && BSON_ITER_HOLDS_UTF8 (iter)) {
-		if (test_suite_debug_output ()) {
-			fprintf (stderr, "  - %s\n", bson_iter_utf8 (iter, NULL));
-			fflush (stderr);
-		}
-	}
+   if (bson_iter_find (iter, "description") && BSON_ITER_HOLDS_UTF8 (iter)) {
+      if (test_suite_debug_output ()) {
+         fprintf (stderr, "  - %s\n", bson_iter_utf8 (iter, NULL));
+         fflush (stderr);
+      }
+   }
 }
 
 void
 _test_bson_type_visit_corrupt (const bson_iter_t *iter,
-               void              *data)
+                               void              *data)
 {
    *((bool *) data) = true;
 }
@@ -136,9 +153,7 @@ _test_bson_type_visit_corrupt (const bson_iter_t *iter,
 #define IS_NAN(dec) (dec).high == 0x7c00000000000000ull
 
 static void
-test_bson_type (
-				bson_t *scenario,
-				test_bson_type_valid_cb valid)
+test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
 {
    bson_iter_t iter;
    bson_iter_t inner_iter;
@@ -146,74 +161,81 @@ test_bson_type (
 
    if (bson_iter_init_find (&iter, scenario, "valid")) {
       const char *expected = NULL;
-      bson_t json = BSON_INITIALIZER;
-	  bson_t bson_input = BSON_INITIALIZER;
+      bson_t json;
+      bson_t bson_input = BSON_INITIALIZER;
 
       bson_iter_recurse (&iter, &inner_iter);
       while (bson_iter_next (&inner_iter)) {
          bson_iter_t test;
+         bool roundtrip_json = true;
 
          bson_iter_recurse (&inner_iter, &test);
-		 _test_bson_type_print_description(&test);
-		 if (bson_iter_find (&test, "subject") && BSON_ITER_HOLDS_UTF8 (&test)) {
-			 const char *input = NULL;
-			 unsigned int byte;
-			 uint8_t *doc = NULL;
-			 uint32_t length;
-			 int x = 0;
-			 int i = 0;
+         _test_bson_type_print_description (&test);
+         while (bson_iter_next (&test)) {
+            const char *key = bson_iter_key (&test);
 
-			 input = bson_iter_utf8 (&test, &length);
-			 doc = bson_malloc (length / 2);
-			 while (SSCANF(&input[i], "%2x", &byte) == 1) {
-				 doc[x++] = byte;
-				 i += 2;
-			 }
-			 if (i == length && bson_init_static (&bson_input, doc, x)) {
-				 if (test_suite_debug_output ()) {
-					 fprintf (stderr, "%s\n", bson_as_json (&bson_input, NULL));
-					 fflush (stderr);
-				 }
-			 } else {
-				 fprintf(stderr, "Failed to create bson from subject\n");
-				 ASSERT(0);
-			 }
-		 }
+            if (!strcmp (key, "subject") && BSON_ITER_HOLDS_UTF8 (&test)) {
+               const char *input = NULL;
+               uint8_t *doc = NULL;
+               unsigned int byte;
+               uint32_t length;
+               int x = 0;
+               int i = 0;
 
-         if (bson_iter_find (&test, "string") && BSON_ITER_HOLDS_UTF8 (&test)) {
-            expected = bson_iter_utf8 (&test, NULL);
+               input = bson_iter_utf8 (&test, &length);
+               doc = bson_malloc (length / 2);
+               while (SSCANF (&input[i], "%2x", &byte) == 1) {
+                  doc[x++] = byte;
+                  i += 2;
+               }
+               if (i == length && bson_init_static (&bson_input, doc, x)) {
+                  if (test_suite_debug_output ()) {
+                     fprintf (stderr, "BSON as JSON: %s\n", bson_as_json (&bson_input, NULL));
+                     fflush (stderr);
+                  }
+               } else {
+                  fprintf (stderr, "Failed to create bson from subject\n");
+                  ASSERT (0);
+               }
+            }
+
+            if (!strcmp (key, "string") && BSON_ITER_HOLDS_UTF8 (&test)) {
+               expected = bson_iter_utf8 (&test, NULL);
+            }
+
+            if (!strcmp (key, "to_extjson") || !strcmp (key, "from_extjson")) {
+               roundtrip_json = bson_iter_as_bool (&test);
+            }
+
+            if (!strcmp (key, "extjson") && BSON_ITER_HOLDS_UTF8 (&test)) {
+               const char *json_str;
+               uint32_t json_len;
+
+               json_str = bson_iter_utf8 (&test, &json_len);
+               bson_init_from_json (&json, json_str, json_len, NULL);
+            }
          }
-         if (bson_iter_find (&test, "extjson") && BSON_ITER_HOLDS_DOCUMENT (&test)) {
-            uint32_t len;
-            const uint8_t *data;
-
-            bson_iter_document (&test, &len, &data);
-            assert (bson_init_static (&json, data, len));
-         }
-         valid (&bson_input, expected, &json);
+         valid (&bson_input, expected, &json, roundtrip_json);
       }
    }
-   if (bson_iter_init_find (&iter, scenario, "decodeErrors")) {
-	   fprintf(stderr, "Not implemented");
-	   ASSERT(0);
-   }
+
    if (bson_iter_init_find (&iter, scenario, "parseErrors")) {
       bson_iter_recurse (&iter, &inner_iter);
       while (bson_iter_next (&inner_iter)) {
          bson_iter_t test;
 
          bson_iter_recurse (&inner_iter, &test);
-		 _test_bson_type_print_description (&test);
+         _test_bson_type_print_description (&test);
 
-		 if (bson_iter_find (&test, "subject") && BSON_ITER_HOLDS_UTF8 (&test)) {
-			 uint32_t length;
-			 bson_decimal128_t d;
-			 const char *input = bson_iter_utf8 (&test, &length);
+         if (bson_iter_find (&test, "subject") && BSON_ITER_HOLDS_UTF8 (&test)) {
+            uint32_t length;
+            bson_decimal128_t d;
+            const char *input = bson_iter_utf8 (&test, &length);
 
-			 ASSERT (!bson_decimal128_from_string (input, &d));
-			 ASSERT (IS_NAN (d));
-		 }
-	  }
+            ASSERT (!bson_decimal128_from_string (input, &d));
+            ASSERT (IS_NAN (d));
+         }
+      }
    }
 }
 
@@ -243,8 +265,8 @@ test_add_spec_test (TestSuite *suite, const char *filename, test_hook callback)
    char *skip_json;
 
    test = get_bson_from_json_file ((char *)filename);
-   skip_json = strstr(filename, "json")+4;
-   skip_json = bson_strndup (skip_json, strlen(skip_json)-5);
+   skip_json = strstr (filename, "json")+4;
+   skip_json = bson_strndup (skip_json, strlen (skip_json)-5);
 
    TestSuite_AddWC (suite, skip_json, (void (*)(void *))callback, (void (*)(void*))bson_destroy, test);
    bson_free (skip_json);
