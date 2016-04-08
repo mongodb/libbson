@@ -222,6 +222,9 @@ endif()
 if (ENABLE_TESTS)
     enable_testing()
 
+    add_definitions("-DBINARY_DIR=\"${SOURCE_DIR}/tests/binary\"")
+    add_definitions("-DJSON_DIR=\"${SOURCE_DIR}/tests/json\"")
+
     add_executable(test-libbson
        ${SOURCE_DIR}/tests/TestSuite.c
        ${SOURCE_DIR}/tests/TestSuite.h

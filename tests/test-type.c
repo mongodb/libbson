@@ -35,6 +35,10 @@ typedef void (*test_bson_type_valid_cb)(const bson_t *input, const char *expecte
 # define SSCANF sscanf
 #endif
 
+#ifndef JSON_DIR
+# define JSON_DIR "tests/json"
+#endif
+
 void
 test_bson_type_int32 (const bson_t *input,
                       const char   *expected,
@@ -275,8 +279,8 @@ test_add_spec_test (TestSuite *suite, const char *filename, test_hook callback)
 void
 test_bson_type_install (TestSuite *suite)
 {
-   test_add_spec_test (suite, "tests/json/type/boolean.json", test_bson_type_bool_cb);
-   test_add_spec_test (suite, "tests/json/type/int32.json", test_bson_type_int32_cb);
-   test_add_spec_test (suite, "tests/json/type/decimal128.json", test_bson_type_decimal128_cb);
+   test_add_spec_test (suite, JSON_DIR "/type/boolean.json", test_bson_type_bool_cb);
+   test_add_spec_test (suite, JSON_DIR "/type/int32.json", test_bson_type_int32_cb);
+   test_add_spec_test (suite, JSON_DIR "/type/decimal128.json", test_bson_type_decimal128_cb);
 }
 
