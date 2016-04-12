@@ -2193,8 +2193,6 @@ bool
 bson_steal (bson_t *dst,
             bson_t *src)
 {
-   uint8_t *data;
-   uint32_t length;
    bson_impl_inline_t *src_inline;
    bson_impl_inline_t *dst_inline;
    bson_impl_alloc_t *alloc;
