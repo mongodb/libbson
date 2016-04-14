@@ -180,6 +180,7 @@ test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
       while (bson_iter_next (&inner_iter)) {
          bson_iter_t test;
          bool roundtrip_json = true;
+         uint8_t *doc = NULL;
 
          bson_iter_recurse (&inner_iter, &test);
          _test_bson_type_print_description (&test);
@@ -188,7 +189,6 @@ test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
 
             if (!strcmp (key, "subject") && BSON_ITER_HOLDS_UTF8 (&test)) {
                const char *input = NULL;
-               uint8_t *doc = NULL;
                unsigned int byte;
                uint32_t length;
                int x = 0;
@@ -197,7 +197,7 @@ test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
                input = bson_iter_utf8 (&test, &length);
                doc = bson_malloc (length / 2);
                while (SSCANF (&input[i], "%2x", &byte) == 1) {
-                  doc[x++] = byte;
+                  doc[x++] = (uint8_t) byte;
                   i += 2;
                }
                if (i == length && bson_init_static (&bson_input, doc, x)) {
@@ -209,8 +209,6 @@ test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
                   fprintf (stderr, "Failed to create bson from subject\n");
                   ASSERT (0);
                }
-
-               bson_free (doc);
             }
 
             if (!strcmp (key, "string") && BSON_ITER_HOLDS_UTF8 (&test)) {
@@ -229,7 +227,9 @@ test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
                bson_init_from_json (&json, json_str, json_len, NULL);
             }
          }
+
          valid (&bson_input, expected, &json, roundtrip_json);
+         bson_free (doc);
       }
    }
 
