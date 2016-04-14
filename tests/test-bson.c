@@ -1568,7 +1568,6 @@ test_bson_steal (void)
    ASSERT (bson_steal (&dst, heap_alloced));
    ASSERT (bson_has_field (&dst, "a"));
    ASSERT (dst.flags & BSON_FLAG_INLINE);
-   ASSERT (!bson_validate (heap_alloced, BSON_VALIDATE_NONE, 0));
    bson_destroy (&dst);
 
    /* spilled over, heap-allocated */
@@ -1580,7 +1579,6 @@ test_bson_steal (void)
    ASSERT (alloc == ((bson_impl_alloc_t *) &dst)->alloc);
    ASSERT (bson_has_field (&dst, "99"));
    ASSERT (!(dst.flags & BSON_FLAG_INLINE));
-   ASSERT (!bson_validate (heap_alloced, BSON_VALIDATE_NONE, 0));
    bson_destroy (&dst);
 
    /* test stealing from a bson created with bson_new_from_buffer */

@@ -2214,16 +2214,20 @@ bson_steal (bson_t *dst,
 
       /* for consistency, src is always invalid after steal, even if inline */
       src->len = 0;
-      return true;
+   } else {
+      memcpy (dst, src, sizeof (bson_t));
+      alloc = (bson_impl_alloc_t *) dst;
+      alloc->flags |= BSON_FLAG_STATIC;
+      alloc->buf = &alloc->alloc;
+      alloc->buflen = &alloc->alloclen;
    }
 
-   memcpy (dst, src, sizeof (bson_t));
-   alloc = (bson_impl_alloc_t *) dst;
-   alloc->flags |= BSON_FLAG_STATIC;
-   alloc->buf = &alloc->alloc;
-   alloc->buflen = &alloc->alloclen;
-
-   src->len = 0;
+   if (!(src->flags & BSON_FLAG_STATIC)) {
+      bson_free (src);
+   } else {
+      /* src is invalid after steal */
+      src->len = 0;
+   }
 
    return true;
 }
