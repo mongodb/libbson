@@ -162,13 +162,6 @@ _test_bson_type_print_description (bson_iter_t *iter)
    }
 }
 
-void
-_test_bson_type_visit_corrupt (const bson_iter_t *iter,
-                               void              *data)
-{
-   *((bool *) data) = true;
-}
-
 #define IS_NAN(dec) (dec).high == 0x7c00000000000000ull
 
 static void
