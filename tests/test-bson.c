@@ -1572,7 +1572,7 @@ test_bson_steal (void)
    bson_destroy (&dst);
 
    /* spilled over, heap-allocated */
-   bson_init (heap_alloced);
+   heap_alloced = bson_new ();
    bloat (heap_alloced);
    alloc = ((bson_impl_alloc_t *) heap_alloced)->alloc;
    ASSERT (bson_steal (&dst, heap_alloced));
