@@ -48,6 +48,7 @@ test_bson_type_int32 (const bson_t *input,
    int32_t number1, number2;
    bson_t *bson;
    bson_iter_t iter;
+   char *str1, *str2;
 
    BSON_ASSERT (input);
    BSON_ASSERT (expected);
@@ -64,7 +65,11 @@ test_bson_type_int32 (const bson_t *input,
 
    bson = BCON_NEW ("i", BCON_INT32 (number1));
 
-   ASSERT_CMPSTR (bson_as_json (bson, NULL), bson_as_json (json, NULL));
+   str1 = bson_as_json (bson, NULL);
+   str2 = bson_as_json (json, NULL);
+   ASSERT_CMPSTR (str1, str2);
+   bson_free (str1);
+   bson_free (str2);
    bson_free (bson);
 }
 
@@ -77,6 +82,7 @@ test_bson_type_bool (const bson_t *input,
    bool b;
    bson_t *bson;
    bson_iter_t iter;
+   char *str1, *str2;
 
    BSON_ASSERT (input);
    BSON_ASSERT (expected);
@@ -91,7 +97,11 @@ test_bson_type_bool (const bson_t *input,
 
    bson = BCON_NEW ("b", BCON_BOOL (b));
 
-   ASSERT_CMPSTR (bson_as_json (bson, NULL), bson_as_json (json, NULL));
+   str1 = bson_as_json (bson, NULL);
+   str2 = bson_as_json (json, NULL);
+   ASSERT_CMPSTR (str1, str2);
+   bson_free (str1);
+   bson_free (str2);
    bson_free (bson);
 }
 
@@ -107,6 +117,7 @@ test_bson_type_decimal128 (const bson_t *input,
    bson_decimal128_t bson_decimal128;
    bson_decimal128_t json_decimal128;
    bson_iter_t iter;
+   char *str1, *str2;
 
    BSON_ASSERT (input);
    BSON_ASSERT (expected);
@@ -131,7 +142,11 @@ test_bson_type_decimal128 (const bson_t *input,
 
 
    if (roundtrip_json) {
-      ASSERT_CMPSTR (bson_as_json (bson, NULL), bson_as_json (json, NULL));
+      str1 = bson_as_json (bson, NULL);
+      str2 = bson_as_json (json, NULL);
+      ASSERT_CMPSTR (str1, str2);
+      bson_free (str1);
+      bson_free (str2);
    }
    bson_free (bson);
 }
@@ -201,6 +216,8 @@ test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
                   fprintf (stderr, "Failed to create bson from subject\n");
                   ASSERT (0);
                }
+
+               bson_free (doc);
             }
 
             if (!strcmp (key, "string") && BSON_ITER_HOLDS_UTF8 (&test)) {
