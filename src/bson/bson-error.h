@@ -30,8 +30,6 @@ BSON_BEGIN_DECLS
 #define BSON_ERROR_JSON   1
 #define BSON_ERROR_READER 2
 
-#define BSON_ERROR_BUFFER_SIZE      64
-
 
 void  bson_set_error  (bson_error_t *error,
                        uint32_t      domain,

@@ -512,13 +512,14 @@ typedef struct
 } bson_visitor_t
 BSON_ALIGNED_END (8);
 
+#define BSON_ERROR_BUFFER_SIZE 504
 
 BSON_ALIGNED_BEGIN (8)
 typedef struct _bson_error_t
 {
    uint32_t domain;
    uint32_t code;
-   char     message[504];
+   char     message[BSON_ERROR_BUFFER_SIZE];
 } bson_error_t
 BSON_ALIGNED_END (8);
 
