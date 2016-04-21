@@ -258,13 +258,15 @@ test_bson_iter_fuzz (void)
                uint32_t child_len = 0;
 
                bson_iter_document(&iter, &child_len, &child);
-               assert(child);
-               assert(child_len >= 5);
-               assert((iter.off + child_len) < b->len);
-               assert(child_len < (uint32_t)-1);
-               memcpy(&child_len, child, sizeof (child_len));
-               child_len = BSON_UINT32_FROM_LE(child_len);
-               assert(child_len >= 5);
+               if (child_len) {
+                  assert(child);
+                  assert(child_len >= 5);
+                  assert((iter.off + child_len) < b->len);
+                  assert(child_len < (uint32_t) -1);
+                  memcpy(&child_len, child, sizeof (child_len));
+                  child_len = BSON_UINT32_FROM_LE(child_len);
+                  assert(child_len >= 5);
+               }
             }
             break;
          case BSON_TYPE_DOUBLE:
