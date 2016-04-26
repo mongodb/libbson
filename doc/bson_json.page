@@ -52,7 +52,7 @@ if (!b) {
     <info><link type="guide" xref="index#json"/></info>
     <p>Libbson provides <code xref="bson_json_reader_t">bson_json_reader_t</code> to allow for parsing a sequence of JSON documents into BSON. The interface is similar to <code xref="bson_reader_t">bson_reader_t</code> but expects the input to be in the <link href="http://docs.mongodb.org/manual/reference/mongodb-extended-json/">MongoDB extended JSON</link> format.</p>
     <example>
-      <title><file>json-to-bson.c</file></title>
+      <title>json-to-bson.c</title>
       <code mime="text/x-csrc"><include parse="text" href="../examples/json-to-bson.c" xmlns="http://www.w3.org/2001/XInclude" /></code>
     </example>
   </section>
@@ -61,7 +61,7 @@ if (!b) {
     <title>Examples</title>
     <p>The following example reads BSON documents from <code>stdin</code> and prints them to <code>stdout</code> as JSON.</p>
     <example>
-      <title><file>bson-to-json.c</file></title>
+      <title>bson-to-json.c</title>
       <code mime="text/x-csrc"><include parse="text" href="../examples/bson-to-json.c" xmlns="http://www.w3.org/2001/XInclude" /></code>
     </example>
   </section>
