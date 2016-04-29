@@ -146,6 +146,7 @@ bson_reader_tell
 bson_realloc
 bson_realloc_ctx
 bson_reinit
+bson_reserve_buffer
 bson_set_error
 bson_sized_new
 bson_snprintf

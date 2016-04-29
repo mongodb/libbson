@@ -369,6 +369,9 @@ bson_copy_to_excluding_noinit (const bson_t *src,
 void
 bson_destroy (bson_t *bson);
 
+uint8_t *
+bson_reserve_buffer (bson_t   *bson,
+                     uint32_t  size);
 
 bool
 bson_steal (bson_t *dst,

@@ -1596,6 +1596,103 @@ test_bson_steal (void)
    bson_free (buf);
 }
 
+static void
+assert_key_and_value (const bson_t *bson)
+{
+   bson_iter_t iter;
+
+   ASSERT (bson_iter_init_find (&iter, bson, "key"));
+   ASSERT (BSON_ITER_HOLDS_UTF8 (&iter));
+   ASSERT_CMPSTR ("value", bson_iter_utf8 (&iter, NULL));
+}
+
+
+static void
+test_bson_reserve_buffer (void)
+{
+   bson_t src = BSON_INITIALIZER;
+   bson_t stack_alloced;
+   bson_t *heap_alloced;
+   uint8_t *buf;
+
+   /* inline, stack-allocated */
+   bson_init (&stack_alloced);
+   BSON_APPEND_UTF8 (&src, "key", "value");
+   ASSERT (buf = bson_reserve_buffer (&stack_alloced, src.len));
+   ASSERT_CMPUINT32 (src.len, ==, stack_alloced.len);
+   ASSERT (stack_alloced.flags & BSON_FLAG_INLINE);
+   memcpy (buf, ((bson_impl_inline_t *) &src)->data, src.len);
+   /* data was transferred */
+   assert_key_and_value (&stack_alloced);
+   bson_destroy (&stack_alloced);
+
+   /* spilled over, stack-allocated */
+   bloat (&src);
+   bson_init (&stack_alloced);
+   ASSERT (buf = bson_reserve_buffer (&stack_alloced, src.len));
+   ASSERT_CMPUINT32 (src.len, ==, stack_alloced.len);
+   ASSERT (!(stack_alloced.flags & BSON_FLAG_INLINE));
+   memcpy (buf, ((bson_impl_alloc_t *) &src)->alloc, src.len);
+   assert_key_and_value (&stack_alloced);
+   ASSERT (bson_has_field (&stack_alloced, "99"));
+   bson_destroy (&src);
+   bson_destroy (&stack_alloced);
+
+   /* inline, heap-allocated */
+   heap_alloced = bson_new ();
+   bson_init (&src);
+   BSON_APPEND_UTF8 (&src, "key", "value");
+   ASSERT (buf = bson_reserve_buffer (heap_alloced, src.len));
+   ASSERT_CMPUINT32 (src.len, ==, heap_alloced->len);
+   ASSERT (heap_alloced->flags & BSON_FLAG_INLINE);
+   memcpy (buf, ((bson_impl_inline_t *) &src)->data, src.len);
+   assert_key_and_value (heap_alloced);
+   bson_destroy (heap_alloced);
+
+   /* spilled over, heap-allocated */
+   heap_alloced = bson_new ();
+   bloat (&src);
+   ASSERT (buf = bson_reserve_buffer (heap_alloced, src.len));
+   ASSERT_CMPUINT32 (src.len, ==, heap_alloced->len);
+   ASSERT (!(heap_alloced->flags & BSON_FLAG_INLINE));
+   memcpy (buf, ((bson_impl_alloc_t *) &src)->alloc, src.len);
+   assert_key_and_value (heap_alloced);
+   ASSERT (bson_has_field (heap_alloced, "99"));
+
+   bson_destroy (&src);
+   bson_destroy (heap_alloced);
+}
+
+
+static void
+test_bson_reserve_buffer_errors (void)
+{
+   bson_t bson = BSON_INITIALIZER;
+   bson_t child;
+   uint8_t data[5] = { 0 };
+   uint32_t len_le;
+
+   /* too big */
+   ASSERT (!bson_reserve_buffer (&bson, INT32_MAX + 1));
+
+   /* make a static bson, it refuses bson_reserve_buffer since it's read-only */
+   len_le = BSON_UINT32_TO_LE (5);
+   memcpy (data, &len_le, sizeof (len_le));
+   ASSERT (bson_init_static (&bson, data, sizeof data));
+   ASSERT (!bson_reserve_buffer (&bson, 10));
+
+   /* parent's and child's buffers are locked */
+   bson_init (&bson);
+   BSON_APPEND_DOCUMENT_BEGIN (&bson, "child", &child);
+   ASSERT (!bson_reserve_buffer (&bson, 10));
+   ASSERT (!bson_reserve_buffer (&child, 10));
+   /* unlock parent's buffer */
+   bson_append_document_end (&bson, &child);
+   ASSERT (bson_reserve_buffer (&bson, 10));
+
+   bson_destroy (&bson);
+}
+
 
 static void
 test_bson_destroy_with_steal (void)
@@ -1893,6 +1990,8 @@ test_bson_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/macros", test_bson_macros);
    TestSuite_Add (suite, "/bson/clear", test_bson_clear);
    TestSuite_Add (suite, "/bson/steal", test_bson_steal);
+   TestSuite_Add (suite, "/bson/reserve_buffer", test_bson_reserve_buffer);
+   TestSuite_Add (suite, "/bson/reserve_buffer/errors", test_bson_reserve_buffer_errors);
    TestSuite_Add (suite, "/bson/destroy_with_steal", test_bson_destroy_with_steal);
    TestSuite_Add (suite, "/bson/has_field", test_bson_has_field);
    TestSuite_Add (suite, "/bson/visit_invalid_field", test_bson_visit_invalid_field);

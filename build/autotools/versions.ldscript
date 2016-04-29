@@ -208,5 +208,6 @@ LIBBSON_1.3 {
 
 LIBBSON_1.4 {
     global:
+        bson_reserve_buffer;
         bson_steal;
 } LIBBSON_1.3;

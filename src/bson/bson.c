@@ -2189,6 +2189,30 @@ bson_destroy (bson_t *bson)
 }
 
 
+uint8_t *
+bson_reserve_buffer (bson_t   *bson,
+                     uint32_t  size)
+{
+   if (bson->flags &
+      (BSON_FLAG_CHILD | BSON_FLAG_IN_CHILD | BSON_FLAG_RDONLY)) {
+      return NULL;
+   }
+
+   if (!_bson_grow (bson, size)) {
+      return NULL;
+   }
+
+   if (bson->flags & BSON_FLAG_INLINE) {
+      /* bson_grow didn't spill over */
+      ((bson_impl_inline_t *) bson)->len = size;
+   } else {
+      ((bson_impl_alloc_t *) bson)->len = size;
+   }
+
+   return _bson_data (bson);
+}
+
+
 bool
 bson_steal (bson_t *dst,
             bson_t *src)
