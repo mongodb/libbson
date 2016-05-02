@@ -52,6 +52,21 @@
 
   </section>
 
+  <section id="package-manager">
+    <info><link type="guide" xref="index#installation" /></info>
+    <title>Install with a Package Manager</title>
+    <p>The libbson package is available on recent versions of Debian and Ubuntu.</p>
+    <screen><output style="prompt">$ </output><input>apt-get install libbson-1.0</input></screen>
+    <p>For RedHat-like systems, use Remi Collet's well-maintained RPMs for libbson. Commands to enable Remi's repository and install libbson depend on your exact system. For example, on CentOS 6:</p>
+    <screen><output style="prompt">$ </output><input>yum install http://rpms.remirepo.net/enterprise/remi-release-6.rpm</input>
+<output style="prompt">$ </output><input>yum install yum-utils</input>
+<output style="prompt">$ </output><input>yum-config-manager --enable remi</input>
+<output style="prompt">$ </output><input>yum update</input>
+<output style="prompt">$ </output><input>yum install libbson</input></screen>
+
+    <p>The <link href="http://rpms.remirepo.net/wizard/">Configuration Wizard for Remi's RPM Repository</link> generates detailed instructions for your system.</p>
+  </section>
+
   <section id="build-yourself">
     <info><link type="guide" xref="index#installation" /></info>
     <title>Installing from Source</title>
