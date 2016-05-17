@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 9),
                libyajl-dev,
                yelp-tools,
                yelp-xsl
-Standards-Version: 3.9.6
+Standards-Version: 3.9.8
 Section: libs
 Homepage: https://github.com/mongodb/libbson
 Vcs-Git: https://github.com/mongodb/libbson.git
