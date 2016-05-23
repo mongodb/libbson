@@ -13,30 +13,32 @@
   <section id="synopsis">
     <title>Synopsis</title>
     <synopsis><code mime="text/x-csrc"><![CDATA[bson_t *
-bson_new_from_buffer (uint8_t         **buf,
-                      size_t           *buf_len,
-                      bson_realloc_func realloc_func,
-                      void             *realloc_func_ctx);
+bson_new_from_buffer (uint8_t           **buf,
+                      size_t             *buf_len,
+                      bson_realloc_func   realloc_func,
+                      void               *realloc_func_ctx);
 ]]></code></synopsis>
   </section>
 
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p>buf</p></td><td><p>A uint8_t.</p></td></tr>
-      <tr><td><p>buf_len</p></td><td><p>A size_t.</p></td></tr>
-      <tr><td><p>realloc_func</p></td><td><p>A bson_realloc_func.</p></td></tr>
-      <tr><td><p>realloc_func_ctx</p></td><td><p>A (null).</p></td></tr>
+      <tr><td><p>buf</p></td><td><p>An out-pointer to a buffer containing a serialized BSON document, or to NULL.</p></td></tr>
+      <tr><td><p>buf_len</p></td><td><p>An out-pointer to the length of the buffer in bytes.</p></td></tr>
+      <tr><td><p>realloc_func</p></td><td><p>Optional <code xref="bson_realloc_func">bson_realloc_func</code> for reallocating the buffer.</p></td></tr>
+      <tr><td><p>realloc_func_ctx</p></td><td><p>Optional pointer that will be passed as <code>ctx</code> to <code>realloc_func</code>.</p></td></tr>
     </table>
   </section>
 
   <section id="description">
     <title>Description</title>
-    <p>TODO:</p>
+    <p>Creates a new <code xref="bson_t">bson_t</code> using the data provided.</p>
+    <p>The <code>realloc_func</code>, if provided, is called to resize <code>buf</code> if the document is later expanded, for example by a call to one of the <code>bson_append</code> functions.</p>
+    <p>If <code>*buf</code> is initially NULL then it is allocated, using <code>realloc_func</code> or the default allocator, and initialized with an empty BSON document, and <code>*buf_len</code> is set to 5, the size of an empty document.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>TODO:</p>
+    <p>A newly-allocated <code xref="bson_t">bson_t</code> on success, or NULL.</p>
   </section>
 </page>

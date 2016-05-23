@@ -271,7 +271,7 @@ bson_new_from_data (const uint8_t *data,
 
 /**
  * bson_new_from_buffer:
- * @buf: A pointer to a buffer containing a serialized bson document.  Or null
+ * @buf: A pointer to a buffer containing a serialized bson document.
  * @buf_len: The length of the buffer in bytes.
  * @realloc_fun: a realloc like function
  * @realloc_fun_ctx: a context for the realloc function
