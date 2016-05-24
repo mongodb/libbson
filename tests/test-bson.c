@@ -1673,7 +1673,7 @@ test_bson_reserve_buffer_errors (void)
    uint32_t len_le;
 
    /* too big */
-   ASSERT (!bson_reserve_buffer (&bson, INT32_MAX + 1));
+   ASSERT (!bson_reserve_buffer (&bson, (uint32_t) INT32_MAX + 1));
 
    /* make a static bson, it refuses bson_reserve_buffer since it's read-only */
    len_le = BSON_UINT32_TO_LE (5);
