@@ -27,7 +27,15 @@
 #define realpath(path, expanded) GetFullPathName (path, PATH_MAX, expanded, NULL)
 #endif
 
-typedef void (*test_bson_type_valid_cb)(const bson_t *input, const char *expected, const bson_t *json, bool roundtrip_json);
+typedef void (*test_bson_type_valid_cb)(const char *bson_str,
+                                        uint32_t    bson_str_len,
+                                        const char *canonical_bson_str,
+                                        uint32_t    canonical_bson_str_len,
+                                        const char *extjson_str,
+                                        uint32_t    extjson_str_len,
+                                        const char *canonical_extjson_str,
+                                        uint32_t    canonical_extjson_str_len,
+                                        bool lossy);
 
 #ifdef _MSC_VER
 # define SSCANF sscanf_s
@@ -40,115 +48,67 @@ typedef void (*test_bson_type_valid_cb)(const bson_t *input, const char *expecte
 #endif
 
 void
-test_bson_type_int32 (const bson_t *input,
-                      const char   *expected,
-                      const bson_t *json,
-                      bool          roundtrip_json)
-{
-   int32_t number1, number2;
-   bson_t *bson;
-   bson_iter_t iter;
-   char *str1, *str2;
-
-   BSON_ASSERT (input);
-   BSON_ASSERT (expected);
-   BSON_ASSERT (json);
-
-
-   SSCANF (expected, "%d", &number2);
-
-   ASSERT (bson_iter_init_find (&iter, input, "i"));
-   ASSERT (BSON_ITER_HOLDS_INT32 (&iter));
-   number1 = bson_iter_int32 (&iter);
-
-   ASSERT_CMPINT32 (number1, ==, number2);
-
-   bson = BCON_NEW ("i", BCON_INT32 (number1));
-
-   str1 = bson_as_json (bson, NULL);
-   str2 = bson_as_json (json, NULL);
-   ASSERT_CMPSTR (str1, str2);
-   bson_free (str1);
-   bson_free (str2);
-   bson_free (bson);
-}
-
-void
-test_bson_type_bool (const bson_t *input,
-                     const char   *expected,
-                     const bson_t *json,
-                     bool          roundtrip_json)
-{
-   bool b;
-   bson_t *bson;
-   bson_iter_t iter;
-   char *str1, *str2;
-
-   BSON_ASSERT (input);
-   BSON_ASSERT (expected);
-   BSON_ASSERT (json);
-
-
-   ASSERT (bson_iter_init_find (&iter, input, "b"));
-   ASSERT (BSON_ITER_HOLDS_BOOL (&iter));
-   b = bson_iter_bool (&iter);
-
-   ASSERT_CMPSTR (expected, b ? "true" : "false");
-
-   bson = BCON_NEW ("b", BCON_BOOL (b));
-
-   str1 = bson_as_json (bson, NULL);
-   str2 = bson_as_json (json, NULL);
-   ASSERT_CMPSTR (str1, str2);
-   bson_free (str1);
-   bson_free (str2);
-   bson_free (bson);
-}
-
-void
-test_bson_type_decimal128 (const bson_t *input,
-                           const char   *expected,
-                           const bson_t *json,
-                           bool          roundtrip_json)
+test_bson_type_decimal128 (const char *bson_str,
+                           uint32_t    bson_str_len,
+                           const char *canonical_bson_str,
+                           uint32_t    canonical_bson_str_len,
+                           const char *extjson_str,
+                           uint32_t    extjson_str_len,
+                           const char *canonical_extjson_str,
+                           uint32_t    canonical_extjson_str_len,
+                           bool lossy)
 {
    char bson_string[BSON_DECIMAL128_STRING];
    char json_string[BSON_DECIMAL128_STRING];
-   bson_t *bson;
+   bson_t bson;
+   bson_t canonical_bson;
+   bson_t *extjson;
+   bson_t *canonical_extjson;
    bson_decimal128_t bson_decimal128;
    bson_decimal128_t json_decimal128;
    bson_iter_t iter;
    char *str1, *str2;
+   bson_error_t error;
 
-   BSON_ASSERT (input);
-   BSON_ASSERT (expected);
-   BSON_ASSERT (json);
+   BSON_ASSERT (bson_str);
+   BSON_ASSERT (canonical_bson_str);
+   BSON_ASSERT (extjson_str);
+   BSON_ASSERT (canonical_extjson_str);
 
-   ASSERT (bson_iter_init_find (&iter, input, "d"));
-   ASSERT (BSON_ITER_HOLDS_DECIMAL128 (&iter));
-   ASSERT (bson_iter_decimal128 (&iter, &bson_decimal128));
-
-   bson_decimal128_to_string (&bson_decimal128, bson_string);
-   ASSERT_CMPSTR (bson_string, expected);
-
-   bson = BCON_NEW ("d", BCON_DECIMAL128 (&bson_decimal128));
-
-   ASSERT (bson_iter_init_find (&iter, input, "d"));
-   ASSERT (BSON_ITER_HOLDS_DECIMAL128 (&iter));
-   ASSERT (bson_iter_decimal128 (&iter, &json_decimal128));
-
-   bson_decimal128_to_string (&json_decimal128, json_string);
-   ASSERT_CMPSTR (json_string, expected);
-   ASSERT_CMPSTR (json_string, bson_string);
+   bson_init_static (&bson, bson_str, bson_str_len);
+   bson_init_static (&canonical_bson, canonical_bson_str, canonical_bson_str_len);
 
 
-   if (roundtrip_json) {
-      str1 = bson_as_json (bson, NULL);
-      str2 = bson_as_json (json, NULL);
-      ASSERT_CMPSTR (str1, str2);
-      bson_free (str1);
-      bson_free (str2);
+   ASSERT_CMPSTR ((const char *)bson_get_data (&bson), bson_str);
+   /* B->cB */
+   ASSERT_CMPSTR ((const char *)bson_get_data (&bson), canonical_bson_str);
+   /* cB->cB */
+   ASSERT_CMPSTR ((const char *)bson_get_data (&canonical_bson), canonical_bson_str);
+
+   extjson = bson_new_from_json (extjson_str, extjson_str_len, &error);
+   canonical_extjson = bson_new_from_json (canonical_extjson_str, canonical_extjson_str_len, &error);
+
+   /* B->cE */
+   ASSERT_CMPJSON (bson_as_json (&bson, NULL), canonical_extjson_str);
+
+   /* E->cE */
+   ASSERT_CMPJSON (bson_as_json (extjson, NULL), canonical_extjson_str);
+   
+   /* cb->cE */
+   ASSERT_CMPSTR ((const char*) bson_get_data (&canonical_bson), (const char*) bson_get_data (canonical_extjson));
+
+   /* cE->cE */
+   ASSERT_CMPJSON (bson_as_json (canonical_extjson, NULL), canonical_extjson_str);
+
+   if (!lossy) {
+   /* E->cB */
+      ASSERT_CMPJSON (bson_as_json (extjson, NULL), canonical_extjson_str);
+
+      /* cE->cB */
+      ASSERT_CMPSTR ((const char*) bson_get_data (canonical_extjson), canonical_bson_str);
    }
-   bson_free (bson);
+   bson_destroy (extjson);
+   bson_destroy (canonical_extjson);
 }
 
 static void
@@ -179,57 +139,57 @@ test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
       bson_iter_recurse (&iter, &inner_iter);
       while (bson_iter_next (&inner_iter)) {
          bson_iter_t test;
-         bool roundtrip_json = true;
-         uint8_t *doc = NULL;
+         char *bson_str;
+         uint32_t    bson_str_len;
+         const char *extjson_str = NULL;
+         uint32_t    extjson_str_len;
+         const char *canonical_extjson_str = NULL;
+         uint32_t    canonical_extjson_str_len;
+         bool lossy = false;
 
          bson_iter_recurse (&inner_iter, &test);
          _test_bson_type_print_description (&test);
          while (bson_iter_next (&test)) {
             const char *key = bson_iter_key (&test);
 
-            if (!strcmp (key, "subject") && BSON_ITER_HOLDS_UTF8 (&test)) {
+            if (!strcmp (key, "bson") && BSON_ITER_HOLDS_UTF8 (&test)) {
                const char *input = NULL;
                unsigned int byte;
-               uint32_t length;
+               uint32_t tmp;
                int x = 0;
                int i = 0;
 
-               input = bson_iter_utf8 (&test, &length);
-               doc = bson_malloc (length / 2);
+               input = bson_iter_utf8 (&test, &tmp);
+               bson_str_len = tmp / 2;
+               bson_str = bson_malloc (bson_str_len);
                while (SSCANF (&input[i], "%2x", &byte) == 1) {
-                  doc[x++] = (uint8_t) byte;
+                  bson_str[x++] = (uint8_t) byte;
                   i += 2;
                }
-               if (i == length && bson_init_static (&bson_input, doc, x)) {
-                  if (test_suite_debug_output ()) {
-                     fprintf (stderr, "BSON as JSON: %s\n", bson_as_json (&bson_input, NULL));
-                     fflush (stderr);
-                  }
-               } else {
-                  fprintf (stderr, "Failed to create bson from subject\n");
-                  ASSERT (0);
-               }
-            }
-
-            if (!strcmp (key, "string") && BSON_ITER_HOLDS_UTF8 (&test)) {
-               expected = bson_iter_utf8 (&test, NULL);
-            }
-
-            if (!strcmp (key, "to_extjson") || !strcmp (key, "from_extjson")) {
-               roundtrip_json = bson_iter_as_bool (&test);
             }
 
             if (!strcmp (key, "extjson") && BSON_ITER_HOLDS_UTF8 (&test)) {
-               const char *json_str;
-               uint32_t json_len;
+               extjson_str = bson_iter_utf8 (&test, &extjson_str_len);
+            }
 
-               json_str = bson_iter_utf8 (&test, &json_len);
-               bson_init_from_json (&json, json_str, json_len, NULL);
+            if (!strcmp (key, "canonical_extjson") && BSON_ITER_HOLDS_UTF8 (&test)) {
+               canonical_extjson_str = bson_iter_utf8 (&test, &canonical_extjson_str_len);
+            }
+            if (!strcmp (key, "canonical_extjson") && BSON_ITER_HOLDS_BOOL (&test)) {
+               lossy = bson_iter_bool (&test);
             }
          }
 
-         valid (&bson_input, expected, &json, roundtrip_json);
-         bson_free (doc);
+         valid (bson_str,
+                bson_str_len,
+                bson_str,
+                bson_str_len,
+                extjson_str,
+                extjson_str_len,
+                canonical_extjson_str ? canonical_extjson_str : extjson_str,
+                canonical_extjson_str ? canonical_extjson_str_len : extjson_str_len,
+                lossy);
+         bson_free (bson_str);
       }
    }
 
@@ -242,27 +202,15 @@ test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
          _test_bson_type_print_description (&test);
 
          if (bson_iter_find (&test, "subject") && BSON_ITER_HOLDS_UTF8 (&test)) {
-            uint32_t length;
             bson_decimal128_t d;
-            const char *input = bson_iter_utf8 (&test, &length);
+            uint32_t tmp;
+            const char *input = bson_iter_utf8 (&test, &tmp);
 
             ASSERT (!bson_decimal128_from_string (input, &d));
             ASSERT (IS_NAN (d));
          }
       }
    }
-}
-
-static void
-test_bson_type_int32_cb (bson_t *scenario)
-{
-   test_bson_type (scenario, test_bson_type_int32);
-}
-
-static void
-test_bson_type_bool_cb (bson_t *scenario)
-{
-   test_bson_type (scenario, test_bson_type_bool);
 }
 
 static void
@@ -289,8 +237,12 @@ test_add_spec_test (TestSuite *suite, const char *filename, test_hook callback)
 void
 test_bson_type_install (TestSuite *suite)
 {
-   test_add_spec_test (suite, JSON_DIR "/type/boolean.json", test_bson_type_bool_cb);
-   test_add_spec_test (suite, JSON_DIR "/type/int32.json", test_bson_type_int32_cb);
-   test_add_spec_test (suite, JSON_DIR "/type/decimal128.json", test_bson_type_decimal128_cb);
+   test_add_spec_test (suite, JSON_DIR "/type/decimal128/decimal128-1.json", test_bson_type_decimal128_cb);
+   test_add_spec_test (suite, JSON_DIR "/type/decimal128/decimal128-2.json", test_bson_type_decimal128_cb);
+   test_add_spec_test (suite, JSON_DIR "/type/decimal128/decimal128-3.json", test_bson_type_decimal128_cb);
+   test_add_spec_test (suite, JSON_DIR "/type/decimal128/decimal128-4.json", test_bson_type_decimal128_cb);
+   test_add_spec_test (suite, JSON_DIR "/type/decimal128/decimal128-5.json", test_bson_type_decimal128_cb);
+   test_add_spec_test (suite, JSON_DIR "/type/decimal128/decimal128-6.json", test_bson_type_decimal128_cb);
+   test_add_spec_test (suite, JSON_DIR "/type/decimal128/decimal128-7.json", test_bson_type_decimal128_cb);
 }
 

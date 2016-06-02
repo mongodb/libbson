@@ -51,10 +51,10 @@ test_decimal128_to_string__infinity (void) {
    DECIMAL128_FROM_ULLS (negative_infinity, 0xf800000000000000, 0);
 
    bson_decimal128_to_string (&positive_infinity, bid_string);
-   assert (!strcmp (bid_string, "Inf"));
+   assert (!strcmp (bid_string, "Infinity"));
 
    bson_decimal128_to_string (&negative_infinity, bid_string);
-   assert (!strcmp (bid_string, "-Inf"));
+   assert (!strcmp (bid_string, "-Infinity"));
 }
 
 

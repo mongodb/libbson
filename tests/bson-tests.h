@@ -30,8 +30,8 @@ BSON_BEGIN_DECLS
 #define assert_cmpstr(a, b)                                             \
    do {                                                                 \
       if (((a) != (b)) && !!strcmp((a), (b))) {                         \
-         fprintf(stderr, "FAIL\n\nAssert Failure: \"%s\" != \"%s\"\n",  \
-                         a, b);                                         \
+         fprintf(stderr, "FAIL\n\nAssert Failure: (line#%d) \"%s\" != \"%s\"\n",  \
+                         __LINE__, a, b);                               \
          abort();                                                       \
       }                                                                 \
    } while (0)
@@ -40,8 +40,8 @@ BSON_BEGIN_DECLS
 #define assert_cmpint(a, eq, b)                                         \
    do {                                                                 \
       if (!((a) eq (b))) {                                              \
-         fprintf(stderr, "FAIL\n\nAssert Failure: "                     \
-                         #a " " #eq " " #b "\n");                       \
+         fprintf(stderr, "FAIL\n\nAssert Failure: (line#%d)"            \
+                         #a " " #eq " " #b "\n", __LINE__);             \
          abort();                                                       \
       }                                                                 \
    } while (0)
