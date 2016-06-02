@@ -12,7 +12,7 @@ AC_CHECK_FUNCS(_set_output_format, [AC_SUBST(BSON_NEEDS_SET_OUTPUT_FORMAT, 1)])
 
 # Check for struct timespec
 AC_SUBST(BSON_HAVE_TIMESPEC, 0)
-AC_CHECK_TYPES([struct timespec], [AC_SUBST(BSON_HAVE_TIMESPEC, 1)])
+AC_CHECK_TYPE([struct timespec], [AC_SUBST(BSON_HAVE_TIMESPEC, 1)], [], [#include <time.h>])
 
 # Check for clock_gettime and if it needs -lrt
 AC_SUBST(BSON_HAVE_CLOCK_GETTIME, 0)
