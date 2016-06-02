@@ -18,6 +18,7 @@
 #include "bson-iter.h"
 #include "bson-config.h"
 #include "bson-decimal128.h"
+#include <strings.h>
 
 
 #define ITER_TYPE(i) ((bson_type_t) *((i)->raw + (i)->type))
