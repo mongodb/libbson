@@ -113,7 +113,7 @@ collect_tests_from_dir (char (*paths)[MAX_TEST_NAME_LENGTH] /* OUT */,
    while ((entry = readdir(dir))) {
       assert(paths_index < max_paths);
 
-      if (0 == stat(entry->d_name, &dir_stat) && dir_stat.st_mode & S_IFDIR) {
+      if (0 == stat(entry->d_name, &dir_stat) && S_ISDIR(dir_stat.st_mode)) {
          /* recursively call on child directories */
          if (strcmp (entry->d_name, "..") != 0 &&
              strcmp (entry->d_name, ".") != 0) {
