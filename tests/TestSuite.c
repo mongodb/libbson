@@ -244,9 +244,9 @@ TestSuite_Init (TestSuite *suite,
 
    memset (suite, 0, sizeof *suite);
 
-   suite->name = strdup (name);
+   suite->name = bson_strdup (name);
    suite->flags = 0;
-   suite->prgname = strdup (argv [0]);
+   suite->prgname = bson_strdup (argv [0]);
 
    for (i = 0; i < argc; i++) {
       if (0 == strcmp ("-v", argv [i])) {
@@ -283,7 +283,7 @@ TestSuite_Init (TestSuite *suite,
             _Print_StdErr ("-l requires an argument.\n");
             exit (EXIT_FAILURE);
          }
-         suite->testname = strdup (argv [++i]);
+         suite->testname = bson_strdup (argv [++i]);
       }
    }
    
@@ -338,7 +338,7 @@ TestSuite_AddFull (TestSuite  *suite,   /* IN */
    Test *iter;
 
    test = (Test *)calloc (1, sizeof *test);
-   test->name = strdup (name);
+   test->name = bson_strdup (name);
    test->func = func;
    test->check = check;
    test->next = NULL;
@@ -815,7 +815,7 @@ TestSuite_Destroy (TestSuite *suite)
       if (test->dtor) {
          test->dtor(test->ctx);
       }
-      free (test->name);
+      bson_free (test->name);
       free (test);
    }
 
@@ -823,9 +823,9 @@ TestSuite_Destroy (TestSuite *suite)
       fclose (suite->outfile);
    }
 
-   free (suite->name);
-   free (suite->prgname);
-   free (suite->testname);
+   bson_free (suite->name);
+   bson_free (suite->prgname);
+   bson_free (suite->testname);
 }
 
 
