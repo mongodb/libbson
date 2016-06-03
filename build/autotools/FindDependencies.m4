@@ -1,6 +1,17 @@
 # Check for strnlen()
+dnl AC_CHECK_FUNC isn't properly respecting _XOPEN_SOURCE for strnlen for unknown reason
 AC_SUBST(BSON_HAVE_STRNLEN, 0)
-AC_CHECK_FUNC(strnlen, [AC_SUBST(BSON_HAVE_STRNLEN, 1)])
+AC_CACHE_CHECK([for strnlen],
+  bson_cv_have_strnlen,
+  [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <string.h>
+int strnlen () { return 0; }
+]])],
+    [bson_cv_have_strnlen=no],
+    [bson_cv_have_strnlen=yes])])
+if test "$bson_cv_have_strnlen" = yes; then
+    AC_SUBST(BSON_HAVE_STRNLEN, 1)
+fi
 
 # Check for syscall()
 AC_SUBST(BSON_HAVE_SYSCALL_TID, 0)
