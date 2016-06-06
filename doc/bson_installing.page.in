@@ -93,17 +93,18 @@
 
 Build configuration:
   Enable debugging (slow)                          : no
+  Enable extra alignment (required for 1.0 ABI)    : no
   Compile with debug symbols (slow)                : no
   Enable GCC build optimization                    : yes
   Enable automatic binary hardening                : yes
   Code coverage support                            : no
   Cross Compiling                                  : no
-  Libbson                                          : bundled
+  Big endian                                       : no
+  Link Time Optimization (experimental)            : no
 
 Documentation:
   man                                              : yes
-  HTML                                             : yes
-  Yelp                                             : no</output></screen>
+  HTML                                             : no</output></screen>
     <p>We can now build libbson with the venerable <code>make</code> program.</p>
 
     <screen><output style="prompt">$ </output><input>make</input></screen>
