@@ -30,7 +30,7 @@
 #include "bson-memory.h"
 #include "bson-thread-private.h"
 
-#if BSON_HAVE_SYSCALL_TID
+#ifdef BSON_HAVE_SYSCALL_TID
 #include <sys/syscall.h>
 #endif
 
@@ -46,7 +46,7 @@
 static bson_context_t gContextDefault;
 
 
-#if BSON_HAVE_SYSCALL_TID
+#ifdef BSON_HAVE_SYSCALL_TID
 static uint16_t
 gettid (void)
 {
@@ -372,7 +372,7 @@ _bson_context_init (bson_context_t *context,    /* IN */
       context->oid_get_pid = _bson_context_get_oid_pid;
    } else {
       pid = BSON_UINT16_TO_BE (_bson_getpid());
-#if BSON_HAVE_SYSCALL_TID
+#ifdef BSON_HAVE_SYSCALL_TID
 
       if ((flags & BSON_CONTEXT_USE_TASK_ID)) {
          int32_t tid;
