@@ -154,7 +154,7 @@ test_bson_as_json_decimal128 (void)
    size_t len;
    bson_t *b;
    char *str;
-   bson_decimal128_t decimal128; // 11
+   bson_decimal128_t decimal128;
    decimal128.high = 0x3040000000000000ULL;
    decimal128.low  = 0x000000000000000B;
 

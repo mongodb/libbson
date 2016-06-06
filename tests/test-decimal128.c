@@ -514,7 +514,7 @@ test_decimal128_from_string__round (void) {
    bson_decimal128_from_string ("10E-6177", &truncate);
    bson_decimal128_from_string ("15E-6177", &up);
 
-   // Test rounding with 'max exponent' range of characters: 0.000...00015
+   /* Test rounding with 'max exponent' range of characters: 0.000...00015 */
    up_literal_string[1] = '.';
    up_literal_string[6177] = '1';
    up_literal_string[6178] = '5';

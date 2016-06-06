@@ -297,7 +297,6 @@ gmtsub(const time_t *const timep, const int_fast32_t offset,
 
 	if (!gmt_is_set) {
 		gmt_is_set = true;
-//		if (gmtptr != NULL)
 			gmtload(gmtptr);
 	}
 	result = timesub(timep, offset, gmtptr, tmp);

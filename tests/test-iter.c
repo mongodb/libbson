@@ -127,7 +127,7 @@ test_bson_iter_mixed (void)
    assert(bson_iter_time_t(&iter) == 123456);
    assert(bson_iter_date_time(&iter) == 123456000);
    assert(bson_iter_next(&iter));
-   // This test uses memcmp because libbson lacks decimal128 comparison.
+   /* This test uses memcmp because libbson lacks decimal128 comparison. */
    bson_iter_decimal128(&iter, &iter_value);
    assert(memcmp(&iter_value, &value, sizeof(value)) == 0);
    assert(!bson_iter_next(&iter));
