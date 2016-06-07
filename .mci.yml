@@ -50,7 +50,6 @@ c_driver_variables:
           set -o verbose
           ./configure --enable-optimizations --enable-man-pages --enable-maintainer-flags --enable-debug --with-libbson=bundled
           make -j8
-          make abicheck
           make test TEST_ARGS="--no-fork -d"
       unix: &compile_unix
         compile_script: |
@@ -58,7 +57,6 @@ c_driver_variables:
           set -o verbose
           ./configure --enable-optimizations --enable-man-pages --enable-maintainer-flags --enable-debug --with-libbson=bundled
           make -j8
-          make abicheck
           make test TEST_ARGS="--no-fork -d"
       solaris64: &compile_solaris64
         compile_script: |
@@ -69,7 +67,6 @@ c_driver_variables:
           export SASL_LIBS="-L/opt/csw/lib/amd64/ -lsasl2"
           ./configure --enable-optimizations --enable-man-pages --enable-maintainer-flags --enable-debug --with-libbson=bundled
           make
-          make abicheck
           make test TEST_ARGS="--no-fork -d"
       solaris: &compile_solaris
         compile_script: |
@@ -77,7 +74,6 @@ c_driver_variables:
           set -o verbose
           ./configure --enable-optimizations --enable-man-pages --enable-maintainer-flags --enable-debug --with-libbson=bundled
           make
-          make abicheck
           make test TEST_ARGS="--no-fork -d"
       msvc: &compile_msvc
         compile_script: |
