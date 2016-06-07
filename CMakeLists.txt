@@ -93,6 +93,7 @@ else ()
    endif ()
    set (BSON_EXTRA_ALIGN 1)
    CHECK_FUNCTION_EXISTS(syscall BSON_HAVE_SYSCALL_TID)
+   CHECK_INCLUDE_FILES(strings.h HAVE_STRINGS_H)
 endif ()
 
 set (BSON_HAVE_ATOMIC_32_ADD_AND_FETCH 1)
