@@ -703,12 +703,12 @@ bson_ascii_strtoll (const char  *s,
 
     if (c == '0' && tok[1] != '\0' &&
        (isdigit (tok[1]) || tok[1] == 'x' || tok[1] == 'X')) {
-        /* Hex, octal or binary -- maybe. */
+        /* Hex, octal or decimal */
 
         c = *++tok;
 
         if (c == 'x' || c == 'X') { /* Hex */
-            if (base != 16) {
+            if (base != 16 && base != 0) {
                 *e = (char *)(s);
                 errno = EINVAL;
                 return 0;
@@ -725,22 +725,28 @@ bson_ascii_strtoll (const char  *s,
                 c = *(++tok);
             } while (isxdigit (c));
         }
-        else { /* Octal */
-            if (base != 8) {
+        else { /* Octal or Decimal -- prefixed with 0 */
+            if (base != 8 && base != 0 && base != 10) {
                 *e = (char *)(s);
                 errno = EINVAL;
                 return 0;
             }
-
-            if (c < '0' || c >= '8') {
-                *e = tok;
-                errno = EINVAL;
-                return 0;
+            if (base == 10) {
+                do {
+                  number = (number * 10) + (c - '0');
+                  c = *(++tok);
+                } while (isdigit (c));
+            } else { /*Octal*/
+                if ( c < '0' || c >= '8') {
+                  *e = tok;
+                  errno = EINVAL;
+                  return 0;
+                }
+                do {
+                  number = (number << 3) + (c - '0');
+                  c = *(++tok);
+                } while (('0' <= c) && (c < '8'));
             }
-            do {
-                number = (number << 3) + (c - '0');
-                c = *(++tok);
-            } while (('0' <= c) && (c < '8'));
         }
 
         while (c == 'l' || c == 'L' || c == 'u' || c == 'U') {
