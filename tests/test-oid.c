@@ -218,7 +218,7 @@ test_bson_oid_init_sequence_thread_safe (void)
 }
 
 
-#if defined(__linux__)
+#ifdef BSON_HAVE_SYSCALL_TID
 static void
 test_bson_oid_init_sequence_with_tid (void)
 {
@@ -271,7 +271,7 @@ test_bson_oid_init_with_threads (void)
       bson_context_t *contexts[N_THREADS];
       bson_thread_t threads[N_THREADS];
 
-#if defined(__linux__)
+#ifdef BSON_HAVE_SYSCALL_TID
       flags |= BSON_CONTEXT_USE_TASK_ID;
 #endif
 
@@ -316,7 +316,7 @@ test_oid_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/oid/init_from_string", test_bson_oid_init_from_string);
    TestSuite_Add (suite, "/bson/oid/init_sequence", test_bson_oid_init_sequence);
    TestSuite_Add (suite, "/bson/oid/init_sequence_thread_safe", test_bson_oid_init_sequence_thread_safe);
-#if defined(__linux__)
+#ifdef BSON_HAVE_SYSCALL_TID
    TestSuite_Add (suite, "/bson/oid/init_sequence_with_tid", test_bson_oid_init_sequence_with_tid);
 #endif
    TestSuite_Add (suite, "/bson/oid/init_with_threads", test_bson_oid_init_with_threads);
