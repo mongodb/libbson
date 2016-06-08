@@ -117,6 +117,8 @@ extern "C" {
       } \
    } while (0)
 
+#define ASSERT_CMPUINT8(a, b) ASSERT_CMPSTR((const char *)a, (const char *)b)
+
 
 #define ASSERT_CMPJSON(_a, _b) \
    do {                                                                 \

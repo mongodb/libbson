@@ -27,15 +27,15 @@
 #define realpath(path, expanded) GetFullPathName (path, PATH_MAX, expanded, NULL)
 #endif
 
-typedef void (*test_bson_type_valid_cb)(const char *bson_str,
-                                        uint32_t    bson_str_len,
-                                        const char *canonical_bson_str,
-                                        uint32_t    canonical_bson_str_len,
-                                        const char *extjson_str,
-                                        uint32_t    extjson_str_len,
-                                        const char *canonical_extjson_str,
-                                        uint32_t    canonical_extjson_str_len,
-                                        bool lossy);
+typedef void (*test_bson_type_valid_cb)(const uint8_t *bson_str,
+                                        uint32_t       bson_str_len,
+                                        const uint8_t *canonical_bson_str,
+                                        uint32_t       canonical_bson_str_len,
+                                        const uint8_t *extjson_str,
+                                        uint32_t       extjson_str_len,
+                                        const uint8_t *canonical_extjson_str,
+                                        uint32_t       canonical_extjson_str_len,
+                                        bool           lossy);
 
 #ifdef _MSC_VER
 # define SSCANF sscanf_s
@@ -48,15 +48,15 @@ typedef void (*test_bson_type_valid_cb)(const char *bson_str,
 #endif
 
 void
-test_bson_type_decimal128 (const char *bson_str,
-                           uint32_t    bson_str_len,
-                           const char *canonical_bson_str,
-                           uint32_t    canonical_bson_str_len,
-                           const char *extjson_str,
-                           uint32_t    extjson_str_len,
-                           const char *canonical_extjson_str,
-                           uint32_t    canonical_extjson_str_len,
-                           bool lossy)
+test_bson_type_decimal128 (const uint8_t *bson_str,
+                           uint32_t       bson_str_len,
+                           const uint8_t *canonical_bson_str,
+                           uint32_t       canonical_bson_str_len,
+                           const uint8_t *extjson_str,
+                           uint32_t       extjson_str_len,
+                           const uint8_t *canonical_extjson_str,
+                           uint32_t       canonical_extjson_str_len,
+                           bool           lossy)
 {
    char bson_string[BSON_DECIMAL128_STRING];
    char json_string[BSON_DECIMAL128_STRING];
@@ -79,11 +79,11 @@ test_bson_type_decimal128 (const char *bson_str,
    bson_init_static (&canonical_bson, canonical_bson_str, canonical_bson_str_len);
 
 
-   ASSERT_CMPSTR ((const char *)bson_get_data (&bson), bson_str);
+   ASSERT_CMPUINT8 (bson_get_data (&bson), bson_str);
    /* B->cB */
-   ASSERT_CMPSTR ((const char *)bson_get_data (&bson), canonical_bson_str);
+   ASSERT_CMPUINT8 (bson_get_data (&bson), canonical_bson_str);
    /* cB->cB */
-   ASSERT_CMPSTR ((const char *)bson_get_data (&canonical_bson), canonical_bson_str);
+   ASSERT_CMPUINT8 (bson_get_data (&canonical_bson), canonical_bson_str);
 
    extjson = bson_new_from_json (extjson_str, extjson_str_len, &error);
    canonical_extjson = bson_new_from_json (canonical_extjson_str, canonical_extjson_str_len, &error);
@@ -95,7 +95,7 @@ test_bson_type_decimal128 (const char *bson_str,
    ASSERT_CMPJSON (bson_as_json (extjson, NULL), canonical_extjson_str);
    
    /* cb->cE */
-   ASSERT_CMPSTR ((const char*) bson_get_data (&canonical_bson), (const char*) bson_get_data (canonical_extjson));
+   ASSERT_CMPUINT8 (bson_get_data (&canonical_bson), bson_get_data (canonical_extjson));
 
    /* cE->cE */
    ASSERT_CMPJSON (bson_as_json (canonical_extjson, NULL), canonical_extjson_str);
@@ -105,7 +105,7 @@ test_bson_type_decimal128 (const char *bson_str,
       ASSERT_CMPJSON (bson_as_json (extjson, NULL), canonical_extjson_str);
 
       /* cE->cB */
-      ASSERT_CMPSTR ((const char*) bson_get_data (canonical_extjson), canonical_bson_str);
+      ASSERT_CMPUINT8 (bson_get_data (canonical_extjson), canonical_bson_str);
    }
    bson_destroy (extjson);
    bson_destroy (canonical_extjson);
@@ -139,13 +139,15 @@ test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
       bson_iter_recurse (&iter, &inner_iter);
       while (bson_iter_next (&inner_iter)) {
          bson_iter_t test;
-         char *bson_str;
-         uint32_t    bson_str_len;
-         const char *extjson_str = NULL;
-         uint32_t    extjson_str_len;
-         const char *canonical_extjson_str = NULL;
-         uint32_t    canonical_extjson_str_len;
-         bool lossy = false;
+         uint8_t       *bson_str;
+         uint32_t       bson_str_len;
+         const uint8_t *extjson_str;
+         uint32_t       extjson_str_len;
+         const uint8_t *canonical_extjson_str;
+         uint32_t       canonical_extjson_str_len;
+         bool           lossy = false;
+         bool           have_extjson = false;
+         bool           have_canonical_extjson = false;
 
          bson_iter_recurse (&inner_iter, &test);
          _test_bson_type_print_description (&test);
@@ -169,11 +171,13 @@ test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
             }
 
             if (!strcmp (key, "extjson") && BSON_ITER_HOLDS_UTF8 (&test)) {
-               extjson_str = bson_iter_utf8 (&test, &extjson_str_len);
+               extjson_str = (const uint8_t *)bson_iter_utf8 (&test, &extjson_str_len);
+               have_extjson = true;
             }
 
             if (!strcmp (key, "canonical_extjson") && BSON_ITER_HOLDS_UTF8 (&test)) {
-               canonical_extjson_str = bson_iter_utf8 (&test, &canonical_extjson_str_len);
+               canonical_extjson_str = (const uint8_t *)bson_iter_utf8 (&test, &canonical_extjson_str_len);
+               have_canonical_extjson = true;
             }
             if (!strcmp (key, "canonical_extjson") && BSON_ITER_HOLDS_BOOL (&test)) {
                lossy = bson_iter_bool (&test);
@@ -184,10 +188,10 @@ test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
                 bson_str_len,
                 bson_str,
                 bson_str_len,
-                extjson_str,
-                extjson_str_len,
-                canonical_extjson_str ? canonical_extjson_str : extjson_str,
-                canonical_extjson_str ? canonical_extjson_str_len : extjson_str_len,
+                have_extjson ? extjson_str : NULL,
+                have_extjson ?  extjson_str_len : 0,
+                have_canonical_extjson ? canonical_extjson_str : extjson_str,
+                have_canonical_extjson ? canonical_extjson_str_len : extjson_str_len,
                 lossy);
          bson_free (bson_str);
       }
