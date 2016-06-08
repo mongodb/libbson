@@ -201,7 +201,7 @@ test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
          bson_iter_recurse (&inner_iter, &test);
          _test_bson_type_print_description (&test);
 
-         if (bson_iter_find (&test, "subject") && BSON_ITER_HOLDS_UTF8 (&test)) {
+         if (bson_iter_find (&test, "string") && BSON_ITER_HOLDS_UTF8 (&test)) {
             bson_decimal128_t d;
             uint32_t tmp;
             const char *input = bson_iter_utf8 (&test, &tmp);

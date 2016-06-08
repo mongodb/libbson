@@ -105,6 +105,7 @@ test_decimal128_to_string__regular (void) {
    bson_decimal128_t largest_regular;
    bson_decimal128_t trailing_zeros;
    bson_decimal128_t all_digits;
+   bson_decimal128_t full_house;
 
    DECIMAL128_FROM_ULLS (one, 0x3040000000000000, 0x0000000000000001);
    DECIMAL128_FROM_ULLS (zero, 0x3040000000000000, 0x0000000000000000);
@@ -120,6 +121,9 @@ test_decimal128_to_string__regular (void) {
    DECIMAL128_FROM_ULLS (trailing_zeros, 0x302a000000000000, 0x00000000075aef40);
    /* 0.1234567890123456789012345678901234 */
    DECIMAL128_FROM_ULLS (all_digits, 0x2ffc3cde6fff9732, 0xde825cd07e96aff2);
+
+   /* 5192296858534827628530496329220095 */
+   DECIMAL128_FROM_ULLS (full_house, 0x3040ffffffffffff, 0xffffffffffffffff);
 
    bson_decimal128_to_string (&one, bid_string);
    assert (!strcmp ("1", bid_string));
@@ -150,6 +154,9 @@ test_decimal128_to_string__regular (void) {
 
    bson_decimal128_to_string (&all_digits, bid_string);
    assert (!strcmp ("0.1234567890123456789012345678901234", bid_string));
+
+   bson_decimal128_to_string (&full_house, bid_string);
+   assert (!strcmp ("5192296858534827628530496329220095", bid_string));
 }
 
 
@@ -163,7 +170,6 @@ test_decimal128_to_string__scientific (void) {
    bson_decimal128_t large;      /* 9.999987654321E+112 */
    bson_decimal128_t largest;    /* 9.999999999999999999999999999999999E+6144 */
    bson_decimal128_t tiniest;    /* 9.999999999999999999999999999999999E-6143 */
-   bson_decimal128_t full_house; /* 5.192296858534827628530496329220095E+33 */
    bson_decimal128_t trailing_zero; /* 1.050E9 */
    bson_decimal128_t one_trailing_zero; /* 1.050E4 */
    bson_decimal128_t move_decimal; /* 105 */
@@ -176,7 +182,6 @@ test_decimal128_to_string__scientific (void) {
    DECIMAL128_FROM_ULLS (large, 0x3108000000000000, 0x000009184db63eb1);
    DECIMAL128_FROM_ULLS (largest, 0x5fffed09bead87c0, 0x378d8e63ffffffff);
    DECIMAL128_FROM_ULLS (tiniest, 0x0001ed09bead87c0, 0x378d8e63ffffffff);
-   DECIMAL128_FROM_ULLS (full_house, 0x3040ffffffffffff, 0xffffffffffffffff);
    DECIMAL128_FROM_ULLS (trailing_zero, 0x304c000000000000, 0x000000000000041a);
    DECIMAL128_FROM_ULLS (one_trailing_zero, 0x3042000000000000, 0x000000000000041a);
    DECIMAL128_FROM_ULLS (move_decimal, 0x3040000000000000, 0x0000000000000069);
@@ -203,9 +208,6 @@ test_decimal128_to_string__scientific (void) {
 
    bson_decimal128_to_string (&tiniest, bid_string);
    assert (!strcmp ("9.999999999999999999999999999999999E-6143", bid_string));
-
-   bson_decimal128_to_string (&full_house, bid_string);
-   assert (!strcmp ("5.192296858534827628530496329220095E+33", bid_string));
 
    bson_decimal128_to_string (&trailing_zero, bid_string);
    assert (!strcmp ("1.050E+9", bid_string));
@@ -461,13 +463,10 @@ test_decimal128_from_string__exponent_normalization (void) {
       "0000000000000000000000000000000000",
    &a_disaster);
 
-   bson_decimal128_from_string ("1E-6177", &zero);
-
    assert (decimal128_equal (&trailing_zeros, 0x304c314dc6448d93, 0x38c15b0a00000000));
    assert (decimal128_equal (&one_normalize, 0x3042314dc6448d93, 0x38c15b0a00000000));
    assert (decimal128_equal (&no_normalize, 0x3040314dc6448d93, 0x38c15b0a00000000));
    assert (decimal128_equal (&a_disaster, 0x37cc314dc6448d93, 0x38c15b0a00000000));
-   assert (decimal128_equal (&zero, 0x0000000000000000, 0x0000000000000000));
 }
 
 
@@ -487,78 +486,6 @@ test_decimal128_from_string__zeros (void) {
    assert (decimal128_equal (&exponent_zero, 0x2b7a000000000000, 0x0000000000000000));
    assert (decimal128_equal (&large_exponent, 0x5f20000000000000, 0x0000000000000000));
    assert (decimal128_equal (&negative_zero, 0xb03e000000000000, 0x0000000000000000));
-}
-
-
-static void
-test_decimal128_from_string__round (void) {
-   bson_decimal128_t truncate;
-   bson_decimal128_t up;
-   bson_decimal128_t up_literal;
-   bson_decimal128_t check_tie_up;
-   bson_decimal128_t check_tie_trunc;
-   bson_decimal128_t extra_digit_up;
-   bson_decimal128_t extra_digit_down;
-   bson_decimal128_t extra_digit_tie;
-   bson_decimal128_t extra_digit_tie_break;
-   bson_decimal128_t too_big;
-   bson_decimal128_t largest_binary;
-   bson_decimal128_t round_propagate;
-   bson_decimal128_t round_propagate_large;
-   bson_decimal128_t not_inf;
-   bson_decimal128_t round_propagate_inf;
-   char up_literal_string[6180];
-
-   memset (up_literal_string, '0', sizeof up_literal_string);
-
-   bson_decimal128_from_string ("10E-6177", &truncate);
-   bson_decimal128_from_string ("15E-6177", &up);
-
-   /* Test rounding with 'max exponent' range of characters: 0.000...00015 */
-   up_literal_string[1] = '.';
-   up_literal_string[6177] = '1';
-   up_literal_string[6178] = '5';
-   up_literal_string[6179] = '\0';
-   bson_decimal128_from_string (up_literal_string, &up_literal);
-
-   bson_decimal128_from_string ("251E-6178", &check_tie_up);
-   bson_decimal128_from_string ("250E-6178", &check_tie_trunc);
-
-   bson_decimal128_from_string ("10000000000000000000000000000000006", &extra_digit_up);
-   bson_decimal128_from_string ("10000000000000000000000000000000003", &extra_digit_down);
-   bson_decimal128_from_string ("10000000000000000000000000000000005", &extra_digit_tie);
-   bson_decimal128_from_string ("100000000000000000000000000000000051", &extra_digit_tie_break);
-
-   bson_decimal128_from_string ("10000000000000000000000000000000006E6111", &too_big);
-
-   bson_decimal128_from_string ("12980742146337069071326240823050239", &largest_binary);
-
-   bson_decimal128_from_string ("99999999999999999999999999999999999", &round_propagate);
-   bson_decimal128_from_string (
-      "9999999999999999999999999999999999999999999999999999999999999999999"
-      "999999999999999999999999999999999"
-   , &round_propagate_large);
-
-   bson_decimal128_from_string ("9999999999999999999999999999999999E6111", &not_inf);
-   bson_decimal128_from_string ("99999999999999999999999999999999999E6144", &round_propagate_inf);
-
-   assert (decimal128_equal (&truncate, 0x0000000000000000, 0x0000000000000001));
-   assert (decimal128_equal (&up, 0x0000000000000000, 0x0000000000000002));
-   assert (decimal128_equal (&up_literal, 0x0000000000000000, 0x0000000000000002));
-   assert (decimal128_equal (&check_tie_up, 0x0000000000000000, 0x0000000000000003));
-   assert (decimal128_equal (&check_tie_trunc, 0x0000000000000000, 0x0000000000000002));
-
-   assert (decimal128_equal (&extra_digit_up, 0x3042314dc6448d93, 0x38c15b0a00000001));
-   assert (decimal128_equal (&extra_digit_down, 0x3042314dc6448d93, 0x38c15b0a00000000));
-   assert (decimal128_equal (&extra_digit_tie, 0x3042314dc6448d93, 0x38c15b0a00000000));
-   assert (decimal128_equal (&extra_digit_tie_break, 0x3044314dc6448d93, 0x38c15b0a00000001));
-
-   assert (decimal128_equal (&too_big, 0x7800000000000000, 0x0000000000000000));
-   assert (decimal128_equal (&largest_binary, 0x3042400000000000, 0x0000000000000000));
-   assert (decimal128_equal (&round_propagate, 0x3044314dc6448d93, 0x38c15b0a00000000));
-   assert (decimal128_equal (&round_propagate_large, 0x30c6314dc6448d93, 0x38c15b0a00000000));
-   assert (decimal128_equal (&not_inf, 0x5fffed09bead87c0, 0x378d8e63ffffffff));
-   assert (decimal128_equal (&round_propagate_inf, 0x7800000000000000, 0x0000000000000000));
 }
 
 void
@@ -603,7 +530,4 @@ test_decimal128_install (TestSuite *suite)
    TestSuite_Add (suite,
                   "/bson/decimal128/from_string/zero",
                   test_decimal128_from_string__zeros);
-   TestSuite_Add (suite,
-                  "/bson/decimal128/from_string/round",
-                  test_decimal128_from_string__round);
 }
