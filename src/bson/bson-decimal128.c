@@ -463,7 +463,6 @@ bson_decimal128_from_string (const char        *string, /* IN */
    size_t last_digit = 0;       /* The index of the last digit */
 
    int32_t exponent = 0;
-   size_t i = 0;                   /* loop index over array */
    uint64_t significand_high = 0;  /* The high 17 digits of the significand */
    uint64_t significand_low = 0;   /* The low 17 digits of the significand */
    uint16_t biased_exponent = 0;   /* The biased exponent */
@@ -656,9 +655,7 @@ bson_decimal128_from_string (const char        *string, /* IN */
    /* Round */
    /* We've normalized the exponent, but might still need to round. */
    if (last_digit - first_digit + 1 < significant_digits) {
-      size_t end_of_string = ndigits_read + includes_sign + saw_radix;
       uint8_t round_digit;
-      uint8_t round_bit = 0;
 
       /* There are non-zero digits after last_digit that need rounding. */
       /* We round to nearest, ties to even */
