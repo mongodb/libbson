@@ -71,7 +71,7 @@ if CAN_ABI_CHECK
 endif
 
 valgrind: $(TEST_PROGS)
-	$(LIBTOOL) --mode=execute valgrind --leak-check=full ./test-libbson $(TEST_ARGS) --no-fork
+	$(LIBTOOL) --mode=execute valgrind --error-exitcode=1 --leak-check=full ./test-libbson $(TEST_ARGS) --no-fork
 
 debug: $(TEST_PROGS)
 	$(LIBTOOL) --mode=execute $(DEBUGGER) ./test-libbson $(TEST_ARGS)
