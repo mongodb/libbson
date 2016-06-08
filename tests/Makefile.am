@@ -156,8 +156,10 @@ EXTRA_DIST += \
 	tests/binary/test9.bson \
 	tests/binary/trailingnull.bson \
 	tests/json/test.json \
-	tests/json/type/array.json \
-	tests/json/type/boolean.json \
-	tests/json/type/corrupted.json \
-	tests/json/type/decimal128.json \
-	tests/json/type/int32.json
+	tests/json/type/decimal128/decimal128-1.json \
+	tests/json/type/decimal128/decimal128-2.json \
+	tests/json/type/decimal128/decimal128-3.json \
+	tests/json/type/decimal128/decimal128-4.json \
+	tests/json/type/decimal128/decimal128-5.json \
+	tests/json/type/decimal128/decimal128-6.json \
+	tests/json/type/decimal128/decimal128-7.json

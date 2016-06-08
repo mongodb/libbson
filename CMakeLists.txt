@@ -254,11 +254,13 @@ if (ENABLE_TESTS)
        ${SOURCE_DIR}/tests/json-test.c
        ${SOURCE_DIR}/tests/json-test.c
        ${SOURCE_DIR}/tests/json-test.h
-       ${SOURCE_DIR}/tests/json/type/array.json
-       ${SOURCE_DIR}/tests/json/type/boolean.json
-       ${SOURCE_DIR}/tests/json/type/corrupted.json
-       ${SOURCE_DIR}/tests/json/type/decimal128.json
-       ${SOURCE_DIR}/tests/json/type/int32.json
+       ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-1.json
+       ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-2.json
+       ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-3.json
+       ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-4.json
+       ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-5.json
+       ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-6.json
+       ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-7.json
     )
 
     target_link_libraries(test-libbson bson_static)
