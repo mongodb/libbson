@@ -56,6 +56,11 @@
 #define TYPE_SIGNED(type) (((type) -1) < 0)
 #endif /* !defined TYPE_SIGNED */
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshift-negative-value"
+#endif
+
 /* The minimum and maximum finite time values.  */
 static time_t const time_t_min =
     (TYPE_SIGNED(time_t)
@@ -66,6 +71,9 @@ static time_t const time_t_max =
         ? - (~ 0 < 0) - ((time_t) -1 << (CHAR_BIT * sizeof (time_t) - 1))
         : -1);
 
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 #ifndef TZ_MAX_TIMES
 #define TZ_MAX_TIMES	2000
