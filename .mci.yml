@@ -6,102 +6,27 @@
 
 c_driver_variables:
 
-  test_list: &std_tests
-    - name: "compile"
+  unix_compile: &unix_compile
+    - name: "debug-compile"
+    - name: "debug-compile-c89"
+    - name: "debug-compile-c99"
+    - name: "debug-compile-c11"
 
-  release_archive: &release_archive_builder
-    - name: "releasearchive"
+  windows_compile: &windows_compile
+    - name: "debug-windows-compile"
 
-  just_compile: &just_compile
-    - name: "compile"
-
-  ## Common sets of CFLAGS
+## Common sets of CFLAGS
   cflags:
     standard: &cflags_power8
-      cflags: "-mcpu=power8 -mtune=power8 -mcmodel=medium -Werror"
+      cflags: "-mcpu=power8 -mtune=power8 -mcmodel=medium"
     standard: &cflags_64
-      cflags: "-m64 -march=x86-64 -Werror"
-    standard_no_werror: &cflags_64_no_werror
       cflags: "-m64 -march=x86-64"
     standard_32: &cflags_32
-      cflags: "-m32 -march=i386 -Werror"
+      cflags: "-m32 -march=i386"
     osx_1010: &cflags_osx_1010
       cflags: "-m64 -march=x86-64"
     solaris_64: &cflags_solaris_64
       cflags: "-m64 -march=x86-64"
-
-  ## Extra $PATH entries
-  paths:
-    unix_path: &unix_path
-      extra_path:
-    osx_path: &osx_path
-      extra_path:
-    windows_path: &windows_path
-      extra_path: /cygdrive/c/libbson/bin:/cygdrive/c/openssl/bin
-    solaris_path: &solaris_path
-      extra_path: /opt/mongodbtoolchain/bin
-
-  ## Scripts that are shared between buildvariants
-  scripts:
-    compile:
-      osx: &compile_osx
-        compile_script: |
-          set -o errexit
-          set -o verbose
-          ./configure --enable-optimizations --enable-man-pages --enable-maintainer-flags --enable-debug --with-libbson=bundled
-          make -j8
-          make test TEST_ARGS="--no-fork -d"
-      unix: &compile_unix
-        compile_script: |
-          set -o errexit
-          set -o verbose
-          ./configure --enable-optimizations --enable-man-pages --enable-maintainer-flags --enable-debug --with-libbson=bundled
-          make -j8
-          make test TEST_ARGS="--no-fork -d"
-      solaris64: &compile_solaris64
-        compile_script: |
-          set -o errexit
-          set -o verbose
-          sudo /opt/csw/bin/pkgutil -y -i sasl_dev
-          export SASL_CFLAGS="-I/opt/csw/include/"
-          export SASL_LIBS="-L/opt/csw/lib/amd64/ -lsasl2"
-          ./configure --enable-optimizations --enable-man-pages --enable-maintainer-flags --enable-debug --with-libbson=bundled
-          make
-          make test TEST_ARGS="--no-fork -d"
-      solaris: &compile_solaris
-        compile_script: |
-          set -o errexit
-          set -o verbose
-          ./configure --enable-optimizations --enable-man-pages --enable-maintainer-flags --enable-debug --with-libbson=bundled
-          make
-          make test TEST_ARGS="--no-fork -d"
-      msvc: &compile_msvc
-        compile_script: |
-          file "tests/binary/gridfs-large.dat"
-          set -o errexit
-          set -o verbose
-          cmake="/cygdrive/c/cmake/bin/cmake"
-          echo "MSBUILD: $MSBUILD, GENERATOR: $GENERATOR, CMAKE_DEFS: $CMAKE_DEFS"
-          "$cmake" -G "$GENERATOR" "-DCMAKE_INSTALL_PREFIX=C:/libbson"
-          "$MSBUILD" /m ALL_BUILD.vcxproj
-          "$MSBUILD" /m INSTALL.vcxproj
-          ./Debug/test-libbson.exe --no-fork -d
-
-## Other OS-specific attributes, grouped by OS
-  unix_common: &unix_common
-    <<: *compile_unix
-    <<: *unix_path
-
-  solaris_common: &solaris_common
-    <<: *unix_common
-    <<: *compile_solaris
-    <<: *solaris_path
-
-  solaris64_common: &solaris64_common
-    <<: *compile_unix
-    <<: *unix_path
-    <<: *compile_solaris64
-    <<: *solaris_path
 
 ## Misc. for Windows builds
   windows_compilers:
@@ -111,32 +36,23 @@ c_driver_variables:
     msvc2010: &with_msvc2010
       generator: Visual Studio 10 2010 Win64
       msbuild: /cygdrive/c/Windows/Microsoft.NET/Framework64/v4.0.30319/MSBuild.exe
-      dllpath: "c:/openssl/bin,c:/sasl/bin"
     msvc2013_32bit: &with_msvc2013_32bit
       generator: Visual Studio 12 2013
       msbuild: /cygdrive/c/Program Files (x86)/MSBuild/12.0/Bin/MSBuild.exe
     msvc2013: &with_msvc2013
       generator: Visual Studio 12 2013 Win64
       msbuild: /cygdrive/c/Program Files (x86)/MSBuild/12.0/Bin/MSBuild.exe
-      dllpath: "c:/openssl/bin,c:/sasl/bin"
     msvc2015_32bit: &with_msvc2015_32bit
       generator: Visual Studio 14 2015
       msbuild: /cygdrive/c/Program Files (x86)/MSBuild/14.0/Bin/MSBuild.exe
     msvc2015: &with_msvc2015
       generator: Visual Studio 14 2015 Win64
       msbuild: /cygdrive/c/Program Files (x86)/MSBuild/14.0/Bin/MSBuild.exe
-      dllpath: "c:/openssl/bin,c:/sasl/bin"
 
-  ## all windows buildvariants have these attributes in common
-  windows_common: &windows_common
-    extension: ".exe"
-    windows: true
-    <<: *windows_path
-
-  msvc_common: &msvc_common
-    <<: *windows_common
-    <<: *compile_msvc
-
+## Configure flags
+  configure_flags:
+     standard: &configure_flags_default
+     flags: "--enable-optimizations --enable-man-pages=no --enable-maintainer-flags --enable-debug --enable-extra-align=no --enable-hardening=no"
 
 #######################################
 #            Functions                #
@@ -161,36 +77,86 @@ functions:
     params:
       directory: libbson
 
-  "create working directory" :
-    command: shell.exec
-    params:
-      script: |
-        rm -rf libbson
-        mkdir libbson
-
-  # MCI's S3 mechanism doesn't support symlinks, use curl instead of s3.get
-  "fetch artifacts" :
+  "compile unix function" :
     command: shell.exec
     params:
       working_dir: "libbson"
       script: |
-        set -o verbose
-        set -o errexit
-        ls -la
-        curl http://s3.amazonaws.com/mciuploads/libbson/${build_variant}/${revision}/artifacts/mongo-${build_id}.tar.gz -o ${build_id}.tar.gz --silent --max-time 120
-        tar zxf ${build_id}.tar.gz
+          set -o errexit
+          set -o verbose
+          export PATH="/opt/mongodbtoolchain/bin:$PATH"
+          export CFLAGS="$CFLAGS ${CFLAGS} ${cflags}"
+          export CC="${CC}"
+          if [ `uname -s` = "Linux" ]; then
+             cpus=`grep -c '^processor' /proc/cpuinfo`
+             MAKEFLAGS="-j{$cpus}"
+          fi
+          ${CONFIGURE_SCRIPT|./autogen.sh} ${CONFIGURE_FLAGS}
+          make
 
-  "compile function" :
+  "run unix tests" :
     command: shell.exec
     params:
       working_dir: "libbson"
       script: |
-          export PATH=${extra_path}:$PATH
-          export GENERATOR="${generator}"     # For CMake on Windows
-          export MSBUILD="${msbuild}"         # For CMake on Windows
-          export CMAKE_DEFS="${cmake_defs}"   # For CMake on Windows
-          export CFLAGS="${cflags}"
-          ${compile_script}
+          set -o errexit
+          make ${TEST_TARGET} TEST_ARGS="--no-fork -d"
+
+  "compile windows function" :
+    command: shell.exec
+    params:
+      working_dir: "libbson"
+      script: |
+          set -o errexit
+          set -o verbose
+          export GENERATOR="${generator}"
+          export MSBUILD="${msbuild}"
+          export CMAKE_DEFS="${cmake_defs}"
+          cmake="/cygdrive/c/cmake/bin/cmake"
+          echo "MSBUILD: $MSBUILD, GENERATOR: $GENERATOR, CMAKE_DEFS: $CMAKE_DEFS"
+          "$cmake" -G "$GENERATOR" "-DCMAKE_INSTALL_PREFIX=C:/libbson"
+          "$MSBUILD" /m ALL_BUILD.vcxproj
+          "$MSBUILD" /m INSTALL.vcxproj
+          ./Debug/test-libbson.exe --no-fork -d
+
+  "archive and upload":
+    - command: shell.exec
+      params:
+        working_dir: "libbson"
+        script: |
+          set -o errexit
+          set -o verbose
+          tar czf ../libbson.tar.gz .
+    - command: s3.put
+      params:
+        aws_key: ${aws_key}
+        aws_secret: ${aws_secret}
+        local_file: libbson.tar.gz
+        remote_file: libbson/${build_variant}/${revision}/artifacts/mongo-${build_id}.tar.gz
+        bucket: mciuploads
+        permissions: public-read
+        content_type: ${content_type|application/x-gzip}
+
+  "make release archive and upload":
+    - command: shell.exec
+      params:
+        working_dir: "libbson"
+        script: |
+          set -o errexit
+          set -o verbose
+          ./autogen.sh --enable-man-pages --enable-html-docs --enable-maintainer-flags --enable-debug
+          make dist
+          mv libbson*.tar.gz ../libbson-archive.tar.gz
+          ls -la
+    - command: s3.put
+      params:
+        aws_key: ${aws_key}
+        aws_secret: ${aws_secret}
+        local_file: libbson-archive.tar.gz
+        remote_file: libbson/${revision}/${version_id}/artifacts/libbson-archive.tar.gz
+        bucket: mciuploads
+        permissions: public-read
+        content_type: ${content_type|application/x-gzip}
 
   "report results" :
     command: attach.results
@@ -206,52 +172,84 @@ tasks:
     - name: releasearchive
       commands:
         - func: "fetch source"
-        - command: git.apply_patch
-          params:
-            directory: "libbson"
-        - command: shell.exec
-          params:
-              working_dir: "libbson"
-              script: |
-                set -o errexit
-                set -o verbose
-                ./autogen.sh --enable-man-pages --enable-html-docs --enable-maintainer-flags --enable-debug
-                make dist
-                mv libbson*.tar.gz ../libbson-archive.tar.gz
-                ls -la
-        - command: s3.put
-          params:
-            aws_key: ${aws_key}
-            aws_secret: ${aws_secret}
-            local_file: libbson-archive.tar.gz
-            remote_file: libbson/${revision}/${version_id}/artifacts/libbson-archive.tar.gz
-            bucket: mciuploads
-            permissions: public-read
-            content_type: ${content_type|application/x-gzip}
+        - func: "make release archive and upload"
 
-    - name: compile
+    - name: "release-compile"
       depends_on:
         - name: "releasearchive"
           variant: ubuntu-1404-64-release
       commands:
         - func: "fetch releasearchive"
-        - func: "compile function"
-        - command: shell.exec
-          params:
-              working_dir: "libbson"
-              script: |
-                set -o errexit
-                set -o verbose
-                tar czf ../libbson.tar.gz .
-        - command: s3.put
-          params:
-            aws_key: ${aws_key}
-            aws_secret: ${aws_secret}
-            local_file: libbson.tar.gz
-            remote_file: libbson/${build_variant}/${revision}/artifacts/mongo-${build_id}.tar.gz
-            bucket: mciuploads
-            permissions: public-read
-            content_type: ${content_type|application/x-gzip}
+        - func: "compile unix function"
+          vars:
+             CONFIGURE_SCRIPT: "./configure"
+             CONFIGURE_FLAGS: "--enable-optimizations --enable-man-pages --enable-html-docs"
+        - func: "run unix tests"
+        - func: "archive and upload"
+
+    - name: "debug-compile"
+      commands:
+        - func: "fetch source"
+        - func: "compile unix function"
+          vars:
+             CONFIGURE_FLAGS: *configure_flags_default
+             CFLAGS: "${CFLAGS} -Werror"
+             CC: ${CC|gcc}
+        - func: "run unix tests"
+        - func: "archive and upload"
+
+    - name: "debug-compile-c11"
+      commands:
+        - func: "fetch source"
+        - func: "compile unix function"
+          vars:
+             CONFIGURE_FLAGS: *configure_flags_default
+             CFLAGS: "${CFLAGS} -std=c11 -D_XOPEN_SOURCE=600 -Werror"
+             CC: ${CC|gcc}
+        - func: "run unix tests"
+        - func: "archive and upload"
+
+    - name: "debug-compile-c99"
+      commands:
+        - func: "fetch source"
+        - func: "compile unix function"
+          vars:
+             CONFIGURE_FLAGS: *configure_flags_default
+             CFLAGS: "${CFLAGS} -std=c99 -D_XOPEN_SOURCE=600 -Werror"
+             CC: ${CC|gcc}
+        - func: "run unix tests"
+        - func: "archive and upload"
+
+    - name: "debug-compile-c89"
+      commands:
+        - func: "fetch source"
+        - func: "compile unix function"
+          vars:
+             CONFIGURE_FLAGS: *configure_flags_default
+             CFLAGS: "${CFLAGS} -std=c99 -D_POSIX_C_SOURCE=200112L -Werror"
+             CC: ${CC|gcc}
+        - func: "run unix tests"
+        - func: "archive and upload"
+
+    - name: "debug-compile-valgrind"
+      commands:
+        - func: "fetch source"
+        - func: "compile unix function"
+          vars:
+             CONFIGURE_FLAGS: *configure_flags_default
+             CFLAGS: "${CFLAGS}"
+             CC: ${CC|gcc}
+        - func: "run unix tests"
+          vars:
+             TEST_TARGET: valgrind
+        - func: "archive and upload"
+
+    - name: "debug-windows-compile"
+      commands:
+        - func: "fetch source"
+        - func: "compile windows function"
+        - func: "archive and upload"
+
 
 #######################################
 #           Buildvariants             #
@@ -259,101 +257,98 @@ tasks:
 
 buildvariants:
 
-#######################################
-#         Linux Buildvariants         #
-#######################################
-
-### RHEL 5.5
-#
-#- name: rhel55
-#  display_name: "RHEL 5.5"
-#  expansions:
-#    <<: *cflags_64
-#    <<: *warning_flags_rhel55
-#    <<: *cpppath_rhel55
-#    <<: *libpath_rhel55_64
-#  run_on:
-#  - rhel55-test
-#  tasks: *just_compile
-#
-### RHEL 5.5 32-bit
-#
-#- name: rhel55-32-bit
-#  display_name: "RHEL 5.5 32"
-#  expansions:
-#    <<: *cflags_32
-#    <<: *warning_flags_rhel55
-#    <<: *cpppath_rhel55
-#    <<: *libpath_rhel55_32
-#  run_on:
-#  - rhel55-test
-#  tasks: *just_compile
-
 - name: ubuntu-1404-64-release
   display_name: "Release Archive Creator"
   expansions:
     <<: *cflags_64
-    <<: *unix_common
   run_on:
      - ubuntu1404-test
-  tasks: *release_archive_builder
+  tasks:
+    - name: "releasearchive"
+    - name: "release-compile"
+    - name: "debug-compile-valgrind"
 
-## Ubuntu 1204
+## clang
 
+#### Doesn't have libtool or autoconf
+#- name: clang35
+#  display_name: "Debian 8.1 (clang 3.5)"
+#  expansions:
+#    <<: *cflags_64
+#    CC: clang
+#    source: "release"
+#  run_on:
+#  - debian81-build
+#  tasks: *unix_compile
+
+- name: clang37
+  display_name: "Archlinux (clang 3.7)"
+  expansions:
+    <<: *cflags_64
+    CC: clang
+  run_on:
+  - archlinux-build
+  tasks: *unix_compile
+
+- name: clang38
+  display_name: "Ubuntu 16 64 (clang 3.8)"
+  expansions:
+    <<: *cflags_64
+    CC: clang
+  run_on:
+  - ubuntu1604-build
+  tasks: *unix_compile
+
+## GCC
+- name: gcc48
+  display_name: "RHEL 7.0 64 (GCC 4.8)"
+  expansions:
+    <<: *cflags_64
+  run_on:
+  - rhel70
+  tasks: *unix_compile
+
+- name: gcc53
+  display_name: "Ubuntu 16 64 (GCC 5.3)"
+  expansions:
+    <<: *cflags_64
+  run_on:
+  - ubuntu1604-build
+  tasks: *unix_compile
+
+
+# Other Linuxs
 - name: ubuntu-1204-64
   display_name: "Ubu 12 gcc-4.6.3 64"
   expansions:
     <<: *cflags_64
-    <<: *unix_common
   run_on:
   - ubuntu1204-test
-  tasks: *just_compile
+  tasks: *unix_compile
 
 - name: rhel-62
   display_name: "RHEL 6.2 64"
   expansions:
-    <<: *cflags_64_no_werror
-    <<: *unix_common
+    <<: *cflags_64
   run_on:
      - rhel62-test
-  tasks: *just_compile
+  tasks: *unix_compile
 
-- name: rhel-70
-  display_name: "RHEL 7.0 64"
-  expansions:
-    <<: *cflags_64
-    <<: *unix_common
-  run_on:
-  - rhel70
-  tasks: *just_compile
-
+## ZAP
 - name: rhel-72-zseries
   display_name: "RHEL 7.2 zSeries"
   expansions:
-    <<: *unix_common
   run_on:
      - rhel72-zseries-build
-  tasks: *just_compile
+  tasks: *unix_compile
 
 - name: rhel-71-power8
   display_name: "RHEL 7.1 Power8"
   expansions:
     <<: *cflags_power8
-    <<: *unix_common
   run_on:
      - rhel71-power8-test
-  tasks: *just_compile
-
-## Ubuntu 1404
-
-- name: ubuntu-1404-64
-  display_name: "Ubu 14 gcc-4.8.4 64"
-  expansions:
-    <<: *cflags_64
-    <<: *unix_common
-  run_on:
-  - ubuntu1404-test
-  tasks: *just_compile
+  tasks: *unix_compile
 
 #######################################
 #         OS X Buildvariants          #
@@ -363,72 +358,11 @@ buildvariants:
   display_name: "OSX 10.10 clang 64"
   expansions:
     <<: *cflags_osx_1010
-    <<: *compile_osx
-    <<: *unix_path
-    <<: *osx_path
+    CFLAGS: "-Wno-unknown-pragmas"
+    CC: clang
   run_on:
   - osx-1010
-  tasks: *just_compile
-
-
-#######################################
-#        Windows Buildvariants        #
-#######################################
-
-- name: windows-32-vs2010
-  display_name: "Win VS2010 32"
-  expansions:
-    <<: *msvc_common
-    <<: *with_msvc2010_32bit
-  run_on:
-  - windows-64-vs2010-compile
-  tasks: *just_compile
-
-- name: windows-64-vs2010
-  display_name: "Win VS2010 64"
-  expansions:
-    <<: *msvc_common
-    <<: *with_msvc2010
-  run_on:
-  - windows-64-vs2010-compile
-  tasks: *just_compile
-
-- name: windows-32-vs2013
-  display_name: "Win VS2013 32"
-  expansions:
-    <<: *msvc_common
-    <<: *with_msvc2013_32bit
-  run_on:
-  - windows-64-vs2013-compile
-  tasks: *just_compile
-
-- name: windows-64-vs2013
-  display_name: "Win VS2013 64"
-  expansions:
-    <<: *msvc_common
-    <<: *with_msvc2013
-  run_on:
-  - windows-64-vs2013-compile
-  tasks: *just_compile
-
-- name: windows-32-vs2015
-  display_name: "Win VS2015 32"
-  expansions:
-    <<: *msvc_common
-    <<: *with_msvc2015_32bit
-  run_on:
-  - windows-64-vs2015-compile
-  tasks: *just_compile
-
-- name: windows-64-vs2015
-  display_name: "Win VS2015 64"
-  expansions:
-    <<: *msvc_common
-    <<: *with_msvc2015
-  run_on:
-  - windows-64-vs2015-compile
-  tasks: *just_compile
-
+  tasks: *unix_compile
 
 #######################################
 #        Solaris Buildvariant         #
@@ -437,17 +371,70 @@ buildvariants:
 - name: solaris-32-bit
   display_name: "Sol gcc-4.8.2 32"
   expansions:
-    <<: *solaris_common
     <<: *cflags_32
   run_on:
       - solaris
-  tasks: *just_compile
+  tasks:
+    - name: "debug-compile"
 
 - name: solaris-64-bit
   display_name: "Sol gcc-4.8.2 64"
   expansions:
-    <<: *solaris64_common
     <<: *cflags_solaris_64
   run_on:
       - solaris
-  tasks: *just_compile
+  tasks:
+    - name: "debug-compile"
+
+#######################################
+#        Windows Buildvariants        #
+#######################################
+
+- name: windows-32-vs2010
+  display_name: "Win VS2010 32"
+  expansions:
+    <<: *with_msvc2010_32bit
+  run_on:
+  - windows-64-vs2010-compile
+  tasks: *windows_compile
+
+- name: windows-64-vs2010
+  display_name: "Win VS2010 64"
+  expansions:
+    <<: *with_msvc2010
+  run_on:
+  - windows-64-vs2010-compile
+  tasks: *windows_compile
+
+- name: windows-32-vs2013
+  display_name: "Win VS2013 32"
+  expansions:
+    <<: *with_msvc2013_32bit
+  run_on:
+  - windows-64-vs2013-compile
+  tasks: *windows_compile
+
+- name: windows-64-vs2013
+  display_name: "Win VS2013 64"
+  expansions:
+    <<: *with_msvc2013
+  run_on:
+  - windows-64-vs2013-compile
+  tasks: *windows_compile
+
+- name: windows-32-vs2015
+  display_name: "Win VS2015 32"
+  expansions:
+    <<: *with_msvc2015_32bit
+  run_on:
+  - windows-64-vs2015-compile
+  tasks: *windows_compile
+
+- name: windows-64-vs2015
+  display_name: "Win VS2015 64"
+  expansions:
+    <<: *with_msvc2015
+  run_on:
+  - windows-64-vs2015-compile
+  tasks: *windows_compile
+
