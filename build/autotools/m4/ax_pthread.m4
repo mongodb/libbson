@@ -160,7 +160,9 @@ case ${host_os} in
         ;;
 
         darwin*)
-        ax_pthread_flags="-pthread $ax_pthread_flags"
+                if test "$c_compiler" != "clang"; then
+                        ax_pthread_flags="-pthread $ax_pthread_flags"
+                fi
         ;;
 esac
 
