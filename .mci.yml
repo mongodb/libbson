@@ -1,33 +1,8 @@
-#######################################
-#       C Driver Config for MCI       #
-#######################################
+#####################################
+# Evergreen configuration for libbson
+#####################################
 
-## Some variables for convenience:
-
-c_driver_variables:
-
-  unix_compile: &unix_compile
-    - name: "debug-compile"
-    - name: "debug-compile-c89"
-    - name: "debug-compile-c99"
-    - name: "debug-compile-c11"
-
-  windows_compile: &windows_compile
-    - name: "debug-windows-compile"
-
-## Common sets of CFLAGS
-  cflags:
-    standard: &cflags_power8
-      cflags: "-mcpu=power8 -mtune=power8 -mcmodel=medium"
-    standard: &cflags_64
-      cflags: "-m64 -march=x86-64"
-    standard_32: &cflags_32
-      cflags: "-m32 -march=i386"
-    osx_1010: &cflags_osx_1010
-      cflags: "-m64 -march=x86-64"
-    solaris_64: &cflags_solaris_64
-      cflags: "-m64 -march=x86-64"
-
+variables:
 ## Misc. for Windows builds
   windows_compilers:
     msvc2010_32bit: &with_msvc2010_32bit
@@ -49,111 +24,58 @@ c_driver_variables:
       generator: Visual Studio 14 2015 Win64
       msbuild: /cygdrive/c/Program Files (x86)/MSBuild/14.0/Bin/MSBuild.exe
 
-## Configure flags
-  configure_flags:
-     standard: &configure_flags_default
-     flags: "--enable-optimizations --enable-man-pages=no --enable-maintainer-flags --enable-debug --enable-extra-align=no --enable-hardening=no"
-
 #######################################
 #            Functions                #
 #######################################
 
 functions:
-  "fetch releasearchive" :
-    command: shell.exec
-    params:
-      script: |
-        set -o verbose
-        set -o errexit
-        rm -rf libbson*
-        ls -la
-        curl -s https://s3.amazonaws.com/mciuploads/libbson/${revision}/${version_id}/artifacts/libbson-archive.tar.gz --output libbson-archive.tar.gz
-        tar zxf libbson-archive.tar.gz
-        rm libbson-archive.tar.gz
-        mv libbson* libbson
+  "fetch git source" :
+    - command: git.get_project
+      params:
+        directory: libbson
+    - command: git.apply_patch
+      params:
+        directory: "libbson"
 
   "fetch source" :
-    command: git.get_project
-    params:
-      directory: libbson
+    - command: git.get_project
+      params:
+        directory: libbson
+    - command: git.apply_patch
+      params:
+        directory: "libbson"
+    - command: s3.get
+      params:
+        aws_key: ${aws_key}
+        aws_secret: ${aws_secret}
+        local_file: libbson.tar.gz
+        remote_file: libbson/${revision}/${version_id}/artifacts/libbson.tar.gz
+        bucket: mciuploads
 
-  "compile unix function" :
-    command: shell.exec
-    params:
-      working_dir: "libbson"
-      script: |
-          set -o errexit
-          set -o verbose
-          export PATH="/opt/mongodbtoolchain/bin:$PATH"
-          export CFLAGS="$CFLAGS ${CFLAGS} ${cflags}"
-          export CC="${CC}"
-          if [ `uname -s` = "Linux" ]; then
-             cpus=`grep -c '^processor' /proc/cpuinfo`
-             MAKEFLAGS="-j{$cpus}"
-          fi
-          ${CONFIGURE_SCRIPT|./autogen.sh} ${CONFIGURE_FLAGS}
-          make
-
-  "run unix tests" :
-    command: shell.exec
-    params:
-      working_dir: "libbson"
-      script: |
-          set -o errexit
-          make ${TEST_TARGET} TEST_ARGS="--no-fork -d"
-
-  "compile windows function" :
-    command: shell.exec
-    params:
-      working_dir: "libbson"
-      script: |
-          set -o errexit
-          set -o verbose
-          export GENERATOR="${generator}"
-          export MSBUILD="${msbuild}"
-          export CMAKE_DEFS="${cmake_defs}"
-          cmake="/cygdrive/c/cmake/bin/cmake"
-          echo "MSBUILD: $MSBUILD, GENERATOR: $GENERATOR, CMAKE_DEFS: $CMAKE_DEFS"
-          "$cmake" -G "$GENERATOR" "-DCMAKE_INSTALL_PREFIX=C:/libbson"
-          "$MSBUILD" /m ALL_BUILD.vcxproj
-          "$MSBUILD" /m INSTALL.vcxproj
-          ./Debug/test-libbson.exe --no-fork -d
-
-  "archive and upload":
+  "upload release":
     - command: shell.exec
       params:
-        working_dir: "libbson"
-        script: |
-          set -o errexit
-          set -o verbose
-          tar czf ../libbson.tar.gz .
+        script: mv libbson/libbson*gz libbson.tar.gz
     - command: s3.put
       params:
         aws_key: ${aws_key}
         aws_secret: ${aws_secret}
         local_file: libbson.tar.gz
-        remote_file: libbson/${build_variant}/${revision}/artifacts/mongo-${build_id}.tar.gz
+        remote_file: libbson/${revision}/${version_id}/artifacts/libbson.tar.gz
         bucket: mciuploads
         permissions: public-read
         content_type: ${content_type|application/x-gzip}
 
-  "make release archive and upload":
+  "upload artifacts":
     - command: shell.exec
       params:
-        working_dir: "libbson"
-        script: |
-          set -o errexit
-          set -o verbose
-          ./autogen.sh --enable-man-pages --enable-html-docs --enable-maintainer-flags --enable-debug
-          make dist
-          mv libbson*.tar.gz ../libbson-archive.tar.gz
-          ls -la
+        script: tar czf libbson.tar.gz libbson
     - command: s3.put
       params:
         aws_key: ${aws_key}
         aws_secret: ${aws_secret}
-        local_file: libbson-archive.tar.gz
-        remote_file: libbson/${revision}/${version_id}/artifacts/libbson-archive.tar.gz
+        local_file: libbson.tar.gz
+        remote_file: libbson/${build_variant}/${revision}/${version_id}/${build_id}/artifacts/libbson.tar.gz
         bucket: mciuploads
         permissions: public-read
         content_type: ${content_type|application/x-gzip}
@@ -163,92 +85,134 @@ functions:
     params:
       file_location: "libbson/test-results.json"
 
+  "compile windows function" :
+    command: shell.exec
+    params:
+      working_dir: "libbson"
+      script: |
+        set -o errexit
+        set -o verbose
+        export GENERATOR="${generator}"
+        export MSBUILD="${msbuild}"
+        export CMAKE_DEFS="${cmake_defs}"
+        cmake="/cygdrive/c/cmake/bin/cmake"
+        echo "MSBUILD: $MSBUILD, GENERATOR: $GENERATOR, CMAKE_DEFS: $CMAKE_DEFS"
+        "$cmake" -G "$GENERATOR" "-DCMAKE_INSTALL_PREFIX=C:/libbson"
+        "$MSBUILD" /m ALL_BUILD.vcxproj
+        "$MSBUILD" /m INSTALL.vcxproj
+        ./Debug/test-libbson.exe --no-fork -d
 
 #######################################
 #               Tasks                 #
 #######################################
 
 tasks:
-    - name: releasearchive
+    - name: debug-compile
       commands:
         - func: "fetch source"
-        - func: "make release archive and upload"
+        - command: shell.exec
+          params:
+            working_dir: "libbson"
+            script: "DEBUG=1 CC=${CC} MARCH=${MARCH} sh .evergreen/unix.sh"
+        - func: "upload artifacts"
 
-    - name: "release-compile"
+    - name: debug-compile-c11
+      commands:
+        - func: "fetch source"
+        - command: shell.exec
+          params:
+            working_dir: "libbson"
+            script: "DEBUG=1 CC=${CC} MARCH=${MARCH} CFLAGS='-std=c11 -D_XOPEN_SOURCE=600' sh .evergreen/unix.sh"
+        - func: "upload artifacts"
+
+    - name: debug-compile-c99
+      commands:
+        - func: "fetch source"
+        - command: shell.exec
+          params:
+            working_dir: "libbson"
+            script: "DEBUG=1 CC=${CC} MARCH=${MARCH} CFLAGS='-std=c99 -D_XOPEN_SOURCE=600' sh .evergreen/unix.sh"
+        - func: "upload artifacts"
+
+    - name: debug-compile-c89
+      commands:
+        - func: "fetch source"
+        - command: shell.exec
+          params:
+            working_dir: "libbson"
+            script: "DEBUG=1 CC=${CC} MARCH=${MARCH} CFLAGS='-std=c89 -D_POSIX_C_SOURCE=200112L' sh .evergreen/unix.sh"
+        - func: "upload artifacts"
+
+    - name: debug-compile-valgrind
+      commands:
+        - func: "fetch source"
+        - command: shell.exec
+          params:
+            working_dir: "libbson"
+            script: "VALGRIND=1 DEBUG=1 CC=${CC} MARCH=${MARCH} sh .evergreen/unix.sh"
+        - func: "upload artifacts"
+
+    - name: make-release-archive
+      commands:
+        - func: "fetch git source"
+        - command: shell.exec
+          params:
+            working_dir: "libbson"
+            script: "./autogen.sh --enable-html-docs --enable-man-pages && make dist"
+        - func: "upload release"
+
+    - name: release-compile
       depends_on:
-        - name: "releasearchive"
+        - name: "make-release-archive"
           variant: ubuntu-1404-64-release
       commands:
-        - func: "fetch releasearchive"
-        - func: "compile unix function"
-          vars:
-             CONFIGURE_SCRIPT: "./configure"
-             CONFIGURE_FLAGS: "--enable-optimizations --enable-man-pages --enable-html-docs"
-        - func: "run unix tests"
-        - func: "archive and upload"
+        - func: "fetch source"
+        - command: shell.exec
+          params:
+            working_dir: "libbson"
+            script: "RELEASE=1 CC=${CC} MARCH=${MARCH} sh .evergreen/unix.sh"
+        - func: "upload artifacts"
 
-    - name: "debug-compile"
+    - name: release-compile-c11
+      depends_on:
+        - name: "make-release-archive"
+          variant: ubuntu-1404-64-release
       commands:
         - func: "fetch source"
-        - func: "compile unix function"
-          vars:
-             CONFIGURE_FLAGS: *configure_flags_default
-             CFLAGS: "${CFLAGS} -Werror"
-             CC: ${CC|gcc}
-        - func: "run unix tests"
-        - func: "archive and upload"
+        - command: shell.exec
+          params:
+            working_dir: "libbson"
+            script: "RELEASE=1 CC=${CC} MARCH=${MARCH} CFLAGS='-std=c11 -D_XOPEN_SOURCE=600' sh .evergreen/unix.sh"
+        - func: "upload artifacts"
 
-    - name: "debug-compile-c11"
+    - name: release-compile-c99
+      depends_on:
+        - name: "make-release-archive"
+          variant: ubuntu-1404-64-release
       commands:
         - func: "fetch source"
-        - func: "compile unix function"
-          vars:
-             CONFIGURE_FLAGS: *configure_flags_default
-             CFLAGS: "${CFLAGS} -std=c11 -D_XOPEN_SOURCE=600 -Werror"
-             CC: ${CC|gcc}
-        - func: "run unix tests"
-        - func: "archive and upload"
+        - command: shell.exec
+          params:
+            working_dir: "libbson"
+            script: "RELEASE=1 CC=${CC} MARCH=${MARCH} CFLAGS='-std=c99 -D_XOPEN_SOURCE=600' sh .evergreen/unix.sh"
+        - func: "upload artifacts"
 
-    - name: "debug-compile-c99"
+    - name: release-compile-c89
+      depends_on:
+        - name: "make-release-archive"
+          variant: ubuntu-1404-64-release
       commands:
         - func: "fetch source"
-        - func: "compile unix function"
-          vars:
-             CONFIGURE_FLAGS: *configure_flags_default
-             CFLAGS: "${CFLAGS} -std=c99 -D_XOPEN_SOURCE=600 -Werror"
-             CC: ${CC|gcc}
-        - func: "run unix tests"
-        - func: "archive and upload"
-
-    - name: "debug-compile-c89"
-      commands:
-        - func: "fetch source"
-        - func: "compile unix function"
-          vars:
-             CONFIGURE_FLAGS: *configure_flags_default
-             CFLAGS: "${CFLAGS} -std=c99 -D_POSIX_C_SOURCE=200112L -Werror"
-             CC: ${CC|gcc}
-        - func: "run unix tests"
-        - func: "archive and upload"
-
-    - name: "debug-compile-valgrind"
-      commands:
-        - func: "fetch source"
-        - func: "compile unix function"
-          vars:
-             CONFIGURE_FLAGS: *configure_flags_default
-             CFLAGS: "${CFLAGS}"
-             CC: ${CC|gcc}
-        - func: "run unix tests"
-          vars:
-             TEST_TARGET: valgrind
-        - func: "archive and upload"
+        - command: shell.exec
+          params:
+            working_dir: "libbson"
+            script: "RELEASE=1 CC=${CC} MARCH=${MARCH} CFLAGS='-std=c89 -D_POSIX_C_SOURCE=200112L' sh .evergreen/unix.sh"
+        - func: "upload artifacts"
 
     - name: "debug-windows-compile"
       commands:
         - func: "fetch source"
         - func: "compile windows function"
-        - func: "archive and upload"
 
 
 #######################################
@@ -259,144 +223,169 @@ buildvariants:
 
 - name: ubuntu-1404-64-release
   display_name: "Release Archive Creator"
-  expansions:
-    <<: *cflags_64
   run_on:
      - ubuntu1404-test
   tasks:
-    - name: "releasearchive"
+    - name: "make-release-archive"
     - name: "release-compile"
     - name: "debug-compile-valgrind"
 
 ## clang
 
-#### Doesn't have libtool or autoconf
-#- name: clang35
-#  display_name: "Debian 8.1 (clang 3.5)"
-#  expansions:
-#    <<: *cflags_64
-#    CC: clang
-#    source: "release"
-#  run_on:
-#  - debian81-build
-#  tasks: *unix_compile
+- name: clang35
+  display_name: "Debian 8.1 (clang 3.5)"
+  expansions:
+    CC: clang
+  run_on:
+  - debian81-build
+  tasks:
+    - name: "release-compile"
+    - name: "release-compile-c89"
+    - name: "release-compile-c99"
+    - name: "release-compile-c11"
 
 - name: clang37
   display_name: "Archlinux (clang 3.7)"
   expansions:
-    <<: *cflags_64
     CC: clang
   run_on:
-  - archlinux-build
-  tasks: *unix_compile
+    - archlinux-build
+  tasks:
+    - name: "debug-compile"
+    - name: "debug-compile-c89"
+    - name: "debug-compile-c99"
+    - name: "debug-compile-c11"
 
 - name: clang38
   display_name: "Ubuntu 16 64 (clang 3.8)"
   expansions:
-    <<: *cflags_64
     CC: clang
   run_on:
-  - ubuntu1604-build
-  tasks: *unix_compile
+    - ubuntu1604-build
+  tasks:
+    - name: "debug-compile"
+    - name: "debug-compile-c89"
+    - name: "debug-compile-c99"
+    - name: "debug-compile-c11"
 
 ## GCC
 - name: gcc48
   display_name: "RHEL 7.0 64 (GCC 4.8)"
   expansions:
-    <<: *cflags_64
+    CC: gcc
   run_on:
-  - rhel70
-  tasks: *unix_compile
+    - rhel70
+  tasks:
+    - name: "debug-compile"
+    - name: "debug-compile-c99"
+    - name: "debug-compile-c11"
 
 - name: gcc53
   display_name: "Ubuntu 16 64 (GCC 5.3)"
   expansions:
-    <<: *cflags_64
+    CC: gcc
   run_on:
-  - ubuntu1604-build
-  tasks: *unix_compile
+    - ubuntu1604-build
+  tasks:
+    - name: "debug-compile"
+    - name: "debug-compile-c99"
+    - name: "debug-compile-c11"
 
 
 # Other Linuxs
 - name: ubuntu-1204-64
   display_name: "Ubu 12 gcc-4.6.3 64"
   expansions:
-    <<: *cflags_64
+    CC: gcc
   run_on:
-  - ubuntu1204-test
-  tasks: *unix_compile
+    - ubuntu1204-test
+  tasks:
+    - name: "debug-compile"
+    - name: "debug-compile-c99"
+
+- name: rhel-55
+  display_name: "RHEL 5.5 64"
+  expansions:
+    CC: gcc
+  run_on:
+    - rhel55
+  tasks:
+    - name: "release-compile"
 
 - name: rhel-62
   display_name: "RHEL 6.2 64"
   expansions:
-    <<: *cflags_64
+    CC: gcc
   run_on:
-     - rhel62-test
-  tasks: *unix_compile
+    - rhel62-test
+  tasks:
+    - name: "debug-compile"
+    - name: "debug-compile-c99"
 
 ## ZAP
 - name: rhel-72-zseries
   display_name: "RHEL 7.2 zSeries"
   expansions:
+    CC: gcc
   run_on:
-     - rhel72-zseries-build
-  tasks: *unix_compile
+    - rhel72-zseries-build
+  tasks:
+    - name: "debug-compile"
+    - name: "debug-compile-c99"
+    - name: "debug-compile-c11"
 
 - name: rhel-71-power8
   display_name: "RHEL 7.1 Power8"
   expansions:
-    <<: *cflags_power8
+    CC: gcc
   run_on:
-     - rhel71-power8-test
-  tasks: *unix_compile
+    - rhel71-power8-test
+  tasks:
+    - name: "debug-compile"
+    - name: "debug-compile-c99"
+    - name: "debug-compile-c11"
 
-#######################################
-#         OS X Buildvariants          #
-#######################################
-
+## OSX
 - name: os-x-1010-64
   display_name: "OSX 10.10 clang 64"
   expansions:
-    <<: *cflags_osx_1010
-    CFLAGS: "-Wno-unknown-pragmas"
     CC: clang
   run_on:
-  - osx-1010
-  tasks: *unix_compile
+    - osx-1010
+  tasks:
+    - name: "debug-compile"
+    - name: "debug-compile-c99"
+    - name: "debug-compile-c11"
 
-#######################################
-#        Solaris Buildvariant         #
-#######################################
-
+## Solaris
 - name: solaris-32-bit
   display_name: "Sol gcc-4.8.2 32"
   expansions:
-    <<: *cflags_32
+    CC: gcc
+    MARCH: i386
   run_on:
-      - solaris
+    - solaris
   tasks:
     - name: "debug-compile"
 
 - name: solaris-64-bit
   display_name: "Sol gcc-4.8.2 64"
   expansions:
-    <<: *cflags_solaris_64
+    CC: gcc
   run_on:
-      - solaris
+    - solaris
   tasks:
     - name: "debug-compile"
 
-#######################################
-#        Windows Buildvariants        #
-#######################################
-
+## Windows
 - name: windows-32-vs2010
   display_name: "Win VS2010 32"
   expansions:
     <<: *with_msvc2010_32bit
   run_on:
   - windows-64-vs2010-compile
-  tasks: *windows_compile
+  tasks:
+    - name: "debug-windows-compile"
 
 - name: windows-64-vs2010
   display_name: "Win VS2010 64"
@@ -404,7 +393,8 @@ buildvariants:
     <<: *with_msvc2010
   run_on:
   - windows-64-vs2010-compile
-  tasks: *windows_compile
+  tasks:
+    - name: "debug-windows-compile"
 
 - name: windows-32-vs2013
   display_name: "Win VS2013 32"
@@ -412,7 +402,8 @@ buildvariants:
     <<: *with_msvc2013_32bit
   run_on:
   - windows-64-vs2013-compile
-  tasks: *windows_compile
+  tasks:
+    - name: "debug-windows-compile"
 
 - name: windows-64-vs2013
   display_name: "Win VS2013 64"
@@ -420,7 +411,8 @@ buildvariants:
     <<: *with_msvc2013
   run_on:
   - windows-64-vs2013-compile
-  tasks: *windows_compile
+  tasks:
+    - name: "debug-windows-compile"
 
 - name: windows-32-vs2015
   display_name: "Win VS2015 32"
@@ -428,7 +420,8 @@ buildvariants:
     <<: *with_msvc2015_32bit
   run_on:
   - windows-64-vs2015-compile
-  tasks: *windows_compile
+  tasks:
+    - name: "debug-windows-compile"
 
 - name: windows-64-vs2015
   display_name: "Win VS2015 64"
@@ -436,5 +429,6 @@ buildvariants:
     <<: *with_msvc2015
   run_on:
   - windows-64-vs2015-compile
-  tasks: *windows_compile
+  tasks:
+    - name: "debug-windows-compile"
 
