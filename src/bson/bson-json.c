@@ -600,20 +600,13 @@ _bson_json_read_string (void                *_ctx, /* IN */
       case BSON_JSON_LF_DECIMAL128:
          {
             bson_decimal128_t decimal128;
-            /* bson_decimal128_from_string requires a null-padded string. */
-            char *string = bson_malloc(vlen + 1);
-            memcpy(string, val, vlen);
-            string[vlen] = '\0';
-            bson_decimal128_from_string (string, &decimal128);
+            bson_decimal128_from_string (val_w_null, &decimal128);
 
             if (bson->read_state == BSON_JSON_IN_BSON_TYPE) {
                bson->bson_type_data.v_decimal128.value = decimal128;
             } else {
-               bson_free(string);
                goto BAD_PARSE;
             }
-
-            bson_free(string);
          }
          break;
       case BSON_JSON_LF_TIMESTAMP_T:
