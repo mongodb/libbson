@@ -2,32 +2,6 @@
 # Evergreen configuration for libbson
 #####################################
 
-variables:
-## Misc. for Windows builds
-  windows_compilers:
-    msvc2010_32bit: &with_msvc2010_32bit
-      generator: Visual Studio 10 2010
-      msbuild: /cygdrive/c/Windows/Microsoft.NET/Framework/v4.0.30319/MSBuild.exe
-    msvc2010: &with_msvc2010
-      generator: Visual Studio 10 2010 Win64
-      msbuild: /cygdrive/c/Windows/Microsoft.NET/Framework64/v4.0.30319/MSBuild.exe
-    msvc2013_32bit: &with_msvc2013_32bit
-      generator: Visual Studio 12 2013
-      msbuild: /cygdrive/c/Program Files (x86)/MSBuild/12.0/Bin/MSBuild.exe
-    msvc2013: &with_msvc2013
-      generator: Visual Studio 12 2013 Win64
-      msbuild: /cygdrive/c/Program Files (x86)/MSBuild/12.0/Bin/MSBuild.exe
-    msvc2015_32bit: &with_msvc2015_32bit
-      generator: Visual Studio 14 2015
-      msbuild: /cygdrive/c/Program Files (x86)/MSBuild/14.0/Bin/MSBuild.exe
-    msvc2015: &with_msvc2015
-      generator: Visual Studio 14 2015 Win64
-      msbuild: /cygdrive/c/Program Files (x86)/MSBuild/14.0/Bin/MSBuild.exe
-
-#######################################
-#            Functions                #
-#######################################
-
 functions:
   "fetch git source" :
     - command: git.get_project
@@ -85,23 +59,6 @@ functions:
     params:
       file_location: "libbson/test-results.json"
 
-  "compile windows function" :
-    command: shell.exec
-    params:
-      working_dir: "libbson"
-      script: |
-        set -o errexit
-        set -o verbose
-        export GENERATOR="${generator}"
-        export MSBUILD="${msbuild}"
-        export CMAKE_DEFS="${cmake_defs}"
-        cmake="/cygdrive/c/cmake/bin/cmake"
-        echo "MSBUILD: $MSBUILD, GENERATOR: $GENERATOR, CMAKE_DEFS: $CMAKE_DEFS"
-        "$cmake" -G "$GENERATOR" "-DCMAKE_INSTALL_PREFIX=C:/libbson"
-        "$MSBUILD" /m ALL_BUILD.vcxproj
-        "$MSBUILD" /m INSTALL.vcxproj
-        ./Debug/test-libbson.exe --no-fork -d
-
 #######################################
 #               Tasks                 #
 #######################################
@@ -113,7 +70,7 @@ tasks:
         - command: shell.exec
           params:
             working_dir: "libbson"
-            script: "DEBUG=1 CC=${CC} MARCH=${MARCH} sh .evergreen/unix.sh"
+            script: "DEBUG=1 CC=${CC} MARCH='${MARCH}' sh .evergreen/${FILENAME|unix}.sh"
         - func: "upload artifacts"
 
     - name: debug-compile-c11
@@ -122,7 +79,7 @@ tasks:
         - command: shell.exec
           params:
             working_dir: "libbson"
-            script: "DEBUG=1 CC=${CC} MARCH=${MARCH} CFLAGS='-std=c11 -D_XOPEN_SOURCE=600' sh .evergreen/unix.sh"
+            script: "DEBUG=1 CC='${CC}' MARCH='${MARCH}' CFLAGS='-std=c11 -D_XOPEN_SOURCE=600' sh .evergreen/${FILENAME|unix}.sh"
         - func: "upload artifacts"
 
     - name: debug-compile-c99
@@ -131,7 +88,7 @@ tasks:
         - command: shell.exec
           params:
             working_dir: "libbson"
-            script: "DEBUG=1 CC=${CC} MARCH=${MARCH} CFLAGS='-std=c99 -D_XOPEN_SOURCE=600' sh .evergreen/unix.sh"
+            script: "DEBUG=1 CC='${CC}' MARCH='${MARCH}' CFLAGS='-std=c99 -D_XOPEN_SOURCE=600' sh .evergreen/${FILENAME|unix}.sh"
         - func: "upload artifacts"
 
     - name: debug-compile-c89
@@ -140,7 +97,7 @@ tasks:
         - command: shell.exec
           params:
             working_dir: "libbson"
-            script: "DEBUG=1 CC=${CC} MARCH=${MARCH} CFLAGS='-std=c89 -D_POSIX_C_SOURCE=200112L' sh .evergreen/unix.sh"
+            script: "DEBUG=1 CC='${CC}' MARCH='${MARCH}' CFLAGS='-std=c89 -D_POSIX_C_SOURCE=200112L' sh .evergreen/${FILENAME|unix}.sh"
         - func: "upload artifacts"
 
     - name: debug-compile-valgrind
@@ -149,7 +106,7 @@ tasks:
         - command: shell.exec
           params:
             working_dir: "libbson"
-            script: "VALGRIND=1 DEBUG=1 CC=${CC} MARCH=${MARCH} sh .evergreen/unix.sh"
+            script: "VALGRIND=1 DEBUG=1 CC='${CC}' MARCH='${MARCH}' sh .evergreen/${FILENAME|unix}.sh"
         - func: "upload artifacts"
 
     - name: make-release-archive
@@ -170,7 +127,7 @@ tasks:
         - command: shell.exec
           params:
             working_dir: "libbson"
-            script: "RELEASE=1 CC=${CC} MARCH=${MARCH} sh .evergreen/unix.sh"
+            script: "cat .evergreen/${FILENAME|unix}.sh | tr -d '\r' > .evergreen/tmp.sh && RELEASE=1 CC='${CC}' MARCH='${MARCH}' sh .evergreen/tmp.sh"
         - func: "upload artifacts"
 
     - name: release-compile-c11
@@ -182,7 +139,7 @@ tasks:
         - command: shell.exec
           params:
             working_dir: "libbson"
-            script: "RELEASE=1 CC=${CC} MARCH=${MARCH} CFLAGS='-std=c11 -D_XOPEN_SOURCE=600' sh .evergreen/unix.sh"
+            script: "RELEASE=1 CC='${CC}' MARCH='${MARCH}' CFLAGS='-std=c11 -D_XOPEN_SOURCE=600' sh .evergreen/${FILENAME|unix}.sh"
         - func: "upload artifacts"
 
     - name: release-compile-c99
@@ -194,7 +151,7 @@ tasks:
         - command: shell.exec
           params:
             working_dir: "libbson"
-            script: "RELEASE=1 CC=${CC} MARCH=${MARCH} CFLAGS='-std=c99 -D_XOPEN_SOURCE=600' sh .evergreen/unix.sh"
+            script: "RELEASE=1 CC='${CC}' MARCH='${MARCH}' CFLAGS='-std=c99 -D_XOPEN_SOURCE=600' sh .evergreen/${FILENAME|unix}.sh"
         - func: "upload artifacts"
 
     - name: release-compile-c89
@@ -206,13 +163,8 @@ tasks:
         - command: shell.exec
           params:
             working_dir: "libbson"
-            script: "RELEASE=1 CC=${CC} MARCH=${MARCH} CFLAGS='-std=c89 -D_POSIX_C_SOURCE=200112L' sh .evergreen/unix.sh"
+            script: "RELEASE=1 CC='${CC}' MARCH='${MARCH}' CFLAGS='-std=c89 -D_POSIX_C_SOURCE=200112L' sh .evergreen/${FILENAME|unix}.sh"
         - func: "upload artifacts"
-
-    - name: "debug-windows-compile"
-      commands:
-        - func: "fetch source"
-        - func: "compile windows function"
 
 
 #######################################
@@ -381,54 +333,60 @@ buildvariants:
 - name: windows-32-vs2010
   display_name: "Win VS2010 32"
   expansions:
-    <<: *with_msvc2010_32bit
+    CC: "Visual Studio 10 2010"
+    FILENAME: "windows"
   run_on:
   - windows-64-vs2010-compile
   tasks:
-    - name: "debug-windows-compile"
+    - name: "release-compile"
 
 - name: windows-64-vs2010
   display_name: "Win VS2010 64"
   expansions:
-    <<: *with_msvc2010
+    CC: "Visual Studio 10 2010 Win64"
+    FILENAME: "windows"
   run_on:
   - windows-64-vs2010-compile
   tasks:
-    - name: "debug-windows-compile"
+    - name: "release-compile"
 
 - name: windows-32-vs2013
   display_name: "Win VS2013 32"
   expansions:
-    <<: *with_msvc2013_32bit
+    CC: "Visual Studio 12 2013"
+    FILENAME: "windows"
   run_on:
   - windows-64-vs2013-compile
   tasks:
-    - name: "debug-windows-compile"
+    - name: "release-compile"
 
 - name: windows-64-vs2013
   display_name: "Win VS2013 64"
   expansions:
-    <<: *with_msvc2013
+    CC: "Visual Studio 12 2013 Win64"
+    FILENAME: "windows"
   run_on:
   - windows-64-vs2013-compile
   tasks:
-    - name: "debug-windows-compile"
+    - name: "release-compile"
 
 - name: windows-32-vs2015
   display_name: "Win VS2015 32"
   expansions:
-    <<: *with_msvc2015_32bit
+    CC: "Visual Studio 14 2015"
+    FILENAME: "windows"
   run_on:
   - windows-64-vs2015-compile
   tasks:
-    - name: "debug-windows-compile"
+    - name: "release-compile"
 
 - name: windows-64-vs2015
   display_name: "Win VS2015 64"
   expansions:
-    <<: *with_msvc2015
+    CC: "Visual Studio 14 2015 Win64"
+    FILENAME: "windows"
   run_on:
   - windows-64-vs2015-compile
   tasks:
-    - name: "debug-windows-compile"
+    - name: "release-compile"
 
