@@ -64,7 +64,7 @@ endif
 
 test: $(TEST_PROGS)
 	@ for TEST_PROG in $(TEST_PROGS) ; do \
-		$(LIBTOOL) --mode=execute $$VALGRIND ./$$TEST_PROG $(TEST_ARGS) -F test.log; \
+		$(LIBTOOL) --mode=execute $$VALGRIND ./$$TEST_PROG $(TEST_ARGS) -F test-results.json; \
 	done
 if CAN_ABI_CHECK
 	@ $(srcdir)/tests/abicheck.sh "$(srcdir)/src/libbson.symbols"

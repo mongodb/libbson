@@ -5,17 +5,25 @@ set -o errexit  # Exit the script with error if any of the commands fail
 # Supported/used environment variables:
 #       CFLAGS   Additional compiler flags
 #       MARCH    Machine Architecture. Defaults to lowercase uname -m
-#       PATH     Where runtime executable are located
 #       RELEASE  Use the fully qualified release archive
 #       DEBUG    Use debug configure flags
 #       VALGRIND Run the test suite through valgrind
 #       CC       Which compiler to use
+#       ANALYZE  Run the build through clang's scan-build
 
 
+echo "CFLAGS: $CFLAGS"
+echo "MARCH: $MARCH"
+echo "RELEASE: $RELEASE"
+echo "DEBUG: $DEBUG"
+echo "VALGRIND: $VALGRIND"
+echo "CC: $CC"
+echo "ANALYZE $ANALYZE"
 
 
 # Get the kernel name, lowercased
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+echo "OS: $OS"
 
 # Automatically retrieve the machine architecture, lowercase, unless provided
 # as an environment variable (e.g. to force 32bit)
@@ -40,6 +48,12 @@ else
    TAR=tar
 fi
 
+# Available on our Ubuntu 16.04 images
+[ "$ANALYZE" ] && SCAN_BUILD="scan-build-3.8 -o scan --status-bugs"
+# AddressSanitizer configuration
+ASAN_OPTIONS="detect_leaks=1"
+# LeakSanitizer configuration
+LSAN_OPTIONS="log_pointers=true"
 
 case "$MARCH" in
    i386)
@@ -62,7 +76,7 @@ case "$OS" in
    linux)
       # Make linux builds a tad faster by parallelise the build
       cpus=$(grep -c '^processor' /proc/cpuinfo)
-      MAKEFLAGS="-j{$cpus}"
+      MAKEFLAGS="-j${cpus}"
    ;;
 
    sunos)
@@ -88,14 +102,7 @@ if [ "$RELEASE" ]; then
    CONFIGURE_SCRIPT="./configure"
 fi
 
-echo "CFLAGS: $CFLAGS"
-echo "MARCH: $MARCH"
-echo "OS: $OS"
-echo "CC: $CC"
-echo "DEBUG: $DEBUG"
-echo "RELEASE: $RELEASE"
-echo "VALGRIND: $VALGRIND"
 
-CFLAGS="$CFLAGS" CC="$CC" $CONFIGURE_SCRIPT $CONFIGURE_FLAGS
-make $TARGET TEST_ARGS="--no-fork -d"
+CFLAGS="$CFLAGS" CC="$CC" $SCAN_BUILD $CONFIGURE_SCRIPT $CONFIGURE_FLAGS
+$SCAN_BUILD make $TARGET TEST_ARGS="--no-fork -F test-results.json"
 
