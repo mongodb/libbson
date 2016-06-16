@@ -132,13 +132,13 @@ Documentation:
     <p>Let's start by generating Visual Studio project files for libbson. The following assumes we are compiling for 64-bit Windows using Visual Studio 2010 Express which can be freely downloaded from Microsoft.</p>
 
     <screen><output style="prompt">&gt; </output><input>cd libbson-@BSON_RELEASED_VERSION@</input>
-<output style="prompt">&gt; </output><input>cmake -G "Visual Studio 2010 Win64" "-DCMAKE_INSTALL_PREFIX=C:\libbson"</input>
+<output style="prompt">&gt; </output><input>cmake -G "Visual Studio 14 2015 Win64" "-DCMAKE_INSTALL_PREFIX=C:\libbson"</input>
 <output style="prompt">&gt; </output><input>msbuild.exe ALL_BUILD.vcxproj</input>
 <output style="prompt">&gt; </output><input>msbuild.exe INSTALL.vcxproj</input></screen>
 
     <p>You should now see libbson installed in <code>C:\libbson</code></p>.
     <p>You can disable building the tests with:</p>.
-    <screen><output style="prompt">&gt; </output><input>cmake -G "Visual Studio 2010 Win64" "-DCMAKE_INSTALL_PREFIX=C:\libbson" "-DENABLE_TESTS:BOOL=OFF"</input></screen>
+    <screen><output style="prompt">&gt; </output><input>cmake -G "Visual Studio 14 2015 Win64" "-DCMAKE_INSTALL_PREFIX=C:\libbson" "-DENABLE_TESTS:BOOL=OFF"</input></screen>
   </section>
 
 </page>
