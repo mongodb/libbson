@@ -587,6 +587,26 @@ test_bson_json_read_invalid(void)
 }
 
 static void
+test_bson_json_binary_order (void)
+{
+   bson_error_t error;
+   const char *json = "{ \"bin\" : { \"$binary\" : \"IG43GK8JL9HRL4DK53HMrA==\", \"$type\" : \"05\" } }";
+   bson_t b;
+   bool r;
+   size_t len;
+   char *str;
+
+   r = bson_init_from_json (&b, json, -1, &error);
+   if (!r) fprintf (stderr, "%s\n", error.message);
+   assert (r);
+
+   str = bson_as_json (&b, &len);
+   ASSERT_CMPSTR (str, json);
+
+   bson_destroy (&b);
+}
+
+static void
 test_bson_json_number_long (void)
 {
    bson_error_t error;
@@ -914,6 +934,7 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/as_json/corrupt", test_bson_corrupt);
    TestSuite_Add (suite, "/bson/as_json/corrupt_utf8", test_bson_corrupt_utf8);
    TestSuite_Add (suite, "/bson/as_json/corrupt_binary", test_bson_corrupt_binary);
+   TestSuite_Add (suite, "/bson/as_json/binary_order", test_bson_json_binary_order);
    TestSuite_Add (suite, "/bson/as_json_spacing", test_bson_as_json_spacing);
    TestSuite_Add (suite, "/bson/as_json_special_keys_at_top", test_bson_json_special_keys_at_top);
    TestSuite_Add (suite, "/bson/array_as_json", test_bson_array_as_json);
@@ -928,7 +949,6 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/json/read/invalid", test_bson_json_read_invalid);
    TestSuite_Add (suite, "/bson/json/read/file", test_json_reader_new_from_file);
    TestSuite_Add (suite, "/bson/json/read/bad_path", test_json_reader_new_from_bad_path);
-   TestSuite_Add (suite, "/bson/json/read/invalid", test_bson_json_read_invalid);
    TestSuite_Add (suite, "/bson/json/read/invalid", test_bson_json_read_invalid);
    TestSuite_Add (suite, "/bson/json/read/$numberLong", test_bson_json_number_long);
    TestSuite_Add (suite, "/bson/json/read/$numberLong/zero", test_bson_json_number_long_zero);
