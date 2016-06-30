@@ -101,6 +101,7 @@ _bson_uint128_divide1B (_bson_uint128_t  value,    /* IN */
 }
 
 
+#ifdef BSON_EXPERIMENTAL_FEATURES
 /**
  *------------------------------------------------------------------------------
  *
@@ -298,7 +299,6 @@ bson_decimal128_to_string (const bson_decimal128_t *dec,        /* IN  */
       }
    }
 }
-
 
 typedef struct
 {
@@ -735,3 +735,4 @@ bson_decimal128_from_string (const char        *string, /* IN */
 
    return true;
 }
+#endif /* BSON_EXPERIMENTAL_FEATURES */

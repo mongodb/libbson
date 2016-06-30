@@ -148,6 +148,7 @@ test_bson_as_json_double (void)
 }
 
 
+#ifdef BSON_EXPERIMENTAL_FEATURES
 static void
 test_bson_as_json_decimal128 (void)
 {
@@ -169,6 +170,7 @@ test_bson_as_json_decimal128 (void)
    bson_free(str);
    bson_destroy(b);
 }
+#endif
 
 
 static void
@@ -390,17 +392,13 @@ test_bson_json_read(void)
         \"$timestamp\" : { \n\
            \"t\" : 100, \n\
            \"i\" : 1000 \n\
-        }, \n\
-      \"decimal\" : { \n\
-         \"$numberDecimal\" : \"123.5\"\n\
+        } \n\
       } \n\
    } { \"after\": \"b\" } { \"twice\" : true }";
 
    bson_oid_t oid;
    bson_t * first, *second, *third;
-   bson_decimal128_t dec;
 
-   bson_decimal128_from_string("123.5", &dec);
    bson_oid_init_from_string(&oid, "000000000000000000000000");
 
    first = BCON_NEW(
@@ -421,8 +419,7 @@ test_bson_json_read(void)
       "undefined", BCON_UNDEFINED,
       "minkey", BCON_MINKEY,
       "maxkey", BCON_MAXKEY,
-      "timestamp", BCON_TIMESTAMP(100, 1000),
-      "decimal", BCON_DECIMAL128(&dec)
+      "timestamp", BCON_TIMESTAMP(100, 1000)
    );
 
    second = BCON_NEW("after", "b");
@@ -430,6 +427,22 @@ test_bson_json_read(void)
 
    _test_bson_json_read_compare(json, 5, first, second, third, NULL);
 }
+
+
+#ifdef BSON_EXPERIMENTAL_FEATURES
+static void
+test_bson_json_read_decimal128(void)
+{
+   const char * json = "{ \"decimal\" : { \"$numberDecimal\" : \"123.5\" }";
+   bson_decimal128_t dec;
+   bson_t *doc;
+
+   bson_decimal128_from_string("123.5", &dec);
+   doc = BCON_NEW("decimal", BCON_DECIMAL128(&dec));
+
+   _test_bson_json_read_compare(json, 5, doc, NULL);
+}
+#endif
 
 static void
 test_json_reader_new_from_file (void)
@@ -908,7 +921,6 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/as_json/int32", test_bson_as_json_int32);
    TestSuite_Add (suite, "/bson/as_json/int64", test_bson_as_json_int64);
    TestSuite_Add (suite, "/bson/as_json/double", test_bson_as_json_double);
-   TestSuite_Add (suite, "/bson/as_json/decimal128", test_bson_as_json_decimal128);
    TestSuite_Add (suite, "/bson/as_json/utf8", test_bson_as_json_utf8);
    TestSuite_Add (suite, "/bson/as_json/stack_overflow", test_bson_as_json_stack_overflow);
    TestSuite_Add (suite, "/bson/as_json/corrupt", test_bson_corrupt);
@@ -921,7 +933,6 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/json/inc", test_bson_json_inc);
    TestSuite_Add (suite, "/bson/json/array", test_bson_json_array);
    TestSuite_Add (suite, "/bson/json/date", test_bson_json_date);
-   TestSuite_Add (suite, "/bson/json/read/$numberDecimal", test_bson_json_number_decimal);
    TestSuite_Add (suite, "/bson/json/read/missing_complex", test_bson_json_read_missing_complex);
    TestSuite_Add (suite, "/bson/json/read/invalid_json", test_bson_json_read_invalid_json);
    TestSuite_Add (suite, "/bson/json/read/bad_cb", test_bson_json_read_bad_cb);
@@ -933,4 +944,8 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/json/read/$numberLong", test_bson_json_number_long);
    TestSuite_Add (suite, "/bson/json/read/$numberLong/zero", test_bson_json_number_long_zero);
    TestSuite_Add (suite, "/bson/json/read/dbref", test_bson_json_dbref);
+#ifdef BSON_EXPERIMENTAL_FEATURES
+   TestSuite_Add (suite, "/bson/as_json/decimal128", test_bson_as_json_decimal128);
+   TestSuite_Add (suite, "/bson/json/read/$numberDecimal", test_bson_json_number_decimal);
+#endif
 }

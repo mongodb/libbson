@@ -108,8 +108,10 @@ BCON_ENSURE_DECLARE (const_bson_iter_ptr, const bson_iter_t *)
    BCON_ENSURE (int32, (_increment))
 #define BCON_INT64(_val) \
    BCON_MAGIC, BCON_TYPE_INT64, BCON_ENSURE (int64, (_val))
+#ifdef BSON_EXPERIMENTAL_FEATURES
 #define BCON_DECIMAL128(_val) \
    BCON_MAGIC, BCON_TYPE_DECIMAL128, BCON_ENSURE (const_decimal128_ptr, (_val))
+#endif /* BSON_EXPERIMENTAL_FEATURES */
 #define BCON_MAXKEY BCON_MAGIC, BCON_TYPE_MAXKEY
 #define BCON_MINKEY BCON_MAGIC, BCON_TYPE_MINKEY
 #define BCON(_val) \

@@ -29,7 +29,6 @@ test_value_basic (void)
    bson_value_t copy;
    bson_iter_t iter;
    bson_oid_t oid;
-   bson_decimal128_t dec;
    bson_t other = BSON_INITIALIZER;
    bson_t *doc;
    bson_t sub = BSON_INITIALIZER;
@@ -37,10 +36,8 @@ test_value_basic (void)
    int i;
 
    bson_oid_init (&oid, NULL);
-   bson_decimal128_from_string("123.5", &dec);
 
    doc = BCON_NEW ("double", BCON_DOUBLE (123.4),
-                   "decimal128", BCON_DECIMAL128 (&dec),
                    "utf8", "this is my string",
                    "document", BCON_DOCUMENT (&sub),
                    "array", BCON_DOCUMENT (&sub),
@@ -64,7 +61,7 @@ test_value_basic (void)
    r = bson_iter_init (&iter, doc);
    assert (r);
 
-   for (i = 0; i < 21; i++) {
+   for (i = 0; i < 20; i++) {
       r = bson_iter_next (&iter);
       assert (r);
 
@@ -87,8 +84,36 @@ test_value_basic (void)
 }
 
 
+#ifdef BSON_EXPERIMENTAL_FEATURES
+static void
+test_value_decimal128 (void)
+{
+   const bson_value_t *value;
+   bson_value_t copy;
+   bson_iter_t iter;
+   bson_decimal128_t dec;
+   bson_t other = BSON_INITIALIZER;
+   bson_t *doc;
+
+   assert (bson_decimal128_from_string ("123.5", &dec));
+   doc = BCON_NEW ("decimal128", BCON_DECIMAL128 (&dec));
+   assert (bson_iter_init (&iter, doc) && bson_iter_next (&iter));
+   assert (value = bson_iter_value (&iter));
+   bson_value_copy (value, &copy);
+   assert (bson_append_value (&other, bson_iter_key (&iter), -1, &copy));
+
+   bson_value_destroy (&copy);
+   bson_destroy (doc);
+   bson_destroy (&other);
+}
+#endif
+
+
 void
 test_value_install (TestSuite *suite)
 {
    TestSuite_Add (suite, "/bson/value/basic", test_value_basic);
+#ifdef BSON_EXPERIMENTAL_FEATURES
+   TestSuite_Add (suite, "/bson/value/decimal128", test_value_decimal128);
+#endif
 }

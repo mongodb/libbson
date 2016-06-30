@@ -397,6 +397,7 @@ test_bson_iter_overwrite_int64 (void)
 }
 
 
+#ifdef BSON_EXPERIMENTAL_FEATURES
 static void
 test_bson_iter_overwrite_decimal128 (void)
 {
@@ -423,6 +424,7 @@ test_bson_iter_overwrite_decimal128 (void)
    assert(memcmp(&iter_value, &new_value, sizeof(new_value)) == 0);
    bson_destroy(&b);
 }
+#endif /* BSON_EXPERIMENTAL_FEATURES */
 
 
 static void
@@ -584,7 +586,9 @@ test_iter_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/iter/test_overwrite_int64", test_bson_iter_overwrite_int64);
    TestSuite_Add (suite, "/bson/iter/test_overwrite_double", test_bson_iter_overwrite_double);
    TestSuite_Add (suite, "/bson/iter/test_overwrite_bool", test_bson_iter_overwrite_bool);
+#ifdef BSON_EXPERIMENTAL_FEATURES
    TestSuite_Add (suite, "/bson/iter/test_bson_iter_overwrite_decimal128", test_bson_iter_overwrite_decimal128);
+#endif /* BSON_EXPERIMENTAL_FEATURES */
    TestSuite_Add (suite, "/bson/iter/recurse", test_bson_iter_recurse);
    TestSuite_Add (suite, "/bson/iter/init_find_case", test_bson_iter_init_find_case);
    TestSuite_Add (suite, "/bson/iter/find_descendant", test_bson_iter_find_descendant);

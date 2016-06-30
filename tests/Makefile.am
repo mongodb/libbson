@@ -10,7 +10,6 @@ test_libbson_SOURCES = \
 	tests/test-bson.c \
 	tests/test-endian.c \
 	tests/test-clock.c \
-	tests/test-decimal128.c \
 	tests/test-error.c \
 	tests/test-iso8601.c \
 	tests/test-iter.c \
@@ -24,9 +23,15 @@ test_libbson_SOURCES = \
 	tests/test-writer.c \
 	tests/test-bcon-basic.c \
 	tests/test-bcon-extract.c \
-	tests/test-type.c \
 	tests/json-test.c \
 	tests/json-test.h
+
+if ENABLE_EXPERIMENTAL_FEATURES
+test_libbson_SOURCES += \
+    tests/test-decimal128.c \
+    tests/test-type.c
+endif
+
 
 test_libbson_CPPFLAGS = \
 	-I$(top_srcdir)/src \
@@ -155,7 +160,10 @@ EXTRA_DIST += \
 	tests/binary/test8.bson \
 	tests/binary/test9.bson \
 	tests/binary/trailingnull.bson \
-	tests/json/test.json \
+	tests/json/test.json
+
+if ENABLE_EXPERIMENTAL_FEATURES
+EXTRA_DIST += \
 	tests/json/type/decimal128/decimal128-1.json \
 	tests/json/type/decimal128/decimal128-2.json \
 	tests/json/type/decimal128/decimal128-3.json \
@@ -163,3 +171,4 @@ EXTRA_DIST += \
 	tests/json/type/decimal128/decimal128-5.json \
 	tests/json/type/decimal128/decimal128-6.json \
 	tests/json/type/decimal128/decimal128-7.json
+endif

@@ -1,0 +1,6 @@
+EXPORTS
+bson_append_decimal128
+bson_decimal128_from_string
+bson_decimal128_to_string
+bson_iter_decimal128
+bson_iter_overwrite_decimal128

@@ -495,6 +495,7 @@ test_bson_append_int64 (void)
 }
 
 
+#ifdef BSON_EXPERIMENTAL_FEATURES
 static void
 test_bson_append_decimal128 (void)
 {
@@ -511,6 +512,7 @@ test_bson_append_decimal128 (void)
    bson_destroy(b);
    bson_destroy(b2);
 }
+#endif /* BSON_EXPERIMENTAL_FEATURES */
 
 
 static void
@@ -1491,7 +1493,9 @@ test_bson_macros (void)
    BSON_APPEND_DATE_TIME (&b, "19", 123);
    BSON_APPEND_TIMESTAMP (&b, "20", 123, 0);
    BSON_APPEND_UNDEFINED (&b, "21");
+#ifdef BSON_EXPERIMENTAL_FEATURES
    BSON_APPEND_DECIMAL128 (&b, "22", &dec);
+#endif /* BSON_EXPERIMENTAL_FEATURES */
 
    bson_destroy (&b);
    bson_destroy (&ar);
@@ -1953,7 +1957,9 @@ test_bson_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/append_double", test_bson_append_double);
    TestSuite_Add (suite, "/bson/append_int32", test_bson_append_int32);
    TestSuite_Add (suite, "/bson/append_int64", test_bson_append_int64);
+#ifdef BSON_EXPERIMENTAL_FEATURES
    TestSuite_Add (suite, "/bson/append_decimal128", test_bson_append_decimal128);
+#endif /* BSON_EXPERIMENTAL_FEATURES */
    TestSuite_Add (suite, "/bson/append_iter", test_bson_append_iter);
    TestSuite_Add (suite, "/bson/append_maxkey", test_bson_append_maxkey);
    TestSuite_Add (suite, "/bson/append_minkey", test_bson_append_minkey);

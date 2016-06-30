@@ -36,7 +36,6 @@ main (int argc,
    test_bcon_extract_install (&suite);
    test_bson_install (&suite);
    test_clock_install (&suite);
-   test_decimal128_install (&suite);
    test_error_install (&suite);
    test_endian_install (&suite);
    test_iso8601_install (&suite);
@@ -49,7 +48,10 @@ main (int argc,
    test_value_install (&suite);
    test_version_install (&suite);
    test_writer_install (&suite);
+#ifdef BSON_EXPERIMENTAL_FEATURES
+   test_decimal128_install (&suite);
    test_bson_type_install (&suite);
+#endif
 
    ret = TestSuite_Run (&suite);
 

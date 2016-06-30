@@ -30,8 +30,22 @@ echo "OS: $OS"
 [ -z "$MARCH" ] && MARCH=$(uname -m | tr '[:upper:]' '[:lower:]')
 
 # Default configure flags for debug builds and release builds
-DEBUG_FLAGS="--enable-optimizations=no --enable-man-pages=no --enable-html-docs=no --enable-extra-align=no --enable-hardening=no --enable-maintainer-flags --enable-debug"
-RELEASE_FLAGS="--enable-optimizations --enable-man-pages=no --enable-html-docs=no --enable-extra-align=no --enable-hardening"
+DEBUG_FLAGS="\
+    --enable-optimizations=no \
+    --enable-man-pages=no \
+    --enable-html-docs=no \
+    --enable-extra-align=no \
+    --enable-hardening=no \
+    --enable-maintainer-flags \
+    --enable-debug \
+    --enable-experimental-features"
+RELEASE_FLAGS="
+    --enable-optimizations \
+    --enable-man-pages=no \
+    --enable-html-docs=no \
+    --enable-extra-align=no \
+    --enable-hardening \
+    --enable-experimental-features"
 
 # By default we build from git clone, which requires autotools
 # This gets overwritten if we detect we should use the release archive

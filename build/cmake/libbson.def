@@ -17,7 +17,6 @@ bson_append_code
 bson_append_code_with_scope
 bson_append_date_time
 bson_append_dbpointer
-bson_append_decimal128
 bson_append_document
 bson_append_document_begin
 bson_append_document_end
@@ -54,8 +53,6 @@ bson_copy_to
 bson_copy_to_excluding
 bson_copy_to_excluding_noinit
 bson_count_keys
-bson_decimal128_from_string
-bson_decimal128_to_string
 bson_destroy
 bson_destroy_with_steal
 bson_equal
@@ -80,7 +77,6 @@ bson_iter_code
 bson_iter_codewscope
 bson_iter_date_time
 bson_iter_dbpointer
-bson_iter_decimal128
 bson_iter_document
 bson_iter_double
 bson_iter_dup_utf8
@@ -96,7 +92,6 @@ bson_iter_key
 bson_iter_next
 bson_iter_oid
 bson_iter_overwrite_bool
-bson_iter_overwrite_decimal128
 bson_iter_overwrite_double
 bson_iter_overwrite_int32
 bson_iter_overwrite_int64

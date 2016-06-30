@@ -76,6 +76,19 @@ AC_ARG_ENABLE([maintainer-flags],
               [],
               [enable_maintainer_flags=maintainer_flags_default])
 
+# Experimental BSON features
+AC_ARG_ENABLE(experimental-features,
+   AC_HELP_STRING([--enable-experimental-features=@<:@no/yes@:>@],
+                  [Experimental support for future BSON features [default=no]]),
+   [enable_experimental_features=$enableval])
+
+AS_IF([test "$enable_experimental_features" = "yes"],
+      [
+         AC_SUBST(BSON_EXPERIMENTAL_FEATURES, 1)
+         CFLAGS="${CFLAGS} -DBSON_EXPERIMENTAL_FEATURES"
+      ],
+      [AC_SUBST(BSON_EXPERIMENTAL_FEATURES, 0)])
+
 AC_ARG_ENABLE([html-docs],
               [AS_HELP_STRING([--enable-html-docs=@<:@yes/no@:>@],
                               [Build HTML documentation.])],

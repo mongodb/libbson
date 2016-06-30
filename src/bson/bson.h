@@ -138,8 +138,10 @@ BSON_BEGIN_DECLS
 #define BSON_APPEND_MINKEY(b,key) \
       bson_append_minkey (b, key, (int) strlen (key))
 
+#ifdef BSON_EXPERIMENTAL_FEATURES
 #define BSON_APPEND_DECIMAL128(b, key, val) \
    bson_append_decimal128 (b, key, (int)strlen (key), val)
+#endif /* BSON_EXPERIMENTAL_FEATURES */
 
 #define BSON_APPEND_MAXKEY(b,key) \
       bson_append_maxkey (b, key, (int) strlen (key))

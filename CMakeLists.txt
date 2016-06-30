@@ -3,6 +3,13 @@ cmake_minimum_required(VERSION 2.8)
 project (libbson)
 
 option(ENABLE_TESTS "Build libbson tests." ON)
+option(ENABLE_EXPERIMENTAL_FEATURES
+       "Experimental support for future BSON features."
+       OFF)
+
+if (ENABLE_EXPERIMENTAL_FEATURES)
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DBSON_EXPERIMENTAL_FEATURES")
+endif ()
 
 include(CheckFunctionExists)
 include(CheckIncludeFile)
@@ -98,7 +105,7 @@ else ()
    endif ()
    set (BSON_EXTRA_ALIGN 1)
    CHECK_FUNCTION_EXISTS(syscall BSON_HAVE_SYSCALL_TID)
-   CHECK_INCLUDE_FILES(strings.h HAVE_STRINGS_H)
+   CHECK_INCLUDE_FILE(strings.h HAVE_STRINGS_H)
 endif ()
 
 set (BSON_HAVE_ATOMIC_32_ADD_AND_FETCH 1)
@@ -198,6 +205,10 @@ set (HEADERS
 
 if (MSVC)
    set(BSON_SHARED_SOURCES ${SOURCES} ${PROJECT_SOURCE_DIR}/build/cmake/libbson.def)
+   if (ENABLE_EXPERIMENTAL_FEATURES)
+      set(BSON_SHARED_SOURCES ${BSON_SHARED_SOURCES}
+          ${PROJECT_SOURCE_DIR}/build/cmake/libbson-experimental.def)
+   endif ()
 else()
    set(BSON_SHARED_SOURCES ${SOURCES})
 endif()
@@ -233,40 +244,48 @@ if (ENABLE_TESTS)
     add_definitions("-DBINARY_DIR=\"${SOURCE_DIR}/tests/binary\"")
     add_definitions("-DJSON_DIR=\"${SOURCE_DIR}/tests/json\"")
 
-    add_executable(test-libbson
-       ${SOURCE_DIR}/tests/TestSuite.c
-       ${SOURCE_DIR}/tests/TestSuite.h
-       ${SOURCE_DIR}/tests/test-libbson.c
-       ${SOURCE_DIR}/tests/test-atomic.c
-       ${SOURCE_DIR}/tests/test-bson.c
-       ${SOURCE_DIR}/tests/test-endian.c
-       ${SOURCE_DIR}/tests/test-clock.c
-       ${SOURCE_DIR}/tests/test-decimal128.c
-       ${SOURCE_DIR}/tests/test-error.c
-       ${SOURCE_DIR}/tests/test-iso8601.c
-       ${SOURCE_DIR}/tests/test-iter.c
-       ${SOURCE_DIR}/tests/test-json.c
-       ${SOURCE_DIR}/tests/test-oid.c
-       ${SOURCE_DIR}/tests/test-reader.c
-       ${SOURCE_DIR}/tests/test-string.c
-       ${SOURCE_DIR}/tests/test-utf8.c
-       ${SOURCE_DIR}/tests/test-value.c
-       ${SOURCE_DIR}/tests/test-version.c
-       ${SOURCE_DIR}/tests/test-writer.c
-       ${SOURCE_DIR}/tests/test-bcon-basic.c
-       ${SOURCE_DIR}/tests/test-bcon-extract.c
-       ${SOURCE_DIR}/tests/test-type.c
-       ${SOURCE_DIR}/tests/json-test.c
-       ${SOURCE_DIR}/tests/json-test.c
-       ${SOURCE_DIR}/tests/json-test.h
-       ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-1.json
-       ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-2.json
-       ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-3.json
-       ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-4.json
-       ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-5.json
-       ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-6.json
-       ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-7.json
+    set (BSON_TEST_SOURCES
+         ${SOURCE_DIR}/tests/TestSuite.c
+         ${SOURCE_DIR}/tests/TestSuite.h
+         ${SOURCE_DIR}/tests/test-libbson.c
+         ${SOURCE_DIR}/tests/test-atomic.c
+         ${SOURCE_DIR}/tests/test-bson.c
+         ${SOURCE_DIR}/tests/test-endian.c
+         ${SOURCE_DIR}/tests/test-clock.c
+         ${SOURCE_DIR}/tests/test-error.c
+         ${SOURCE_DIR}/tests/test-iso8601.c
+         ${SOURCE_DIR}/tests/test-iter.c
+         ${SOURCE_DIR}/tests/test-json.c
+         ${SOURCE_DIR}/tests/test-oid.c
+         ${SOURCE_DIR}/tests/test-reader.c
+         ${SOURCE_DIR}/tests/test-string.c
+         ${SOURCE_DIR}/tests/test-utf8.c
+         ${SOURCE_DIR}/tests/test-value.c
+         ${SOURCE_DIR}/tests/test-version.c
+         ${SOURCE_DIR}/tests/test-writer.c
+         ${SOURCE_DIR}/tests/test-bcon-basic.c
+         ${SOURCE_DIR}/tests/test-bcon-extract.c
+         ${SOURCE_DIR}/tests/json-test.c
+         ${SOURCE_DIR}/tests/json-test.c
+         ${SOURCE_DIR}/tests/json-test.h
     )
+
+    if (ENABLE_EXPERIMENTAL_FEATURES)
+        set (BSON_TEST_SOURCES
+             ${BSON_TEST_SOURCES}
+             ${SOURCE_DIR}/tests/test-decimal128.c
+             ${SOURCE_DIR}/tests/test-type.c
+             ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-1.json
+             ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-2.json
+             ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-3.json
+             ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-4.json
+             ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-5.json
+             ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-6.json
+             ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-7.json
+        )
+    endif ()
+
+    add_executable (test-libbson ${BSON_TEST_SOURCES})
 
     target_link_libraries(test-libbson bson_static)
     add_test(NAME test-libbson COMMAND test-libbson)

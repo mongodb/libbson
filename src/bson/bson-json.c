@@ -598,6 +598,7 @@ _bson_json_read_string (void                *_ctx, /* IN */
          }
          break;
       case BSON_JSON_LF_DECIMAL128:
+#ifdef BSON_EXPERIMENTAL_FEATURES
          {
             bson_decimal128_t decimal128;
             bson_decimal128_from_string (val_w_null, &decimal128);
@@ -609,6 +610,7 @@ _bson_json_read_string (void                *_ctx, /* IN */
             }
          }
          break;
+#endif /* BSON_EXPERIMENTAL_FEATURES */
       case BSON_JSON_LF_TIMESTAMP_T:
       case BSON_JSON_LF_TIMESTAMP_I:
       case BSON_JSON_LF_UNDEFINED:
@@ -716,7 +718,9 @@ _bson_json_read_map_key (void          *_ctx, /* IN */
       if HANDLE_OPTION ("$minKey", BSON_TYPE_MINKEY, BSON_JSON_LF_MINKEY) else
       if HANDLE_OPTION ("$maxKey", BSON_TYPE_MAXKEY, BSON_JSON_LF_MAXKEY) else
       if HANDLE_OPTION ("$numberLong", BSON_TYPE_INT64, BSON_JSON_LF_INT64) else
+#ifdef BSON_EXPERIMENTAL_FEATURES
       if HANDLE_OPTION ("$numberDecimal", BSON_TYPE_DECIMAL128, BSON_JSON_LF_DECIMAL128) else
+#endif
       if (len == strlen ("$timestamp") &&
           memcmp (val, "$timestamp", len) == 0) {
          bson->bson_type = BSON_TYPE_TIMESTAMP;
@@ -891,9 +895,11 @@ _bson_json_read_end_map (void *_ctx) /* IN */
                                    (int)bson->key_buf.len,
                                    bson->bson_type_data.v_int64.value);
       case BSON_TYPE_DECIMAL128:
+#ifdef BSON_EXPERIMENTAL_FEATURES
          return bson_append_decimal128 (STACK_BSON_CHILD, bson->key,
                                     (int)bson->key_buf.len,
                                     &bson->bson_type_data.v_decimal128.value);
+#endif /* BSON_EXPERIMENTAL_FEATURES */
       case BSON_TYPE_EOD:
       case BSON_TYPE_DOUBLE:
       case BSON_TYPE_UTF8:
