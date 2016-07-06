@@ -287,7 +287,6 @@ test_bson_corrupt_utf8 (void)
    bson_free(buf);
 }
 
-
 static void
 test_bson_corrupt_binary (void)
 {
@@ -522,6 +521,22 @@ test_bson_json_read_missing_complex(void)
 
    test_bson_json_error (json, BSON_ERROR_JSON,
                          BSON_JSON_ERROR_READ_INVALID_PARAM);
+}
+
+static void
+test_bson_json_read_invalid_binary(void)
+{
+   bson_error_t error;
+   const char *json = "{ "
+       " \"bin\" : { \"$binary\" : \"invalid\", \"$type\" : \"80\" } }";
+   bson_t b;
+   bool r;
+   char *str;
+
+   r = bson_init_from_json (&b, json, -1, &error);
+   assert (!r);
+
+   bson_destroy (&b);
 }
 
 static void
@@ -964,6 +979,7 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/json/array", test_bson_json_array);
    TestSuite_Add (suite, "/bson/json/date", test_bson_json_date);
    TestSuite_Add (suite, "/bson/json/read/missing_complex", test_bson_json_read_missing_complex);
+   TestSuite_Add (suite, "/bson/json/read/invalid_binary", test_bson_json_read_invalid_binary);
    TestSuite_Add (suite, "/bson/json/read/invalid_json", test_bson_json_read_invalid_json);
    TestSuite_Add (suite, "/bson/json/read/bad_cb", test_bson_json_read_bad_cb);
    TestSuite_Add (suite, "/bson/json/read/invalid", test_bson_json_read_invalid);

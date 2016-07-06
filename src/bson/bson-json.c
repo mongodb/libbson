@@ -548,14 +548,16 @@ _bson_json_read_string (void                *_ctx, /* IN */
 #undef SSCANF
 
          break;
-      case BSON_JSON_LF_BINARY: {
-            /* TODO: error handling for pton */
+      case BSON_JSON_LF_BINARY:
+         {
             int binary_len;
             bson->bson_type_data.binary.has_binary = true;
             binary_len = b64_pton (val_w_null, NULL, 0);
+            if (binary_len < 0) {
+                goto BAD_PARSE;
+            }
             _bson_json_buf_ensure (&bson->bson_type_buf[0], binary_len + 1);
-            b64_pton ((char *)bson->bson_type_buf[2].buf,
-                      bson->bson_type_buf[0].buf, binary_len + 1);
+            b64_pton (val_w_null, bson->bson_type_buf[0].buf, binary_len + 1);
             bson->bson_type_buf[0].len = binary_len;
             break;
          }
