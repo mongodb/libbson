@@ -83,10 +83,7 @@ AC_ARG_ENABLE(experimental-features,
    [enable_experimental_features=$enableval])
 
 AS_IF([test "$enable_experimental_features" = "yes"],
-      [
-         AC_SUBST(BSON_EXPERIMENTAL_FEATURES, 1)
-         CFLAGS="${CFLAGS} -DBSON_EXPERIMENTAL_FEATURES"
-      ],
+      [AC_SUBST(BSON_EXPERIMENTAL_FEATURES, 1)],
       [AC_SUBST(BSON_EXPERIMENTAL_FEATURES, 0)])
 
 AC_ARG_ENABLE([html-docs],

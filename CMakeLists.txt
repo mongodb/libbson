@@ -7,10 +7,6 @@ option(ENABLE_EXPERIMENTAL_FEATURES
        "Experimental support for future BSON features."
        OFF)
 
-if (ENABLE_EXPERIMENTAL_FEATURES)
-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DBSON_EXPERIMENTAL_FEATURES")
-endif ()
-
 include(CheckFunctionExists)
 include(CheckIncludeFile)
 include(CheckStructHasMember)
@@ -38,8 +34,13 @@ set (CPACK_RESOURCE_FILE_LICENSE "${SOURCE_DIR}/COPYING")
 set (CPACK_PACKAGE_VERSION_MAJOR ${BSON_MAJOR_VERSION})
 set (CPACK_PACKAGE_VERSION_MINOR ${BSON_MINOR_VERSION})
 
-include (CPack)
+if (ENABLE_EXPERIMENTAL_FEATURES)
+   set (BSON_EXPERIMENTAL_FEATURES 1)
+else ()
+   set (BSON_EXPERIMENTAL_FEATURES 0)
+endif ()
 
+include (CPack)
 TEST_BIG_ENDIAN(BSON_BIG_ENDIAN)
 
 # These need proper checks like automake.
