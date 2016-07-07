@@ -205,11 +205,16 @@ set (HEADERS
 )
 
 if (MSVC)
-   set(BSON_SHARED_SOURCES ${SOURCES} ${PROJECT_SOURCE_DIR}/build/cmake/libbson.def)
+   # Export the functions listed in a definitions file.
    if (ENABLE_EXPERIMENTAL_FEATURES)
-      set(BSON_SHARED_SOURCES ${BSON_SHARED_SOURCES}
-          ${PROJECT_SOURCE_DIR}/build/cmake/libbson-experimental.def)
+      set (BSON_DEF_FILE
+           ${PROJECT_SOURCE_DIR}/build/cmake/libbson-experimental.def)
+   else ()
+       set (BSON_DEF_FILE
+            ${PROJECT_SOURCE_DIR}/build/cmake/libbson.def)
    endif ()
+
+   set(BSON_SHARED_SOURCES ${SOURCES} ${BSON_DEF_FILE})
 else()
    set(BSON_SHARED_SOURCES ${SOURCES})
 endif()
