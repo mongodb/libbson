@@ -15,6 +15,83 @@
 # define JSON_DIR "tests/json"
 #endif
 
+static ssize_t
+test_bson_json_read_cb_helper (void *string, uint8_t *buf, size_t len)
+{
+   ssize_t str_size = strlen ((char *) string);
+   if (str_size) {
+      memcpy (buf, string, len);
+      return str_size;
+   } else {
+      return 0; 
+   }
+}
+
+static void
+test_bson_json_allow_multiple (void)
+{
+   int32_t one;
+   bson_error_t error;
+   bson_json_reader_t *reader;
+   bson_json_reader_t *reader_multiple;
+   bson_t bson = BSON_INITIALIZER;
+   bool allow_multiple = true;
+   char *multiple_json = "{\"a\": 1}{\"b\": 1}";
+
+   reader = bson_json_reader_new (multiple_json,
+                                  &test_bson_json_read_cb_helper,
+                                  NULL, !allow_multiple, 0);
+   reader_multiple = bson_json_reader_new (multiple_json,
+                                           &test_bson_json_read_cb_helper,
+                                           NULL, allow_multiple, 0);
+   assert (reader);
+   assert (reader_multiple);
+
+   /* reader with allow_multiple false */
+   /* read first json */
+   ASSERT_CMPINT (1, ==, bson_json_reader_read (reader, &bson, &error));
+   BCON_EXTRACT (&bson, "a", BCONE_INT32 (one));
+   ASSERT_CMPINT (1, ==, one);
+
+   /* read second json */
+   bson_reinit (&bson);
+   ASSERT_CMPINT (1, ==, bson_json_reader_read (reader, &bson, &error));
+   BCON_EXTRACT (&bson, "b", BCONE_INT32 (one));
+   ASSERT_CMPINT (1, ==, one);
+
+   /* start at the beginning of the string */
+   bson_reinit (&bson);
+   ASSERT_CMPINT (1, ==, bson_json_reader_read (reader, &bson, &error));
+   BCON_EXTRACT (&bson, "a", BCONE_INT32 (one));
+   ASSERT_CMPINT (1, ==, one);
+
+   /* reader_multiple with allow_multiple true */
+   /* read first json */
+   bson_reinit (&bson);
+   ASSERT_CMPINT (1, ==, bson_json_reader_read (reader_multiple,
+                                                &bson, &error));
+   BCON_EXTRACT (&bson, "a", BCONE_INT32 (one));
+   ASSERT_CMPINT (1, ==, one);
+
+   /* read second json */
+   bson_reinit (&bson);
+   ASSERT_CMPINT (1, ==, bson_json_reader_read (reader_multiple,
+                                                &bson, &error));
+   BCON_EXTRACT (&bson, "b", BCONE_INT32 (one));
+   ASSERT_CMPINT (1, ==, one);
+
+   /* start at the beginning of the string */
+   bson_reinit (&bson);
+   ASSERT_CMPINT (1, ==, bson_json_reader_read (reader_multiple,
+                                                &bson, &error));
+   BCON_EXTRACT (&bson, "a", BCONE_INT32 (one));
+   ASSERT_CMPINT (1, ==, one);
+
+   bson_json_reader_destroy (reader);
+   bson_json_reader_destroy (reader_multiple);
+   bson_destroy (&bson);
+}
+
 
 static void
 test_bson_as_json (void)
@@ -974,6 +1051,8 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/as_json_spacing", test_bson_as_json_spacing);
    TestSuite_Add (suite, "/bson/as_json_special_keys_at_top", test_bson_json_special_keys_at_top);
    TestSuite_Add (suite, "/bson/array_as_json", test_bson_array_as_json);
+   TestSuite_Add (suite, "/bson/json/allow_multiple", 
+                  test_bson_json_allow_multiple);
    TestSuite_Add (suite, "/bson/json/read", test_bson_json_read);
    TestSuite_Add (suite, "/bson/json/inc", test_bson_json_inc);
    TestSuite_Add (suite, "/bson/json/array", test_bson_json_array);
