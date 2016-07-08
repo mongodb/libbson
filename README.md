@@ -20,7 +20,7 @@ platform here, we would be happy to hear from you.
  * SmartOS
  * Solaris
  * FreeBSD 10
- * Windows Vista, 7, 8
+ * Windows Vista, 7, 8, 10
  * OS X 10.8
 
 ### Supported Architectures
@@ -74,7 +74,7 @@ pkgin install git automake autoconf libtool gcc47 gmake pkg-config
 export PATH=/opt/local/gcc47/bin:$PATH
 ```
 
-#### Windows Vista and Higher
+#### Windows Vista and Higher from Git
 
 Builds on Windows Vista and Higher require cmake to build Visual Studio project files.
 Alternatively, you can use cygwin or mingw with the automake based build.
