@@ -2541,10 +2541,10 @@ _bson_as_json_visit_binary (const bson_iter_t  *iter,
    b64 = bson_malloc0 (b64_len);
    b64_ntop (v_binary, v_binary_len, b64, b64_len);
 
-   bson_string_append (state->str, "{ \"$type\" : \"");
-   bson_string_append_printf (state->str, "%02x", v_subtype);
-   bson_string_append (state->str, "\", \"$binary\" : \"");
+   bson_string_append (state->str, "{ \"$binary\" : \"");
    bson_string_append (state->str, b64);
+   bson_string_append (state->str, "\", \"$type\" : \"");
+   bson_string_append_printf (state->str, "%02x", v_subtype);
    bson_string_append (state->str, "\" }");
    bson_free (b64);
 
