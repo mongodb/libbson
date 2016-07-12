@@ -20,6 +20,7 @@
 #define BSON_INSIDE
 #include "bson-thread-private.h"
 #undef BSON_INSIDE
+#include <ctype.h>
 #include <fcntl.h>
 #include <time.h>
 
@@ -37,6 +38,15 @@ static const char *gTestOids[] = {
    "eeeeeeeeeeeeeeeeeeeeeeee",
    "999999999999999999999999",
    "111111111111111111111111",
+   NULL
+};
+
+static const char *gTestOidsCase[] = {
+   "0123456789ABCDEFAFCDEF03",
+   "FCDEAB182763817236817236",
+   "FFFFFFFFFFFFFFFFFFFFFFFF",
+   "EEEEEEEEEEEEEEEEEEEEEEEE",
+   "01234567890ACBCDEFabcdef",
    NULL
 };
 
@@ -86,6 +96,25 @@ test_bson_oid_init_from_string (void)
       bson_oid_init_from_string(&oid, gTestOids[i]);
       bson_oid_to_string(&oid, str);
       assert(!strcmp(str, gTestOids[i]));
+   }
+
+   /*
+    * Test successfully parsed oids (case-insensitive).
+    */
+   for (i = 0; gTestOidsCase[i]; i++) {
+      char oid_lower[25];
+      int j;
+
+      bson_oid_init_from_string (&oid, gTestOidsCase[i]);
+      bson_oid_to_string (&oid, str);
+      assert (!strcasecmp (str, gTestOidsCase[i]));
+
+      for (j = 0; gTestOidsCase[i][j]; j++) {
+         oid_lower[j] = tolower (gTestOidsCase[i][j]);
+      }
+
+      oid_lower[24] = '\0';
+      assert (!strcmp (str, oid_lower));
    }
 
    /*
