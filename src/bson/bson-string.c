@@ -665,6 +665,33 @@ bson_snprintf (char       *str,    /* IN */
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_ascii_strtoll --
+ *
+ *       A portable strtoll.
+ *
+ *       Convert a string to a 64-bit signed integer according to the given
+ *       @base, which must be 16, 10, or 8. Leading whitespace will be ignord.
+ *
+ *       If @e is not NULL, it will be assigned the address of the first invalid
+ *       character of @s, or its null terminating byte if the entire string was
+ *       valid.
+ *
+ *       If an invalid value is encountered, errno will be set to EINVAL and
+ *       zero will be returned. This function does not currently detect values
+ *       that are out of range.
+ *
+ * Returns:
+ *       The result of the conversion.
+ *
+ * Side effects:
+ *       errno will be set on error.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 int64_t
 bson_ascii_strtoll (const char  *s,
                     char       **e,
