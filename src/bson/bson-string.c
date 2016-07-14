@@ -687,7 +687,9 @@ bson_ascii_strtoll (const char  *s,
     }
 
     if (!isdigit (c) && (c != '+') && (c != '-')) {
-        *e = tok - 1;
+        if (e != NULL) {
+           *e = tok - 1;
+        }
         errno = EINVAL;
         return 0;
     }
@@ -709,14 +711,18 @@ bson_ascii_strtoll (const char  *s,
 
         if (c == 'x' || c == 'X') { /* Hex */
             if (base != 16 && base != 0) {
-                *e = (char *)(s);
+                if (e != NULL) {
+                   *e = (char *)(s);
+                }
                 errno = EINVAL;
                 return 0;
             }
 
             c = *++tok;
             if (!isxdigit (c)) {
-                *e = tok;
+                if (e != NULL) {
+                   *e = tok;
+                }
                 errno = EINVAL;
                 return 0;
             }
@@ -727,7 +733,9 @@ bson_ascii_strtoll (const char  *s,
         }
         else { /* Octal or Decimal -- prefixed with 0 */
             if (base != 8 && base != 0 && base != 10) {
-                *e = (char *)(s);
+                if (e != NULL) {
+                   *e = (char *)(s);
+                }
                 errno = EINVAL;
                 return 0;
             }
@@ -738,7 +746,9 @@ bson_ascii_strtoll (const char  *s,
                 } while (isdigit (c));
             } else { /*Octal*/
                 if ( c < '0' || c >= '8') {
-                  *e = tok;
+                  if (e != NULL) {
+                     *e = tok;
+                  }
                   errno = EINVAL;
                   return 0;
                 }
@@ -756,7 +766,9 @@ bson_ascii_strtoll (const char  *s,
     else {
         /* Decimal */
         if (base != 10) {
-            *e = (char *)(s);
+            if (e != NULL) {
+               *e = (char *)(s);
+            }
             errno = EINVAL;
             return 0;
         }
@@ -771,7 +783,9 @@ bson_ascii_strtoll (const char  *s,
         }
     }
 
-    *e = tok;
+    if (e != NULL) {
+       *e = tok;
+    }
     errno = 0;
     return (sign * number);
 }
