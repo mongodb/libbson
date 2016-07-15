@@ -58,8 +58,6 @@ test_bson_type_decimal128 (const uint8_t *bson_str,
                            uint32_t       canonical_extjson_str_len,
                            bool           lossy)
 {
-   char bson_string[BSON_DECIMAL128_STRING];
-   char json_string[BSON_DECIMAL128_STRING];
    bson_t bson;
    bson_t canonical_bson;
    bson_t *extjson;
@@ -67,7 +65,6 @@ test_bson_type_decimal128 (const uint8_t *bson_str,
    bson_decimal128_t bson_decimal128;
    bson_decimal128_t json_decimal128;
    bson_iter_t iter;
-   char *str1, *str2;
    bson_error_t error;
 
    BSON_ASSERT (bson_str);
@@ -133,7 +130,6 @@ test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
 
    if (bson_iter_init_find (&iter, scenario, "valid")) {
       const char *expected = NULL;
-      bson_t json;
       bson_t bson_input = BSON_INITIALIZER;
 
       bson_iter_recurse (&iter, &inner_iter);
