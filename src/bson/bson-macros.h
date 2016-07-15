@@ -124,7 +124,7 @@
 #  endif
 #else
 #  if defined(_MSC_VER)
-#    define BSON_ALIGNED_BEGIN(_N) __declspec (align ((_N) > BSON_ALIGN_OF_PTR ? BSON_ALIGN_OF_PTR : (_N) ))
+#    define BSON_ALIGNED_BEGIN(_N) __declspec (align (BSON_ALIGN_OF_PTR))
 #    define BSON_ALIGNED_END(_N)
 #  else
 #    define BSON_ALIGNED_BEGIN(_N)
