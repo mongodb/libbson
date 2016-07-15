@@ -42,3 +42,5 @@ test.log
 xcuserdata
 tags
 .lvimrc
+doc/installing.page
+doc/version.page
