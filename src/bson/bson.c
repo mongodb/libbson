@@ -1927,16 +1927,14 @@ bson_t *
 bson_sized_new (size_t size)
 {
    bson_impl_alloc_t *impl_a;
-   bson_impl_inline_t *impl_i;
    bson_t *b;
 
    BSON_ASSERT (size <= INT32_MAX);
 
    b = bson_malloc (sizeof *b);
    impl_a = (bson_impl_alloc_t *)b;
-   impl_i = (bson_impl_inline_t *)b;
 
-   if (size <= sizeof impl_i->data) {
+   if (size <= BSON_INLINE_DATA_SIZE) {
       bson_init (b);
       b->flags &= ~BSON_FLAG_STATIC;
    } else {

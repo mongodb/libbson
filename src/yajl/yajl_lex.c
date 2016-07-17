@@ -46,6 +46,9 @@ tokToStr(yajl_tok tok)
 }
 #endif
 
+/* added for libbson: disable clang's static analyzer on this file */
+#ifndef __clang_analyzer__
+
 /* Impact of the stream parsing feature on the lexer:
  *
  * YAJL support stream parsing.  That is, the ability to parse the first
@@ -761,3 +764,5 @@ yajl_tok yajl_lex_peek(yajl_lexer lexer, const unsigned char * jsonText,
     
     return tok;
 }
+
+#endif /* __clang_analyzer__ */

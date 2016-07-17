@@ -206,9 +206,9 @@ buildvariants:
     - name: "debug-compile-sanitizer-address"
       distros:
       - ubuntu1604-build
-#    - name: "debug-compile-scan-build"
-#      distros:
-#      - ubuntu1604-build
+    - name: "debug-compile-scan-build"
+      distros:
+      - ubuntu1604-build
 
 ## clang
 

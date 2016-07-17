@@ -14,6 +14,9 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+/* added for libbson: disable clang's static analyzer on this file */
+#ifndef __clang_analyzer__
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -501,3 +504,4 @@ void yajl_tree_free (yajl_val v)
         free(v);
     }
 }
+#endif /* __clang_analyzer__ */

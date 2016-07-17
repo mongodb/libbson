@@ -217,7 +217,7 @@ test_bson_as_json_stack_overflow (void)
    BSON_ASSERT(str);
 
    r = !!strstr(str, "...");
-   BSON_ASSERT(str);
+   BSON_ASSERT(r);
 
    bson_free(str);
    bson_destroy(&b);
