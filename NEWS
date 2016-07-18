@@ -1,10 +1,11 @@
 NEXT RELEASE
 ============
 
-New features:
+New features and bug fixes:
 
   * bson_reader_reset seeks to the beginning of a BSON buffer.
   * bson_steal efficiently transfers contents from one bson_t to another.
+  * Fix Windows compile error with BSON_EXTRA_ALIGN disabled.
 
 
 Libbson-1.3.5
