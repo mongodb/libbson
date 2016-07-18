@@ -183,9 +183,8 @@ static time_t const time_t_max =
 
 #ifdef TM_ZONE
 static const char	wildabbr[] = WILDABBR;
-#endif
-
 static const char	gmt[] = "GMT";
+#endif
 
 struct ttinfo {				/* time type information */
 	int_fast32_t	tt_gmtoff;	/* UT offset in seconds */
@@ -219,8 +218,7 @@ struct state {
 	time_t		ats[TZ_MAX_TIMES];
 	unsigned char	types[TZ_MAX_TIMES];
 	struct ttinfo	ttis[TZ_MAX_TYPES];
-	char		chars[BIGGEST(BIGGEST(TZ_MAX_CHARS + 1, sizeof gmt),
-				(2 * (MY_TZNAME_MAX + 1)))];
+	char		chars[BIGGEST(TZ_MAX_CHARS + 1, (2 * (MY_TZNAME_MAX + 1)))];
 	struct lsinfo	lsis[TZ_MAX_LEAPS];
 	int		defaulttype; /* for early times or if no transitions */
 };
