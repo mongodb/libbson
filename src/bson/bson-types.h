@@ -158,6 +158,7 @@ typedef struct
    uint8_t bytes[12];
 } bson_oid_t;
 
+BSON_STATIC_ASSERT (sizeof (bson_oid_t) == 12);
 
 /**
  * bson_decimal128_t:
@@ -171,6 +172,7 @@ typedef struct
  * type.  The structure stores the 128 bits such that they correspond to the
  * native format for the IEEE decimal128 type, if it is implemented.
  **/
+#ifdef BSON_EXPERIMENTAL_FEATURES
 typedef struct
 {
 #if BSON_BYTE_ORDER == BSON_LITTLE_ENDIAN
@@ -181,9 +183,7 @@ typedef struct
    uint64_t low;
 #endif
 } bson_decimal128_t;
-
-
-BSON_STATIC_ASSERT (sizeof (bson_oid_t) == 12);
+#endif  /* BSON_EXPERIMENTAL_FEATURES */
 
 
 /**
@@ -326,7 +326,9 @@ typedef struct _bson_value_t
          char           *symbol;
          uint32_t        len;
       } v_symbol;
+#ifdef BSON_EXPERIMENTAL_FEATURES
       bson_decimal128_t  v_decimal128;
+#endif
    } value;
 } bson_value_t
 BSON_ALIGNED_END (8);
@@ -503,12 +505,16 @@ typedef struct
                                    const char        *key,
                                    uint32_t           type_code,
                                    void              *data);
+#ifdef BSON_EXPERIMENTAL_FEATURES
    bool (*visit_decimal128)       (const bson_iter_t       *iter,
                                    const char              *key,
                                    const bson_decimal128_t *v_decimal128,
                                    void                    *data);
 
    void *padding[7];
+#else
+   void *padding[8];
+#endif
 } bson_visitor_t
 BSON_ALIGNED_END (8);
 

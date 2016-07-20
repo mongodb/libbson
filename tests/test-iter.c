@@ -87,16 +87,20 @@ static void
 test_bson_iter_mixed (void)
 {
    bson_iter_t iter;
+#ifdef BSON_EXPERIMENTAL_FEATURES
    bson_decimal128_t iter_value;
    bson_decimal128_t value;
+#endif
    bson_t *b;
    bson_t *b2;
 
    b = bson_new();
    b2 = bson_new();
 
+#ifdef BSON_EXPERIMENTAL_FEATURES
    value.high = 0;
    value.low = 1;
+#endif
 
    assert(bson_append_utf8(b2, "foo", -1, "bar", -1));
    assert(bson_append_code(b, "0", -1, "var a = {};"));
@@ -104,7 +108,9 @@ test_bson_iter_mixed (void)
    assert(bson_append_int32(b, "2", -1, 1234));
    assert(bson_append_int64(b, "3", -1, 4567));
    assert(bson_append_time_t(b, "4", -1, 123456));
+#ifdef BSON_EXPERIMENTAL_FEATURES
    assert(bson_append_decimal128(b, "5", -1, &value));
+#endif
    assert(bson_iter_init(&iter, b));
    assert(bson_iter_next(&iter));
    assert(BSON_ITER_HOLDS_CODE(&iter));
@@ -116,8 +122,10 @@ test_bson_iter_mixed (void)
    assert(BSON_ITER_HOLDS_INT64(&iter));
    assert(bson_iter_next(&iter));
    assert(BSON_ITER_HOLDS_DATE_TIME(&iter));
+#ifdef BSON_EXPERIMENTAL_FEATURES
    assert(bson_iter_next(&iter));
    assert(BSON_ITER_HOLDS_DECIMAL128(&iter));
+#endif
    assert(!bson_iter_next(&iter));
    assert(bson_iter_init_find(&iter, b, "3"));
    assert(!strcmp(bson_iter_key(&iter), "3"));
@@ -126,10 +134,12 @@ test_bson_iter_mixed (void)
    assert(BSON_ITER_HOLDS_DATE_TIME(&iter));
    assert(bson_iter_time_t(&iter) == 123456);
    assert(bson_iter_date_time(&iter) == 123456000);
+#ifdef BSON_EXPERIMENTAL_FEATURES
    assert(bson_iter_next(&iter));
-   /* This test uses memcmp because libbson lacks decimal128 comparison. */
    bson_iter_decimal128(&iter, &iter_value);
+   /* This test uses memcmp because libbson lacks decimal128 comparison. */
    assert(memcmp(&iter_value, &value, sizeof(value)) == 0);
+#endif
    assert(!bson_iter_next(&iter));
    bson_destroy(b);
    bson_destroy(b2);

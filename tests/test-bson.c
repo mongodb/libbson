@@ -1454,13 +1454,17 @@ test_bson_macros (void)
    const uint8_t data [] = { 1, 2, 3, 4 };
    bson_t b = BSON_INITIALIZER;
    bson_t ar = BSON_INITIALIZER;
+#ifdef BSON_EXPERIMENTAL_FEATURES
    bson_decimal128_t dec;
+#endif
    bson_oid_t oid;
    struct timeval tv;
    time_t t;
 
+#ifdef BSON_EXPERIMENTAL_FEATURES
    dec.high = 0x3040000000000000ULL;
    dec.low = 0x0ULL;
+#endif
 
    t = time (NULL);
 #ifdef BSON_OS_WIN32

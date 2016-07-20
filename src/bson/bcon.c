@@ -137,7 +137,9 @@ typedef union bcon_append {
    } TIMESTAMP;
 
    int64_t       INT64;
+#ifdef BSON_EXPERIMENTAL_FEATURES
    bson_decimal128_t *DECIMAL128;
+#endif
    const bson_iter_t *ITER;
 } bcon_append_t;
 
@@ -194,7 +196,9 @@ typedef union bcon_extract {
    } TIMESTAMP;
 
    int64_t *INT64;
+#ifdef BSON_EXPERIMENTAL_FEATURES
    bson_decimal128_t *DECIMAL128;
+#endif
 } bcon_extract_t;
 
 static const char *gBconMagic = "BCON_MAGIC";
@@ -283,9 +287,11 @@ _bcon_append_single (bson_t        *bson,
    case BCON_TYPE_INT64:
       bson_append_int64 (bson, key, -1, val->INT64);
       break;
+#ifdef BSON_EXPERIMENTAL_FEATURES
    case BCON_TYPE_DECIMAL128:
       bson_append_decimal128 (bson, key, -1, val->DECIMAL128);
       break;
+#endif
    case BCON_TYPE_MAXKEY:
       bson_append_maxkey (bson, key, -1);
       break;
@@ -406,10 +412,12 @@ _bcon_extract_single (const bson_iter_t *iter,
       CHECK_TYPE (BSON_TYPE_INT64);
       *val->INT64 = bson_iter_int64 (iter);
       break;
+#ifdef BSON_EXPERIMENTAL_FEATURES
    case BCON_TYPE_DECIMAL128:
       CHECK_TYPE (BSON_TYPE_DECIMAL128);
       bson_iter_decimal128 (iter, val->DECIMAL128);
       break;
+#endif
    case BCON_TYPE_MAXKEY:
       CHECK_TYPE (BSON_TYPE_MAXKEY);
       break;
@@ -542,9 +550,11 @@ _bcon_append_tokenize (va_list       *ap,
       case BCON_TYPE_INT64:
          u->INT64 = va_arg (*ap, int64_t);
          break;
+#ifdef BSON_EXPERIMENTAL_FEATURES
       case BCON_TYPE_DECIMAL128:
          u->DECIMAL128 = va_arg (*ap, bson_decimal128_t *);
          break;
+#endif
       case BCON_TYPE_MAXKEY:
          break;
       case BCON_TYPE_MINKEY:
@@ -675,9 +685,11 @@ _bcon_extract_tokenize (va_list        *ap,
       case BCON_TYPE_INT64:
          u->INT64 = va_arg (*ap, int64_t *);
          break;
+#ifdef BSON_EXPERIMENTAL_FEATURES
       case BCON_TYPE_DECIMAL128:
          u->DECIMAL128 = va_arg (*ap, bson_decimal128_t *);
          break;
+#endif
       case BCON_TYPE_MAXKEY:
          break;
       case BCON_TYPE_MINKEY:

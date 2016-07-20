@@ -12,7 +12,6 @@ INST_H_FILES = \
 	src/bson/bson-clock.h \
 	src/bson/bson-compat.h \
 	src/bson/bson-context.h \
-	src/bson/bson-decimal128.h \
 	src/bson/bson-endian.h \
 	src/bson/bson-error.h \
 	src/bson/bson-iter.h \
@@ -30,6 +29,11 @@ INST_H_FILES = \
 	src/bson/bson-version.h \
 	src/bson/bson-version-functions.h \
 	src/bson/bson-writer.h
+
+if ENABLE_EXPERIMENTAL_FEATURES
+INST_H_FILES += \
+	src/bson/bson-decimal128.h
+endif
 
 if OS_WIN32
 INST_H_FILES += src/bson/bson-stdint-win32.h
@@ -68,7 +72,6 @@ libbson_la_SOURCES = \
 	src/bson/bson-atomic.c \
 	src/bson/bson-clock.c \
 	src/bson/bson-context.c \
-	src/bson/bson-decimal128.c \
 	src/bson/bson-error.c \
 	src/bson/bson-iter.c \
 	src/bson/bson-iso8601.c \
@@ -84,6 +87,11 @@ libbson_la_SOURCES = \
 	src/bson/bson-value.c \
 	src/bson/bson-version-functions.c \
 	src/bson/bson-writer.c
+
+if ENABLE_EXPERIMENTAL_FEATURES
+libbson_la_SOURCES += \
+	src/bson/bson-decimal128.c
+endif
 
 libbson_la_LIBADD =
 

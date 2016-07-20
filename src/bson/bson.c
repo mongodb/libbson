@@ -1159,6 +1159,7 @@ bson_append_int64 (bson_t      *bson,
 }
 
 
+#ifdef BSON_EXPERIMENTAL_FEATURES
 bool
 bson_append_decimal128 (bson_t                  *bson,
                         const char              *key,
@@ -1186,6 +1187,7 @@ bson_append_decimal128 (bson_t                  *bson,
                         1, &gZero,
                         16, value_le);
 }
+#endif
 
 
 bool

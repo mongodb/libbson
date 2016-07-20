@@ -125,9 +125,11 @@ typedef union
    struct {
       int64_t value;
    } v_int64;
+#ifdef BSON_EXPERIMENTAL_FEATURES
    struct {
       bson_decimal128_t value;
    } v_decimal128;
+#endif
 } bson_json_bson_data_t;
 
 

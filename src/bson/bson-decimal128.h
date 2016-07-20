@@ -45,7 +45,6 @@
 
 BSON_BEGIN_DECLS
 
-#ifdef BSON_EXPERIMENTAL_FEATURES
 void
 bson_decimal128_to_string (const bson_decimal128_t *dec,
                            char                    *str);
@@ -74,7 +73,6 @@ bson_Decimal128_to_decimal128 (_Decimal128        decimal128,
    memcpy (dec, &decimal128, sizeof(decimal128));
 }
 #endif /* BSON_HAVE_DECIMAL128 */
-#endif /* BSON_EXPERIMENTAL_FEATURES */
 
 BSON_END_DECLS
 

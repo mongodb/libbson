@@ -20,15 +20,19 @@ static void
 test_bson_as_json (void)
 {
    bson_oid_t oid;
+#ifdef BSON_EXPERIMENTAL_FEATURES
    bson_decimal128_t decimal128;
+#endif
    bson_t *b;
    bson_t *b2;
    char *str;
    size_t len;
    int i;
 
+#ifdef BSON_EXPERIMENTAL_FEATURES
    decimal128.high = 0x3040000000000000ULL;
    decimal128.low  = 0x000000000000000B;
+#endif
    bson_oid_init_from_string(&oid, "123412341234abcdabcdabcd");
 
    b = bson_new();
@@ -48,7 +52,9 @@ test_bson_as_json (void)
    assert(bson_append_minkey(b, "minkey", -1));
    assert(bson_append_maxkey(b, "maxkey", -1));
    assert(bson_append_symbol(b, "symbol", -1, "var a = {};", -1));
+#ifdef BSON_EXPERIMENTAL_FEATURES
    assert(bson_append_decimal128(b, "decimal128", -1, &decimal128));
+#endif
 
    b2 = bson_new();
    assert(bson_append_int32(b2, "0", -1, 60));
@@ -753,6 +759,7 @@ test_bson_json_dbref (void)
    }
 }
 
+#ifdef BSON_EXPERIMENTAL_FEATURES
 static void
 test_bson_json_number_decimal (void) {
    bson_error_t error;
@@ -773,6 +780,7 @@ test_bson_json_number_decimal (void) {
    assert (decimal128.high == 0x3040000000000000ULL);
    bson_destroy (&b);
 }
+#endif
 
 static void
 test_bson_json_inc (void)

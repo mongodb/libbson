@@ -17,7 +17,9 @@
 
 #include "bson-iter.h"
 #include "bson-config.h"
+#ifdef BSON_EXPERIMENTAL_FEATURES
 #include "bson-decimal128.h"
+#endif
 #ifdef HAVE_STRINGS_H
 # include <strings.h>
 #endif
@@ -1030,6 +1032,7 @@ bson_iter_as_int64 (const bson_iter_t *iter) /* IN */
 }
 
 
+#ifdef BSON_EXPERIMENTAL_FEATURES
 /*
  *--------------------------------------------------------------------------
  *
@@ -1060,6 +1063,7 @@ bson_iter_decimal128 (const bson_iter_t *iter,      /* IN */
 
    return false;
 }
+#endif
 
 
 /*
@@ -1981,6 +1985,7 @@ bson_iter_visit_all (bson_iter_t          *iter,    /* INOUT */
          }
 
          break;
+#ifdef BSON_EXPERIMENTAL_FEATURES
       case BSON_TYPE_DECIMAL128:
          {
             bson_decimal128_t dec;
@@ -1991,6 +1996,7 @@ bson_iter_visit_all (bson_iter_t          *iter,    /* INOUT */
             }
          }
          break;
+#endif
       case BSON_TYPE_MAXKEY:
 
          if (VISIT_MAXKEY (iter, bson_iter_key_unsafe (iter), data)) {
@@ -2156,6 +2162,7 @@ bson_iter_overwrite_double (bson_iter_t *iter,  /* IN */
 }
 
 
+#ifdef BSON_EXPERIMENTAL_FEATURES
 /*
  *--------------------------------------------------------------------------
  *
@@ -2189,6 +2196,7 @@ bson_iter_overwrite_decimal128 (bson_iter_t       *iter,   /* IN */
 #endif
    }
 }
+#endif
 
 
 /*
@@ -2299,9 +2307,11 @@ bson_iter_value (bson_iter_t *iter) /* IN */
    case BSON_TYPE_INT64:
       value->value.v_int64 = bson_iter_int64 (iter);
       break;
+#ifdef BSON_EXPERIMENTAL_FEATURES
    case BSON_TYPE_DECIMAL128:
       bson_iter_decimal128 (iter, &(value->value.v_decimal128));
       break;
+#endif
    case BSON_TYPE_NULL:
    case BSON_TYPE_UNDEFINED:
    case BSON_TYPE_MAXKEY:

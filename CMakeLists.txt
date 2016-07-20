@@ -147,7 +147,6 @@ set (SOURCES
    ${SOURCE_DIR}/src/bson/bson-atomic.c
    ${SOURCE_DIR}/src/bson/bson-clock.c
    ${SOURCE_DIR}/src/bson/bson-context.c
-   ${SOURCE_DIR}/src/bson/bson-decimal128.c
    ${SOURCE_DIR}/src/bson/bson-error.c
    ${SOURCE_DIR}/src/bson/bson-iso8601.c
    ${SOURCE_DIR}/src/bson/bson-iter.c
@@ -174,6 +173,10 @@ set (SOURCES
    ${SOURCE_DIR}/src/yajl/yajl_version.c
 )
 
+if (ENABLE_EXPERIMENTAL_FEATURES)
+    set (SOURCES ${SOURCES} ${SOURCE_DIR}/src/bson/bson-decimal128.c)
+endif ()
+
 set (HEADERS
    ${PROJECT_BINARY_DIR}/src/bson/bson-config.h
    ${PROJECT_BINARY_DIR}/src/bson/bson-stdint.h
@@ -183,7 +186,6 @@ set (HEADERS
    ${SOURCE_DIR}/src/bson/bson-clock.h
    ${SOURCE_DIR}/src/bson/bson-compat.h
    ${SOURCE_DIR}/src/bson/bson-context.h
-   ${SOURCE_DIR}/src/bson/bson-decimal128.h
    ${SOURCE_DIR}/src/bson/bson-endian.h
    ${SOURCE_DIR}/src/bson/bson-error.h
    ${SOURCE_DIR}/src/bson/bson.h
@@ -203,6 +205,10 @@ set (HEADERS
    ${SOURCE_DIR}/src/bson/bson-version-functions.h
    ${SOURCE_DIR}/src/bson/bson-writer.h
 )
+
+if (ENABLE_EXPERIMENTAL_FEATURES)
+    set (HEADERS ${HEADERS} ${SOURCE_DIR}/src/bson/bson-decimal128.h)
+endif ()
 
 if (MSVC)
    # Export the functions listed in a definitions file.
