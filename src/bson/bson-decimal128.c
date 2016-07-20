@@ -50,6 +50,7 @@ typedef struct
 } _bson_uint128_t;
 
 
+#ifdef BSON_EXPERIMENTAL_FEATURES
 /**
  *------------------------------------------------------------------------------
  *
@@ -101,7 +102,6 @@ _bson_uint128_divide1B (_bson_uint128_t  value,    /* IN */
 }
 
 
-#ifdef BSON_EXPERIMENTAL_FEATURES
 /**
  *------------------------------------------------------------------------------
  *
