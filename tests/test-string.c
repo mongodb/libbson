@@ -199,7 +199,6 @@ typedef struct
 static void
 test_bson_ascii_strtoll (void)
 {
-   char *endptr = NULL;
    int64_t rv;
    int i;
    strtoll_test tests[] = {
@@ -246,9 +245,8 @@ test_bson_ascii_strtoll (void)
 
    for (i = 0; tests [i].str; i++) {
       errno = 0;
-      endptr = NULL;
 
-      rv = bson_ascii_strtoll (tests [i].str, &endptr, tests [i].base);
+      rv = bson_ascii_strtoll (tests [i].str, NULL, tests [i].base);
 
 #if 0
       fprintf (stderr, "rv=%"PRId64" errno=%d\n", rv, errno);

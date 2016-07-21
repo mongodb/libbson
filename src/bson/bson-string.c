@@ -664,6 +664,33 @@ bson_snprintf (char       *str,    /* IN */
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_ascii_strtoll --
+ *
+ *       A portable strtoll.
+ *
+ *       Convert a string to a 64-bit signed integer according to the given
+ *       @base, which must be 16, 10, or 8. Leading whitespace will be ignord.
+ *
+ *       If @e is not NULL, it will be assigned the address of the first invalid
+ *       character of @s, or its null terminating byte if the entire string was
+ *       valid.
+ *
+ *       If an invalid value is encountered, errno will be set to EINVAL and
+ *       zero will be returned. This function does not currently detect values
+ *       that are out of range.
+ *
+ * Returns:
+ *       The result of the conversion.
+ *
+ * Side effects:
+ *       errno will be set on error.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 int64_t
 bson_ascii_strtoll (const char  *s,
                     char       **e,
@@ -686,7 +713,9 @@ bson_ascii_strtoll (const char  *s,
     }
 
     if (!isdigit (c) && (c != '+') && (c != '-')) {
-        *e = tok - 1;
+        if (e != NULL) {
+           *e = tok - 1;
+        }
         errno = EINVAL;
         return 0;
     }
@@ -708,14 +737,18 @@ bson_ascii_strtoll (const char  *s,
 
         if (c == 'x' || c == 'X') { /* Hex */
             if (base != 16 && base != 0) {
-                *e = (char *)(s);
+                if (e != NULL) {
+                   *e = (char *)(s);
+                }
                 errno = EINVAL;
                 return 0;
             }
 
             c = *++tok;
             if (!isxdigit (c)) {
-                *e = tok;
+                if (e != NULL) {
+                   *e = tok;
+                }
                 errno = EINVAL;
                 return 0;
             }
@@ -726,7 +759,9 @@ bson_ascii_strtoll (const char  *s,
         }
         else { /* Octal or Decimal -- prefixed with 0 */
             if (base != 8 && base != 0 && base != 10) {
-                *e = (char *)(s);
+                if (e != NULL) {
+                   *e = (char *)(s);
+                }
                 errno = EINVAL;
                 return 0;
             }
@@ -737,7 +772,9 @@ bson_ascii_strtoll (const char  *s,
                 } while (isdigit (c));
             } else { /*Octal*/
                 if ( c < '0' || c >= '8') {
-                  *e = tok;
+                  if (e != NULL) {
+                     *e = tok;
+                  }
                   errno = EINVAL;
                   return 0;
                 }
@@ -755,7 +792,9 @@ bson_ascii_strtoll (const char  *s,
     else {
         /* Decimal */
         if (base != 10) {
-            *e = (char *)(s);
+            if (e != NULL) {
+               *e = (char *)(s);
+            }
             errno = EINVAL;
             return 0;
         }
@@ -770,7 +809,9 @@ bson_ascii_strtoll (const char  *s,
         }
     }
 
-    *e = tok;
+    if (e != NULL) {
+       *e = tok;
+    }
     errno = 0;
     return (sign * number);
 }
