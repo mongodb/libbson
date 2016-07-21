@@ -158,6 +158,23 @@ test_bson_strndup (void)
    s = bson_strndup("asdf", 2);
    assert(!strcmp(s, "as"));
    bson_free(s);
+
+   s = bson_strndup ("asdf", 10);
+   assert (!strcmp (s, "asdf"));
+   bson_free (s);
+
+   /* Some tests where we truncate to size n-1, n, n+1 */
+   s = bson_strndup ("asdf", 3);
+   assert (!strcmp (s, "asd"));
+   bson_free (s);
+
+   s = bson_strndup ("asdf", 4);
+   assert (!strcmp (s, "asdf"));
+   bson_free (s);
+
+   s = bson_strndup ("asdf", 5);
+   assert (!strcmp (s, "asdf"));
+   bson_free (s);
 }
 
 

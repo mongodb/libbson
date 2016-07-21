@@ -464,8 +464,7 @@ bson_strndup (const char *str,     /* IN */
    BSON_ASSERT (str);
 
    ret = bson_malloc (n_bytes + 1);
-   memcpy (ret, str, n_bytes);
-   ret[n_bytes] = '\0';
+   bson_strncpy (ret, str, n_bytes + 1);
 
    return ret;
 }
