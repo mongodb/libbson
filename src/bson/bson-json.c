@@ -898,8 +898,8 @@ _bson_json_read_end_map (void *_ctx) /* IN */
          return bson_append_int64 (STACK_BSON_CHILD, bson->key,
                                    (int)bson->key_buf.len,
                                    bson->bson_type_data.v_int64.value);
-      case BSON_TYPE_DECIMAL128:
 #ifdef BSON_EXPERIMENTAL_FEATURES
+      case BSON_TYPE_DECIMAL128:
          return bson_append_decimal128 (STACK_BSON_CHILD, bson->key,
                                     (int)bson->key_buf.len,
                                     &bson->bson_type_data.v_decimal128.value);

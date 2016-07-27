@@ -299,7 +299,9 @@ test_bson_iter_fuzz (void)
          case BSON_TYPE_INT32:
          case BSON_TYPE_TIMESTAMP:
          case BSON_TYPE_INT64:
+#ifdef BSON_EXPERIMENTAL_FEATURES
          case BSON_TYPE_DECIMAL128:
+#endif
          case BSON_TYPE_MAXKEY:
          case BSON_TYPE_MINKEY:
             break;

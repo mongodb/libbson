@@ -684,9 +684,11 @@ fill_data_fields:
    case BSON_TYPE_INT32:
       iter->next_off = o + 4;
       break;
+#ifdef BSON_EXPERIMENTAL_FEATURES
    case BSON_TYPE_DECIMAL128:
       iter->next_off = o + 16;
       break;
+#endif
    case BSON_TYPE_MAXKEY:
    case BSON_TYPE_MINKEY:
    case BSON_TYPE_NULL:

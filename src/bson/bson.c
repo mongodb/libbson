@@ -1345,8 +1345,8 @@ bson_append_iter (bson_t            *bson,
    case BSON_TYPE_INT64:
       ret = bson_append_int64 (bson, key, key_length, bson_iter_int64 (iter));
       break;
-   case BSON_TYPE_DECIMAL128:
 #ifdef BSON_EXPERIMENTAL_FEATURES
+   case BSON_TYPE_DECIMAL128:
       {
          bson_decimal128_t dec;
 
@@ -1807,8 +1807,8 @@ bson_append_value (bson_t             *bson,
    case BSON_TYPE_INT64:
       ret = bson_append_int64 (bson, key, key_length, value->value.v_int64);
       break;
-   case BSON_TYPE_DECIMAL128:
 #ifdef BSON_EXPERIMENTAL_FEATURES
+   case BSON_TYPE_DECIMAL128:
       ret = bson_append_decimal128 (bson, key, key_length, &(value->value.v_decimal128));
 #endif
       break;
