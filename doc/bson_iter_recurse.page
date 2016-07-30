@@ -35,6 +35,6 @@ bson_iter_recurse (const bson_iter_t *iter,
 
   <section id="return">
     <title>Returns</title>
-    <p>true if <code>child</code> has been intialized. Otherwise, both <code>child</code> and <code>iter</code> should be considered invalid.</p>
+    <p>true if <code>child</code> has been intialized. Otherwise, <code>child</code> should be considered invalid.</p>
   </section>
 </page>
