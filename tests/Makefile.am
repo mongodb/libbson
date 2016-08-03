@@ -83,6 +83,10 @@ debug: $(TEST_PROGS)
 
 DISTCLEANFILES += test.log
 
+CLEANFILES += \
+              tests/*.gcda \
+              tests/*.gcno
+
 
 EXTRA_DIST += \
 	tests/abicheck.sh \

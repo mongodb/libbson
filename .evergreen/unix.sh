@@ -10,6 +10,7 @@ set -o errexit  # Exit the script with error if any of the commands fail
 #       VALGRIND Run the test suite through valgrind
 #       CC       Which compiler to use
 #       ANALYZE  Run the build through clang's scan-build
+#       COVERAGE Run code coverage
 
 
 echo "CFLAGS: $CFLAGS"
@@ -19,6 +20,7 @@ echo "DEBUG: $DEBUG"
 echo "VALGRIND: $VALGRIND"
 echo "CC: $CC"
 echo "ANALYZE $ANALYZE"
+echo "COVERAGE $COVERAGE"
 
 
 # Get the kernel name, lowercased
@@ -109,6 +111,7 @@ esac
 
 [ "$DEBUG" ] && CONFIGURE_FLAGS=$DEBUG_FLAGS || CONFIGURE_FLAGS=$RELEASE_FLAGS
 [ "$VALGRIND" ] && TARGET="valgrind" || TARGET="test"
+[ "$COVERAGE" ] && CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-coverage"
 
 if [ "$RELEASE" ]; then
    # Overwrite the git checkout with the packaged archive
@@ -120,3 +123,14 @@ fi
 CFLAGS="$CFLAGS" CC="$CC" $SCAN_BUILD $CONFIGURE_SCRIPT $CONFIGURE_FLAGS
 $SCAN_BUILD make $TARGET TEST_ARGS="--no-fork -F test-results.json"
 
+if [ "$COVERAGE" ]; then
+   case "$CC" in
+      clang)
+         lcov --gcov-tool `pwd`/.evergreen/llvm-gcov.sh --capture --derive-func-data --directory . --output-file .coverage.lcov --no-external
+         ;;
+      *)
+         lcov --gcov-tool gcov --capture --derive-func-data --directory . --output-file .coverage.lcov --no-external
+         ;;
+   esac
+   genhtml .coverage.lcov --legend --title "libbson code coverage" --output-directory coverage
+fi

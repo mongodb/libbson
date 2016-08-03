@@ -3,6 +3,27 @@
 #####################################
 
 functions:
+  "upload coverage" :
+    - command: shell.exec
+      params:
+        silent: true
+        working_dir: "libbson"
+        script: |
+           sudo apt-get install -y awscli
+           export AWS_ACCESS_KEY_ID=${aws_key}
+           export AWS_SECRET_ACCESS_KEY=${aws_secret}
+           aws s3 cp coverage s3://mciuploads/libbson/${build_variant}/${revision}/${version_id}/${build_id}/coverage/ --recursive --acl public-read
+    - command: s3.put
+      params:
+        aws_key: ${aws_key}
+        aws_secret: ${aws_secret}
+        local_file:  libbson/coverage/index.html
+        remote_file: libbson/${build_variant}/${revision}/${version_id}/${build_id}/coverage/index.html
+        bucket: mciuploads
+        permissions: public-read
+        content_type: text/html
+        display_name: "Coverage Report"
+
   "fetch source" :
     - command: git.get_project
       params:
@@ -76,7 +97,6 @@ pre:
 
 post:
   - func: "upload artifacts"
-  - func: "upload scan artifacts"
   - func: "upload release"
   - func: "upload results"
 
@@ -133,6 +153,17 @@ tasks:
           params:
             working_dir: "libbson"
             script: "DEBUG=1 CC=clang ANALYZE=1 MARCH='${MARCH}' sh .evergreen/${FILENAME|unix}.sh"
+        - func: "upload scan artifacts"
+
+    - name: debug-compile-coverage
+      commands:
+        - command: shell.exec
+          params:
+            working_dir: "libbson"
+            script: |
+               sudo apt-get -y install lcov
+               DEBUG=1 CC='${CC}' COVERAGE=1 MARCH='${MARCH}' sh .evergreen/${FILENAME|unix}.sh
+        - func: "upload coverage"
 
     - name: make-release-archive
       commands:
@@ -209,6 +240,10 @@ buildvariants:
     - name: "debug-compile-scan-build"
       distros:
       - ubuntu1604-build
+    - name: "debug-compile-coverage"
+      distros:
+      - ubuntu1604-build
+      - ubuntu1604-test
 
 ## clang
 
