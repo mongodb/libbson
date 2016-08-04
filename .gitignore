@@ -44,3 +44,7 @@ tags
 .lvimrc
 doc/installing.page
 doc/version.page
+.coverage.lcov
+coverage
+*.gcda
+*.gcno
