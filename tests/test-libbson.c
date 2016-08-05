@@ -1,4 +1,5 @@
 #include "TestSuite.h"
+#include "bson-config.h"
 
 
 extern void test_atomic_install       (TestSuite *suite);
