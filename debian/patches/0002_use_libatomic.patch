@@ -1,0 +1,62 @@
+Index: libbson/build/autotools/CheckAtomics.m4
+===================================================================
+--- libbson.orig/build/autotools/CheckAtomics.m4
++++ libbson/build/autotools/CheckAtomics.m4
+@@ -1,23 +1,25 @@
+ AC_LANG_PUSH([C])
+-AC_MSG_CHECKING([for __sync_add_and_fetch_4])
++AC_SEARCH_LIBS([__atomic_fetch_add_8], [atomic], [LDFLAGS="$LDFLAGS -Wl,--as-needed"
++                                                  AC_SUBST(LDFLAGS)])
++AC_MSG_CHECKING([for __atomic_fetch_add_4])
+ AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdint.h>]],
+-                                [[int32_t v = 1; return __sync_add_and_fetch_4 (&v, (int32_t)10);]])],
++                                [[int32_t v = 1; return __atomic_fetch_add_4 (&v, (int32_t)10, __ATOMIC_SEQ_CST);]])],
+                [AC_MSG_RESULT(yes)
+-                have_sync_add_and_fetch_4=yes],
++                have_atomic_fetch_add_4=yes],
+                [AC_MSG_RESULT(no)
+-                have_sync_add_and_fetch_4=no])
+-AS_IF([test "$have_sync_add_and_fetch_4" = "yes"],
++                have_atomic_fetch_add_4=no])
++AS_IF([test "$have_atomic_fetch_add_4" = "yes"],
+       [AC_SUBST(BSON_HAVE_ATOMIC_32_ADD_AND_FETCH, 1)],
+       [AC_SUBST(BSON_HAVE_ATOMIC_32_ADD_AND_FETCH, 0)])
+ 
+-AC_MSG_CHECKING([for __sync_add_and_fetch_8])
++AC_MSG_CHECKING([for __atomic_fetch_add_8])
+ AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdint.h>]],
+-                                [[int64_t v; return __sync_add_and_fetch_8 (&v, (int64_t)10);]])],
++                                [[int64_t v; return __atomic_fetch_add_8 (&v, (int64_t)10, __ATOMIC_SEQ_CST);]])],
+                [AC_MSG_RESULT(yes)
+-                have_sync_add_and_fetch_8=yes],
++                have_atomic_fetch_add_8=yes],
+                [AC_MSG_RESULT(no)
+-                have_sync_add_and_fetch_8=no])
+-AS_IF([test "$have_sync_add_and_fetch_8" = "yes"],
++                have_atomic_fetch_add_8=no])
++AS_IF([test "$have_atomic_fetch_add_8" = "yes"],
+       [AC_SUBST(BSON_HAVE_ATOMIC_64_ADD_AND_FETCH, 1)],
+       [AC_SUBST(BSON_HAVE_ATOMIC_64_ADD_AND_FETCH, 0)])
+ AC_LANG_POP([C])
+Index: libbson/src/bson/bson-atomic.h
+===================================================================
+--- libbson.orig/src/bson/bson-atomic.h
++++ libbson/src/bson/bson-atomic.h
+@@ -38,7 +38,7 @@ BSON_BEGIN_DECLS
+ #  define bson_atomic_int64_add(p, v) (InterlockedExchangeAdd64((volatile LONGLONG *)(p), (LONGLONG)(v)) + (LONGLONG)(v))
+ #else
+ #  ifdef BSON_HAVE_ATOMIC_32_ADD_AND_FETCH
+-#    define bson_atomic_int_add(p,v) __sync_add_and_fetch((p), (v))
++#    define bson_atomic_int_add(p,v) __atomic_add_fetch((p), (v), __ATOMIC_SEQ_CST)
+ #  else
+ #    define __BSON_NEED_ATOMIC_32
+ #  endif
+@@ -52,7 +52,7 @@ BSON_BEGIN_DECLS
+         */
+ #      define __BSON_NEED_ATOMIC_64
+ #    else
+-#      define bson_atomic_int64_add(p, v) __sync_add_and_fetch((volatile int64_t*)(p), (int64_t)(v))
++#      define bson_atomic_int64_add(p, v) __atomic_add_fetch((volatile int64_t*)(p), (int64_t)(v), __ATOMIC_SEQ_CST)
+ #    endif
+ #  else
+ #    define __BSON_NEED_ATOMIC_64
