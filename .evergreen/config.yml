@@ -3,13 +3,49 @@
 #####################################
 
 functions:
+  "upload docs" :
+    - command: shell.exec
+      params:
+        working_dir: "libbson"
+        script: |
+           # Since we cannot conditionally define evergreen expansions, but we can
+           # load expansions from external file, we dynamically generate a file
+           # containing the exact folder name we'd like to upload the docs to,
+           # depending on if its a patch build or regular evergreen build
+           if [ "${is_patch}" = "true" ]; then
+              VERSION=$(git describe)-patch-${version_id}
+           else
+              VERSION=latest
+           fi
+           echo "docspath: $VERSION" > expansion.yml
+    - command: expansions.update
+      params:
+        file: libbson/expansion.yml
+    - command: shell.exec
+      params:
+        silent: true
+        working_dir: "libbson"
+        script: |
+           export AWS_ACCESS_KEY_ID=${aws_key}
+           export AWS_SECRET_ACCESS_KEY=${aws_secret}
+           aws s3 cp doc/html s3://mciuploads/${project}/docs/${docspath} --recursive --acl public-read --region us-east-1
+    - command: s3.put
+      params:
+        aws_key: ${aws_key}
+        aws_secret: ${aws_secret}
+        local_file:  ${project}/doc/html/index.html
+        remote_file: ${project}/docs/${docspath}/index.html
+        bucket: mciuploads
+        permissions: public-read
+        content_type: text/html
+        display_name: "Rendered docs"
+
   "upload coverage" :
     - command: shell.exec
       params:
         silent: true
         working_dir: "libbson"
         script: |
-           sudo apt-get install -y awscli
            export AWS_ACCESS_KEY_ID=${aws_key}
            export AWS_SECRET_ACCESS_KEY=${aws_secret}
            aws s3 cp coverage s3://mciuploads/libbson/${build_variant}/${revision}/${version_id}/${build_id}/coverage/ --recursive --acl public-read
@@ -97,7 +133,6 @@ pre:
 
 post:
   - func: "upload artifacts"
-  - func: "upload release"
   - func: "upload results"
 
 #######################################
@@ -170,7 +205,11 @@ tasks:
         - command: shell.exec
           params:
             working_dir: "libbson"
-            script: "./autogen.sh --enable-html-docs --enable-man-pages && make dist"
+            script: |
+               sudo apt-get install -y awscli
+               ./autogen.sh --enable-html-docs --enable-man-pages && make dist
+        - func: "upload docs"
+        - func: "upload release"
 
     - name: release-compile
       depends_on:
