@@ -30,9 +30,7 @@
 #include "bson-atomic.h"
 #include "bson-context.h"
 #include "bson-clock.h"
-#ifdef BSON_EXPERIMENTAL_FEATURES
 #include "bson-decimal128.h"
-#endif
 #include "bson-error.h"
 #include "bson-iter.h"
 #include "bson-json.h"
@@ -140,10 +138,8 @@ BSON_BEGIN_DECLS
 #define BSON_APPEND_MINKEY(b,key) \
       bson_append_minkey (b, key, (int) strlen (key))
 
-#ifdef BSON_EXPERIMENTAL_FEATURES
 #define BSON_APPEND_DECIMAL128(b, key, val) \
    bson_append_decimal128 (b, key, (int)strlen (key), val)
-#endif /* BSON_EXPERIMENTAL_FEATURES */
 
 #define BSON_APPEND_MAXKEY(b,key) \
       bson_append_maxkey (b, key, (int) strlen (key))
@@ -785,7 +781,6 @@ bson_append_int64 (bson_t      *bson,
                    int64_t value);
 
 
-#ifdef BSON_EXPERIMENTAL_FEATURES
 /**
  * bson_append_decimal128:
  * @bson: A bson_t.
@@ -801,7 +796,6 @@ bson_append_decimal128 (bson_t                  *bson,
                         const char              *key,
                         int                      key_length,
                         const bson_decimal128_t *value);
-#endif
 
 
 /**

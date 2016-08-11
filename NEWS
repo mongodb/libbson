@@ -1,3 +1,33 @@
+Libbson-1.5.0
+=============
+
+It is my pleasure to announce Libbson-1.5.0.
+
+New features and bug fixes:
+
+  * New BSON Type, Decimal128 (bson_decimal128_t) along with the following
+    new functions and helpers:
+    * bson_decimal128_to_string ()
+    * bson_decimal128_from_string ()
+    * bson_decimal128_to_Decimal128 ()
+    * bson_Decimal128_to_decimal128
+    * bson_iter_decimal128 ()
+    * bson_iter_overwrite_decimal128 ()
+    * BSON_ITER_HOLDS_DECIMAL128()
+    * bson_append_decimal128 ()
+    * BSON_APPEND_DECIMAL128()
+    * BCON_DECIMAL128()
+    See the documentations for further details
+
+
+Thanks to everyone who contributed to the development of this release.
+
+  * Everyone
+
+Farewell,
+
+    A. Jesse Jiryu Davis
+
 Libbson-1.4.0
 =============
 

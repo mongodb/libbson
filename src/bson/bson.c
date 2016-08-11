@@ -1159,7 +1159,6 @@ bson_append_int64 (bson_t      *bson,
 }
 
 
-#ifdef BSON_EXPERIMENTAL_FEATURES
 bool
 bson_append_decimal128 (bson_t                  *bson,
                         const char              *key,
@@ -1187,7 +1186,6 @@ bson_append_decimal128 (bson_t                  *bson,
                         1, &gZero,
                         16, value_le);
 }
-#endif
 
 
 bool
@@ -1345,7 +1343,6 @@ bson_append_iter (bson_t            *bson,
    case BSON_TYPE_INT64:
       ret = bson_append_int64 (bson, key, key_length, bson_iter_int64 (iter));
       break;
-#ifdef BSON_EXPERIMENTAL_FEATURES
    case BSON_TYPE_DECIMAL128:
       {
          bson_decimal128_t dec;
@@ -1356,7 +1353,6 @@ bson_append_iter (bson_t            *bson,
 
          ret = bson_append_decimal128 (bson, key, key_length, &dec);
       }
-#endif /* BSON_EXPERIMENTAL_FEATURES */
       break;
    case BSON_TYPE_MAXKEY:
       ret = bson_append_maxkey (bson, key, key_length);
@@ -1807,10 +1803,8 @@ bson_append_value (bson_t             *bson,
    case BSON_TYPE_INT64:
       ret = bson_append_int64 (bson, key, key_length, value->value.v_int64);
       break;
-#ifdef BSON_EXPERIMENTAL_FEATURES
    case BSON_TYPE_DECIMAL128:
       ret = bson_append_decimal128 (bson, key, key_length, &(value->value.v_decimal128));
-#endif
       break;
    case BSON_TYPE_MAXKEY:
       ret = bson_append_maxkey (bson, key, key_length);
@@ -2439,7 +2433,6 @@ _bson_as_json_visit_int64 (const bson_iter_t *iter,
 }
 
 
-#ifdef BSON_EXPERIMENTAL_FEATURES
 static bool
 _bson_as_json_visit_decimal128 (const bson_iter_t       *iter,
                                 const char              *key,
@@ -2456,7 +2449,6 @@ _bson_as_json_visit_decimal128 (const bson_iter_t       *iter,
 
    return false;
 }
-#endif /* BSON_EXPERIMENTAL_FEATURES */
 
 
 static bool
@@ -2797,9 +2789,7 @@ static const bson_visitor_t bson_as_json_visitors = {
    _bson_as_json_visit_maxkey,
    _bson_as_json_visit_minkey,
    NULL, /* visit_unsupported_type */
-#ifdef BSON_EXPERIMENTAL_FEATURES
    _bson_as_json_visit_decimal128,
-#endif /* BSON_EXPERIMENTAL_FEATURES */
 };
 
 

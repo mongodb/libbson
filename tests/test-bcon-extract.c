@@ -31,7 +31,6 @@ test_double (void)
    bson_destroy (bcon);
 }
 
-#ifdef BSON_EXPERIMENTAL_FEATURES
 static void
 test_decimal128 (void)
 {
@@ -49,7 +48,6 @@ test_decimal128 (void)
 
    bson_destroy (bcon);
 }
-#endif
 
 static void
 test_binary (void)
@@ -514,9 +512,7 @@ test_bcon_extract_install (TestSuite *suite)
 {
    TestSuite_Add (suite, "/bson/bcon/extract/test_utf8", test_utf8);
    TestSuite_Add (suite, "/bson/bcon/extract/test_double", test_double);
-#ifdef BSON_EXPERIMENTAL_FEATURES
    TestSuite_Add (suite, "/bson/bcon/extract/test_decimal128", test_decimal128);
-#endif
    TestSuite_Add (suite, "/bson/bcon/extract/test_binary", test_binary);
    TestSuite_Add (suite, "/bson/bcon/extract/test_undefined", test_undefined);
    TestSuite_Add (suite, "/bson/bcon/extract/test_oid", test_oid);

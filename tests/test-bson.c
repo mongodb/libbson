@@ -495,7 +495,6 @@ test_bson_append_int64 (void)
 }
 
 
-#ifdef BSON_EXPERIMENTAL_FEATURES
 static void
 test_bson_append_decimal128 (void)
 {
@@ -512,7 +511,6 @@ test_bson_append_decimal128 (void)
    bson_destroy(b);
    bson_destroy(b2);
 }
-#endif /* BSON_EXPERIMENTAL_FEATURES */
 
 
 static void
@@ -1454,17 +1452,13 @@ test_bson_macros (void)
    const uint8_t data [] = { 1, 2, 3, 4 };
    bson_t b = BSON_INITIALIZER;
    bson_t ar = BSON_INITIALIZER;
-#ifdef BSON_EXPERIMENTAL_FEATURES
    bson_decimal128_t dec;
-#endif
    bson_oid_t oid;
    struct timeval tv;
    time_t t;
 
-#ifdef BSON_EXPERIMENTAL_FEATURES
    dec.high = 0x3040000000000000ULL;
    dec.low = 0x0ULL;
-#endif
 
    t = time (NULL);
 #ifdef BSON_OS_WIN32
@@ -1497,9 +1491,7 @@ test_bson_macros (void)
    BSON_APPEND_DATE_TIME (&b, "19", 123);
    BSON_APPEND_TIMESTAMP (&b, "20", 123, 0);
    BSON_APPEND_UNDEFINED (&b, "21");
-#ifdef BSON_EXPERIMENTAL_FEATURES
    BSON_APPEND_DECIMAL128 (&b, "22", &dec);
-#endif /* BSON_EXPERIMENTAL_FEATURES */
 
    bson_destroy (&b);
    bson_destroy (&ar);
@@ -1961,9 +1953,7 @@ test_bson_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/append_double", test_bson_append_double);
    TestSuite_Add (suite, "/bson/append_int32", test_bson_append_int32);
    TestSuite_Add (suite, "/bson/append_int64", test_bson_append_int64);
-#ifdef BSON_EXPERIMENTAL_FEATURES
    TestSuite_Add (suite, "/bson/append_decimal128", test_bson_append_decimal128);
-#endif /* BSON_EXPERIMENTAL_FEATURES */
    TestSuite_Add (suite, "/bson/append_iter", test_bson_append_iter);
    TestSuite_Add (suite, "/bson/append_maxkey", test_bson_append_maxkey);
    TestSuite_Add (suite, "/bson/append_minkey", test_bson_append_minkey);

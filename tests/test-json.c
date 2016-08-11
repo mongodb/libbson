@@ -20,19 +20,15 @@ static void
 test_bson_as_json (void)
 {
    bson_oid_t oid;
-#ifdef BSON_EXPERIMENTAL_FEATURES
    bson_decimal128_t decimal128;
-#endif
    bson_t *b;
    bson_t *b2;
    char *str;
    size_t len;
    int i;
 
-#ifdef BSON_EXPERIMENTAL_FEATURES
    decimal128.high = 0x3040000000000000ULL;
    decimal128.low  = 0x000000000000000B;
-#endif
    bson_oid_init_from_string(&oid, "123412341234abcdabcdabcd");
 
    b = bson_new();
@@ -52,9 +48,7 @@ test_bson_as_json (void)
    assert(bson_append_minkey(b, "minkey", -1));
    assert(bson_append_maxkey(b, "maxkey", -1));
    assert(bson_append_symbol(b, "symbol", -1, "var a = {};", -1));
-#ifdef BSON_EXPERIMENTAL_FEATURES
    assert(bson_append_decimal128(b, "decimal128", -1, &decimal128));
-#endif
 
    b2 = bson_new();
    assert(bson_append_int32(b2, "0", -1, 60));
@@ -154,7 +148,6 @@ test_bson_as_json_double (void)
 }
 
 
-#ifdef BSON_EXPERIMENTAL_FEATURES
 static void
 test_bson_as_json_decimal128 (void)
 {
@@ -176,7 +169,6 @@ test_bson_as_json_decimal128 (void)
    bson_free(str);
    bson_destroy(b);
 }
-#endif
 
 
 static void
@@ -434,7 +426,6 @@ test_bson_json_read(void)
 }
 
 
-#ifdef BSON_EXPERIMENTAL_FEATURES
 static void
 test_bson_json_read_decimal128(void)
 {
@@ -447,7 +438,6 @@ test_bson_json_read_decimal128(void)
 
    _test_bson_json_read_compare(json, 5, doc, NULL);
 }
-#endif
 
 static void
 test_json_reader_new_from_file (void)
@@ -774,7 +764,6 @@ test_bson_json_dbref (void)
    }
 }
 
-#ifdef BSON_EXPERIMENTAL_FEATURES
 static void
 test_bson_json_number_decimal (void) {
    bson_error_t error;
@@ -795,7 +784,6 @@ test_bson_json_number_decimal (void) {
    assert (decimal128.high == 0x3040000000000000ULL);
    bson_destroy (&b);
 }
-#endif
 
 static void
 test_bson_json_inc (void)
@@ -983,17 +971,13 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/json/read/invalid_json", test_bson_json_read_invalid_json);
    TestSuite_Add (suite, "/bson/json/read/bad_cb", test_bson_json_read_bad_cb);
    TestSuite_Add (suite, "/bson/json/read/invalid", test_bson_json_read_invalid);
-#ifdef BSON_EXPERIMENTAL_FEATURES
    TestSuite_Add (suite, "/bson/json/read/decimal128", test_bson_json_read_decimal128);
-#endif
    TestSuite_Add (suite, "/bson/json/read/file", test_json_reader_new_from_file);
    TestSuite_Add (suite, "/bson/json/read/bad_path", test_json_reader_new_from_bad_path);
    TestSuite_Add (suite, "/bson/json/read/invalid", test_bson_json_read_invalid);
    TestSuite_Add (suite, "/bson/json/read/$numberLong", test_bson_json_number_long);
    TestSuite_Add (suite, "/bson/json/read/$numberLong/zero", test_bson_json_number_long_zero);
    TestSuite_Add (suite, "/bson/json/read/dbref", test_bson_json_dbref);
-#ifdef BSON_EXPERIMENTAL_FEATURES
    TestSuite_Add (suite, "/bson/as_json/decimal128", test_bson_as_json_decimal128);
    TestSuite_Add (suite, "/bson/json/read/$numberDecimal", test_bson_json_number_decimal);
-#endif
 }

@@ -3,9 +3,6 @@ cmake_minimum_required(VERSION 2.8)
 project (libbson)
 
 option(ENABLE_TESTS "Build libbson tests." ON)
-option(ENABLE_EXPERIMENTAL_FEATURES
-       "Experimental support for future BSON features."
-       OFF)
 
 include(CheckFunctionExists)
 include(CheckIncludeFile)
@@ -33,12 +30,6 @@ set (BSON_API_VERSION 1.0)
 set (CPACK_RESOURCE_FILE_LICENSE "${SOURCE_DIR}/COPYING")
 set (CPACK_PACKAGE_VERSION_MAJOR ${BSON_MAJOR_VERSION})
 set (CPACK_PACKAGE_VERSION_MINOR ${BSON_MINOR_VERSION})
-
-if (ENABLE_EXPERIMENTAL_FEATURES)
-   set (BSON_EXPERIMENTAL_FEATURES 1)
-else ()
-   set (BSON_EXPERIMENTAL_FEATURES 0)
-endif ()
 
 include (CPack)
 TEST_BIG_ENDIAN(BSON_BIG_ENDIAN)
@@ -147,6 +138,7 @@ set (SOURCES
    ${SOURCE_DIR}/src/bson/bson-atomic.c
    ${SOURCE_DIR}/src/bson/bson-clock.c
    ${SOURCE_DIR}/src/bson/bson-context.c
+   ${SOURCE_DIR}/src/bson/bson-decimal128.c
    ${SOURCE_DIR}/src/bson/bson-error.c
    ${SOURCE_DIR}/src/bson/bson-iso8601.c
    ${SOURCE_DIR}/src/bson/bson-iter.c
@@ -173,10 +165,6 @@ set (SOURCES
    ${SOURCE_DIR}/src/yajl/yajl_version.c
 )
 
-if (ENABLE_EXPERIMENTAL_FEATURES)
-    set (SOURCES ${SOURCES} ${SOURCE_DIR}/src/bson/bson-decimal128.c)
-endif ()
-
 set (HEADERS
    ${PROJECT_BINARY_DIR}/src/bson/bson-config.h
    ${PROJECT_BINARY_DIR}/src/bson/bson-stdint.h
@@ -186,6 +174,7 @@ set (HEADERS
    ${SOURCE_DIR}/src/bson/bson-clock.h
    ${SOURCE_DIR}/src/bson/bson-compat.h
    ${SOURCE_DIR}/src/bson/bson-context.h
+   ${SOURCE_DIR}/src/bson/bson-decimal128.h
    ${SOURCE_DIR}/src/bson/bson-endian.h
    ${SOURCE_DIR}/src/bson/bson-error.h
    ${SOURCE_DIR}/src/bson/bson.h
@@ -206,21 +195,8 @@ set (HEADERS
    ${SOURCE_DIR}/src/bson/bson-writer.h
 )
 
-if (ENABLE_EXPERIMENTAL_FEATURES)
-    set (HEADERS ${HEADERS} ${SOURCE_DIR}/src/bson/bson-decimal128.h)
-endif ()
-
 if (MSVC)
-   # Export the functions listed in a definitions file.
-   if (ENABLE_EXPERIMENTAL_FEATURES)
-      set (BSON_DEF_FILE
-           ${PROJECT_SOURCE_DIR}/build/cmake/libbson-experimental.def)
-   else ()
-       set (BSON_DEF_FILE
-            ${PROJECT_SOURCE_DIR}/build/cmake/libbson.def)
-   endif ()
-
-   set(BSON_SHARED_SOURCES ${SOURCES} ${BSON_DEF_FILE})
+   set(BSON_SHARED_SOURCES ${SOURCES} ${PROJECT_SOURCE_DIR}/build/cmake/libbson.def)
 else()
    set(BSON_SHARED_SOURCES ${SOURCES})
 endif()
@@ -259,11 +235,19 @@ if (ENABLE_TESTS)
     set (BSON_TEST_SOURCES
          ${SOURCE_DIR}/tests/TestSuite.c
          ${SOURCE_DIR}/tests/TestSuite.h
+         ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-1.json
+         ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-2.json
+         ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-3.json
+         ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-4.json
+         ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-5.json
+         ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-6.json
+         ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-7.json
          ${SOURCE_DIR}/tests/test-libbson.c
          ${SOURCE_DIR}/tests/test-atomic.c
          ${SOURCE_DIR}/tests/test-bson.c
          ${SOURCE_DIR}/tests/test-endian.c
          ${SOURCE_DIR}/tests/test-clock.c
+         ${SOURCE_DIR}/tests/test-decimal128.c
          ${SOURCE_DIR}/tests/test-error.c
          ${SOURCE_DIR}/tests/test-iso8601.c
          ${SOURCE_DIR}/tests/test-iter.c
@@ -271,6 +255,7 @@ if (ENABLE_TESTS)
          ${SOURCE_DIR}/tests/test-oid.c
          ${SOURCE_DIR}/tests/test-reader.c
          ${SOURCE_DIR}/tests/test-string.c
+         ${SOURCE_DIR}/tests/test-type.c
          ${SOURCE_DIR}/tests/test-utf8.c
          ${SOURCE_DIR}/tests/test-value.c
          ${SOURCE_DIR}/tests/test-version.c
@@ -281,21 +266,6 @@ if (ENABLE_TESTS)
          ${SOURCE_DIR}/tests/json-test.c
          ${SOURCE_DIR}/tests/json-test.h
     )
-
-    if (ENABLE_EXPERIMENTAL_FEATURES)
-        set (BSON_TEST_SOURCES
-             ${BSON_TEST_SOURCES}
-             ${SOURCE_DIR}/tests/test-decimal128.c
-             ${SOURCE_DIR}/tests/test-type.c
-             ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-1.json
-             ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-2.json
-             ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-3.json
-             ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-4.json
-             ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-5.json
-             ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-6.json
-             ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-7.json
-        )
-    endif ()
 
     add_executable (test-libbson ${BSON_TEST_SOURCES})
 

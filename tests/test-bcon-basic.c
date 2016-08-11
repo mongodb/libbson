@@ -37,7 +37,6 @@ test_double (void)
    bson_destroy (&expected);
 }
 
-#ifdef BSON_EXPERIMENTAL_FEATURES
 static void
 test_decimal128 (void)
 {
@@ -56,7 +55,6 @@ test_decimal128 (void)
    bson_destroy (&bcon);
    bson_destroy (&expected);
 }
-#endif
 
 static void
 test_binary (void)
@@ -648,9 +646,7 @@ test_bcon_basic_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/bcon/test_int32", test_int32);
    TestSuite_Add (suite, "/bson/bcon/test_timestamp", test_timestamp);
    TestSuite_Add (suite, "/bson/bcon/test_int64", test_int64);
-#ifdef BSON_EXPERIMENTAL_FEATURES
    TestSuite_Add (suite, "/bson/bcon/test_decimal128", test_decimal128);
-#endif
    TestSuite_Add (suite, "/bson/bcon/test_maxkey", test_maxkey);
    TestSuite_Add (suite, "/bson/bcon/test_minkey", test_minkey);
    TestSuite_Add (suite, "/bson/bcon/test_bson_document", test_bson_document);

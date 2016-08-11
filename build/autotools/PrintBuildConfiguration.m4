@@ -1,12 +1,5 @@
 AC_OUTPUT
 
-if test "$enable_experimental_features" = "yes"; then
-enable_experimental_text="
-  Experimental support for future BSON features    : yes"
-else
-enable_experimental_text=""
-fi
-
 if test -n "$BSON_PRERELEASE_VERSION"; then
 cat << EOF
  *** IMPORTANT *** 
@@ -42,7 +35,7 @@ Build configuration:
   Cross Compiling                                  : ${enable_crosscompile}
   Big endian                                       : ${enable_bigendian}
   Compile with native _Decimal128 (BID) support    : ${enable_decimal}
-  Link Time Optimization (experimental)            : ${enable_lto}${enable_experimental_text}
+  Link Time Optimization (experimental)            : ${enable_lto}
 
 Documentation:
   man                                              : ${enable_man_pages}

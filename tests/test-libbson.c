@@ -49,10 +49,8 @@ main (int argc,
    test_value_install (&suite);
    test_version_install (&suite);
    test_writer_install (&suite);
-#ifdef BSON_EXPERIMENTAL_FEATURES
    test_decimal128_install (&suite);
    test_bson_type_install (&suite);
-#endif
 
    ret = TestSuite_Run (&suite);
 

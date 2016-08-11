@@ -39,15 +39,13 @@ DEBUG_FLAGS="\
     --enable-extra-align=no \
     --enable-hardening=no \
     --enable-maintainer-flags \
-    --enable-debug \
-    --enable-experimental-features"
+    --enable-debug"
 RELEASE_FLAGS="
     --enable-optimizations \
     --enable-man-pages=no \
     --enable-html-docs=no \
     --enable-extra-align=no \
-    --enable-hardening \
-    --enable-experimental-features"
+    --enable-hardening"
 
 # By default we build from git clone, which requires autotools
 # This gets overwritten if we detect we should use the release archive
