@@ -362,7 +362,6 @@ buildvariants:
   expansions:
     CC: gcc
   run_on:
-    - rhel55
     - rhel55-test
   tasks:
     - name: "release-compile"
