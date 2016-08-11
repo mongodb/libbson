@@ -38,6 +38,7 @@ stamp-h1
 *.swp
 test-libbson
 test.log
+test-results.json
 .DS_Store
 xcuserdata
 tags
