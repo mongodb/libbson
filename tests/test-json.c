@@ -521,7 +521,6 @@ test_bson_json_read_invalid_binary(void)
        " \"bin\" : { \"$binary\" : \"invalid\", \"$type\" : \"80\" } }";
    bson_t b;
    bool r;
-   char *str;
 
    r = bson_init_from_json (&b, json, -1, &error);
    assert (!r);

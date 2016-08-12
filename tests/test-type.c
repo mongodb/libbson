@@ -62,9 +62,6 @@ test_bson_type_decimal128 (const uint8_t *bson_str,
    bson_t canonical_bson;
    bson_t *extjson;
    bson_t *canonical_extjson;
-   bson_decimal128_t bson_decimal128;
-   bson_decimal128_t json_decimal128;
-   bson_iter_t iter;
    bson_error_t error;
 
    BSON_ASSERT (bson_str);
