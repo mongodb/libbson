@@ -222,6 +222,16 @@ tasks:
             working_dir: "libbson"
             script: "cat .evergreen/${FILENAME|unix}.sh | tr -d '\r' > .evergreen/tmp.sh && CC='${CC}' MARCH='${MARCH}' RELEASE=1 sh .evergreen/tmp.sh"
 
+    - name: release-compile-cmake
+      depends_on:
+        - name: "make-release-archive"
+          variant: releng
+      commands:
+        - command: shell.exec
+          params:
+            working_dir: "libbson"
+            script: "CC='${CC}' sh .evergreen/cmake.sh"
+
     - name: release-compile-c11
       depends_on:
         - name: "make-release-archive"
@@ -271,6 +281,7 @@ buildvariants:
       - ubuntu1404-build
       - ubuntu1404-test
     - name: "release-compile"
+    - name: "release-compile-cmake"
     - name: "debug-compile-valgrind"
       distros:
       - ubuntu1604-build
