@@ -31,7 +31,7 @@
 
 
 /**
- * BSON_DEC_128_STRING:
+ * BSON_DECIMAL128_STRING:
  *
  * The length of a decimal128 string (with null terminator).
  *

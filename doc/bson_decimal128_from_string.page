@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      style="function"
+      xmlns:api="http://projectmallard.org/experimental/api/"
+      xmlns:ui="http://projectmallard.org/experimental/ui/"
+      id="bson_decimal128_from_string">
+  <info>
+    <link type="guide" xref="bson_decimal128_t" group="function"/>
+  </info>
+  <title>bson_decimal128_from_string()</title>
+
+  <section id="synopsis">
+    <title>Synopsis</title>
+    <synopsis><code mime="text/x-csrc"><![CDATA[bool
+bson_decimal128_from_string (const char        *string,
+                             bson_decimal128_t *dec);
+]]></code></synopsis>
+  </section>
+
+  <section id="parameters">
+    <title>Parameters</title>
+    <table>
+      <tr><td><p><code>string</code></p></td><td><p>A string containing ASCII encoded Decimal128.</p></td></tr>
+      <tr><td><p><code>dec</code></p></td><td><p>A <code xref="bson_decimal128_t">bson_decimal128_t</code>.</p></td></tr>
+    </table>
+  </section>
+
+  <section id="description">
+    <title>Description</title>
+    <p>Parses the string containing ascii encoded decimal128 and initialize the bytes in <code>decimal128</code>.</p>
+  </section>
+
+  <section id="example">
+    <title>Example</title>
+    <synopsis><code mime="text/x-csrc"><![CDATA[bson_decimal128_t dec;
+bson_decimal128_from_string ("1.00", &dec);]]></code></synopsis>
+  </section>
+
+</page>

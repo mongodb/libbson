@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      style="function"
+      xmlns:api="http://projectmallard.org/experimental/api/"
+      xmlns:ui="http://projectmallard.org/experimental/ui/"
+      id="bson_decimal128_to_string">
+  <info>
+    <link type="guide" xref="bson_decimal128_t" group="function"/>
+  </info>
+  <title>bson_decimal128_to_string()</title>
+
+  <section id="synopsis">
+    <title>Synopsis</title>
+    <synopsis><code mime="text/x-csrc"><![CDATA[void
+bson_decimal128_to_string (const bson_decimal128_t *dec,
+                           char                    *str);
+]]></code></synopsis>
+  </section>
+
+  <section id="parameters">
+    <title>Parameters</title>
+    <table>
+      <tr><td><p><code>dec</code></p></td><td><p>A <code xref="bson_decimal128_t">bson_decimal128_t</code>.</p></td></tr>
+      <tr><td><p><code>str</code></p></td><td><p>A location of length BSON_DECIMAL128_STRING for the resulting string.</p></td></tr>
+    </table>
+  </section>
+
+  <section id="description">
+    <title>Description</title>
+    <p>Converts <code>dec</code> into a printable string.</p>
+  </section>
+
+  <section id="example">
+    <title>Example</title>
+    <synopsis><code mime="text/x-csrc"><![CDATA[char decimal128_string[BSON_DECIMAL128_STRING];
+bson_decimal128_to_string (&decimal128t, decimal128_string);]]></code></synopsis>
+  </section>
+
+</page>
