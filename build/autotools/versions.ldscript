@@ -211,3 +211,6 @@ LIBBSON_1.4 {
         bson_reserve_buffer;
         bson_steal;
 } LIBBSON_1.3;
+
+LIBBSON_1.5 {
+} LIBBSON_1.4;
