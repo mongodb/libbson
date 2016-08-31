@@ -147,6 +147,8 @@ main (int   argc,
          fprintf (stdout,
                   "Usage: %s [-s SERVER_NAME] [-p PORT_NUM]\n",
                   argv[0]);
+         free (hostname);
+         free (port);
          return EXIT_SUCCESS;
       case 'p':
          free (port);
