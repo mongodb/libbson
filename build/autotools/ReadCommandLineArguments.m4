@@ -93,3 +93,15 @@ AC_ARG_ENABLE([yelp],
                               [Install yelp manuals.])],
               [],
               [enable_yelp=no])
+
+AC_ARG_ENABLE([examples],
+              [AS_HELP_STRING([--enable-examples=@<:@yes/no@:>@],
+                              [Build libbson examples.])],
+              [],
+              [enable_examples=yes])
+
+AC_ARG_ENABLE([tests],
+              [AS_HELP_STRING([--enable-tests=@<:@yes/no@:>@],
+                              [Build libbson tests.])],
+              [],
+              [enable_tests=yes])
