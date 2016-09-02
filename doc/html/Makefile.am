@@ -21,6 +21,5 @@ YELP_HTML_FILES = \
 	doc/html/yelp-note.png \
 	doc/html/yelp.js
 
-EXTRA_DIST += $(wildcard doc/html/*.html)
-EXTRA_DIST += $(wildcard doc/html/*.css)
-EXTRA_DIST += $(wildcard doc/html/*.js)
+EXTRA_DIST += $(BUILT_HTML_FILES)
+EXTRA_DIST += $(YELP_HTML_FILES)
