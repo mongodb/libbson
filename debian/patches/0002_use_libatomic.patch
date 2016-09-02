@@ -1,3 +1,5 @@
+Author: Radovan Birdic <Radovan.Birdic@imgtec.com>
+Description: Use libatomic instead of GCC intrinsics
 Index: libbson/build/autotools/CheckAtomics.m4
 ===================================================================
 --- libbson.orig/build/autotools/CheckAtomics.m4
