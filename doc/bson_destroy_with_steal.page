@@ -30,7 +30,8 @@ bson_destroy_with_steal (bson_t   *bson,
 
   <section id="description">
     <title>Description</title>
-    <p>The <code xref="bson_destroy_with_steal">bson_destroy_with_steal()</code> function shall destroy a <code xref="bson_t">bson_t</code> structure but return the underlying buffer instead of freeing it. If steal is false, this is equivalent to calling bson_destroy(). It is a programming error to call this function on a <code xref="bson_t">bson_t</code> that is not a top-level <code xref="bson_t">bson_t</code>, shuch as those initialized with <code xref="bson_append_document_begin">bson_append_document_begin()</code>, <code xref="bson_append_array_begin">bson_append_array_begin()</code>, and <code xref="bson_writer_begin">bson_writer_begin()</code>.</p>
+    <p>The <code xref="bson_destroy_with_steal">bson_destroy_with_steal()</code> function shall destroy a <code xref="bson_t">bson_t</code> structure but return the underlying buffer instead of freeing it. If steal is false, this is equivalent to calling bson_destroy(). It is a programming error to call this function on a <code xref="bson_t">bson_t</code> that is not a top-level <code xref="bson_t">bson_t</code>, such as those initialized with <code xref="bson_append_document_begin">bson_append_document_begin()</code>, <code xref="bson_append_array_begin">bson_append_array_begin()</code>, and <code xref="bson_writer_begin">bson_writer_begin()</code>.</p>
+    <p>See also <code xref="bson_steal">bson_steal</code>, a higher-level function that efficiently transfers the contents of one <code xref="bson_t">bson_t</code> to another.</p>
   </section>
 
   <section id="return">

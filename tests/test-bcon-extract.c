@@ -31,6 +31,26 @@ test_double (void)
    bson_destroy (bcon);
 }
 
+#ifdef BSON_EXPERIMENTAL_FEATURES
+static void
+test_decimal128 (void)
+{
+   bson_decimal128_t val;
+   bson_decimal128_t dec;
+   bson_t *bcon;
+
+   bson_decimal128_from_string("12", &dec);
+   bcon = BCON_NEW ("foo", BCON_DECIMAL128 (&dec));
+
+   assert (BCON_EXTRACT (bcon, "foo", BCONE_DECIMAL128 (val)));
+
+   assert (val.low == 0xCULL);
+   assert (val.high == 0x3040000000000000ULL);
+
+   bson_destroy (bcon);
+}
+#endif
+
 static void
 test_binary (void)
 {
@@ -494,6 +514,9 @@ test_bcon_extract_install (TestSuite *suite)
 {
    TestSuite_Add (suite, "/bson/bcon/extract/test_utf8", test_utf8);
    TestSuite_Add (suite, "/bson/bcon/extract/test_double", test_double);
+#ifdef BSON_EXPERIMENTAL_FEATURES
+   TestSuite_Add (suite, "/bson/bcon/extract/test_decimal128", test_decimal128);
+#endif
    TestSuite_Add (suite, "/bson/bcon/extract/test_binary", test_binary);
    TestSuite_Add (suite, "/bson/bcon/extract/test_undefined", test_undefined);
    TestSuite_Add (suite, "/bson/bcon/extract/test_oid", test_oid);

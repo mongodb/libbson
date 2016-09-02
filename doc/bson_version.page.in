@@ -13,10 +13,11 @@
   <title>Libbson Versioning</title>
   <subtitle>Versioning Macros and Functions</subtitle>
 
-  <p>
-    The following preprocessor macros can be used to perform various checks based on the version of the library you are compiling against.
-    This may be useful if you only want to enable a feature on a certain version of the library.
-  </p>
+  <section id="macros">
+    <title>Macros</title>
+    <p>The following preprocessor macros can be used to perform various checks based on the version of the library you are compiling against.
+    This may be useful if you only want to enable a feature on a certain version of the library.</p>
+  </section>
 
   <section id="synopsis">
     <title>Synopsis</title>

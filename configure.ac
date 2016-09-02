@@ -1,8 +1,8 @@
 AC_PREREQ(2.60)
 
-# Set version from contents of "VERSION_CURRENT" file.
+# Set version from contents of "VERSION_CURRENT" file (minus newlines).
 AC_INIT([libbson],
-        m4_esyscmd_s(cat VERSION_CURRENT),
+        m4_esyscmd(cat VERSION_CURRENT | tr -d '\n'),
         [https://jira.mongodb.org/browse/CDRIVER])
 
 m4_include([build/autotools/Versions.m4])
@@ -32,6 +32,7 @@ m4_include([build/autotools/MaintainerFlags.m4])
 m4_include([build/autotools/Optimizations.m4])
 m4_include([build/autotools/Coverage.m4])
 m4_include([build/autotools/LDVersionScript.m4])
+m4_include([build/autotools/CheckDecimal.m4])
 
 # We would put AM_INIT_AUTOMAKE into SetupAutomake.m4, but seems to cause autoconf errors.
 AM_INIT_AUTOMAKE([foreign subdir-objects tar-ustar])
@@ -43,8 +44,8 @@ AC_CONFIG_FILES([
     src/libbson-1.0.pc
     src/bson/bson-config.h
     src/bson/bson-version.h
-    doc/installing.page
-    doc/version.page
+    doc/bson_installing.page
+    doc/bson_version.page
 ])
 
 m4_include([build/autotools/PrintBuildConfiguration.m4])

@@ -5,8 +5,11 @@
   <info><link type="guide" xref="index#intro"/></info>
   <title>UTF-8</title>
 
-  <p>Libbson expects that you are always working with UTF-8 encoded text. Anything else is INVALID API USE.</p>
-  <p>If you should need to walk through UTF-8 sequences, you can use the various UTF-8 helper functions distributed with Libbson.</p>
+  <section id="encoding">
+    <title>Encoding</title>
+    <p>Libbson expects that you are always working with UTF-8 encoded text. Anything else is INVALID API USE.</p>
+    <p>If you should need to walk through UTF-8 sequences, you can use the various UTF-8 helper functions distributed with Libbson.</p>
+  </section>
 
   <section id="validate">
     <title>Validating a UTF-8 Sequence</title>

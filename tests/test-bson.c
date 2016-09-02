@@ -495,6 +495,26 @@ test_bson_append_int64 (void)
 }
 
 
+#ifdef BSON_EXPERIMENTAL_FEATURES
+static void
+test_bson_append_decimal128 (void)
+{
+   bson_t *b;
+   bson_t *b2;
+   bson_decimal128_t value;
+   value.high = 0;
+   value.low = 1;
+
+   b = bson_new();
+   assert(bson_append_decimal128(b, "a", -1, &value));
+   b2 = get_bson("test58.bson");
+   assert_bson_equal(b, b2);
+   bson_destroy(b);
+   bson_destroy(b2);
+}
+#endif /* BSON_EXPERIMENTAL_FEATURES */
+
+
 static void
 test_bson_append_iter (void)
 {
@@ -1434,9 +1454,17 @@ test_bson_macros (void)
    const uint8_t data [] = { 1, 2, 3, 4 };
    bson_t b = BSON_INITIALIZER;
    bson_t ar = BSON_INITIALIZER;
+#ifdef BSON_EXPERIMENTAL_FEATURES
+   bson_decimal128_t dec;
+#endif
    bson_oid_t oid;
    struct timeval tv;
    time_t t;
+
+#ifdef BSON_EXPERIMENTAL_FEATURES
+   dec.high = 0x3040000000000000ULL;
+   dec.low = 0x0ULL;
+#endif
 
    t = time (NULL);
 #ifdef BSON_OS_WIN32
@@ -1469,6 +1497,9 @@ test_bson_macros (void)
    BSON_APPEND_DATE_TIME (&b, "19", 123);
    BSON_APPEND_TIMESTAMP (&b, "20", 123, 0);
    BSON_APPEND_UNDEFINED (&b, "21");
+#ifdef BSON_EXPERIMENTAL_FEATURES
+   BSON_APPEND_DECIMAL128 (&b, "22", &dec);
+#endif /* BSON_EXPERIMENTAL_FEATURES */
 
    bson_destroy (&b);
    bson_destroy (&ar);
@@ -1487,6 +1518,184 @@ test_bson_clear (void)
    assert (doc != NULL);
    bson_clear (&doc);
    assert (doc == NULL);
+}
+
+
+static void
+bloat (bson_t *b) {
+   uint32_t i;
+   char buf[16];
+   const char *key;
+
+   for (i = 0; i < 100; i++) {
+      bson_uint32_to_string (i, &key, buf, sizeof buf);
+      BSON_APPEND_UTF8 (b, key, "long useless value foo bar baz quux quizzle");
+   }
+
+   /* spilled over */
+   ASSERT (!(b->flags & BSON_FLAG_INLINE));
+}
+
+
+static void
+test_bson_steal (void)
+{
+   bson_t stack_alloced;
+   bson_t *heap_alloced;
+   bson_t dst;
+   uint8_t *alloc;
+   uint8_t *buf;
+   size_t len;
+   uint32_t len_le;
+
+   /* inline, stack-allocated */
+   bson_init (&stack_alloced);
+   BSON_APPEND_INT32 (&stack_alloced, "a", 1);
+   ASSERT (bson_steal (&dst, &stack_alloced));
+   ASSERT (bson_has_field (&dst, "a"));
+   ASSERT (dst.flags & BSON_FLAG_INLINE);
+   /* src was invalidated */
+   ASSERT (!bson_validate (&stack_alloced, BSON_VALIDATE_NONE, 0));
+   bson_destroy (&dst);
+
+   /* spilled over, stack-allocated */
+   bson_init (&stack_alloced);
+   bloat (&stack_alloced);
+   alloc = ((bson_impl_alloc_t *) &stack_alloced)->alloc;
+   ASSERT (bson_steal (&dst, &stack_alloced));
+   /* data was transferred */
+   ASSERT (alloc == ((bson_impl_alloc_t *) &dst)->alloc);
+   ASSERT (bson_has_field (&dst, "99"));
+   ASSERT (!(dst.flags & BSON_FLAG_INLINE));
+   ASSERT (!bson_validate (&stack_alloced, BSON_VALIDATE_NONE, 0));
+   bson_destroy (&dst);
+
+   /* inline, heap-allocated */
+   heap_alloced = bson_new ();
+   BSON_APPEND_INT32 (heap_alloced, "a", 1);
+   ASSERT (bson_steal (&dst, heap_alloced));
+   ASSERT (bson_has_field (&dst, "a"));
+   ASSERT (dst.flags & BSON_FLAG_INLINE);
+   bson_destroy (&dst);
+
+   /* spilled over, heap-allocated */
+   heap_alloced = bson_new ();
+   bloat (heap_alloced);
+   alloc = ((bson_impl_alloc_t *) heap_alloced)->alloc;
+   ASSERT (bson_steal (&dst, heap_alloced));
+   /* data was transferred */
+   ASSERT (alloc == ((bson_impl_alloc_t *) &dst)->alloc);
+   ASSERT (bson_has_field (&dst, "99"));
+   ASSERT (!(dst.flags & BSON_FLAG_INLINE));
+   bson_destroy (&dst);
+
+   /* test stealing from a bson created with bson_new_from_buffer */
+   buf = bson_malloc0 (5);
+   len = 5;
+   len_le = BSON_UINT32_TO_LE (5);
+   memcpy(buf, &len_le, sizeof (len_le));
+   heap_alloced = bson_new_from_buffer (&buf, &len, bson_realloc_ctx, NULL);
+   ASSERT (bson_steal (&dst, heap_alloced));
+   ASSERT (dst.flags & BSON_FLAG_NO_FREE);
+   ASSERT (dst.flags & BSON_FLAG_STATIC);
+   ASSERT (((bson_impl_alloc_t *) &dst)->realloc == bson_realloc_ctx);
+   ASSERT (((bson_impl_alloc_t *) &dst)->realloc_func_ctx == NULL);
+   bson_destroy (&dst);
+   bson_free (buf);
+}
+
+static void
+assert_key_and_value (const bson_t *bson)
+{
+   bson_iter_t iter;
+
+   ASSERT (bson_iter_init_find (&iter, bson, "key"));
+   ASSERT (BSON_ITER_HOLDS_UTF8 (&iter));
+   ASSERT_CMPSTR ("value", bson_iter_utf8 (&iter, NULL));
+}
+
+
+static void
+test_bson_reserve_buffer (void)
+{
+   bson_t src = BSON_INITIALIZER;
+   bson_t stack_alloced;
+   bson_t *heap_alloced;
+   uint8_t *buf;
+
+   /* inline, stack-allocated */
+   bson_init (&stack_alloced);
+   BSON_APPEND_UTF8 (&src, "key", "value");
+   ASSERT (buf = bson_reserve_buffer (&stack_alloced, src.len));
+   ASSERT_CMPUINT32 (src.len, ==, stack_alloced.len);
+   ASSERT (stack_alloced.flags & BSON_FLAG_INLINE);
+   memcpy (buf, ((bson_impl_inline_t *) &src)->data, src.len);
+   /* data was transferred */
+   assert_key_and_value (&stack_alloced);
+   bson_destroy (&stack_alloced);
+
+   /* spilled over, stack-allocated */
+   bloat (&src);
+   bson_init (&stack_alloced);
+   ASSERT (buf = bson_reserve_buffer (&stack_alloced, src.len));
+   ASSERT_CMPUINT32 (src.len, ==, stack_alloced.len);
+   ASSERT (!(stack_alloced.flags & BSON_FLAG_INLINE));
+   memcpy (buf, ((bson_impl_alloc_t *) &src)->alloc, src.len);
+   assert_key_and_value (&stack_alloced);
+   ASSERT (bson_has_field (&stack_alloced, "99"));
+   bson_destroy (&src);
+   bson_destroy (&stack_alloced);
+
+   /* inline, heap-allocated */
+   heap_alloced = bson_new ();
+   bson_init (&src);
+   BSON_APPEND_UTF8 (&src, "key", "value");
+   ASSERT (buf = bson_reserve_buffer (heap_alloced, src.len));
+   ASSERT_CMPUINT32 (src.len, ==, heap_alloced->len);
+   ASSERT (heap_alloced->flags & BSON_FLAG_INLINE);
+   memcpy (buf, ((bson_impl_inline_t *) &src)->data, src.len);
+   assert_key_and_value (heap_alloced);
+   bson_destroy (heap_alloced);
+
+   /* spilled over, heap-allocated */
+   heap_alloced = bson_new ();
+   bloat (&src);
+   ASSERT (buf = bson_reserve_buffer (heap_alloced, src.len));
+   ASSERT_CMPUINT32 (src.len, ==, heap_alloced->len);
+   ASSERT (!(heap_alloced->flags & BSON_FLAG_INLINE));
+   memcpy (buf, ((bson_impl_alloc_t *) &src)->alloc, src.len);
+   assert_key_and_value (heap_alloced);
+   ASSERT (bson_has_field (heap_alloced, "99"));
+
+   bson_destroy (&src);
+   bson_destroy (heap_alloced);
+}
+
+
+static void
+test_bson_reserve_buffer_errors (void)
+{
+   bson_t bson = BSON_INITIALIZER;
+   bson_t child;
+   uint8_t data[5] = { 0 };
+   uint32_t len_le;
+
+   /* make a static bson, it refuses bson_reserve_buffer since it's read-only */
+   len_le = BSON_UINT32_TO_LE (5);
+   memcpy (data, &len_le, sizeof (len_le));
+   ASSERT (bson_init_static (&bson, data, sizeof data));
+   ASSERT (!bson_reserve_buffer (&bson, 10));
+
+   /* parent's and child's buffers are locked */
+   bson_init (&bson);
+   BSON_APPEND_DOCUMENT_BEGIN (&bson, "child", &child);
+   ASSERT (!bson_reserve_buffer (&bson, 10));
+   ASSERT (!bson_reserve_buffer (&child, 10));
+   /* unlock parent's buffer */
+   bson_append_document_end (&bson, &child);
+   ASSERT (bson_reserve_buffer (&bson, 10));
+
+   bson_destroy (&bson);
 }
 
 
@@ -1613,6 +1822,125 @@ test_next_power_of_two (void)
 }
 
 
+
+void
+visit_corrupt (const bson_iter_t *iter,
+               void              *data)
+{
+   *((bool *) data) = true;
+}
+
+
+static void
+test_bson_visit_invalid_field (void)
+{
+   /* key is invalid utf-8 char: {"\x80": 1} */
+   const char data[] =
+      "\x0c\x00\x00\x00\x10\x80\x00\x01\x00\x00\x00\x00";
+   bson_t b;
+   bson_iter_t iter;
+   bson_visitor_t visitor = { 0 };
+   bool visited = false;
+
+   visitor.visit_corrupt = visit_corrupt;
+   assert (bson_init_static (&b, (const uint8_t *) data, sizeof data - 1));
+   assert (bson_iter_init (&iter, &b));
+   assert (!bson_iter_visit_all (&iter, &visitor, (void *) &visited));
+   assert (visited);
+}
+
+
+typedef struct {
+   bool visited;
+   const char *key;
+   uint32_t type_code;
+} unsupported_type_test_data_t;
+
+
+void
+visit_unsupported_type (const bson_iter_t *iter,
+                        const char        *key,
+                        uint32_t           type_code,
+                        void              *data)
+{
+   unsupported_type_test_data_t *context;
+
+   context = (unsupported_type_test_data_t *) data;
+   context->visited = true;
+   context->key = key;
+   context->type_code = type_code;
+}
+
+
+static void
+test_bson_visit_unsupported_type (void)
+{
+   /* {k: 1}, but instead of BSON type 0x10 (int32), use unknown type 0x33 */
+   const char data[] =
+      "\x0c\x00\x00\x00\x33k\x00\x01\x00\x00\x00\x00";
+   bson_t b;
+   bson_iter_t iter;
+   unsupported_type_test_data_t context = { 0 };
+   bson_visitor_t visitor = { 0 };
+
+   visitor.visit_unsupported_type = visit_unsupported_type;
+
+   assert (bson_init_static (&b, (const uint8_t *) data, sizeof data - 1));
+   assert (bson_iter_init (&iter, &b));
+   bson_iter_visit_all (&iter, &visitor, (void *) &context);
+   assert (!bson_iter_next (&iter));
+   assert (context.visited);
+   assert (!strcmp (context.key, "k"));
+   assert (context.type_code == '\x33');
+}
+
+
+static void
+test_bson_visit_unsupported_type_bad_key (void)
+{
+   /* key is invalid utf-8 char, '\x80' */
+   const char data[] =
+      "\x0c\x00\x00\x00\x33\x80\x00\x01\x00\x00\x00\x00";
+   bson_t b;
+   bson_iter_t iter;
+   unsupported_type_test_data_t context = { 0 };
+   bson_visitor_t visitor = { 0 };
+
+   visitor.visit_unsupported_type = visit_unsupported_type;
+
+   assert (bson_init_static (&b, (const uint8_t *) data, sizeof data - 1));
+   assert (bson_iter_init (&iter, &b));
+   bson_iter_visit_all (&iter, &visitor, (void *) &context);
+   assert (!bson_iter_next (&iter));
+
+   /* unsupported type error wasn't reported, because the bson is corrupt */
+   assert (!context.visited);
+}
+
+
+static void
+test_bson_visit_unsupported_type_empty_key (void)
+{
+   /* {"": 1}, but instead of BSON type 0x10 (int32), use unknown type 0x33 */
+   const char data[] =
+      "\x0b\x00\x00\x00\x33\x00\x01\x00\x00\x00\x00";
+   bson_t b;
+   bson_iter_t iter;
+   unsupported_type_test_data_t context = { 0 };
+   bson_visitor_t visitor = { 0 };
+
+   visitor.visit_unsupported_type = visit_unsupported_type;
+
+   assert (bson_init_static (&b, (const uint8_t *) data, sizeof data - 1));
+   assert (bson_iter_init (&iter, &b));
+   bson_iter_visit_all (&iter, &visitor, (void *) &context);
+   assert (!bson_iter_next (&iter));
+   assert (context.visited);
+   assert (!strcmp (context.key, ""));
+   assert (context.type_code == '\x33');
+}
+
+
 void
 test_bson_install (TestSuite *suite)
 {
@@ -1633,6 +1961,9 @@ test_bson_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/append_double", test_bson_append_double);
    TestSuite_Add (suite, "/bson/append_int32", test_bson_append_int32);
    TestSuite_Add (suite, "/bson/append_int64", test_bson_append_int64);
+#ifdef BSON_EXPERIMENTAL_FEATURES
+   TestSuite_Add (suite, "/bson/append_decimal128", test_bson_append_decimal128);
+#endif /* BSON_EXPERIMENTAL_FEATURES */
    TestSuite_Add (suite, "/bson/append_iter", test_bson_append_iter);
    TestSuite_Add (suite, "/bson/append_maxkey", test_bson_append_maxkey);
    TestSuite_Add (suite, "/bson/append_minkey", test_bson_append_minkey);
@@ -1665,8 +1996,18 @@ test_bson_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/reinit", test_bson_reinit);
    TestSuite_Add (suite, "/bson/macros", test_bson_macros);
    TestSuite_Add (suite, "/bson/clear", test_bson_clear);
+   TestSuite_Add (suite, "/bson/steal", test_bson_steal);
+   TestSuite_Add (suite, "/bson/reserve_buffer", test_bson_reserve_buffer);
+   TestSuite_Add (suite, "/bson/reserve_buffer/errors", test_bson_reserve_buffer_errors);
    TestSuite_Add (suite, "/bson/destroy_with_steal", test_bson_destroy_with_steal);
    TestSuite_Add (suite, "/bson/has_field", test_bson_has_field);
+   TestSuite_Add (suite, "/bson/visit_invalid_field", test_bson_visit_invalid_field);
+   TestSuite_Add (suite, "/bson/unsupported_type",
+                  test_bson_visit_unsupported_type);
+   TestSuite_Add (suite, "/bson/unsupported_type/bad_key",
+                  test_bson_visit_unsupported_type_bad_key);
+   TestSuite_Add (suite, "/bson/unsupported_type/empty_key",
+                  test_bson_visit_unsupported_type_empty_key);
 
    TestSuite_Add (suite, "/util/next_power_of_two", test_next_power_of_two);
 }

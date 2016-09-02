@@ -219,7 +219,7 @@ yajl_gen_integer(yajl_gen g, long long int number)
 # endif
 #endif
 
-#if defined(__sun) && defined(__GNUC__) && __GNUC__ < 4
+#if !defined(isinf) && defined(__sun)
 # define isinf !finite
 #endif
 
@@ -254,9 +254,9 @@ yajl_gen_status
 yajl_gen_string(yajl_gen g, const unsigned char * str,
                 size_t len)
 {
-    // if validation is enabled, check that the string is valid utf8
-    // XXX: This checking could be done a little faster, in the same pass as
-    // the string encoding
+    /* if validation is enabled, check that the string is valid utf8
+     * XXX: This checking could be done a little faster, in the same pass as
+     * the string encoding */
     if (g->flags & yajl_gen_validate_utf8) {
         if (!yajl_string_validate_utf8(str, len)) {
             return yajl_gen_invalid_string;

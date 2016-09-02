@@ -1,3 +1,50 @@
+Libbson-1.4.1
+=============
+
+A pseudo-release of Libbson only to fix the Debian package.
+
+Libbson-1.4.0
+=============
+
+It is my pleasure to announce Libbson-1.4.0.
+
+New features and bug fixes:
+
+  * bson_reader_reset seeks to the beginning of a BSON buffer.
+  * bson_steal efficiently transfers contents from one bson_t to another.
+  * Fix Windows compile error with BSON_EXTRA_ALIGN disabled.
+  * Potential buffer overrun in bson_strndup.
+  * bson_oid_to_string optimization for MS Visual Studio
+  * bson_oid_is_valid accepts uppercase hex characters.
+  * bson_json_reader_read aborted on some invalid Extended JSON documents.
+  * All man page names now begin with "bson_" to avoid install conflicts.
+  * Error messages sometimes truncated at 63 chars.
+
+This release tentatively supports the new BSON decimal type when built with
+"./configure --enable-experimental-features", or with
+"cmake -DENABLE_EXPERIMENTAL_FEATURES=ON", but this feature may change
+between now and libbson 1.5.
+
+Thanks to everyone who contributed to the development of this release.
+
+  * A. Jesse Jiryu Davis
+  * Hannes Magnusson
+  * Jeremy Mikola
+  * David Hatch
+  * Ian Boros
+  * Fiona Rowan
+  * Shane Harvey
+  * Runar Buvik
+  * Raymond Jacobson
+  * ReadmeCritic
+  * Mike Lloyd
+  * Derick Rethans
+  * Maverick Chan
+
+Peace,
+
+    A. Jesse Jiryu Davis
+
 Libbson-1.3.5
 =============
 

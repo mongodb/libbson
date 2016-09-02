@@ -464,8 +464,7 @@ bson_strndup (const char *str,     /* IN */
    BSON_ASSERT (str);
 
    ret = bson_malloc (n_bytes + 1);
-   memcpy (ret, str, n_bytes);
-   ret[n_bytes] = '\0';
+   bson_strncpy (ret, str, n_bytes + 1);
 
    return ret;
 }
@@ -665,6 +664,33 @@ bson_snprintf (char       *str,    /* IN */
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_ascii_strtoll --
+ *
+ *       A portable strtoll.
+ *
+ *       Convert a string to a 64-bit signed integer according to the given
+ *       @base, which must be 16, 10, or 8. Leading whitespace will be ignord.
+ *
+ *       If @e is not NULL, it will be assigned the address of the first invalid
+ *       character of @s, or its null terminating byte if the entire string was
+ *       valid.
+ *
+ *       If an invalid value is encountered, errno will be set to EINVAL and
+ *       zero will be returned. This function does not currently detect values
+ *       that are out of range.
+ *
+ * Returns:
+ *       The result of the conversion.
+ *
+ * Side effects:
+ *       errno will be set on error.
+ *
+ *--------------------------------------------------------------------------
+ */
+
 int64_t
 bson_ascii_strtoll (const char  *s,
                     char       **e,
@@ -687,7 +713,9 @@ bson_ascii_strtoll (const char  *s,
     }
 
     if (!isdigit (c) && (c != '+') && (c != '-')) {
-        *e = tok - 1;
+        if (e != NULL) {
+           *e = tok - 1;
+        }
         errno = EINVAL;
         return 0;
     }
@@ -701,21 +729,26 @@ bson_ascii_strtoll (const char  *s,
         c = *++tok;
     }
 
-    if (c == '0' && tok[1] != '\0') {
-        /* Hex, octal or binary -- maybe. */
+    if (c == '0' && tok[1] != '\0' &&
+       (isdigit (tok[1]) || tok[1] == 'x' || tok[1] == 'X')) {
+        /* Hex, octal or decimal */
 
         c = *++tok;
 
         if (c == 'x' || c == 'X') { /* Hex */
-            if (base != 16) {
-                *e = (char *)(s);
+            if (base != 16 && base != 0) {
+                if (e != NULL) {
+                   *e = (char *)(s);
+                }
                 errno = EINVAL;
                 return 0;
             }
 
             c = *++tok;
             if (!isxdigit (c)) {
-                *e = tok;
+                if (e != NULL) {
+                   *e = tok;
+                }
                 errno = EINVAL;
                 return 0;
             }
@@ -724,22 +757,32 @@ bson_ascii_strtoll (const char  *s,
                 c = *(++tok);
             } while (isxdigit (c));
         }
-        else { /* Octal */
-            if (base != 8) {
-                *e = (char *)(s);
+        else { /* Octal or Decimal -- prefixed with 0 */
+            if (base != 8 && base != 0 && base != 10) {
+                if (e != NULL) {
+                   *e = (char *)(s);
+                }
                 errno = EINVAL;
                 return 0;
             }
-
-            if (c < '0' || c >= '8') {
-                *e = tok;
-                errno = EINVAL;
-                return 0;
+            if (base == 10) {
+                do {
+                  number = (number * 10) + (c - '0');
+                  c = *(++tok);
+                } while (isdigit (c));
+            } else { /*Octal*/
+                if ( c < '0' || c >= '8') {
+                  if (e != NULL) {
+                     *e = tok;
+                  }
+                  errno = EINVAL;
+                  return 0;
+                }
+                do {
+                  number = (number << 3) + (c - '0');
+                  c = *(++tok);
+                } while (('0' <= c) && (c < '8'));
             }
-            do {
-                number = (number << 3) + (c - '0');
-                c = *(++tok);
-            } while (('0' <= c) && (c < '8'));
         }
 
         while (c == 'l' || c == 'L' || c == 'u' || c == 'U') {
@@ -749,7 +792,9 @@ bson_ascii_strtoll (const char  *s,
     else {
         /* Decimal */
         if (base != 10) {
-            *e = (char *)(s);
+            if (e != NULL) {
+               *e = (char *)(s);
+            }
             errno = EINVAL;
             return 0;
         }
@@ -764,7 +809,9 @@ bson_ascii_strtoll (const char  *s,
         }
     }
 
-    *e = tok;
+    if (e != NULL) {
+       *e = tok;
+    }
     errno = 0;
     return (sign * number);
 }

@@ -22,10 +22,6 @@
 #include <string.h>
 #include <time.h>
 
-#if defined(__linux__)
-#include <sys/syscall.h>
-#endif
-
 #include "bson-atomic.h"
 #include "bson-clock.h"
 #include "bson-context.h"
@@ -33,6 +29,10 @@
 #include "bson-md5.h"
 #include "bson-memory.h"
 #include "bson-thread-private.h"
+
+#ifdef BSON_HAVE_SYSCALL_TID
+#include <sys/syscall.h>
+#endif
 
 
 #ifndef HOST_NAME_MAX
@@ -46,7 +46,7 @@
 static bson_context_t gContextDefault;
 
 
-#if defined(__linux__)
+#ifdef BSON_HAVE_SYSCALL_TID
 static uint16_t
 gettid (void)
 {
@@ -372,7 +372,7 @@ _bson_context_init (bson_context_t *context,    /* IN */
       context->oid_get_pid = _bson_context_get_oid_pid;
    } else {
       pid = BSON_UINT16_TO_BE (_bson_getpid());
-#if defined(__linux__)
+#ifdef BSON_HAVE_SYSCALL_TID
 
       if ((flags & BSON_CONTEXT_USE_TASK_ID)) {
          int32_t tid;

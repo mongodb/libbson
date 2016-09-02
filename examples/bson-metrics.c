@@ -202,9 +202,9 @@ bson_metrics (const bson_t *bson,
               size_t       *length,
               void         *data)
 {
+   bson_iter_t iter;
    bson_metrics_state_t *state = data;
    ++state->doc_count;
-   bson_iter_t iter;
 
    if (bson_iter_init (&iter, bson)) {
       bson_iter_visit_all (&iter, &bson_metrics_visitors, data);

@@ -6,6 +6,7 @@ extern void test_bcon_basic_install   (TestSuite *suite);
 extern void test_bcon_extract_install (TestSuite *suite);
 extern void test_bson_install         (TestSuite *suite);
 extern void test_clock_install        (TestSuite *suite);
+extern void test_decimal128_install   (TestSuite *suite);
 extern void test_endian_install       (TestSuite *suite);
 extern void test_error_install        (TestSuite *suite);
 extern void test_iso8601_install      (TestSuite *suite);
@@ -18,6 +19,7 @@ extern void test_utf8_install         (TestSuite *suite);
 extern void test_value_install        (TestSuite *suite);
 extern void test_version_install      (TestSuite *suite);
 extern void test_writer_install       (TestSuite *suite);
+extern void test_bson_type_install    (TestSuite *suite);
 
 
 int
@@ -46,6 +48,10 @@ main (int argc,
    test_value_install (&suite);
    test_version_install (&suite);
    test_writer_install (&suite);
+#ifdef BSON_EXPERIMENTAL_FEATURES
+   test_decimal128_install (&suite);
+   test_bson_type_install (&suite);
+#endif
 
    ret = TestSuite_Run (&suite);
 

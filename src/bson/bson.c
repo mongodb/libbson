@@ -16,6 +16,7 @@
 
 
 #include "bson.h"
+#include "bson-config.h"
 #include "b64_ntop.h"
 #include "bson-private.h"
 #include "bson-string.h"
@@ -1158,6 +1159,37 @@ bson_append_int64 (bson_t      *bson,
 }
 
 
+#ifdef BSON_EXPERIMENTAL_FEATURES
+bool
+bson_append_decimal128 (bson_t                  *bson,
+                        const char              *key,
+                        int                      key_length,
+                        const bson_decimal128_t *value)
+{
+   static const uint8_t type = BSON_TYPE_DECIMAL128;
+   uint64_t value_le[2];
+
+   BSON_ASSERT (bson);
+   BSON_ASSERT (key);
+   BSON_ASSERT (value);
+
+   if (key_length < 0) {
+      key_length = (int)strlen (key);
+   }
+
+   value_le[0] = BSON_UINT64_TO_LE (value->low);
+   value_le[1] = BSON_UINT64_TO_LE (value->high);
+
+   return _bson_append (bson, 4,
+                        (1 + key_length + 1 + 16),
+                        1, &type,
+                        key_length, key,
+                        1, &gZero,
+                        16, value_le);
+}
+#endif
+
+
 bool
 bson_append_iter (bson_t            *bson,
                   const char        *key,
@@ -1312,6 +1344,19 @@ bson_append_iter (bson_t            *bson,
       break;
    case BSON_TYPE_INT64:
       ret = bson_append_int64 (bson, key, key_length, bson_iter_int64 (iter));
+      break;
+#ifdef BSON_EXPERIMENTAL_FEATURES
+   case BSON_TYPE_DECIMAL128:
+      {
+         bson_decimal128_t dec;
+
+         if (!bson_iter_decimal128 (iter, &dec)) {
+            return false;
+         }
+
+         ret = bson_append_decimal128 (bson, key, key_length, &dec);
+      }
+#endif /* BSON_EXPERIMENTAL_FEATURES */
       break;
    case BSON_TYPE_MAXKEY:
       ret = bson_append_maxkey (bson, key, key_length);
@@ -1762,6 +1807,11 @@ bson_append_value (bson_t             *bson,
    case BSON_TYPE_INT64:
       ret = bson_append_int64 (bson, key, key_length, value->value.v_int64);
       break;
+#ifdef BSON_EXPERIMENTAL_FEATURES
+   case BSON_TYPE_DECIMAL128:
+      ret = bson_append_decimal128 (bson, key, key_length, &(value->value.v_decimal128));
+#endif
+      break;
    case BSON_TYPE_MAXKEY:
       ret = bson_append_maxkey (bson, key, key_length);
       break;
@@ -1879,16 +1929,14 @@ bson_t *
 bson_sized_new (size_t size)
 {
    bson_impl_alloc_t *impl_a;
-   bson_impl_inline_t *impl_i;
    bson_t *b;
 
    BSON_ASSERT (size <= INT32_MAX);
 
    b = bson_malloc (sizeof *b);
    impl_a = (bson_impl_alloc_t *)b;
-   impl_i = (bson_impl_inline_t *)b;
 
-   if (size <= sizeof impl_i->data) {
+   if (size <= BSON_INLINE_DATA_SIZE) {
       bson_init (b);
       b->flags &= ~BSON_FLAG_STATIC;
    } else {
@@ -2146,6 +2194,74 @@ bson_destroy (bson_t *bson)
 
 
 uint8_t *
+bson_reserve_buffer (bson_t   *bson,
+                     uint32_t  size)
+{
+   if (bson->flags &
+      (BSON_FLAG_CHILD | BSON_FLAG_IN_CHILD | BSON_FLAG_RDONLY)) {
+      return NULL;
+   }
+
+   if (!_bson_grow (bson, size)) {
+      return NULL;
+   }
+
+   if (bson->flags & BSON_FLAG_INLINE) {
+      /* bson_grow didn't spill over */
+      ((bson_impl_inline_t *) bson)->len = size;
+   } else {
+      ((bson_impl_alloc_t *) bson)->len = size;
+   }
+
+   return _bson_data (bson);
+}
+
+
+bool
+bson_steal (bson_t *dst,
+            bson_t *src)
+{
+   bson_impl_inline_t *src_inline;
+   bson_impl_inline_t *dst_inline;
+   bson_impl_alloc_t *alloc;
+
+   BSON_ASSERT (dst);
+   BSON_ASSERT (src);
+
+   bson_init (dst);
+
+   if (src->flags & (BSON_FLAG_CHILD | BSON_FLAG_IN_CHILD | BSON_FLAG_RDONLY)) {
+      return false;
+   }
+
+   if (src->flags & BSON_FLAG_INLINE) {
+      src_inline = (bson_impl_inline_t *) src;
+      dst_inline = (bson_impl_inline_t *) dst;
+      dst_inline->len = src_inline->len;
+      memcpy (dst_inline->data, src_inline->data, sizeof src_inline->data);
+
+      /* for consistency, src is always invalid after steal, even if inline */
+      src->len = 0;
+   } else {
+      memcpy (dst, src, sizeof (bson_t));
+      alloc = (bson_impl_alloc_t *) dst;
+      alloc->flags |= BSON_FLAG_STATIC;
+      alloc->buf = &alloc->alloc;
+      alloc->buflen = &alloc->alloclen;
+   }
+
+   if (!(src->flags & BSON_FLAG_STATIC)) {
+      bson_free (src);
+   } else {
+      /* src is invalid after steal */
+      src->len = 0;
+   }
+
+   return true;
+}
+
+
+uint8_t *
 bson_destroy_with_steal (bson_t   *bson,
                          bool      steal,
                          uint32_t *length)
@@ -2323,6 +2439,26 @@ _bson_as_json_visit_int64 (const bson_iter_t *iter,
 }
 
 
+#ifdef BSON_EXPERIMENTAL_FEATURES
+static bool
+_bson_as_json_visit_decimal128 (const bson_iter_t       *iter,
+                                const char              *key,
+                                const bson_decimal128_t *value,
+                                void                    *data)
+{
+   bson_json_state_t *state = data;
+   char decimal128_string[BSON_DECIMAL128_STRING];
+   bson_decimal128_to_string(value, decimal128_string);
+
+   bson_string_append (state->str, "{ \"$numberDecimal\" : \"");
+   bson_string_append (state->str, decimal128_string);
+   bson_string_append (state->str, "\" }");
+
+   return false;
+}
+#endif /* BSON_EXPERIMENTAL_FEATURES */
+
+
 static bool
 _bson_as_json_visit_double (const bson_iter_t *iter,
                             const char        *key,
@@ -2405,10 +2541,10 @@ _bson_as_json_visit_binary (const bson_iter_t  *iter,
    b64 = bson_malloc0 (b64_len);
    b64_ntop (v_binary, v_binary_len, b64, b64_len);
 
-   bson_string_append (state->str, "{ \"$type\" : \"");
-   bson_string_append_printf (state->str, "%02x", v_subtype);
-   bson_string_append (state->str, "\", \"$binary\" : \"");
+   bson_string_append (state->str, "{ \"$binary\" : \"");
    bson_string_append (state->str, b64);
+   bson_string_append (state->str, "\", \"$type\" : \"");
+   bson_string_append_printf (state->str, "%02x", v_subtype);
    bson_string_append (state->str, "\" }");
    bson_free (b64);
 
@@ -2660,6 +2796,10 @@ static const bson_visitor_t bson_as_json_visitors = {
    _bson_as_json_visit_int64,
    _bson_as_json_visit_maxkey,
    _bson_as_json_visit_minkey,
+   NULL, /* visit_unsupported_type */
+#ifdef BSON_EXPERIMENTAL_FEATURES
+   _bson_as_json_visit_decimal128,
+#endif /* BSON_EXPERIMENTAL_FEATURES */
 };
 
 

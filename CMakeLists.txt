@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 2.8)
 project (libbson)
 
 option(ENABLE_TESTS "Build libbson tests." ON)
+option(ENABLE_EXPERIMENTAL_FEATURES
+       "Experimental support for future BSON features."
+       OFF)
 
 include(CheckFunctionExists)
 include(CheckIncludeFile)
@@ -31,12 +34,18 @@ set (CPACK_RESOURCE_FILE_LICENSE "${SOURCE_DIR}/COPYING")
 set (CPACK_PACKAGE_VERSION_MAJOR ${BSON_MAJOR_VERSION})
 set (CPACK_PACKAGE_VERSION_MINOR ${BSON_MINOR_VERSION})
 
-include (CPack)
+if (ENABLE_EXPERIMENTAL_FEATURES)
+   set (BSON_EXPERIMENTAL_FEATURES 1)
+else ()
+   set (BSON_EXPERIMENTAL_FEATURES 0)
+endif ()
 
+include (CPack)
 TEST_BIG_ENDIAN(BSON_BIG_ENDIAN)
 
 # These need proper checks like automake.
 set (BSON_PTHREAD_ONCE_INIT_NEEDS_BRACES 0)
+set (BSON_HAVE_DECIMAL128 0)
 
 #librt needed on linux for clock_gettime
 find_library(RT_LIBRARY rt)
@@ -58,6 +67,11 @@ if (NOT BSON_NEEDS_SET_OUTPUT_FORMAT)
   set(BSON_NEEDS_SET_OUTPUT_FORMAT 0)
 endif ()
 
+CHECK_FUNCTION_EXISTS(reallocf BSON_HAVE_REALLOCF)
+if (NOT BSON_HAVE_REALLOCF)
+  set(BSON_HAVE_REALLOCF 0)
+endif ()
+
 CHECK_STRUCT_HAS_MEMBER("struct timespec" tv_sec time.h BSON_HAVE_TIMESPEC)
 if (NOT BSON_HAVE_TIMESPEC)
   message(STATUS "    no timespec struct")
@@ -73,6 +87,7 @@ if (MSVC)
    set (BSON_HAVE_STDBOOL_H 0)
    set (BSON_HAVE_STRNLEN 0)
    set (BSON_EXTRA_ALIGN 1)
+   set (BSON_HAVE_SYSCALL_TID 0)
 else ()
    find_package (Threads)
 
@@ -90,6 +105,8 @@ else ()
       set(BSON_HAVE_STDBOOL_H 0)
    endif ()
    set (BSON_EXTRA_ALIGN 1)
+   CHECK_FUNCTION_EXISTS(syscall BSON_HAVE_SYSCALL_TID)
+   CHECK_INCLUDE_FILE(strings.h HAVE_STRINGS_H)
 endif ()
 
 set (BSON_HAVE_ATOMIC_32_ADD_AND_FETCH 1)
@@ -156,6 +173,10 @@ set (SOURCES
    ${SOURCE_DIR}/src/yajl/yajl_version.c
 )
 
+if (ENABLE_EXPERIMENTAL_FEATURES)
+    set (SOURCES ${SOURCES} ${SOURCE_DIR}/src/bson/bson-decimal128.c)
+endif ()
+
 set (HEADERS
    ${PROJECT_BINARY_DIR}/src/bson/bson-config.h
    ${PROJECT_BINARY_DIR}/src/bson/bson-stdint.h
@@ -185,8 +206,21 @@ set (HEADERS
    ${SOURCE_DIR}/src/bson/bson-writer.h
 )
 
+if (ENABLE_EXPERIMENTAL_FEATURES)
+    set (HEADERS ${HEADERS} ${SOURCE_DIR}/src/bson/bson-decimal128.h)
+endif ()
+
 if (MSVC)
-   set(BSON_SHARED_SOURCES ${SOURCES} ${PROJECT_SOURCE_DIR}/build/cmake/libbson.def)
+   # Export the functions listed in a definitions file.
+   if (ENABLE_EXPERIMENTAL_FEATURES)
+      set (BSON_DEF_FILE
+           ${PROJECT_SOURCE_DIR}/build/cmake/libbson-experimental.def)
+   else ()
+       set (BSON_DEF_FILE
+            ${PROJECT_SOURCE_DIR}/build/cmake/libbson.def)
+   endif ()
+
+   set(BSON_SHARED_SOURCES ${SOURCES} ${BSON_DEF_FILE})
 else()
    set(BSON_SHARED_SOURCES ${SOURCES})
 endif()
@@ -219,28 +253,51 @@ endif()
 if (ENABLE_TESTS)
     enable_testing()
 
-    add_executable(test-libbson
-       ${SOURCE_DIR}/tests/TestSuite.c
-       ${SOURCE_DIR}/tests/TestSuite.h
-       ${SOURCE_DIR}/tests/test-libbson.c
-       ${SOURCE_DIR}/tests/test-atomic.c
-       ${SOURCE_DIR}/tests/test-bson.c
-       ${SOURCE_DIR}/tests/test-endian.c
-       ${SOURCE_DIR}/tests/test-clock.c
-       ${SOURCE_DIR}/tests/test-error.c
-       ${SOURCE_DIR}/tests/test-iso8601.c
-       ${SOURCE_DIR}/tests/test-iter.c
-       ${SOURCE_DIR}/tests/test-json.c
-       ${SOURCE_DIR}/tests/test-oid.c
-       ${SOURCE_DIR}/tests/test-reader.c
-       ${SOURCE_DIR}/tests/test-string.c
-       ${SOURCE_DIR}/tests/test-utf8.c
-       ${SOURCE_DIR}/tests/test-value.c
-       ${SOURCE_DIR}/tests/test-version.c
-       ${SOURCE_DIR}/tests/test-writer.c
-       ${SOURCE_DIR}/tests/test-bcon-basic.c
-       ${SOURCE_DIR}/tests/test-bcon-extract.c
+    add_definitions("-DBINARY_DIR=\"${SOURCE_DIR}/tests/binary\"")
+    add_definitions("-DJSON_DIR=\"${SOURCE_DIR}/tests/json\"")
+
+    set (BSON_TEST_SOURCES
+         ${SOURCE_DIR}/tests/TestSuite.c
+         ${SOURCE_DIR}/tests/TestSuite.h
+         ${SOURCE_DIR}/tests/test-libbson.c
+         ${SOURCE_DIR}/tests/test-atomic.c
+         ${SOURCE_DIR}/tests/test-bson.c
+         ${SOURCE_DIR}/tests/test-endian.c
+         ${SOURCE_DIR}/tests/test-clock.c
+         ${SOURCE_DIR}/tests/test-error.c
+         ${SOURCE_DIR}/tests/test-iso8601.c
+         ${SOURCE_DIR}/tests/test-iter.c
+         ${SOURCE_DIR}/tests/test-json.c
+         ${SOURCE_DIR}/tests/test-oid.c
+         ${SOURCE_DIR}/tests/test-reader.c
+         ${SOURCE_DIR}/tests/test-string.c
+         ${SOURCE_DIR}/tests/test-utf8.c
+         ${SOURCE_DIR}/tests/test-value.c
+         ${SOURCE_DIR}/tests/test-version.c
+         ${SOURCE_DIR}/tests/test-writer.c
+         ${SOURCE_DIR}/tests/test-bcon-basic.c
+         ${SOURCE_DIR}/tests/test-bcon-extract.c
+         ${SOURCE_DIR}/tests/json-test.c
+         ${SOURCE_DIR}/tests/json-test.c
+         ${SOURCE_DIR}/tests/json-test.h
     )
+
+    if (ENABLE_EXPERIMENTAL_FEATURES)
+        set (BSON_TEST_SOURCES
+             ${BSON_TEST_SOURCES}
+             ${SOURCE_DIR}/tests/test-decimal128.c
+             ${SOURCE_DIR}/tests/test-type.c
+             ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-1.json
+             ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-2.json
+             ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-3.json
+             ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-4.json
+             ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-5.json
+             ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-6.json
+             ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-7.json
+        )
+    endif ()
+
+    add_executable (test-libbson ${BSON_TEST_SOURCES})
 
     target_link_libraries(test-libbson bson_static)
     add_test(NAME test-libbson COMMAND test-libbson)

@@ -1,0 +1,46 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="errors">
+    <info><link type="guide" xref="index#intro"/></info>
+    <title>Handling Errors</title>
+
+  <section id="description">
+    <title>Description</title>
+    <p>Many libbson functions report errors by returning <code>NULL</code> or -1 and filling out a <code xref="bson_error_t">bson_error_t</code> structure with an error domain, error code, and message.</p>
+    <list>
+      <item><p><code>error.domain</code> names the subsystem that generated the error.</p></item>
+      <item><p><code>error.code</code> is a domain-specific error type.</p></item>
+      <item><p><code>error.message</code> describes the error.</p></item>
+    </list>
+    <p>Some error codes overlap with others; always check both the domain and code to determine the type of error.</p>
+    <table rules="all">
+      <thead>
+        <tr>
+          <td><p>Domain</p></td>
+          <td><p>Code</p></td>
+          <td><p>Description</p></td>
+        </tr>
+      </thead>
+      <tr>
+        <td><p><em style="strong"><code>BSON_ERROR_JSON</code></em></p></td>
+        <td><p><code>BSON_JSON_ERROR_READ_CORRUPT_JS</code></p></td>
+        <td><p><code xref="bson_json_reader_t">bson_json_reader_t</code>tried to parse invalid MongoDB Extended JSON.</p></td>
+      </tr>
+      <tr>
+        <td/>
+        <td><p><code>BSON_JSON_ERROR_READ_INVALID_PARAM</code></p></td>
+        <td><p>Tried to parse a valid JSON document that is invalid as MongoDBExtended JSON.</p></td>
+      </tr>
+      <tr>
+        <td/>
+        <td><p><code>BSON_JSON_ERROR_READ_CB_FAILURE</code></p></td>
+        <td><p>An internal callback failure during JSON parsing.</p></td>
+      </tr>
+      <tr>
+        <td><p><em style="strong"><code>BSON_ERROR_READER</code></em></p></td>
+        <td><p><code>BSON_ERROR_READER_BADFD</code></p></td>
+        <td><p><code xref="bson_json_reader_new_from_file">bson_json_reader_new_from_file</code> could not open the file.</p></td>
+      </tr>
+    </table>
+  </section>
+</page>

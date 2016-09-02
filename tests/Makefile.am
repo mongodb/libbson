@@ -22,7 +22,16 @@ test_libbson_SOURCES = \
 	tests/test-version.c \
 	tests/test-writer.c \
 	tests/test-bcon-basic.c \
-	tests/test-bcon-extract.c
+	tests/test-bcon-extract.c \
+	tests/json-test.c \
+	tests/json-test.h
+
+if ENABLE_EXPERIMENTAL_FEATURES
+test_libbson_SOURCES += \
+    tests/test-decimal128.c \
+    tests/test-type.c
+endif
+
 
 test_libbson_CPPFLAGS = \
 	-I$(top_srcdir)/src \
@@ -45,22 +54,32 @@ test_libbson_LDADD = \
 check: test
 
 
-TEST_ARGS = 
 if OS_DARWIN
-TEST_ARGS += -f -p
+DEBUGGER = lldb --
+else
+DEBUGGER = gdb --args
+endif
+
+if OS_DARWIN
+TEST_ARGS = --no-fork
+else
+TEST_ARGS = --threads --no-fork
 endif
 
 
 test: $(TEST_PROGS)
 	@ for TEST_PROG in $(TEST_PROGS) ; do \
-		$(LIBTOOL) --mode=execute $$VALGRIND ./$$TEST_PROG $(TEST_ARGS) -F test.log; \
+		$(LIBTOOL) --mode=execute $$VALGRIND ./$$TEST_PROG $(TEST_ARGS) -F test-results.json; \
 	done
 if CAN_ABI_CHECK
 	@ $(srcdir)/tests/abicheck.sh "$(srcdir)/src/libbson.symbols"
 endif
 
 valgrind: $(TEST_PROGS)
-	$(LIBTOOL) --mode=execute valgrind --leak-check=full ./test-libbson -f -p
+	$(LIBTOOL) --mode=execute valgrind --error-exitcode=1 --leak-check=full ./test-libbson $(TEST_ARGS) --no-fork
+
+debug: $(TEST_PROGS)
+	$(LIBTOOL) --mode=execute $(DEBUGGER) ./test-libbson $(TEST_ARGS)
 
 DISTCLEANFILES += test.log
 
@@ -135,9 +154,21 @@ EXTRA_DIST += \
 	tests/binary/test55.bson \
 	tests/binary/test56.bson \
 	tests/binary/test57.bson \
+	tests/binary/test58.bson \
 	tests/binary/test6.bson \
 	tests/binary/test7.bson \
 	tests/binary/test8.bson \
 	tests/binary/test9.bson \
 	tests/binary/trailingnull.bson \
 	tests/json/test.json
+
+if ENABLE_EXPERIMENTAL_FEATURES
+EXTRA_DIST += \
+	tests/json/type/decimal128/decimal128-1.json \
+	tests/json/type/decimal128/decimal128-2.json \
+	tests/json/type/decimal128/decimal128-3.json \
+	tests/json/type/decimal128/decimal128-4.json \
+	tests/json/type/decimal128/decimal128-5.json \
+	tests/json/type/decimal128/decimal128-6.json \
+	tests/json/type/decimal128/decimal128-7.json
+endif

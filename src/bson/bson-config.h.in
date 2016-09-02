@@ -80,6 +80,15 @@
 
 
 /*
+ * Define to 1 if you have reallocf available on your platform.
+ */
+#define BSON_HAVE_REALLOCF @BSON_HAVE_REALLOCF@
+#if BSON_HAVE_REALLOCF != 1
+# undef BSON_HAVE_REALLOCF
+#endif
+
+
+/*
  * Define to 1 if you have _set_output_format (VS2013 and older).
  */
 #define BSON_NEEDS_SET_OUTPUT_FORMAT @BSON_NEEDS_SET_OUTPUT_FORMAT@
@@ -104,5 +113,31 @@
 # undef BSON_EXTRA_ALIGN
 #endif
 
+
+/*
+ * Define to 1 if you have SYS_gettid syscall
+ */
+#define BSON_HAVE_SYSCALL_TID @BSON_HAVE_SYSCALL_TID@
+#if BSON_HAVE_SYSCALL_TID != 1
+# undef BSON_HAVE_SYSCALL_TID
+#endif
+
+
+/*
+ * Define to 1 if _Decimal128 (BID format) is available on your platform.
+ */
+#define BSON_HAVE_DECIMAL128 @BSON_HAVE_DECIMAL128@
+#if BSON_HAVE_DECIMAL128 != 1
+# undef BSON_HAVE_DECIMAL128
+#endif
+
+
+/*
+ * Define to 1 to support experimental future BSON or MongoDB features.
+ */
+#define BSON_EXPERIMENTAL_FEATURES @BSON_EXPERIMENTAL_FEATURES@
+#if BSON_EXPERIMENTAL_FEATURES != 1
+# undef BSON_EXPERIMENTAL_FEATURES
+#endif
 
 #endif /* BSON_CONFIG_H */

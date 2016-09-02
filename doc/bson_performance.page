@@ -1,7 +1,7 @@
 <page xmlns="http://projectmallard.org/1.0/"
       type="topic"
       id="performance">
-
+  <info><link type="guide" xref="index#performance" /></info>
   <title>Performance Notes</title>
 
   <section id="keys">

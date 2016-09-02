@@ -38,7 +38,6 @@ bson_memory_barrier (void)
 
 
 #ifdef __BSON_NEED_ATOMIC_32
-#warning "Using mutex to emulate 32-bit atomics."
 #include <pthread.h>
 static pthread_mutex_t gSync32 = PTHREAD_MUTEX_INITIALIZER;
 int32_t

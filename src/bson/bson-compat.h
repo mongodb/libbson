@@ -149,13 +149,13 @@ typedef RTL_RUN_ONCE INIT_ONCE;
 #endif
 
 
-#if !defined(va_copy) && defined(_MSC_VER)
-# define va_copy(dst,src) ((dst) = (src))
+#if !defined(va_copy) && defined(__va_copy)
+# define va_copy(dst,src) __va_copy(dst, src)
 #endif
 
 
-#if !defined(va_copy) && defined(__GNUC__) && __GNUC__ < 3
-# define va_copy(dst,src) __va_copy(dst, src)
+#if !defined(va_copy)
+# define va_copy(dst,src) ((dst) = (src))
 #endif
 
 

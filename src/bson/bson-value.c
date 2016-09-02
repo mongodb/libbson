@@ -119,6 +119,11 @@ bson_value_copy (const bson_value_t *src, /* IN */
    case BSON_TYPE_INT64:
       dst->value.v_int64 = src->value.v_int64;
       break;
+#ifdef BSON_EXPERIMENTAL_FEATURES
+   case BSON_TYPE_DECIMAL128:
+      dst->value.v_decimal128 = src->value.v_decimal128;
+      break;
+#endif
    case BSON_TYPE_UNDEFINED:
    case BSON_TYPE_NULL:
    case BSON_TYPE_MAXKEY:
@@ -172,6 +177,9 @@ bson_value_destroy (bson_value_t *value) /* IN */
    case BSON_TYPE_INT32:
    case BSON_TYPE_TIMESTAMP:
    case BSON_TYPE_INT64:
+#ifdef BSON_EXPERIMENTAL_FEATURES
+   case BSON_TYPE_DECIMAL128:
+#endif
    case BSON_TYPE_MAXKEY:
    case BSON_TYPE_MINKEY:
    case BSON_TYPE_EOD:

@@ -107,7 +107,7 @@ void           bson_reader_set_destroy_func (bson_reader_t              *reader,
 const bson_t  *bson_reader_read             (bson_reader_t              *reader,
                                              bool                       *reached_eof);
 off_t          bson_reader_tell             (bson_reader_t              *reader);
-
+void           bson_reader_reset            (bson_reader_t              *reader);
 
 BSON_END_DECLS
 

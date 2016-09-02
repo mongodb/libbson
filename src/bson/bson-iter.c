@@ -16,6 +16,13 @@
 
 
 #include "bson-iter.h"
+#include "bson-config.h"
+#ifdef BSON_EXPERIMENTAL_FEATURES
+#include "bson-decimal128.h"
+#endif
+#ifdef HAVE_STRINGS_H
+# include <strings.h>
+#endif
 
 
 #define ITER_TYPE(i) ((bson_type_t) *((i)->raw + (i)->type))
@@ -397,26 +404,31 @@ bson_iter_type (const bson_iter_t *iter) /* IN */
 /*
  *--------------------------------------------------------------------------
  *
- * bson_iter_next --
+ * _bson_iter_next_internal --
  *
- *       Advances @iter to the next field of the underlying BSON document.
- *       If all fields have been exhausted, then %false is returned.
+ *       Internal function to advance @iter to the next field and retrieve
+ *       the key and BSON type before error-checking.
  *
- *       It is a programming error to use @iter after this function has
- *       returned false.
- *
- * Returns:
- *       true if the iter was advanced to the next record.
- *       otherwise false and @iter should be considered invalid.
+ * Return:
+ *       true if an element was decoded, else false.
  *
  * Side effects:
- *       @iter may be invalidated.
+ *       @key and @bson_type are set.
+ *
+ *       If the return value is false:
+ *        - @iter is invalidated: @iter->raw is NULLed
+ *        - @unsupported is set to true if the bson type is unsupported
+ *        - otherwise if the BSON is corrupt, @iter->err_off is nonzero
+ *        - otherwise @bson_type is set to BSON_TYPE_EOD
  *
  *--------------------------------------------------------------------------
  */
 
-bool
-bson_iter_next (bson_iter_t *iter) /* INOUT */
+static bool
+_bson_iter_next_internal (bson_iter_t  *iter,         /* INOUT */
+                          const char  **key,          /* OUT */
+                          uint32_t     *bson_type,    /* OUT */
+                          bool         *unsupported)  /* OUT */
 {
    const uint8_t *data;
    uint32_t o;
@@ -424,7 +436,11 @@ bson_iter_next (bson_iter_t *iter) /* INOUT */
 
    BSON_ASSERT (iter);
 
+   *unsupported = false;
+
    if (!iter->raw) {
+      *key = NULL;
+      *bson_type = BSON_TYPE_EOD;
       return false;
    }
 
@@ -450,7 +466,10 @@ bson_iter_next (bson_iter_t *iter) /* INOUT */
 
 fill_data_fields:
 
-   switch (ITER_TYPE (iter)) {
+   *key = bson_iter_key_unsafe (iter);
+   *bson_type = ITER_TYPE (iter);
+
+   switch (*bson_type) {
    case BSON_TYPE_DATE_TIME:
    case BSON_TYPE_DOUBLE:
    case BSON_TYPE_INT64:
@@ -665,6 +684,11 @@ fill_data_fields:
    case BSON_TYPE_INT32:
       iter->next_off = o + 4;
       break;
+#ifdef BSON_EXPERIMENTAL_FEATURES
+   case BSON_TYPE_DECIMAL128:
+      iter->next_off = o + 16;
+      break;
+#endif
    case BSON_TYPE_MAXKEY:
    case BSON_TYPE_MINKEY:
    case BSON_TYPE_NULL:
@@ -672,8 +696,10 @@ fill_data_fields:
       iter->d1 = -1;
       iter->next_off = o;
       break;
-   case BSON_TYPE_EOD:
    default:
+      *unsupported = true;
+      /* FALL THROUGH */
+   case BSON_TYPE_EOD:
       iter->err_off = o;
       goto mark_invalid;
    }
@@ -704,13 +730,45 @@ mark_invalid:
 /*
  *--------------------------------------------------------------------------
  *
+ * bson_iter_next --
+ *
+ *       Advances @iter to the next field of the underlying BSON document.
+ *       If all fields have been exhausted, then %false is returned.
+ *
+ *       It is a programming error to use @iter after this function has
+ *       returned false.
+ *
+ * Returns:
+ *       true if the iter was advanced to the next record.
+ *       otherwise false and @iter should be considered invalid.
+ *
+ * Side effects:
+ *       @iter may be invalidated.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+bool
+bson_iter_next (bson_iter_t *iter) /* INOUT */
+{
+   uint32_t bson_type;
+   const char *key;
+   bool unsupported;
+
+   return _bson_iter_next_internal (iter, &key, &bson_type, &unsupported);
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
  * bson_iter_binary --
  *
  *       Retrieves the BSON_TYPE_BINARY field. The subtype is stored in
  *       @subtype.  The length of @binary in bytes is stored in @binary_len.
  *
  *       @binary should not be modified or freed and is only valid while
- *       @iter is on the current field.
+ *       @iter's bson_t is valid and unmodified.
  *
  * Parameters:
  *       @iter: A bson_iter_t
@@ -974,6 +1032,40 @@ bson_iter_as_int64 (const bson_iter_t *iter) /* IN */
       return 0;
    }
 }
+
+
+#ifdef BSON_EXPERIMENTAL_FEATURES
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_iter_decimal128 --
+ *
+ *       This function retrieves the current field of type %BSON_TYPE_DECIMAL128.
+ *       The result is valid while @iter is valid, and is stored in @dec.
+ *
+ * Returns:
+ *
+ *       True on success, false on failure.
+ *
+ * Side Effects:
+ *    None.
+ *
+ *--------------------------------------------------------------------------
+ */
+bool
+bson_iter_decimal128 (const bson_iter_t *iter,      /* IN */
+                      bson_decimal128_t *dec)       /* OUT */
+{
+   BSON_ASSERT (iter);
+
+   if (ITER_TYPE (iter) == BSON_TYPE_DECIMAL128) {
+      bson_iter_decimal128_unsafe (iter, dec);
+      return true;
+   }
+
+   return false;
+}
+#endif
 
 
 /*
@@ -1643,6 +1735,7 @@ bson_iter_array (const bson_iter_t  *iter,      /* IN */
 #define VISIT_INT32 VISIT_FIELD (int32)
 #define VISIT_TIMESTAMP VISIT_FIELD (timestamp)
 #define VISIT_INT64 VISIT_FIELD (int64)
+#define VISIT_DECIMAL128 VISIT_FIELD (decimal128)
 #define VISIT_MAXKEY VISIT_FIELD (maxkey)
 #define VISIT_MINKEY VISIT_FIELD (minkey)
 
@@ -1686,24 +1779,24 @@ bson_iter_visit_all (bson_iter_t          *iter,    /* INOUT */
                      const bson_visitor_t *visitor, /* IN */
                      void                 *data)    /* IN */
 {
+   uint32_t bson_type;
    const char *key;
+   bool unsupported;
 
    BSON_ASSERT (iter);
    BSON_ASSERT (visitor);
 
-   while (bson_iter_next (iter)) {
-      key = bson_iter_key_unsafe (iter);
-
+   while (_bson_iter_next_internal (iter, &key, &bson_type, &unsupported)) {
       if (*key && !bson_utf8_validate (key, strlen (key), false)) {
          iter->err_off = iter->off;
-         return true;
+         break;
       }
 
       if (VISIT_BEFORE (iter, key, data)) {
          return true;
       }
 
-      switch (bson_iter_type (iter)) {
+      switch (bson_type) {
       case BSON_TYPE_DOUBLE:
 
          if (VISIT_DOUBLE (iter, key, bson_iter_double (iter), data)) {
@@ -1894,6 +1987,18 @@ bson_iter_visit_all (bson_iter_t          *iter,    /* INOUT */
          }
 
          break;
+#ifdef BSON_EXPERIMENTAL_FEATURES
+      case BSON_TYPE_DECIMAL128:
+         {
+            bson_decimal128_t dec;
+            bson_iter_decimal128 (iter, &dec);
+
+            if (VISIT_DECIMAL128 (iter, key, &dec, data)) {
+               return true;
+            }
+         }
+         break;
+#endif
       case BSON_TYPE_MAXKEY:
 
          if (VISIT_MAXKEY (iter, bson_iter_key_unsafe (iter), data)) {
@@ -1919,6 +2024,13 @@ bson_iter_visit_all (bson_iter_t          *iter,    /* INOUT */
    }
 
    if (iter->err_off) {
+      if (unsupported &&
+            visitor->visit_unsupported_type &&
+            bson_utf8_validate (key, strlen (key), false)) {
+         visitor->visit_unsupported_type (iter, key, bson_type, data);
+         return false;
+      }
+
       VISIT_CORRUPT (iter, data);
    }
 
@@ -2052,6 +2164,43 @@ bson_iter_overwrite_double (bson_iter_t *iter,  /* IN */
 }
 
 
+#ifdef BSON_EXPERIMENTAL_FEATURES
+/*
+ *--------------------------------------------------------------------------
+ *
+ * bson_iter_overwrite_decimal128 --
+ *
+ *       Overwrites the current BSON_TYPE_DECIMAL128 field with a new value.
+ *       This is performed in-place and therefore no keys are moved.
+ *
+ * Returns:
+ *    None.
+ *
+ * Side effects:
+ *    None.
+ *
+ *--------------------------------------------------------------------------
+ */
+void
+bson_iter_overwrite_decimal128 (bson_iter_t       *iter,   /* IN */
+                                bson_decimal128_t *value)  /* IN */
+{
+   BSON_ASSERT (iter);
+
+   if (ITER_TYPE (iter) == BSON_TYPE_DECIMAL128) {
+#if BSON_BYTE_ORDER != BSON_LITTLE_ENDIAN
+      uint64_t data[2];
+      data[0] = BSON_UINT64_TO_LE (value->low);
+      data[1] = BSON_UINT64_TO_LE (value->high);
+      memcpy ((void *)(iter->raw + iter->d1), data, sizeof (data));
+#else
+      memcpy ((void *)(iter->raw + iter->d1), value, sizeof (*value));
+#endif
+   }
+}
+#endif
+
+
 /*
  *--------------------------------------------------------------------------
  *
@@ -2160,6 +2309,11 @@ bson_iter_value (bson_iter_t *iter) /* IN */
    case BSON_TYPE_INT64:
       value->value.v_int64 = bson_iter_int64 (iter);
       break;
+#ifdef BSON_EXPERIMENTAL_FEATURES
+   case BSON_TYPE_DECIMAL128:
+      bson_iter_decimal128 (iter, &(value->value.v_decimal128));
+      break;
+#endif
    case BSON_TYPE_NULL:
    case BSON_TYPE_UNDEFINED:
    case BSON_TYPE_MAXKEY:

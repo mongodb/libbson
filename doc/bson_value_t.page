@@ -89,8 +89,8 @@ typedef struct _bson_value_t
 
 value = bson_iter_value (&iter);
 
-if (value.type == BSON_TYPE_INT32) {
-   printf ("%d\n", value.value.v_int32);
+if (value->value_type == BSON_TYPE_INT32) {
+   printf ("%d\n", value->value.v_int32);
 }
 ]]></code></synopsis>
     </listing>

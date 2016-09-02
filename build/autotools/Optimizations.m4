@@ -10,7 +10,7 @@ AS_IF([test "$enable_optimizations" != "no"], [
 # Enable Link-Time-Optimization
 AS_IF([test "$enable_lto" = "yes"],
       [AS_IF([test "$c_compiler" = "gcc"],
-          [check_cc_cxx_flag([-flto], [OPTIMIZE_CFLAGS="$OPTIMIZE_CFLAGS -flto"])
+          [AX_CHECK_COMPILE_FLAG([-flto], [OPTIMIZE_CFLAGS="$OPTIMIZE_CFLAGS -flto"])
            check_link_flag([-flto], [OPTIMIZE_LDFLAGS="$OPTIMIZE_LDFLAGS -flto"])],
           [AC_MSG_WARN([LTO is not yet available on your compiler.])])])
 

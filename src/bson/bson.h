@@ -30,6 +30,9 @@
 #include "bson-atomic.h"
 #include "bson-context.h"
 #include "bson-clock.h"
+#ifdef BSON_EXPERIMENTAL_FEATURES
+#include "bson-decimal128.h"
+#endif
 #include "bson-error.h"
 #include "bson-iter.h"
 #include "bson-json.h"
@@ -136,6 +139,11 @@ BSON_BEGIN_DECLS
 
 #define BSON_APPEND_MINKEY(b,key) \
       bson_append_minkey (b, key, (int) strlen (key))
+
+#ifdef BSON_EXPERIMENTAL_FEATURES
+#define BSON_APPEND_DECIMAL128(b, key, val) \
+   bson_append_decimal128 (b, key, (int)strlen (key), val)
+#endif /* BSON_EXPERIMENTAL_FEATURES */
 
 #define BSON_APPEND_MAXKEY(b,key) \
       bson_append_maxkey (b, key, (int) strlen (key))
@@ -267,7 +275,7 @@ bson_new_from_data (const uint8_t *data,
 
 /**
  * bson_new_from_buffer:
- * @buf: A pointer to a buffer containing a serialized bson document.  Or null
+ * @buf: A pointer to a buffer containing a serialized bson document.
  * @buf_len: The length of the buffer in bytes.
  * @realloc_fun: a realloc like function
  * @realloc_fun_ctx: a context for the realloc function
@@ -364,6 +372,14 @@ bson_copy_to_excluding_noinit (const bson_t *src,
  */
 void
 bson_destroy (bson_t *bson);
+
+uint8_t *
+bson_reserve_buffer (bson_t   *bson,
+                     uint32_t  size);
+
+bool
+bson_steal (bson_t *dst,
+            bson_t *src);
 
 
 /**
@@ -767,6 +783,25 @@ bson_append_int64 (bson_t      *bson,
                    const char  *key,
                    int          key_length,
                    int64_t value);
+
+
+#ifdef BSON_EXPERIMENTAL_FEATURES
+/**
+ * bson_append_decimal128:
+ * @bson: A bson_t.
+ * @key: The key for the field.
+ * @value: The bson_decimal128_t decimal128 value.
+ *
+ * Appends a new field of type BSON_TYPE_DECIMAL128 to @bson.
+ *
+ * Returns: true if successful; false if append would overflow max size.
+ */
+bool
+bson_append_decimal128 (bson_t                  *bson,
+                        const char              *key,
+                        int                      key_length,
+                        const bson_decimal128_t *value);
+#endif
 
 
 /**

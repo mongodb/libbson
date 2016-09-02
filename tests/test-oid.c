@@ -20,8 +20,13 @@
 #define BSON_INSIDE
 #include "bson-thread-private.h"
 #undef BSON_INSIDE
+#include <ctype.h>
 #include <fcntl.h>
 #include <time.h>
+
+#ifdef HAVE_STRINGS_H
+# include <strings.h>
+#endif
 
 #include "bson-tests.h"
 #include "TestSuite.h"
@@ -37,6 +42,15 @@ static const char *gTestOids[] = {
    "eeeeeeeeeeeeeeeeeeeeeeee",
    "999999999999999999999999",
    "111111111111111111111111",
+   NULL
+};
+
+static const char *gTestOidsCase[] = {
+   "0123456789ABCDEFAFCDEF03",
+   "FCDEAB182763817236817236",
+   "FFFFFFFFFFFFFFFFFFFFFFFF",
+   "EEEEEEEEEEEEEEEEEEEEEEEE",
+   "01234567890ACBCDEFabcdef",
    NULL
 };
 
@@ -86,6 +100,30 @@ test_bson_oid_init_from_string (void)
       bson_oid_init_from_string(&oid, gTestOids[i]);
       bson_oid_to_string(&oid, str);
       assert(!strcmp(str, gTestOids[i]));
+   }
+
+   /*
+    * Test successfully parsed oids (case-insensitive).
+    */
+   for (i = 0; gTestOidsCase[i]; i++) {
+      char oid_lower[25];
+      int j;
+
+      bson_oid_init_from_string (&oid, gTestOidsCase[i]);
+      bson_oid_to_string (&oid, str);
+
+#ifdef BSON_OS_WIN32
+      assert (!_stricmp (str, gTestOidsCase[i]));
+#else
+      assert (!strcasecmp (str, gTestOidsCase[i]));
+#endif
+
+      for (j = 0; gTestOidsCase[i][j]; j++) {
+         oid_lower[j] = tolower (gTestOidsCase[i][j]);
+      }
+
+      oid_lower[24] = '\0';
+      assert (!strcmp (str, oid_lower));
    }
 
    /*
@@ -218,7 +256,7 @@ test_bson_oid_init_sequence_thread_safe (void)
 }
 
 
-#if defined(__linux__)
+#ifdef BSON_HAVE_SYSCALL_TID
 static void
 test_bson_oid_init_sequence_with_tid (void)
 {
@@ -271,7 +309,7 @@ test_bson_oid_init_with_threads (void)
       bson_context_t *contexts[N_THREADS];
       bson_thread_t threads[N_THREADS];
 
-#if defined(__linux__)
+#ifdef BSON_HAVE_SYSCALL_TID
       flags |= BSON_CONTEXT_USE_TASK_ID;
 #endif
 
@@ -316,7 +354,7 @@ test_oid_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/oid/init_from_string", test_bson_oid_init_from_string);
    TestSuite_Add (suite, "/bson/oid/init_sequence", test_bson_oid_init_sequence);
    TestSuite_Add (suite, "/bson/oid/init_sequence_thread_safe", test_bson_oid_init_sequence_thread_safe);
-#if defined(__linux__)
+#ifdef BSON_HAVE_SYSCALL_TID
    TestSuite_Add (suite, "/bson/oid/init_sequence_with_tid", test_bson_oid_init_sequence_with_tid);
 #endif
    TestSuite_Add (suite, "/bson/oid/init_with_threads", test_bson_oid_init_with_threads);

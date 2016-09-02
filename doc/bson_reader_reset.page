@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      style="function"
+      xmlns:api="http://projectmallard.org/experimental/api/"
+      xmlns:ui="http://projectmallard.org/experimental/ui/"
+      id="bson_reader_reset">
+  <info>
+    <link type="guide" xref="bson_reader_t" group="function"/>
+  </info>
+  <title>bson_reader_reset()</title>
+
+  <section id="synopsis">
+    <title>Synopsis</title>
+    <synopsis><code mime="text/x-csrc"><![CDATA[void
+bson_reader_reset (bson_reader_t *reader);
+]]></code></synopsis>
+  </section>
+
+  <section id="parameters">
+    <title>Parameters</title>
+    <table>
+      <tr><td><p><code>reader</code></p></td><td><p>A <code xref="bson_reader_t">bson_reader_t</code>.</p></td></tr>
+    </table>
+  </section>
+
+  <section id="description">
+    <title>Description</title>
+    <p>Seeks to the beginning of the underlying buffer. Valid only for a reader created from a buffer with <code xref="bson_reader_new_from_data">bson_reader_new_from_data</code>, not one created from a file, file descriptor, or handle.</p>
+  </section>
+
+</page>

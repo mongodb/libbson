@@ -30,6 +30,11 @@ INST_H_FILES = \
 	src/bson/bson-version-functions.h \
 	src/bson/bson-writer.h
 
+if ENABLE_EXPERIMENTAL_FEATURES
+INST_H_FILES += \
+	src/bson/bson-decimal128.h
+endif
+
 if OS_WIN32
 INST_H_FILES += src/bson/bson-stdint-win32.h
 else
@@ -82,6 +87,11 @@ libbson_la_SOURCES = \
 	src/bson/bson-value.c \
 	src/bson/bson-version-functions.c \
 	src/bson/bson-writer.c
+
+if ENABLE_EXPERIMENTAL_FEATURES
+libbson_la_SOURCES += \
+	src/bson/bson-decimal128.c
+endif
 
 libbson_la_LIBADD =
 

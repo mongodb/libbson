@@ -139,6 +139,7 @@ LIBBSON_1.0 {
         bson_reader_new_from_file;
         bson_reader_new_from_handle;
         bson_reader_read;
+        bson_reader_reset;
         bson_reader_set_read_func;
         bson_reader_set_destroy_func;
         bson_reader_tell;
@@ -195,3 +196,18 @@ LIBBSON_1.2 {
         bson_check_version;
         bson_mem_restore_vtable;
 } LIBBSON_1.1;
+
+LIBBSON_1.3 {
+    global:
+        bson_append_decimal128;
+        bson_decimal128_from_string;
+        bson_decimal128_to_string;
+        bson_iter_decimal128;
+        bson_iter_overwrite_decimal128;
+} LIBBSON_1.2;
+
+LIBBSON_1.4 {
+    global:
+        bson_reserve_buffer;
+        bson_steal;
+} LIBBSON_1.3;

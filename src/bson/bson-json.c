@@ -68,6 +68,7 @@ typedef enum
    BSON_JSON_LF_MINKEY,
    BSON_JSON_LF_MAXKEY,
    BSON_JSON_LF_INT64,
+   BSON_JSON_LF_DECIMAL128
 } bson_json_read_bson_state_t;
 
 
@@ -124,6 +125,11 @@ typedef union
    struct {
       int64_t value;
    } v_int64;
+#ifdef BSON_EXPERIMENTAL_FEATURES
+   struct {
+      bson_decimal128_t value;
+   } v_decimal128;
+#endif
 } bson_json_bson_data_t;
 
 
@@ -455,6 +461,7 @@ _bson_json_read_integer (void    *_ctx, /* IN */
       case BSON_JSON_LF_TYPE:
       case BSON_JSON_LF_UNDEFINED:
       case BSON_JSON_LF_INT64:
+      case BSON_JSON_LF_DECIMAL128:
       default:
          _bson_json_read_set_error (reader,
                                     "Invalid special type for integer read %d",
@@ -541,14 +548,16 @@ _bson_json_read_string (void                *_ctx, /* IN */
 #undef SSCANF
 
          break;
-      case BSON_JSON_LF_BINARY: {
-            /* TODO: error handling for pton */
+      case BSON_JSON_LF_BINARY:
+         {
             int binary_len;
             bson->bson_type_data.binary.has_binary = true;
             binary_len = b64_pton (val_w_null, NULL, 0);
+            if (binary_len < 0) {
+                goto BAD_PARSE;
+            }
             _bson_json_buf_ensure (&bson->bson_type_buf[0], binary_len + 1);
-            b64_pton ((char *)bson->bson_type_buf[2].buf,
-                      bson->bson_type_buf[0].buf, binary_len + 1);
+            b64_pton (val_w_null, bson->bson_type_buf[0].buf, binary_len + 1);
             bson->bson_type_buf[0].len = binary_len;
             break;
          }
@@ -592,6 +601,20 @@ _bson_json_read_string (void                *_ctx, /* IN */
             }
          }
          break;
+      case BSON_JSON_LF_DECIMAL128:
+#ifdef BSON_EXPERIMENTAL_FEATURES
+         {
+            bson_decimal128_t decimal128;
+            bson_decimal128_from_string (val_w_null, &decimal128);
+
+            if (bson->read_state == BSON_JSON_IN_BSON_TYPE) {
+               bson->bson_type_data.v_decimal128.value = decimal128;
+            } else {
+               goto BAD_PARSE;
+            }
+         }
+         break;
+#endif /* BSON_EXPERIMENTAL_FEATURES */
       case BSON_JSON_LF_TIMESTAMP_T:
       case BSON_JSON_LF_TIMESTAMP_I:
       case BSON_JSON_LF_UNDEFINED:
@@ -656,7 +679,8 @@ _is_known_key (const char *key, size_t len)
           IS_KEY ("$maxKey") ||
           IS_KEY ("$minKey") ||
           IS_KEY ("$timestamp") ||
-          IS_KEY ("$numberLong"));
+          IS_KEY ("$numberLong")) ||
+          IS_KEY ("$numberDecimal");
 
 #undef IS_KEY
 
@@ -698,6 +722,9 @@ _bson_json_read_map_key (void          *_ctx, /* IN */
       if HANDLE_OPTION ("$minKey", BSON_TYPE_MINKEY, BSON_JSON_LF_MINKEY) else
       if HANDLE_OPTION ("$maxKey", BSON_TYPE_MAXKEY, BSON_JSON_LF_MAXKEY) else
       if HANDLE_OPTION ("$numberLong", BSON_TYPE_INT64, BSON_JSON_LF_INT64) else
+#ifdef BSON_EXPERIMENTAL_FEATURES
+      if HANDLE_OPTION ("$numberDecimal", BSON_TYPE_DECIMAL128, BSON_JSON_LF_DECIMAL128) else
+#endif
       if (len == strlen ("$timestamp") &&
           memcmp (val, "$timestamp", len) == 0) {
          bson->bson_type = BSON_TYPE_TIMESTAMP;
@@ -818,6 +845,16 @@ _bson_json_read_append_timestamp (bson_json_reader_t      *reader, /* IN */
 }
 
 
+static void
+_bad_extended_json (bson_json_reader_t *reader)
+{
+   bson_set_error (reader->error,
+                   BSON_ERROR_JSON,
+                   BSON_JSON_ERROR_READ_CORRUPT_JS,
+                   "Invalid MongoDB extended JSON");
+}
+
+
 static int
 _bson_json_read_end_map (void *_ctx) /* IN */
 {
@@ -832,6 +869,12 @@ _bson_json_read_end_map (void *_ctx) /* IN */
    }
 
    if (bson->read_state == BSON_JSON_IN_BSON_TYPE) {
+      if (!bson->key) {
+         /* invalid, like {$numberLong: "1"} at the document top level */
+         _bad_extended_json (reader);
+         return false;
+      }
+
       bson->read_state = BSON_JSON_REGULAR;
       switch (bson->bson_type) {
       case BSON_TYPE_REGEX:
@@ -855,6 +898,12 @@ _bson_json_read_end_map (void *_ctx) /* IN */
          return bson_append_int64 (STACK_BSON_CHILD, bson->key,
                                    (int)bson->key_buf.len,
                                    bson->bson_type_data.v_int64.value);
+#ifdef BSON_EXPERIMENTAL_FEATURES
+      case BSON_TYPE_DECIMAL128:
+         return bson_append_decimal128 (STACK_BSON_CHILD, bson->key,
+                                    (int)bson->key_buf.len,
+                                    &bson->bson_type_data.v_decimal128.value);
+#endif /* BSON_EXPERIMENTAL_FEATURES */
       case BSON_TYPE_EOD:
       case BSON_TYPE_DOUBLE:
       case BSON_TYPE_UTF8:
@@ -874,12 +923,22 @@ _bson_json_read_end_map (void *_ctx) /* IN */
          break;
       }
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_TIMESTAMP_VALUES) {
+      if (!bson->key) {
+         _bad_extended_json (reader);
+         return false;
+      }
+
       bson->read_state = BSON_JSON_IN_BSON_TYPE_TIMESTAMP_ENDMAP;
 
       return _bson_json_read_append_timestamp (reader, bson);
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_TIMESTAMP_ENDMAP) {
       bson->read_state = BSON_JSON_REGULAR;
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_DATE_NUMBERLONG) {
+      if (!bson->key) {
+         _bad_extended_json (reader);
+         return false;
+      }
+
       bson->read_state = BSON_JSON_IN_BSON_TYPE_DATE_ENDMAP;
 
       return _bson_json_read_append_date_time(reader, bson);

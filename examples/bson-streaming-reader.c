@@ -170,6 +170,8 @@ main (int   argc,
     */
    fd = bson_streaming_remote_open (hostname, port);
    if (fd == -1) {
+      free (hostname);
+      free (port);
       return EXIT_FAILURE;
    }
 

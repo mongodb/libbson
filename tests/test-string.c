@@ -158,6 +158,23 @@ test_bson_strndup (void)
    s = bson_strndup("asdf", 2);
    assert(!strcmp(s, "as"));
    bson_free(s);
+
+   s = bson_strndup ("asdf", 10);
+   assert (!strcmp (s, "asdf"));
+   bson_free (s);
+
+   /* Some tests where we truncate to size n-1, n, n+1 */
+   s = bson_strndup ("asdf", 3);
+   assert (!strcmp (s, "asd"));
+   bson_free (s);
+
+   s = bson_strndup ("asdf", 4);
+   assert (!strcmp (s, "asdf"));
+   bson_free (s);
+
+   s = bson_strndup ("asdf", 5);
+   assert (!strcmp (s, "asdf"));
+   bson_free (s);
 }
 
 
@@ -182,16 +199,33 @@ typedef struct
 static void
 test_bson_ascii_strtoll (void)
 {
-   char *endptr = NULL;
    int64_t rv;
    int i;
    strtoll_test tests[] = {
+      /* input, base, expected output, expected errno */
       { "1", 10, 1, 0 },
       { "+1", 10, 1, 0 },
       { "-1", 10, -1, 0 },
       { "0", 10, 0, 0 },
+      { "0 ", 10, 0, 0 },
+      { " 0 ", 10, 0, 0 },
+      { " 0", 10, 0, 0 },
+      { " 0\"", 10, 0, 0 },
+      { "0l", 10, 0, 0 },
+      { "0l ", 10, 0, 0 },
+      { "0u", 10, 0, 0 },
+      { "0u ", 10, 0, 0 },
+      { "0L", 10, 0, 0 },
+      { "0L ", 10, 0, 0 },
+      { "0U", 10, 0, 0 },
+      { "0U ", 10, 0, 0 },
       { "-0", 10, 0, 0 },
       { "+0", 10, 0, 0 },
+      { "010", 8, 8, 0 },
+      { "08", 8, 0, EINVAL },
+      { "010", 10, 10, 0 },
+      { "010", 8, 8, 0 },
+      { "010", 0, 8, 0 },  
       { "68719476736", 10, 68719476736, 0 },
       { "-68719476736", 10, -68719476736, 0 },
       { "+68719476736", 10, 68719476736, 0 },
@@ -200,6 +234,7 @@ test_bson_ascii_strtoll (void)
       { "   4611686018427387904LL", 10, 4611686018427387904LL, 0 },
       { " -4611686018427387904LL ", 10, -4611686018427387904LL, 0 },
       { "0x1000000000", 16, 68719476736, 0 },
+      { "0x1000000000", 0, 68719476736, 0 },
       { "-0x1000000000", 16, -68719476736, 0 },
       { "+0x1000000000", 16, 68719476736, 0 },
       { "01234", 8, 668, 0 },
@@ -210,9 +245,8 @@ test_bson_ascii_strtoll (void)
 
    for (i = 0; tests [i].str; i++) {
       errno = 0;
-      endptr = NULL;
 
-      rv = bson_ascii_strtoll (tests [i].str, &endptr, tests [i].base);
+      rv = bson_ascii_strtoll (tests [i].str, NULL, tests [i].base);
 
 #if 0
       fprintf (stderr, "rv=%"PRId64" errno=%d\n", rv, errno);

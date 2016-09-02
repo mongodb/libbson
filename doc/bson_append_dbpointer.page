@@ -28,7 +28,7 @@ bson_append_dbpointer (bson_t           *bson,
       <tr><td><p>key</p></td><td><p>An ASCII C string containing the name of the field.</p></td></tr>
       <tr><td><p>key_length</p></td><td><p>The length of <code>key</code> in bytes, or -1 to determine the length with <code>strlen()</code>.</p></td></tr>
       <tr><td><p>collection</p></td><td><p>The target collection name.</p></td></tr>
-      <tr><td><p>oid</p></td><td><p>The target document identifer.</p></td></tr>
+      <tr><td><p>oid</p></td><td><p>The target document identifier.</p></td></tr>
     </table>
   </section>
 

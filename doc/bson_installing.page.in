@@ -1,6 +1,7 @@
 <page xmlns="http://projectmallard.org/1.0/"
       type="topic"
       id="installing">
+  <info><link type="guide" xref="index#installation" /></info>
   <title>Installing Libbson</title>
 
   <p>The following guide will step you through the process of downloading, building, and installing the current release of the Libbson.</p>
@@ -10,7 +11,7 @@
 
     <title>Supported Platforms</title>
 
-    <p>Libbson is continuously tested on GNU/Linux, Windows 7, Mac OS X 10.10, and Solaris 11 (Intel and Sparc). GCC, Clang, and Visual Studio 2013 compilers are continuously tested.</p>
+    <p>Libbson is continuously tested on GNU/Linux, Windows 7, Mac OS X 10.10, and Solaris 11 (Intel and Sparc), with GCC, Clang, and Visual Studio 2010, 2013, and 2015.</p>
     <p>The library supports the following operating systems and CPU architectures:</p>
 
     <table>
@@ -41,7 +42,7 @@
           <list>
             <item><p>GCC 4.1 and newer</p></item>
             <item><p>Clang 3.3 and newer</p></item>
-            <item><p>Microsoft Visual Studio 2013 and newer</p></item>
+            <item><p>Microsoft Visual Studio 2010 and newer</p></item>
             <item><p><link href="http://www.oracle.com/technetwork/server-storage/solarisstudio/downloads/index.html">Oracle Solaris Studio 12</link></p></item>
             <item><p>MinGW</p></item>
           </list>
@@ -49,6 +50,21 @@
       </tr>
     </table>
 
+  </section>
+
+  <section id="package-manager">
+    <info><link type="guide" xref="index#installation" /></info>
+    <title>Install with a Package Manager</title>
+    <p>The libbson package is available on recent versions of Debian and Ubuntu.</p>
+    <screen><output style="prompt">$ </output><input>apt-get install libbson-1.0</input></screen>
+    <p>For RedHat-like systems, use Remi Collet's well-maintained RPMs for libbson. Commands to enable Remi's repository and install libbson depend on your exact system. For example, on CentOS 6:</p>
+    <screen><output style="prompt">$ </output><input>yum install http://rpms.remirepo.net/enterprise/remi-release-6.rpm</input>
+<output style="prompt">$ </output><input>yum install yum-utils</input>
+<output style="prompt">$ </output><input>yum-config-manager --enable remi</input>
+<output style="prompt">$ </output><input>yum update</input>
+<output style="prompt">$ </output><input>yum install libbson</input></screen>
+
+    <p>The <link href="http://rpms.remirepo.net/wizard/">Configuration Wizard for Remi's RPM Repository</link> generates detailed instructions for your system.</p>
   </section>
 
   <section id="build-yourself">
@@ -77,17 +93,18 @@
 
 Build configuration:
   Enable debugging (slow)                          : no
+  Enable extra alignment (required for 1.0 ABI)    : no
   Compile with debug symbols (slow)                : no
   Enable GCC build optimization                    : yes
   Enable automatic binary hardening                : yes
   Code coverage support                            : no
   Cross Compiling                                  : no
-  Libbson                                          : bundled
+  Big endian                                       : no
+  Link Time Optimization (experimental)            : no
 
 Documentation:
   man                                              : yes
-  HTML                                             : yes
-  Yelp                                             : no</output></screen>
+  HTML                                             : no</output></screen>
     <p>We can now build libbson with the venerable <code>make</code> program.</p>
 
     <screen><output style="prompt">$ </output><input>make</input></screen>
@@ -115,13 +132,13 @@ Documentation:
     <p>Let's start by generating Visual Studio project files for libbson. The following assumes we are compiling for 64-bit Windows using Visual Studio 2010 Express which can be freely downloaded from Microsoft.</p>
 
     <screen><output style="prompt">&gt; </output><input>cd libbson-@BSON_RELEASED_VERSION@</input>
-<output style="prompt">&gt; </output><input>cmake -G "Visual Studio 2010 Win64" "-DCMAKE_INSTALL_PREFIX=C:\libbson"</input>
+<output style="prompt">&gt; </output><input>cmake -G "Visual Studio 14 2015 Win64" "-DCMAKE_INSTALL_PREFIX=C:\libbson"</input>
 <output style="prompt">&gt; </output><input>msbuild.exe ALL_BUILD.vcxproj</input>
 <output style="prompt">&gt; </output><input>msbuild.exe INSTALL.vcxproj</input></screen>
 
     <p>You should now see libbson installed in <code>C:\libbson</code></p>.
     <p>You can disable building the tests with:</p>.
-    <screen><output style="prompt">&gt; </output><input>cmake -G "Visual Studio 2010 Win64" "-DCMAKE_INSTALL_PREFIX=C:\libbson" "-DENABLE_TESTS:BOOL=OFF"</input></screen>
+    <screen><output style="prompt">&gt; </output><input>cmake -G "Visual Studio 14 2015 Win64" "-DCMAKE_INSTALL_PREFIX=C:\libbson" "-DENABLE_TESTS:BOOL=OFF"</input></screen>
   </section>
 
 </page>

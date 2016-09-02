@@ -5,6 +5,9 @@
       xmlns:api="http://projectmallard.org/experimental/api/"
       xmlns:ui="http://projectmallard.org/experimental/ui/"
       id="bson_uint32_to_string">
+  <info>
+    <link type="guide" xref="index#api-reference" />
+  </info>
   <title>bson_uint32_to_string()</title>
 
   <section id="synopsis">
@@ -15,6 +18,7 @@ bson_uint32_to_string (uint32_t     value,
                        char        *str,
                        size_t       size);
 ]]></code></synopsis>
+    <p>See <link xref="performance#keys" /> for example usage.</p>
   </section>
 
   <section id="parameters">
@@ -32,7 +36,7 @@ bson_uint32_to_string (uint32_t     value,
     <p>Converts <code>value</code> to a string.</p>
     <p>If <code>value</code> is from 0 to 999, it will use a constant string in the data section of the library.</p>
     <p>If not, a string will be formatted using <code>str</code> and <code>snprintf()</code>.</p>
-    <p><code>strptr</code> will always be set. It will either point to <code>str</code> or a constant string. You will want to use this as your key.</p>
+    <p><code>strptr</code> will always be set. It will either point to <code>str</code> or a constant string. Use this as your key.</p>
   </section>
 
   <section id="return">
