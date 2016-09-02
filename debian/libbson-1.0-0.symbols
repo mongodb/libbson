@@ -2,6 +2,8 @@ libbson-1.0.so.0 libbson-1.0-0 #MINVER#
  LIBBSON_1.0@LIBBSON_1.0 1.2.1
  LIBBSON_1.1@LIBBSON_1.1 1.2.1
  LIBBSON_1.2@LIBBSON_1.2 1.2.1
+ LIBBSON_1.3@LIBBSON_1.3 1.4.1
+ LIBBSON_1.4@LIBBSON_1.4 1.4.1
  bcon_append@LIBBSON_1.0 1.2.1
  bcon_append_ctx@LIBBSON_1.0 1.2.1
  bcon_append_ctx_init@LIBBSON_1.0 1.2.1
@@ -143,15 +145,18 @@ libbson-1.0.so.0 libbson-1.0-0 #MINVER#
  bson_reader_new_from_file@LIBBSON_1.0 1.2.1
  bson_reader_new_from_handle@LIBBSON_1.0 1.2.1
  bson_reader_read@LIBBSON_1.0 1.2.1
+ bson_reader_reset@LIBBSON_1.0 1.4.1
  bson_reader_set_destroy_func@LIBBSON_1.0 1.2.1
  bson_reader_set_read_func@LIBBSON_1.0 1.2.1
  bson_reader_tell@LIBBSON_1.0 1.2.1
  bson_realloc@LIBBSON_1.0 1.2.1
  bson_realloc_ctx@LIBBSON_1.0 1.2.1
  bson_reinit@LIBBSON_1.0 1.2.1
+ bson_reserve_buffer@LIBBSON_1.4 1.4.1
  bson_set_error@LIBBSON_1.0 1.2.1
  bson_sized_new@LIBBSON_1.0 1.2.1
  bson_snprintf@LIBBSON_1.0 1.2.1
+ bson_steal@LIBBSON_1.4 1.4.1
  bson_strdup@LIBBSON_1.0 1.2.1
  bson_strdup_printf@LIBBSON_1.0 1.2.1
  bson_strdupv_printf@LIBBSON_1.0 1.2.1
