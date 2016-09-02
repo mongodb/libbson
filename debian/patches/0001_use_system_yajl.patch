@@ -1,7 +1,9 @@
 Author: A. Jesse Jiryu Davis <jesse@mongodb.com>
 Description: Use system yajl instead of yajl embedded with libbson
---- libbson-debian.orig/src/bson/bson-json.c
-+++ libbson-debian/src/bson/bson-json.c
+Index: libbson/src/bson/bson-json.c
+===================================================================
+--- libbson.orig/src/bson/bson-json.c
++++ libbson/src/bson/bson-json.c
 @@ -26,8 +26,7 @@
  #include "bson-iso8601-private.h"
  #include "b64_pton.h"
@@ -12,7 +14,7 @@ Description: Use system yajl instead of yajl embedded with libbson
  
  #ifdef _WIN32
  # include <io.h>
-@@ -160,6 +159,7 @@
+@@ -166,6 +165,7 @@ struct _bson_json_reader_t
  {
     bson_json_reader_producer_t  producer;
     bson_json_reader_bson_t      bson;
@@ -20,7 +22,7 @@ Description: Use system yajl instead of yajl embedded with libbson
     yajl_handle                  yh;
     bson_error_t                *error;
  };
-@@ -965,6 +965,34 @@
+@@ -1024,6 +1024,34 @@ static yajl_callbacks read_cbs = {
  };
  
  
@@ -55,7 +57,7 @@ Description: Use system yajl instead of yajl embedded with libbson
  static int
  _bson_json_read_parse_error (bson_json_reader_t *reader, /* IN */
                               yajl_status         ys,     /* IN */
-@@ -999,9 +1027,7 @@
+@@ -1058,9 +1086,7 @@ _bson_json_read_parse_error (bson_json_r
     }
  
     p->bytes_parsed += yajl_get_bytes_consumed (yh);
@@ -66,7 +68,7 @@ Description: Use system yajl instead of yajl embedded with libbson
  
     return r;
  }
-@@ -1047,7 +1073,7 @@
+@@ -1106,7 +1132,7 @@ bson_json_reader_read (bson_json_reader_
     BSON_ASSERT (bson);
  
     p = &reader->producer;
@@ -75,7 +77,7 @@ Description: Use system yajl instead of yajl embedded with libbson
  
     reader->bson.bson = bson;
     reader->bson.n = -1;
-@@ -1133,13 +1159,8 @@
+@@ -1192,13 +1218,8 @@ bson_json_reader_new (void
     p->buf_size = buf_size ? buf_size : BSON_JSON_DEFAULT_BUF_SIZE;
     p->buf = bson_malloc (p->buf_size);
  
@@ -91,7 +93,7 @@ Description: Use system yajl instead of yajl embedded with libbson
     return r;
  }
  
-@@ -1162,7 +1183,7 @@
+@@ -1221,7 +1242,7 @@ bson_json_reader_destroy (bson_json_read
        bson_free (b->bson_type_buf[i].buf);
     }
  
@@ -100,9 +102,11 @@ Description: Use system yajl instead of yajl embedded with libbson
  
     bson_free (reader);
  }
---- libbson-debian.orig/tests/test-json.c
-+++ libbson-debian/tests/test-json.c
-@@ -500,6 +500,30 @@
+Index: libbson/tests/test-json.c
+===================================================================
+--- libbson.orig/tests/test-json.c
++++ libbson/tests/test-json.c
+@@ -566,6 +566,30 @@ test_bson_json_read_invalid_json(void)
     assert (!b);
  }
  
@@ -133,17 +137,19 @@ Description: Use system yajl instead of yajl embedded with libbson
  static ssize_t
  test_bson_json_read_bad_cb_helper(void *_ctx, uint8_t * buf, size_t len)
  {
-@@ -827,6 +851,7 @@
-    TestSuite_Add (suite, "/bson/json/date", test_bson_json_date);
+@@ -981,6 +1005,7 @@ test_json_install (TestSuite *suite)
     TestSuite_Add (suite, "/bson/json/read/missing_complex", test_bson_json_read_missing_complex);
+    TestSuite_Add (suite, "/bson/json/read/invalid_binary", test_bson_json_read_invalid_binary);
     TestSuite_Add (suite, "/bson/json/read/invalid_json", test_bson_json_read_invalid_json);
 +   TestSuite_Add (suite, "/bson/json/read/multiple_errors", test_bson_json_multiple_errors);
     TestSuite_Add (suite, "/bson/json/read/bad_cb", test_bson_json_read_bad_cb);
     TestSuite_Add (suite, "/bson/json/read/invalid", test_bson_json_read_invalid);
-    TestSuite_Add (suite, "/bson/json/read/file", test_json_reader_new_from_file);
---- libbson-debian.orig/src/Makefile.am
-+++ libbson-debian/src/Makefile.am
-@@ -3,7 +3,7 @@
+ #ifdef BSON_EXPERIMENTAL_FEATURES
+Index: libbson/src/Makefile.am
+===================================================================
+--- libbson.orig/src/Makefile.am
++++ libbson/src/Makefile.am
+@@ -3,7 +3,7 @@ lib_LTLIBRARIES += libbson-1.0.la
  libbson_1_0_la_SOURCES =
  libbson_1_0_la_LIBADD = \
  	libbson.la \
@@ -152,7 +158,7 @@ Description: Use system yajl instead of yajl embedded with libbson
  	-lm
  libbson_1_0_la_LDFLAGS = \
  	$(OPTIMIZE_LDFLAGS) \
-@@ -18,7 +18,6 @@
+@@ -18,7 +18,6 @@ libbson_1_0_la_LDFLAGS += -export-symbol
  endif
  
  include src/bson/Makefile.am
@@ -160,9 +166,11 @@ Description: Use system yajl instead of yajl embedded with libbson
  
  pkgconfigdir = $(libdir)/pkgconfig
  pkgconfig_DATA = $(top_builddir)/src/libbson-1.0.pc
---- libbson-debian.orig/src/bson/Makefile.am
-+++ libbson-debian/src/bson/Makefile.am
-@@ -50,7 +50,6 @@
+Index: libbson/src/bson/Makefile.am
+===================================================================
+--- libbson.orig/src/bson/Makefile.am
++++ libbson/src/bson/Makefile.am
+@@ -55,7 +55,6 @@ libbson_la_CPPFLAGS = \
  	-DBSON_COMPILATION \
  	-I$(top_srcdir)/src \
  	-I$(top_srcdir)/src/bson \
