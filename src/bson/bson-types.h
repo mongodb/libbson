@@ -195,6 +195,7 @@ typedef struct
  * %BSON_VALIDATE_DOLLAR_KEYS: Check that keys do not start with $.
  * %BSON_VALIDATE_DOT_KEYS: Check that keys do not contain a period.
  * %BSON_VALIDATE_UTF8_ALLOW_NULL: Allow NUL bytes in UTF-8 text.
+ * %BSON_VALIDATE_EMPTY_KEYS: Prohibit zero-length field names
  */
 typedef enum
 {
@@ -203,6 +204,7 @@ typedef enum
    BSON_VALIDATE_DOLLAR_KEYS = (1 << 1),
    BSON_VALIDATE_DOT_KEYS = (1 << 2),
    BSON_VALIDATE_UTF8_ALLOW_NULL = (1 << 3),
+   BSON_VALIDATE_EMPTY_KEYS = (1 << 4),
 } bson_validate_flags_t;
 
 

@@ -995,6 +995,14 @@ test_bson_validate (void)
    assert(bson_validate (b, BSON_VALIDATE_NONE, &offset));
    bson_destroy(b);
 
+   b = get_bson("empty_key.bson");
+   assert(bson_validate (b, BSON_VALIDATE_NONE |
+                            BSON_VALIDATE_UTF8 |
+                            BSON_VALIDATE_DOLLAR_KEYS |
+                            BSON_VALIDATE_DOT_KEYS, &offset));
+   assert(!bson_validate (b, BSON_VALIDATE_EMPTY_KEYS, &offset));
+   bson_destroy(b);
+
 #define ENSURE_FAILURE(file) \
    b = get_bson(file); \
    assert(!bson_validate(b, BSON_VALIDATE_NONE, &offset)); \

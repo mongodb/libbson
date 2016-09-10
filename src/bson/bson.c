@@ -3002,6 +3002,13 @@ _bson_iter_validate_before (const bson_iter_t *iter,
 {
    bson_validate_state_t *state = data;
 
+   if ((state->flags & BSON_VALIDATE_EMPTY_KEYS)) {
+      if (key[0] == '\0') {
+         state->err_offset = iter->off;
+         return true;
+      }
+   }
+
    if ((state->flags & BSON_VALIDATE_DOLLAR_KEYS)) {
       if (key[0] == '$') {
          if (state->phase == BSON_VALIDATE_PHASE_LF_REF_KEY &&

@@ -19,6 +19,9 @@ New features and bug fixes:
     * BCON_DECIMAL128()
     See the documentations for further details
 
+  * New flag BSON_VALIDATE_EMPTY_KEYS causes bson_validate to fail if a document
+    contains zero-length field names.
+
 
 Thanks to everyone who contributed to the development of this release.
 
