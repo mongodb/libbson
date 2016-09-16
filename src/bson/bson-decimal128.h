@@ -56,24 +56,6 @@ bson_decimal128_from_string (const char        *string,
                              bson_decimal128_t *dec);
 
 
-#ifdef BSON_HAVE_DECIMAL128
-static _Decimal128 BSON_INLINE
-bson_decimal128_to_Decimal128 (bson_decimal128_t *dec)
-{
-   _Decimal128 decimal128;
-   memcpy (&decimal128, dec, sizeof(decimal128));
-   return decimal128;
-}
-
-
-static void BSON_INLINE
-bson_Decimal128_to_decimal128 (_Decimal128        decimal128,
-                               bson_decimal128_t *dec)
-{
-   memcpy (dec, &decimal128, sizeof(decimal128));
-}
-#endif /* BSON_HAVE_DECIMAL128 */
-
 BSON_END_DECLS
 
 

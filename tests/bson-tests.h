@@ -47,15 +47,6 @@ BSON_BEGIN_DECLS
    } while (0)
 
 
-static __inline int
-should_run_decimal_test (void) {
-#ifdef BSON_HAVE_DECIMAL128
-   return 1;
-#else
-   return 0;
-#endif
-}
-
 #ifdef BSON_OS_WIN32
 #include <stdarg.h>
 #include <share.h>
