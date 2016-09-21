@@ -93,7 +93,10 @@ BSON_BEGIN_DECLS
 #define _SSIZE_T_DEFINED
 typedef SSIZE_T ssize_t;
 #endif
+#ifndef _SIZE_T_DEFINED
+#define _SIZE_T_DEFINED
 typedef SIZE_T size_t;
+#endif
 #pragma warning(default : 4142)
 #else
 /*
