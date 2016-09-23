@@ -34,7 +34,8 @@ bsondocdir = ${docdir}
 bsondoc_DATA = \
 	COPYING \
 	NEWS \
-	README
+	README \
+	THIRD_PARTY_NOTICES
 
 EXTRA_DIST += $(bsondoc_DATA)
 
