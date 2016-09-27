@@ -32,7 +32,10 @@ Farewell,
 Libbson-1.4.1
 =============
 
-A pseudo-release of Libbson only to fix the Debian package.
+This release improves the HTML documentation's Makefile.
+
+-- A. Jesse Jiryu Davis
+
 
 Libbson-1.4.0
 =============
