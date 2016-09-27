@@ -10,36 +10,19 @@ functions:
   "upload docs" :
     - command: shell.exec
       params:
-        working_dir: "libbson"
-        script: |
-           # Since we cannot conditionally define evergreen expansions, but we can
-           # load expansions from external file, we dynamically generate a file
-           # containing the exact folder name we'd like to upload the docs to,
-           # depending on if its a patch build or regular evergreen build
-           if [ "${is_patch}" = "true" ]; then
-              VERSION=$(git describe)-patch-${version_id}
-           else
-              VERSION=latest
-           fi
-           echo "docspath: $VERSION" > expansion.yml
-    - command: expansions.update
-      params:
-        file: libbson/expansion.yml
-    - command: shell.exec
-      params:
         silent: true
         working_dir: "libbson"
         script: |
            export AWS_ACCESS_KEY_ID=${aws_key}
            export AWS_SECRET_ACCESS_KEY=${aws_secret}
            sudo apt-get install -y awscli
-           aws s3 cp doc/html s3://mciuploads/${project}/docs/${docspath} --recursive --acl public-read --region us-east-1
+           aws s3 cp doc/html s3://mciuploads/${project}/docs/${CURRENT_VERSION} --recursive --acl public-read --region us-east-1
     - command: s3.put
       params:
         aws_key: ${aws_key}
         aws_secret: ${aws_secret}
         local_file:  ${project}/doc/html/index.html
-        remote_file: ${project}/docs/${docspath}/index.html
+        remote_file: ${project}/docs/${CURRENT_VERSION}/index.html
         bucket: mciuploads
         permissions: public-read
         content_type: text/html
@@ -75,9 +58,26 @@ functions:
         directory: "libbson"
     - command: shell.exec
       params:
+        working_dir: "libbson"
+        script: |
+           # Since we cannot conditionally define evergreen expansions, but we can
+           # load expansions from external file, we dynamically generate a file
+           # containing the exact folder name we'd like to upload the docs to,
+           # depending on if its a patch build or regular evergreen build
+           if [ "${is_patch}" = "true" ]; then
+              VERSION=$(git describe)-patch-${version_id}
+           else
+              VERSION=latest
+           fi
+           echo "CURRENT_VERSION: $VERSION" > expansion.yml
+    - command: expansions.update
+      params:
+        file: libbson/expansion.yml
+    - command: shell.exec
+      params:
         continue_on_err: true
         # Must be http as RHEL55 has https issues
-        script: "set -o xtrace; rm -f *.tar.gz; curl http://s3.amazonaws.com/mciuploads/libbson/${revision}/${version_id}/artifacts/libbson.tar.gz --output libbson.tar.gz --silent --max-time 120 --fail"
+        script: "set -o xtrace; rm -f *.tar.gz; curl http://s3.amazonaws.com/mciuploads/libbson/libbson-${CURRENT_VERSION}.tar.gz --output libbson.tar.gz --silent --max-time 120 --fail"
 
   "upload release":
     - command: shell.exec
@@ -88,7 +88,7 @@ functions:
         aws_key: ${aws_key}
         aws_secret: ${aws_secret}
         local_file: libbson.tar.gz
-        remote_file: libbson/${revision}/${version_id}/artifacts/libbson.tar.gz
+        remote_file: libbson/libbson-${CURRENT_VERSION}.tar.gz
         bucket: mciuploads
         permissions: public-read
         content_type: ${content_type|application/x-gzip}
