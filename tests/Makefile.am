@@ -91,6 +91,7 @@ EXTRA_DIST += \
 	tests/binary/dollarquery.bson \
 	tests/binary/dotkey.bson \
 	tests/binary/dotquery.bson \
+	tests/binary/empty_key.bson \
 	tests/binary/eurokey.bson \
 	tests/binary/overflow1.bson \
 	tests/binary/overflow2.bson \
