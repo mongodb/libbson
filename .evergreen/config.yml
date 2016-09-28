@@ -452,6 +452,18 @@ buildvariants:
     - name: "debug-compile-c99"
     - name: "debug-compile-c11"
 
+- name: ubuntu1604-arm64
+  display_name: "Ubuntu 16.04 ARM64"
+  expansions:
+    CC: "gcc"
+  run_on:
+  - ubuntu1604-arm64-large
+  - ubuntu1604-arm64-small
+  tasks:
+    - name: "debug-compile"
+    - name: "debug-compile-c99"
+    - name: "debug-compile-c11"
+
 ## OSX
 - name: os-x-1010-64
   display_name: "OSX 10.10 clang 64"
