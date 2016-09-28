@@ -440,6 +440,18 @@ buildvariants:
     - name: "debug-compile-c99"
     - name: "debug-compile-c11"
 
+- name: ubuntu1604-power8
+  display_name: "Ubuntu 16.04 Power8"
+  expansions:
+    CC: gcc
+  run_on:
+    - rhel71-power8-build
+    - rhel71-power8-test
+  tasks:
+    - name: "debug-compile"
+    - name: "debug-compile-c99"
+    - name: "debug-compile-c11"
+
 ## OSX
 - name: os-x-1010-64
   display_name: "OSX 10.10 clang 64"
