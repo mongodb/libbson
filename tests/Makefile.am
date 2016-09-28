@@ -10,7 +10,7 @@ test_libbson_SOURCES = \
 	tests/test-bson.c \
 	tests/test-endian.c \
 	tests/test-clock.c \
-        tests/test-decimal128.c \
+	tests/test-decimal128.c \
 	tests/test-error.c \
 	tests/test-iso8601.c \
 	tests/test-iter.c \
@@ -18,7 +18,7 @@ test_libbson_SOURCES = \
 	tests/test-oid.c \
 	tests/test-reader.c \
 	tests/test-string.c \
-        tests/test-type.c \
+	tests/test-type.c \
 	tests/test-utf8.c \
 	tests/test-value.c \
 	tests/test-version.c \
@@ -79,8 +79,8 @@ debug: $(TEST_PROGS)
 DISTCLEANFILES += test.log
 
 CLEANFILES += \
-              tests/*.gcda \
-              tests/*.gcno
+	tests/*.gcda \
+	tests/*.gcno
 
 
 EXTRA_DIST += \
@@ -134,7 +134,6 @@ EXTRA_DIST += \
 	tests/binary/test38.bson \
 	tests/binary/test39.bson \
 	tests/binary/test3.bson \
-	tests/binary/test4.bson \
 	tests/binary/test40.bson \
 	tests/binary/test41.bson \
 	tests/binary/test42.bson \
@@ -145,7 +144,7 @@ EXTRA_DIST += \
 	tests/binary/test47.bson \
 	tests/binary/test48.bson \
 	tests/binary/test49.bson \
-	tests/binary/test5.bson \
+	tests/binary/test4.bson \
 	tests/binary/test50.bson \
 	tests/binary/test51.bson \
 	tests/binary/test52.bson \
@@ -155,6 +154,7 @@ EXTRA_DIST += \
 	tests/binary/test56.bson \
 	tests/binary/test57.bson \
 	tests/binary/test58.bson \
+	tests/binary/test5.bson \
 	tests/binary/test6.bson \
 	tests/binary/test7.bson \
 	tests/binary/test8.bson \
