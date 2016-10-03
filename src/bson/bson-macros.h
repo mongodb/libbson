@@ -71,6 +71,8 @@
 #  else
 #    define BSON_API __declspec(dllimport)
 #  endif
+#elif defined(__GNUC__)
+#  define BSON_API __attribute__ ((visibility ("default")))
 #else
 #  define BSON_API
 #endif

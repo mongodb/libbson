@@ -187,16 +187,19 @@ BSON_BEGIN_DECLS
  *
  * Returns: A newly allocated bson_t that should be freed with bson_destroy().
  */
+BSON_API
 bson_t *
 bson_new (void);
 
 
+BSON_API
 bson_t *
 bson_new_from_json (const uint8_t *data,
                     ssize_t        len,
                     bson_error_t  *error);
 
 
+BSON_API
 bool
 bson_init_from_json (bson_t        *bson,
                      const char    *data,
@@ -216,6 +219,7 @@ bson_init_from_json (bson_t        *bson,
  *
  * Returns: true if initialized successfully; otherwise false.
  */
+BSON_API
 bool
 bson_init_static (bson_t        *b,
                   const uint8_t *data,
@@ -235,6 +239,7 @@ bson_init_static (bson_t        *b,
  * You must call bson_destroy() with @b to release resources when you are done
  * using @b.
  */
+BSON_API
 void
 bson_init (bson_t *b);
 
@@ -248,6 +253,7 @@ bson_init (bson_t *b);
  * This is useful in cases where you want to reduce malloc overhead while
  * building many documents.
  */
+BSON_API
 void
 bson_reinit (bson_t *b);
 
@@ -264,6 +270,7 @@ bson_reinit (bson_t *b);
  *   If the first four bytes (little-endian) of data do not match @length,
  *   then NULL will be returned.
  */
+BSON_API
 bson_t *
 bson_new_from_data (const uint8_t *data,
                     size_t         length);
@@ -282,6 +289,7 @@ bson_new_from_data (const uint8_t *data,
  * Returns: A newly allocated bson_t that should be freed with bson_destroy().
  *          The underlying buffer will be used and not be freed in destroy.
  */
+BSON_API
 bson_t *
 bson_new_from_buffer (uint8_t           **buf,
                       size_t             *buf_len,
@@ -298,6 +306,7 @@ bson_new_from_buffer (uint8_t           **buf,
  *
  * Returns: A newly allocated bson_t that should be freed with bson_destroy().
  */
+BSON_API
 bson_t *
 bson_sized_new (size_t size);
 
@@ -311,6 +320,7 @@ bson_sized_new (size_t size);
  *
  * Returns: A newly allocated bson_t that should be free'd with bson_destroy()
  */
+BSON_API
 bson_t *
 bson_copy (const bson_t *bson);
 
@@ -322,6 +332,7 @@ bson_copy (const bson_t *bson);
  *
  * Initializes @dst and copies the content from @src into @dst.
  */
+BSON_API
 void
 bson_copy_to (const bson_t *src,
               bson_t       *dst);
@@ -338,6 +349,7 @@ bson_copy_to (const bson_t *src,
  * more fields in a bson_t. Note that bson_init() will be called
  * on dst.
  */
+BSON_API
 void
 bson_copy_to_excluding (const bson_t *src,
                         bson_t       *dst,
@@ -354,6 +366,7 @@ bson_copy_to_excluding (const bson_t *src,
  * on the dst. This version should be preferred in new code, but the
  * old function is left for backwards compatibility.
  */
+BSON_API
 void
 bson_copy_to_excluding_noinit (const bson_t *src,
                                bson_t       *dst,
@@ -366,13 +379,16 @@ bson_copy_to_excluding_noinit (const bson_t *src,
  *
  * Frees the resources associated with @bson.
  */
+BSON_API
 void
 bson_destroy (bson_t *bson);
 
+BSON_API
 uint8_t *
 bson_reserve_buffer (bson_t   *bson,
                      uint32_t  size);
 
+BSON_API
 bool
 bson_steal (bson_t *dst,
             bson_t *src);
@@ -397,6 +413,7 @@ bson_steal (bson_t *dst,
  * Returns: a buffer owned by the caller if @steal is true. Otherwise NULL.
  *    If there was an error, NULL is returned.
  */
+BSON_API
 uint8_t *
 bson_destroy_with_steal (bson_t   *bson,
                          bool      steal,
@@ -411,6 +428,7 @@ bson_destroy_with_steal (bson_t   *bson,
  *
  * Returns: A buffer that should not be modified or freed.
  */
+BSON_API
 const uint8_t *
 bson_get_data (const bson_t *bson);
 
@@ -421,6 +439,7 @@ bson_get_data (const bson_t *bson);
  *
  * Counts the number of elements found in @bson.
  */
+BSON_API
 uint32_t
 bson_count_keys (const bson_t *bson);
 
@@ -436,6 +455,7 @@ bson_count_keys (const bson_t *bson);
  *
  * Returns: true if @key exists in @bson; otherwise false.
  */
+BSON_API
 bool
 bson_has_field (const bson_t *bson,
                 const char   *key);
@@ -451,6 +471,7 @@ bson_has_field (const bson_t *bson,
  *
  * Returns: Less than zero, zero, or greater than zero.
  */
+BSON_API
 int
 bson_compare (const bson_t *bson,
               const bson_t *other);
@@ -464,6 +485,7 @@ bson_compare (const bson_t *bson,
  *
  * Returns: true if equal; otherwise false.
  */
+BSON_API
 bool
 bson_equal (const bson_t *bson,
             const bson_t *other);
@@ -479,6 +501,7 @@ bson_equal (const bson_t *bson,
  *
  * Returns: true if @bson is valid; otherwise false and @offset is set.
  */
+BSON_API
 bool
 bson_validate (const bson_t         *bson,
                bson_validate_flags_t flags,
@@ -499,17 +522,20 @@ bson_validate (const bson_t         *bson,
  *
  * Returns: A newly allocated string that should be freed with bson_free().
  */
+BSON_API
 char *
 bson_as_json (const bson_t *bson,
               size_t       *length);
 
 
 /* like bson_as_json() but for outermost arrays. */
+BSON_API
 char *
 bson_array_as_json (const bson_t *bson,
                     size_t       *length);
 
 
+BSON_API
 bool
 bson_append_value (bson_t             *bson,
                    const char         *key,
@@ -529,6 +555,7 @@ bson_append_value (bson_t             *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_array (bson_t       *bson,
                    const char   *key,
@@ -548,6 +575,7 @@ bson_append_array (bson_t       *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_binary (bson_t         *bson,
                     const char     *key,
@@ -567,6 +595,7 @@ bson_append_binary (bson_t         *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_bool (bson_t     *bson,
                   const char *key,
@@ -585,6 +614,7 @@ bson_append_bool (bson_t     *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_code (bson_t     *bson,
                   const char *key,
@@ -604,6 +634,7 @@ bson_append_code (bson_t     *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_code_with_scope (bson_t       *bson,
                              const char   *key,
@@ -624,6 +655,7 @@ bson_append_code_with_scope (bson_t       *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_dbpointer (bson_t           *bson,
                        const char       *key,
@@ -641,6 +673,7 @@ bson_append_dbpointer (bson_t           *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_double (bson_t     *bson,
                     const char *key,
@@ -659,6 +692,7 @@ bson_append_double (bson_t     *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_document (bson_t       *bson,
                       const char   *key,
@@ -683,6 +717,7 @@ bson_append_document (bson_t       *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_document_begin (bson_t     *bson,
                             const char *key,
@@ -700,6 +735,7 @@ bson_append_document_begin (bson_t     *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_document_end (bson_t *bson,
                           bson_t *child);
@@ -725,6 +761,7 @@ bson_append_document_end (bson_t *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_array_begin (bson_t     *bson,
                          const char *key,
@@ -742,6 +779,7 @@ bson_append_array_begin (bson_t     *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_array_end (bson_t *bson,
                        bson_t *child);
@@ -757,6 +795,7 @@ bson_append_array_end (bson_t *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_int32 (bson_t      *bson,
                    const char  *key,
@@ -774,6 +813,7 @@ bson_append_int32 (bson_t      *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_int64 (bson_t      *bson,
                    const char  *key,
@@ -791,6 +831,7 @@ bson_append_int64 (bson_t      *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_decimal128 (bson_t                  *bson,
                         const char              *key,
@@ -810,6 +851,7 @@ bson_append_decimal128 (bson_t                  *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_iter (bson_t            *bson,
                   const char        *key,
@@ -829,6 +871,7 @@ bson_append_iter (bson_t            *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_minkey (bson_t     *bson,
                     const char *key,
@@ -847,6 +890,7 @@ bson_append_minkey (bson_t     *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_maxkey (bson_t     *bson,
                     const char *key,
@@ -862,6 +906,7 @@ bson_append_maxkey (bson_t     *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_null (bson_t     *bson,
                   const char *key,
@@ -879,6 +924,7 @@ bson_append_null (bson_t     *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_oid (bson_t           *bson,
                  const char       *key,
@@ -909,6 +955,7 @@ bson_append_oid (bson_t           *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_regex (bson_t     *bson,
                    const char *key,
@@ -932,6 +979,7 @@ bson_append_regex (bson_t     *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_utf8 (bson_t     *bson,
                   const char *key,
@@ -954,6 +1002,7 @@ bson_append_utf8 (bson_t     *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_symbol (bson_t     *bson,
                     const char *key,
@@ -973,6 +1022,7 @@ bson_append_symbol (bson_t     *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_time_t (bson_t     *bson,
                     const char *key,
@@ -991,6 +1041,7 @@ bson_append_time_t (bson_t     *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_timeval (bson_t         *bson,
                      const char     *key,
@@ -1009,6 +1060,7 @@ bson_append_timeval (bson_t         *bson,
  *
  * Returns: true if sucessful; otherwise false.
  */
+BSON_API
 bool
 bson_append_date_time (bson_t      *bson,
                        const char  *key,
@@ -1027,6 +1079,7 @@ bson_append_date_time (bson_t      *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_now_utc (bson_t     *bson,
                      const char *key,
@@ -1048,6 +1101,7 @@ bson_append_now_utc (bson_t     *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_timestamp (bson_t       *bson,
                        const char   *key,
@@ -1067,12 +1121,14 @@ bson_append_timestamp (bson_t       *bson,
  *
  * Returns: true if successful; false if append would overflow max size.
  */
+BSON_API
 bool
 bson_append_undefined (bson_t     *bson,
                        const char *key,
                        int         key_length);
 
 
+BSON_API
 bool
 bson_concat (bson_t       *dst,
              const bson_t *src);

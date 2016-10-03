@@ -235,42 +235,52 @@ typedef struct _bcon_extract_ctx_t
    int                      n;
 } bcon_extract_ctx_t;
 
+BSON_API
 void
 bcon_append (bson_t *bson,
              ...) BSON_GNUC_NULL_TERMINATED;
+BSON_API
 void
 bcon_append_ctx (bson_t            *bson,
                  bcon_append_ctx_t *ctx,
                  ...) BSON_GNUC_NULL_TERMINATED;
+BSON_API
 void
 bcon_append_ctx_va (bson_t            *bson,
                     bcon_append_ctx_t *ctx,
                     va_list           *va);
+BSON_API
 void
 bcon_append_ctx_init (bcon_append_ctx_t *ctx);
 
+BSON_API
 void
 bcon_extract_ctx_init (bcon_extract_ctx_t *ctx);
 
+BSON_API
 void
 bcon_extract_ctx (bson_t             *bson,
                   bcon_extract_ctx_t *ctx,
                   ...) BSON_GNUC_NULL_TERMINATED;
 
+BSON_API
 bool
 bcon_extract_ctx_va (bson_t             *bson,
                      bcon_extract_ctx_t *ctx,
                      va_list            *ap);
 
+BSON_API
 bool
 bcon_extract (bson_t *bson,
               ...) BSON_GNUC_NULL_TERMINATED;
 
+BSON_API
 bool
 bcon_extract_va (bson_t             *bson,
                  bcon_extract_ctx_t *ctx,
                  ...) BSON_GNUC_NULL_TERMINATED;
 
+BSON_API
 bson_t *
 bcon_new (void *unused,
           ...) BSON_GNUC_NULL_TERMINATED;
@@ -297,7 +307,9 @@ bcon_new (void *unused,
 #define BCON_NEW(...) \
    bcon_new (NULL, __VA_ARGS__, (void *)NULL)
 
+BSON_API
 const char *bson_bcon_magic  (void) BSON_GNUC_CONST;
+BSON_API
 const char *bson_bcone_magic (void) BSON_GNUC_CONST;
 
 

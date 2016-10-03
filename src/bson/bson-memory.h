@@ -48,16 +48,24 @@ typedef struct _bson_mem_vtable_t
 } bson_mem_vtable_t;
 
 
+BSON_API
 void  bson_mem_set_vtable (const bson_mem_vtable_t *vtable);
+BSON_API
 void  bson_mem_restore_vtable (void);
+BSON_API
 void *bson_malloc         (size_t  num_bytes);
+BSON_API
 void *bson_malloc0        (size_t  num_bytes);
+BSON_API
 void *bson_realloc        (void   *mem,
                            size_t  num_bytes);
+BSON_API
 void *bson_realloc_ctx    (void   *mem,
                            size_t  num_bytes,
                            void   *ctx);
+BSON_API
 void  bson_free           (void   *mem);
+BSON_API
 void  bson_zero_free      (void   *mem,
                            size_t  size);
 

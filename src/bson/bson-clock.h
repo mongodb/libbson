@@ -32,7 +32,9 @@
 BSON_BEGIN_DECLS
 
 
+BSON_API
 int64_t bson_get_monotonic_time (void);
+BSON_API
 int     bson_gettimeofday       (struct timeval *tv);
 
 
