@@ -59,7 +59,8 @@ libbson_la_CFLAGS = \
 	$(HARDEN_CFLAGS) \
 	$(OPTIMIZE_CFLAGS) \
 	$(COVERAGE_CFLAGS) \
-	$(PTHREAD_CFLAGS)
+	$(PTHREAD_CFLAGS) \
+	-fvisibility=hidden
 
 libbson_la_SOURCES = \
 	$(INST_H_FILES) \
