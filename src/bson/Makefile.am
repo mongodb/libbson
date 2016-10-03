@@ -56,6 +56,7 @@ libbson_la_CPPFLAGS = \
 
 libbson_la_CFLAGS = \
 	$(MAINTAINER_CFLAGS) \
+	$(HARDEN_CFLAGS) \
 	$(OPTIMIZE_CFLAGS) \
 	$(COVERAGE_CFLAGS) \
 	$(PTHREAD_CFLAGS)
