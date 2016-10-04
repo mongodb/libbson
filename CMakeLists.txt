@@ -194,14 +194,11 @@ set (HEADERS
    ${SOURCE_DIR}/src/bson/bson-writer.h
 )
 
-if (MSVC)
-   set(BSON_SHARED_SOURCES ${SOURCES} ${PROJECT_SOURCE_DIR}/build/cmake/libbson.def)
-else()
-   set(BSON_SHARED_SOURCES ${SOURCES})
-endif()
-
-add_library(bson_shared SHARED ${BSON_SHARED_SOURCES} ${HEADERS})
+add_library(bson_shared SHARED ${SOURCES} ${HEADERS})
 add_library(bson_static STATIC ${SOURCES} ${HEADERS})
+
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+
 
 set_target_properties(bson_shared PROPERTIES COMPILE_DEFINITIONS "BSON_COMPILATION")
 set_target_properties(bson_static PROPERTIES COMPILE_DEFINITIONS "BSON_COMPILATION")
@@ -268,7 +265,7 @@ if (ENABLE_TESTS)
 
     add_executable (test-libbson ${BSON_TEST_SOURCES})
 
-    target_link_libraries(test-libbson bson_static)
+    target_link_libraries(test-libbson bson_shared bson_static)
     add_test(NAME test-libbson COMMAND test-libbson)
 
     file(COPY ${SOURCE_DIR}/tests/binary ${SOURCE_DIR}/tests/json
