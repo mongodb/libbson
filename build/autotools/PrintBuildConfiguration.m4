@@ -30,7 +30,6 @@ Build configuration:
   Enable extra alignment (required for 1.0 ABI)    : ${enable_extra_align}
   Compile with debug symbols (slow)                : ${enable_debug_symbols}
   Enable GCC build optimization                    : ${enable_optimizations}
-  Enable automatic binary hardening                : ${enable_hardening}
   Code coverage support                            : ${enable_coverage}
   Cross Compiling                                  : ${enable_crosscompile}
   Big endian                                       : ${enable_bigendian}

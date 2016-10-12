@@ -96,7 +96,6 @@ Build configuration:
   Enable extra alignment (required for 1.0 ABI)    : no
   Compile with debug symbols (slow)                : no
   Enable GCC build optimization                    : yes
-  Enable automatic binary hardening                : yes
   Code coverage support                            : no
   Cross Compiling                                  : no
   Big endian                                       : no

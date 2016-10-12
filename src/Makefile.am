@@ -6,7 +6,6 @@ libbson_1_0_la_LIBADD = \
 	libyajl.la \
 	-lm
 libbson_1_0_la_LDFLAGS = \
-	$(HARDEN_LDFLAGS) \
 	$(OPTIMIZE_LDFLAGS) \
 	$(COVERAGE_LDFLAGS) \
 	-no-undefined \

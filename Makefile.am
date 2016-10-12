@@ -28,7 +28,7 @@ endif
 include build/cmake/Makefile.am
 
 ACLOCAL_AMFLAGS = -I build/autotools/m4 ${ACLOCAL_FLAGS}
-DISTCHECK_CONFIGURE_FLAGS = --enable-maintainer-flags --enable-silent-rules --enable-hardening --enable-optimizations --enable-html-docs --enable-man-pages
+DISTCHECK_CONFIGURE_FLAGS = --enable-maintainer-flags --enable-silent-rules --enable-optimizations --enable-html-docs --enable-man-pages
 
 bsondocdir = ${docdir}
 bsondoc_DATA = \

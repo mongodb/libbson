@@ -27,7 +27,6 @@ LT_INIT
 m4_include([build/autotools/ReadCommandLineArguments.m4])
 m4_include([build/autotools/FindDependencies.m4])
 m4_include([build/autotools/CheckAtomics.m4])
-m4_include([build/autotools/AutoHarden.m4])
 m4_include([build/autotools/MaintainerFlags.m4])
 m4_include([build/autotools/Optimizations.m4])
 m4_include([build/autotools/Coverage.m4])
