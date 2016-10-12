@@ -1,3 +1,9 @@
+libbson (1.4.2-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- A. Jesse Jiryu Davis <jesse@mongodb.com>  Wed, 12 Oct 2016 15:02:08 +0000
+
 libbson (1.4.1-1) unstable; urgency=medium
 
   * New upstream release
