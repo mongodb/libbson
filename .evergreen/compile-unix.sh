@@ -39,11 +39,12 @@ DEBUG_FLAGS="\
     --enable-extra-align=no \
     --enable-maintainer-flags \
     --enable-debug"
+
 RELEASE_FLAGS="
     --enable-optimizations \
     --enable-man-pages=no \
     --enable-html-docs=no \
-    --enable-extra-align=no
+    --enable-extra-align=no"
 
 # By default we build from git clone, which requires autotools
 # This gets overwritten if we detect we should use the release archive
