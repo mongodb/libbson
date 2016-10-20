@@ -16,16 +16,18 @@ New features and bug fixes:
     * BSON_APPEND_DECIMAL128()
     * BCON_DECIMAL128()
     See the documentations for further details
-
   * New flag BSON_VALIDATE_EMPTY_KEYS causes bson_validate to fail if a document
     contains zero-length field names.
-
+  * The configure option "--enable-hardening" had had no effect. It is removed
+    in favor of system-wide compiler configuration.
 
 Thanks to everyone who contributed to the development of this release.
 
-  * Everyone
+  * A. Jesse Jiryu Davis
+  * Hannes Magnusson
+  * Brian Samek
 
-Farewell,
+Peace,
 
     A. Jesse Jiryu Davis
 
