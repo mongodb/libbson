@@ -944,6 +944,18 @@ test_bson_as_json_spacing (void)
    bson_destroy (&d);
 }
 
+static void
+test_bson_integer_width (void)
+{
+	const char * sd = "{\"v\":-1234567890123, \"x\":12345678901234}";
+	char *match;
+	bson_error_t err;
+	bson_t * bs = bson_new_from_json((const uint8_t*)sd, strlen(sd), &err);
+
+	match = bson_as_json (bs, 0);
+	ASSERT_CMPSTR (match, "{ \"v\" : -1234567890123, \"x\" : 12345678901234 }");
+}
+
 void
 test_json_install (TestSuite *suite)
 {
@@ -979,4 +991,5 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/json/read/dbref", test_bson_json_dbref);
    TestSuite_Add (suite, "/bson/as_json/decimal128", test_bson_as_json_decimal128);
    TestSuite_Add (suite, "/bson/json/read/$numberDecimal", test_bson_json_number_decimal);
+   TestSuite_Add (suite, "/bson/integer/width", test_bson_integer_width);
 }

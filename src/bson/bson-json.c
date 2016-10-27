@@ -426,7 +426,7 @@ _bson_json_read_integer (void    *_ctx, /* IN */
    if (rs == BSON_JSON_REGULAR) {
       BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL ("integer");
 
-      if (val <= INT32_MAX) {
+      if (val <= INT32_MAX && val >= INT32_MIN) {
          bson_append_int32 (STACK_BSON_CHILD, key, (int)len, (int)val);
       } else {
          bson_append_int64 (STACK_BSON_CHILD, key, (int)len, val);
