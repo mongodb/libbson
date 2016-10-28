@@ -502,6 +502,19 @@ test_bson_json_read(void)
    _test_bson_json_read_compare(json, 5, first, second, third, NULL);
 }
 
+static void
+test_bson_json_read_corrupt_utf8 (void)
+{
+   const char *json = "{ \"a\" : \"\x80\"}";
+   bson_error_t error = { 0 };
+
+   assert (!bson_new_from_json ((uint8_t *) json, -1, &error));
+
+   ASSERT_ERROR_CONTAINS (error, BSON_ERROR_JSON,
+                          BSON_JSON_ERROR_READ_CORRUPT_JS,
+                          "invalid bytes in UTF8 string");
+}
+
 
 static void
 test_bson_json_read_decimal128(void)
@@ -1063,6 +1076,7 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/json/read/invalid_json", test_bson_json_read_invalid_json);
    TestSuite_Add (suite, "/bson/json/read/bad_cb", test_bson_json_read_bad_cb);
    TestSuite_Add (suite, "/bson/json/read/invalid", test_bson_json_read_invalid);
+   TestSuite_Add (suite, "/bson/json/read/corrupt_utf8", test_bson_json_read_corrupt_utf8);
    TestSuite_Add (suite, "/bson/json/read/decimal128", test_bson_json_read_decimal128);
    TestSuite_Add (suite, "/bson/json/read/file", test_json_reader_new_from_file);
    TestSuite_Add (suite, "/bson/json/read/bad_path", test_json_reader_new_from_bad_path);
