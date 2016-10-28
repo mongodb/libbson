@@ -1168,7 +1168,7 @@ bson_json_reader_t *
 bson_json_reader_new (void                 *data,           /* IN */
                       bson_json_reader_cb   cb,             /* IN */
                       bson_json_destroy_cb  dcb,            /* IN */
-                      bool                  allow_multiple, /* IN */
+                      bool                  allow_multiple, /* unused */
                       size_t                buf_size)       /* IN */
 {
    bson_json_reader_t *r;

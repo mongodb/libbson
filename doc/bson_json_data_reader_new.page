@@ -21,7 +21,7 @@ bson_json_data_reader_new (bool   allow_multiple,
   <section id="parameters">
     <title>Parameters</title>
     <table>
-      <tr><td><p><code>allow_multiple</code></p></td><td><p>A boolean denoting if more than one document may be allowed in the stream.</p></td></tr>
+      <tr><td><p><code>allow_multiple</code></p></td><td><p>Unused.</p></td></tr>
       <tr><td><p><code>size</code></p></td><td><p>A requested buffer size.</p></td></tr>
     </table>
   </section>
@@ -29,6 +29,7 @@ bson_json_data_reader_new (bool   allow_multiple,
   <section id="description">
     <title>Description</title>
     <p>Creates a new streaming JSON reader that will convert JSON documents to BSON.</p>
+    <p>The <code>allow_multiple</code> parameter is unused.</p>
   </section>
 
   <section id="return">
