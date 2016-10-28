@@ -1053,8 +1053,7 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/as_json_spacing", test_bson_as_json_spacing);
    TestSuite_Add (suite, "/bson/as_json_special_keys_at_top", test_bson_json_special_keys_at_top);
    TestSuite_Add (suite, "/bson/array_as_json", test_bson_array_as_json);
-   TestSuite_Add (suite, "/bson/json/allow_multiple", 
-                  test_bson_json_allow_multiple);
+   TestSuite_Add (suite, "/bson/json/allow_multiple", test_bson_json_allow_multiple);
    TestSuite_Add (suite, "/bson/json/read", test_bson_json_read);
    TestSuite_Add (suite, "/bson/json/inc", test_bson_json_inc);
    TestSuite_Add (suite, "/bson/json/array", test_bson_json_array);
