@@ -950,10 +950,13 @@ test_bson_integer_width (void)
 	const char * sd = "{\"v\":-1234567890123, \"x\":12345678901234}";
 	char *match;
 	bson_error_t err;
-	bson_t * bs = bson_new_from_json((const uint8_t*)sd, strlen(sd), &err);
+	bson_t *bs = bson_new_from_json((const uint8_t*)sd, strlen(sd), &err);
 
 	match = bson_as_json (bs, 0);
 	ASSERT_CMPSTR (match, "{ \"v\" : -1234567890123, \"x\" : 12345678901234 }");
+
+	bson_free (match);
+	bson_destroy(bs);
 }
 
 void
