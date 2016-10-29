@@ -1186,9 +1186,10 @@ bson_json_reader_new (void                 *data,           /* IN */
 
    r->yh = yajl_alloc (&read_cbs, &gYajlAllocFuncs, r);
 
-   yajl_config (r->yh,
-                yajl_dont_validate_strings |
-                (allow_multiple ?  yajl_allow_multiple_values : 0)
+   /* don't validate strings by default, unless allow_multiple is true */
+   yajl_config (r->yh, allow_multiple ?
+                yajl_allow_multiple_values :
+                yajl_dont_validate_strings
                 , 1);
 
    return r;
