@@ -25,7 +25,10 @@ case "$CC" in
    ;;
 esac
 
-CMAKE="/cygdrive/c/cmake/bin/cmake"
+rm -rf cbuild
+mkdir cbuild
+
+CMAKE="/cygdrive/c/cmake/bin/cmake" ..
 "$CMAKE" -G "$CC" "-DCMAKE_INSTALL_PREFIX=C:/libbson"
 "$BUILD" /m ALL_BUILD.vcxproj
 "$BUILD" /m INSTALL.vcxproj
