@@ -236,7 +236,7 @@ tasks:
                echo '{ "results": [ { "status": "pass", "test_file": "Create Release Archive",' > test-results.json
                start=$(date +%s)
                echo '"start": ' $start ', ' >> test-results.json
-               ./autogen.sh --enable-html-docs --enable-man-pages && make dist
+               ./autogen.sh --enable-html-docs --enable-man-pages && make distcheck
                end=$(date +%s)
                echo '"end": ' $end ', ' >> test-results.json
                sum=$(expr $end - $start)

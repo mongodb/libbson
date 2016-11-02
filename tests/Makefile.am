@@ -73,7 +73,9 @@ valgrind: $(TEST_PROGS)
 debug: $(TEST_PROGS)
 	$(LIBTOOL) --mode=execute $(DEBUGGER) ./test-libbson $(TEST_ARGS)
 
-DISTCLEANFILES += test.log
+DISTCLEANFILES += \
+	test.log \
+	test-results.json
 
 CLEANFILES += \
 	tests/*.gcda \

@@ -6,6 +6,7 @@ CLEANFILES += $(wildcard doc/html/*.png)
 .PHONY: doc/html
 
 doc/html:
+	-mkdir doc/html
 	$(AM_V_GEN)$(YELP_BUILD) html -o doc/html/ doc
 
 YELP_HTML_FILES = \

@@ -55,4 +55,5 @@ dist-hook:
 	fi
 
 uninstall-local:
+	-rmdir $(bsondocdir)/doc $(bsondocdir)/html
 	-rm -r $(bsondocdir)
