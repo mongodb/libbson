@@ -24,7 +24,7 @@
       <tr>
         <td><p><em style="strong"><code>BSON_ERROR_JSON</code></em></p></td>
         <td><p><code>BSON_JSON_ERROR_READ_CORRUPT_JS</code></p></td>
-        <td><p><code xref="bson_json_reader_t">bson_json_reader_t</code>tried to parse invalid MongoDB Extended JSON.</p></td>
+        <td><p><code xref="bson_json_reader_t">bson_json_reader_t</code> tried to parse invalid MongoDB Extended JSON.</p></td>
       </tr>
       <tr>
         <td/>
