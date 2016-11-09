@@ -152,12 +152,12 @@ main (int   argc,
          return EXIT_SUCCESS;
       case 'p':
          free (port);
-         port = (char *)malloc (strlen (optarg));
+         port = (char *)malloc (strlen (optarg) + 1);
          strcpy (port, optarg);
          break;
       case 's':
          free (hostname);
-         hostname = (char *)malloc (strlen (optarg));
+         hostname = (char *)malloc (strlen (optarg) + 1);
          strcpy (hostname, optarg);
          break;
       default:
