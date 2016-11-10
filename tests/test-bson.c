@@ -411,10 +411,9 @@ test_bson_append_code_with_scope (void)
    bson_t *b2;
    bson_t *scope;
 
-   /* Test with empty bson, which converts to just CODE type. */
+   /* Test with NULL bson, which converts to just CODE type. */
    b = bson_new();
-   scope = bson_new();
-   assert(bson_append_code_with_scope(b, "code", -1, "var a = {};", scope));
+   assert(bson_append_code_with_scope(b, "code", -1, "var a = {};", NULL));
    b2 = get_bson("test30.bson");
    assert_bson_equal(b, b2);
    r = bson_iter_init_find(&iter, b, "code");
@@ -422,9 +421,19 @@ test_bson_append_code_with_scope (void)
    assert(BSON_ITER_HOLDS_CODE(&iter)); /* Not codewscope */
    bson_destroy(b);
    bson_destroy(b2);
+
+   /* Empty scope is still CODEWSCOPE. */
+   b = bson_new();
+   scope = bson_new ();
+   assert(bson_append_code_with_scope(b, "code", -1, "var a = {};", scope));
+   b2 = get_bson("code_w_empty_scope.bson");
+   assert_bson_equal(b, b2);
+   r = bson_iter_init_find(&iter, b, "code");
+   assert(r);
+   assert(BSON_ITER_HOLDS_CODEWSCOPE(&iter));
+   bson_destroy(b);
+   bson_destroy(b2);
    bson_destroy(scope);
-
-
 
    /* Test with non-empty scope */
    b = bson_new();

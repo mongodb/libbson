@@ -249,6 +249,45 @@ test_bson_as_json_decimal128 (void)
 
 
 static void
+test_bson_as_json_code (void)
+{
+   bson_t code = BSON_INITIALIZER;
+   bson_t scope = BSON_INITIALIZER;
+   char *str;
+
+   assert (bson_append_code (&code, "c", -1, "function () {}"));
+   str = bson_as_json (&code, NULL);
+   ASSERT_CMPSTR (
+      str,
+      "{ \"c\" : { \"$code\" : \"function () {}\" } }");
+
+   bson_free (str);
+   bson_reinit (&code);
+
+   /* empty scope */
+   assert (BSON_APPEND_CODE_WITH_SCOPE (&code, "c", "function () {}", &scope));
+   str = bson_as_json (&code, NULL);
+   ASSERT_CMPSTR (
+      str,
+      "{ \"c\" : { \"$code\" : \"function () {}\", \"$scope\" : { } } }");
+
+   bson_free (str);
+   bson_reinit (&code);
+
+   BSON_APPEND_INT32 (&scope, "x", 1);
+   assert (BSON_APPEND_CODE_WITH_SCOPE (&code, "c", "function () {}", &scope));
+   str = bson_as_json (&code, NULL);
+   ASSERT_CMPSTR (
+      str,
+      "{ \"c\" : { \"$code\" : \"function () {}\", \"$scope\" : { \"x\" : 1 } } }");
+
+   bson_free (str);
+   bson_destroy (&code);
+   bson_destroy (&scope);
+}
+
+
+static void
 test_bson_as_json_utf8 (void)
 {
    /* euro currency symbol */
@@ -1057,6 +1096,7 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/as_json/int32", test_bson_as_json_int32);
    TestSuite_Add (suite, "/bson/as_json/int64", test_bson_as_json_int64);
    TestSuite_Add (suite, "/bson/as_json/double", test_bson_as_json_double);
+   TestSuite_Add (suite, "/bson/as_json/code", test_bson_as_json_code);
    TestSuite_Add (suite, "/bson/as_json/utf8", test_bson_as_json_utf8);
    TestSuite_Add (suite, "/bson/as_json/stack_overflow", test_bson_as_json_stack_overflow);
    TestSuite_Add (suite, "/bson/as_json/corrupt", test_bson_corrupt);

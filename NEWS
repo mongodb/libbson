@@ -16,6 +16,11 @@ New features and bug fixes:
     * BSON_APPEND_DECIMAL128()
     * BCON_DECIMAL128()
     See the documentations for further details
+  * bson_append_code_with_scope now preserves the "code with scope" type
+    if scope is an empty, non-NULL BSON document.
+  * bson_as_json properly formats BSON "code" and "code with scope" types
+    like '{"$code": "...", "$scope": {}}'. Before, it had treated the code
+    as a string and ignored the scope.
   * bson_json_reader functions now always validate UTF-8
   * JSON parsing now preserves integer width
   * New flag BSON_VALIDATE_EMPTY_KEYS causes bson_validate to fail if a document
