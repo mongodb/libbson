@@ -18,9 +18,9 @@
 static ssize_t
 test_bson_json_read_cb_helper (void *string, uint8_t *buf, size_t len)
 {
-   ssize_t str_size = strlen ((char *) string);
+   size_t str_size = strlen ((char *) string);
    if (str_size) {
-      memcpy (buf, string, len);
+      memcpy (buf, string, BSON_MIN (str_size, len));
       return str_size;
    } else {
       return 0; 
