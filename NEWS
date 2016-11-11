@@ -23,6 +23,9 @@ New features and bug fixes:
     as a string and ignored the scope.
   * bson_json_reader functions now always validate UTF-8
   * JSON parsing now preserves integer width
+  * bson_strtoll now matches stroll: it detects range errors, and when
+    parsing octal it stops at non-octal digits and returns what it parsed
+    instead of setting errno
   * New flag BSON_VALIDATE_EMPTY_KEYS causes bson_validate to fail if a document
     contains zero-length field names.
   * The configure option "--enable-hardening" had had no effect. It is removed

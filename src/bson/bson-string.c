@@ -679,8 +679,8 @@ bson_snprintf (char       *str,    /* IN */
  *       valid.
  *
  *       If an invalid value is encountered, errno will be set to EINVAL and
- *       zero will be returned. This function does not currently detect values
- *       that are out of range.
+ *       zero will be returned. If the number is out of range, errno is set to
+ *       ERANGE and LLONG_MAX or LLONG_MIN is returned.
  *
  * Returns:
  *       The result of the conversion.
@@ -696,123 +696,108 @@ bson_ascii_strtoll (const char  *s,
                     char       **e,
                     int          base)
 {
-    char *tok = (char *)s;
-    char c;
-    int64_t number = 0;
-    int64_t sign = 1;
+   char *tok = (char *) s;
+   char *digits_start;
+   char c;
+   int64_t number = 0;
+   int64_t sign = 1;
+   int64_t cutoff;
+   int64_t cutlim;
 
-    if (!s) {
-       errno = EINVAL;
-       return 0;
-    }
+   errno = 0;
 
-    c = *tok;
+   if (!s) {
+      errno = EINVAL;
+      return 0;
+   }
 
-    while (isspace (c)) {
-        c = *++tok;
-    }
+   c = *tok;
 
-    if (!isdigit (c) && (c != '+') && (c != '-')) {
-        if (e != NULL) {
-           *e = tok - 1;
-        }
-        errno = EINVAL;
-        return 0;
-    }
+   while (isspace (c)) {
+      c = *++tok;
+   }
 
-    if (c == '-') {
-        sign = -1;
-        c = *++tok;
-    }
+   if (c == '-') {
+      sign = -1;
+      c = *++tok;
+   } else if (c == '+') {
+      c = *++tok;
+   } else if (!isdigit (c)) {
+      errno = EINVAL;
+      return 0;
+   }
 
-    if (c == '+') {
-        c = *++tok;
-    }
+   /* from here down, inspired by NetBSD's strtoll */
+   if ((base == 0 || base == 16) && c == '0' &&
+       (tok[1] == 'x' || tok[1] == 'X')) {
+      tok += 2;
+      c = *tok;
+      base = 16;
+   }
 
-    if (c == '0' && tok[1] != '\0' &&
-       (isdigit (tok[1]) || tok[1] == 'x' || tok[1] == 'X')) {
-        /* Hex, octal or decimal */
+   if (base == 0) {
+      base = c == '0' ? 8 : 10;
+   }
 
-        c = *++tok;
+   /* Cutoff is the greatest magnitude we'll be able to multiply by base without
+    * range error. If the current number is past cutoff and we see valid digit,
+    * fail. If the number is *equal* to cutoff, then the next digit must be less
+    * than cutlim, otherwise fail.
+    */
+   cutoff = sign == -1 ? LLONG_MIN : LLONG_MAX;
+   cutlim = (int) (cutoff % base);
+   cutoff /= base;
+   if (sign == -1) {
+      if (cutlim > 0) {
+         cutlim -= base;
+         cutoff += 1;
+      }
+      cutlim = -cutlim;
+   }
 
-        if (c == 'x' || c == 'X') { /* Hex */
-            if (base != 16 && base != 0) {
-                if (e != NULL) {
-                   *e = (char *)(s);
-                }
-                errno = EINVAL;
-                return 0;
-            }
+   digits_start = tok;
 
-            c = *++tok;
-            if (!isxdigit (c)) {
-                if (e != NULL) {
-                   *e = tok;
-                }
-                errno = EINVAL;
-                return 0;
-            }
-            do {
-                number = (number << 4) + (c - '0');
-                c = *(++tok);
-            } while (isxdigit (c));
-        }
-        else { /* Octal or Decimal -- prefixed with 0 */
-            if (base != 8 && base != 0 && base != 10) {
-                if (e != NULL) {
-                   *e = (char *)(s);
-                }
-                errno = EINVAL;
-                return 0;
-            }
-            if (base == 10) {
-                do {
-                  number = (number * 10) + (c - '0');
-                  c = *(++tok);
-                } while (isdigit (c));
-            } else { /*Octal*/
-                if ( c < '0' || c >= '8') {
-                  if (e != NULL) {
-                     *e = tok;
-                  }
-                  errno = EINVAL;
-                  return 0;
-                }
-                do {
-                  number = (number << 3) + (c - '0');
-                  c = *(++tok);
-                } while (('0' <= c) && (c < '8'));
-            }
-        }
+   while ((c = *tok)) {
+      if (isdigit (c)) {
+         c -= '0';
+      } else if (isalpha (c)) {
+         c -= isupper (c) ? 'A' - 10 : 'a' - 10;
+      } else {
+         /* end of number string */
+         break;
+      }
 
-        while (c == 'l' || c == 'L' || c == 'u' || c == 'U') {
-            c = *++tok;
-        }
-    }
-    else {
-        /* Decimal */
-        if (base != 10) {
-            if (e != NULL) {
-               *e = (char *)(s);
-            }
-            errno = EINVAL;
-            return 0;
-        }
+      if (c >= base) {
+         break;
+      }
 
-        do {
-            number = (number * 10) + (c - '0');
-            c = *(++tok);
-        } while (isdigit (c));
+      if (sign == -1) {
+         if (number < cutoff || (number == cutoff && c > cutlim)) {
+            number = LLONG_MIN;
+            errno = ERANGE;
+            break;
+         } else {
+            number *= base;
+            number -= c;
+         }
+      } else {
+         if (number > cutoff || (number == cutoff && c > cutlim)) {
+            number = LLONG_MAX;
+            errno = ERANGE;
+            break;
+         } else {
+            number *= base;
+            number += c;
+         }
+      }
 
-        while (c == 'l' || c == 'L' || c == 'u' || c == 'U') {
-            c = *(++tok);
-        }
-    }
+      tok++;
+   }
 
-    if (e != NULL) {
-       *e = tok;
-    }
-    errno = 0;
-    return (sign * number);
+   /* did we parse any digits at all? */
+   if (e != NULL && tok > digits_start) {
+      *e = tok;
+   }
+
+   return number;
 }
-
