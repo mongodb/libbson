@@ -204,7 +204,7 @@ tasks:
           type: test
           params:
             working_dir: "libbson"
-            script: "DEBUG=1 CC='clang-3.8' MARCH='${MARCH}' CFLAGS='-fsanitize=address' sh .evergreen/compile.sh"
+            script: "PATH=/usr/lib/llvm-3.8/bin:$PATH DEBUG=1 CC='clang-3.8' MARCH='${MARCH}' CFLAGS='-fsanitize=address' sh .evergreen/compile.sh"
 
     - name: debug-compile-scan-build
       commands:
