@@ -988,6 +988,44 @@ test_bson_validate_bool (void)
 }
 
 
+/* BSON spec requires the deprecated DBPointer's value to be NULL-termed */
+static void
+test_bson_validate_dbpointer (void)
+{
+   /* { "a": DBPointer(ObjectId(...), Collection="b") }, implicit NULL at end */
+   uint8_t data[] =
+      "\x1A\x00\x00\x00\x0C\x61\x00\x02\x00\x00\x00\x62\x00"
+      "\x56\xE1\xFC\x72\xE0\xC9\x17\xE9\xC4\x71\x41\x61";
+
+   bson_t bson;
+   bson_iter_t iter;
+   size_t err_offset = 0;
+   uint32_t collection_len;
+   const char *collection;
+   const bson_oid_t *oid;
+
+   ASSERT (bson_init_static (&bson, data, sizeof data));
+   ASSERT (bson_validate (&bson, BSON_VALIDATE_NONE, &err_offset));
+   ASSERT (bson_iter_init (&iter, &bson));
+   ASSERT (bson_iter_next (&iter));
+   ASSERT (BSON_ITER_HOLDS_DBPOINTER (&iter));
+   bson_iter_dbpointer (&iter, &collection_len, &collection, &oid);
+   assert_cmpstr (collection, "b");
+   assert_cmpint (collection_len, ==, 1);
+
+   /* replace the NULL terminator of "b" with 255 */
+   ASSERT (data[12] == '\0');
+   data[12] = '\xff';
+
+   ASSERT (bson_init_static (&bson, data, sizeof data));
+   ASSERT (!bson_validate (&bson, BSON_VALIDATE_NONE, &err_offset));
+   assert_cmpint (err_offset, ==, 12);
+
+   ASSERT (bson_iter_init (&iter, &bson));
+   ASSERT (!bson_iter_next (&iter));
+}
+
+
 static void
 test_bson_validate (void)
 {
@@ -2022,6 +2060,7 @@ test_bson_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/validate", test_bson_validate);
    TestSuite_Add (suite, "/bson/validate/dbref", test_bson_validate_dbref);
    TestSuite_Add (suite, "/bson/validate/bool", test_bson_validate_bool);
+   TestSuite_Add (suite, "/bson/validate/dbpointer", test_bson_validate_dbpointer);
    TestSuite_Add (suite, "/bson/new_1mm", test_bson_new_1mm);
    TestSuite_Add (suite, "/bson/init_1mm", test_bson_init_1mm);
    TestSuite_Add (suite, "/bson/build_child", test_bson_build_child);

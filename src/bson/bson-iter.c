@@ -633,6 +633,12 @@ fill_data_fields:
             goto mark_invalid;
          }
 
+         if ( *(iter->raw + o + l + 3) ) {
+            /* not null terminated */
+            iter->err_off = o + l + 3;
+            goto mark_invalid;
+         }
+
          iter->d3 = o + 4 + l;
          iter->next_off = o + 4 + l + 12;
       }
