@@ -1689,6 +1689,9 @@ test_bson_reserve_buffer_errors (void)
    uint8_t data[5] = { 0 };
    uint32_t len_le;
 
+   /* too big */
+   ASSERT (!bson_reserve_buffer (&bson, (uint32_t) (INT32_MAX - bson.len - 1)));
+
    /* make a static bson, it refuses bson_reserve_buffer since it's read-only */
    len_le = BSON_UINT32_TO_LE (5);
    memcpy (data, &len_le, sizeof (len_le));
