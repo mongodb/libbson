@@ -16,6 +16,8 @@ New features and bug fixes:
     * BSON_APPEND_DECIMAL128()
     * BCON_DECIMAL128()
     See the documentations for further details
+  * bson_validate and bson_iter_next now validate that BSON boolean values are
+    0 or 1. Before, any non-zero value was considered true.
   * bson_append_code_with_scope now preserves the "code with scope" type
     if scope is an empty, non-NULL BSON document.
   * bson_as_json properly formats BSON "code" and "code with scope" types

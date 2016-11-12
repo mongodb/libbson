@@ -571,7 +571,16 @@ fill_data_fields:
       iter->next_off = o + 12;
       break;
    case BSON_TYPE_BOOL:
-      iter->next_off = o + 1;
+      {
+          char val;
+          memcpy (&val, iter->raw + iter->d1, 1);
+          if (val != 0x00 && val != 0x01) {
+              iter->err_off = o;
+              goto mark_invalid;
+          }
+
+          iter->next_off = o + 1;
+      }
       break;
    case BSON_TYPE_REGEX:
       {
