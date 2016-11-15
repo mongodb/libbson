@@ -744,7 +744,7 @@ bson_ascii_strtoll (const char  *s,
     * fail. If the number is *equal* to cutoff, then the next digit must be less
     * than cutlim, otherwise fail.
     */
-   cutoff = sign == -1 ? LLONG_MIN : LLONG_MAX;
+   cutoff = sign == -1 ? INT64_MIN : INT64_MAX;
    cutlim = (int) (cutoff % base);
    cutoff /= base;
    if (sign == -1) {
@@ -773,7 +773,7 @@ bson_ascii_strtoll (const char  *s,
 
       if (sign == -1) {
          if (number < cutoff || (number == cutoff && c > cutlim)) {
-            number = LLONG_MIN;
+            number = INT64_MIN;
             errno = ERANGE;
             break;
          } else {
@@ -782,7 +782,7 @@ bson_ascii_strtoll (const char  *s,
          }
       } else {
          if (number > cutoff || (number == cutoff && c > cutlim)) {
-            number = LLONG_MAX;
+            number = INT64_MAX;
             errno = ERANGE;
             break;
          } else {
