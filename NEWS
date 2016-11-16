@@ -15,23 +15,23 @@ New features and bug fixes:
     * bson_append_decimal128 ()
     * BSON_APPEND_DECIMAL128()
     * BCON_DECIMAL128()
-    See the documentations for further details
+    See the documentations for further details.
   * bson_validate and bson_iter_next now validate that BSON boolean values are
     0 or 1. Before, any non-zero value was considered true.
   * bson_append_code_with_scope now preserves the "code with scope" type
     if scope is an empty, non-NULL BSON document.
-  * bson_as_json properly formats BSON "code" and "code with scope" types
-    like '{"$code": "...", "$scope": {}}'. Before, it had treated the code
-    as a string and ignored the scope.
-  * bson_json_reader functions now always validate UTF-8
-  * JSON parsing now preserves integer width
+  * BSON "code" and "code with scope" types are properly translated to and from
+    JSON of the form '{"$code": "...", "$scope": {...}}'.
+  * bson_json_reader functions now always validate UTF-8.
+  * JSON parsing now preserves integer width.
   * bson_strtoll now matches stroll: it detects range errors, and when
     parsing octal it stops at non-octal digits and returns what it parsed
-    instead of setting errno
+    instead of setting errno.
   * New flag BSON_VALIDATE_EMPTY_KEYS causes bson_validate to fail if a document
     contains zero-length field names.
   * The configure option "--enable-hardening" had had no effect. It is removed
     in favor of system-wide compiler configuration.
+  * Additional validation of
 
 Thanks to everyone who contributed to the development of this release.
 
