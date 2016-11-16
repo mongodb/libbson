@@ -79,7 +79,7 @@ yajl_alloc(const yajl_callbacks * callbacks,
 }
 
 int
-yajl_config(yajl_handle h, yajl_option opt, ...)
+yajl_config(yajl_handle h, int opt, ...)
 {
     int rv = 1;
     va_list ap;

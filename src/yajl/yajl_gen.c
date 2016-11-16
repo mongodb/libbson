@@ -48,7 +48,7 @@ struct yajl_gen_t
 };
 
 int
-yajl_gen_config(yajl_gen g, yajl_gen_option opt, ...)
+yajl_gen_config(yajl_gen g, int opt, ...)
 {
     int rv = 1;
     va_list ap;

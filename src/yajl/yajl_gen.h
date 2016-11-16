@@ -105,7 +105,7 @@ extern "C" {
      *  allocation (via yajl_alloc)
      *  \returns zero in case of errors, non-zero otherwise
      */
-    YAJL_API int yajl_gen_config(yajl_gen g, yajl_gen_option opt, ...);
+    YAJL_API int yajl_gen_config(yajl_gen g, int opt, ...);
 
     /** allocate a generator handle
      *  \param allocFuncs an optional pointer to a structure which allows
