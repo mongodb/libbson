@@ -18,7 +18,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/types.h>
-#include <sys/stat.h>
+#include <math.h>
 
 #include "bson.h"
 #include "bson-config.h"
@@ -26,8 +26,7 @@
 #include "bson-iso8601-private.h"
 #include "b64_pton.h"
 
-#include <yajl/yajl_parser.h>
-#include <yajl/yajl_bytestack.h>
+#include "jsonsl/jsonsl.h"
 
 #ifdef _WIN32
 # include <io.h>
@@ -37,6 +36,7 @@
 
 #define STACK_MAX 100
 #define BSON_JSON_DEFAULT_BUF_SIZE (1 << 14)
+#define AT_LEAST_0(x) ((x) >= 0 ? (x) : 0)
 
 
 typedef enum
@@ -138,6 +138,7 @@ typedef struct
    int                          n;
    const char                  *key;
    bson_json_buf_t              key_buf;
+   bson_json_buf_t              unescaped;
    bson_json_read_state_t       read_state;
    bson_json_read_bson_state_t  bson_state;
    bson_type_t                  bson_type;
@@ -164,7 +165,11 @@ struct _bson_json_reader_t
 {
    bson_json_reader_producer_t  producer;
    bson_json_reader_bson_t      bson;
-   yajl_handle                  yh;
+   jsonsl_t                     json;
+   ssize_t                      json_text_pos;
+   bool                         should_reset;
+   ssize_t                      advance;
+   bson_json_buf_t              tok_accumulator;
    bson_error_t                *error;
 };
 
@@ -174,38 +179,6 @@ typedef struct
    int fd;
    bool do_close;
 } bson_json_reader_handle_fd_t;
-
-
-static void *
-bson_yajl_malloc_func (void   *ctx,
-                       size_t  sz)
-{
-   return bson_malloc (sz);
-}
-
-
-static void
-bson_yajl_free_func (void *ctx,
-                     void *ptr)
-{
-   bson_free (ptr);
-}
-
-
-static void *
-bson_yajl_realloc_func (void   *ctx,
-                        void   *ptr,
-                        size_t  sz)
-{
-   return bson_realloc (ptr, sz);
-}
-
-
-static yajl_alloc_funcs gYajlAllocFuncs = {
-   bson_yajl_malloc_func,
-   bson_yajl_realloc_func,
-   bson_yajl_free_func,
-};
 
 
 static void
@@ -257,7 +230,7 @@ _noop (void)
       } \
       bson->n--; \
    } while (0)
-#define BASIC_YAJL_CB_PREAMBLE \
+#define BASIC_CB_PREAMBLE \
    const char *key; \
    size_t len; \
    bson_json_reader_t *reader = (bson_json_reader_t *)_ctx; \
@@ -265,7 +238,7 @@ _noop (void)
    _bson_json_read_fixup_key (bson); \
    key = bson->key; \
    len = bson->key_buf.len;
-#define BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL(_type) \
+#define BASIC_CB_BAIL_IF_NOT_NORMAL(_type) \
    if (bson->read_state != BSON_JSON_REGULAR) { \
       _bson_json_read_set_error (reader, "Invalid read of %s in state %d", \
                                  (_type), bson->read_state); \
@@ -287,22 +260,6 @@ _noop (void)
       bson->bson_state = (_state); \
    }
 
-static bool
-_bson_json_all_whitespace (const char *utf8)
-{
-   bool all_whitespace = true;
-
-   if (utf8) {
-      for (; *utf8; utf8 = bson_utf8_next_char (utf8)) {
-         if (!isspace (bson_utf8_get_char (utf8))) {
-            all_whitespace = false;
-            break;
-         }
-      }
-   }
-
-   return all_whitespace;
-}
 
 static void
 _bson_json_read_set_error (bson_json_reader_t *reader,
@@ -329,6 +286,7 @@ _bson_json_read_set_error (bson_json_reader_t *reader, /* IN */
    }
 
    reader->bson.read_state = BSON_JSON_ERROR;
+   jsonsl_stop (reader->json);
 }
 
 
@@ -346,44 +304,55 @@ _bson_json_buf_ensure (bson_json_buf_t *buf, /* IN */
 
 
 static void
+_bson_json_buf_set (bson_json_buf_t *buf,
+                    const void      *from,
+                    size_t           len)
+{
+   _bson_json_buf_ensure (buf, len + 1);
+   memcpy (buf->buf, from, len);
+   buf->buf[len] = '\0';
+   buf->len = len;
+}
+
+
+static void
+_bson_json_buf_append (bson_json_buf_t *buf,
+                       const void      *from,
+                       size_t           len)
+{
+   size_t len_with_null = len + 1;
+
+   if (buf->len == 0) {
+      _bson_json_buf_ensure (buf, len_with_null);
+   } else if (buf->n_bytes < buf->len + len_with_null) {
+      buf->n_bytes = bson_next_power_of_two (buf->len + len_with_null);
+      buf->buf = bson_realloc (buf->buf, buf->n_bytes);
+   }
+
+   memcpy (buf->buf + buf->len, from, len);
+   buf->len += len;
+   buf->buf[buf->len] = '\0';
+}
+
+
+static void
 _bson_json_read_fixup_key (bson_json_reader_bson_t *bson) /* IN */
 {
    if (bson->n >= 0 && STACK_IS_ARRAY) {
       _bson_json_buf_ensure (&bson->key_buf, 12);
       bson->key_buf.len = bson_uint32_to_string (STACK_I, &bson->key,
-                                                 (char *)bson->key_buf.buf, 12);
+                                                 (char *) bson->key_buf.buf,
+                                                 12);
       STACK_I++;
    }
-}
-
-
-static void
-_bson_json_buf_set (bson_json_buf_t *buf,            /* IN */
-                    const void       *from,          /* IN */
-                    size_t            len,           /* IN */
-                    bool              trailing_null) /* IN */
-{
-   if (trailing_null) {
-      _bson_json_buf_ensure (buf, len + 1);
-   } else {
-      _bson_json_buf_ensure (buf, len);
-   }
-
-   memcpy (buf->buf, from, len);
-
-   if (trailing_null) {
-      buf->buf[len] = '\0';
-   }
-
-   buf->len = len;
 }
 
 
 static int
 _bson_json_read_null (void *_ctx)
 {
-   BASIC_YAJL_CB_PREAMBLE;
-   BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL ("null");
+   BASIC_CB_PREAMBLE;
+   BASIC_CB_BAIL_IF_NOT_NORMAL ("null");
 
    bson_append_null (STACK_BSON_CHILD, key, (int)len);
 
@@ -395,15 +364,15 @@ static int
 _bson_json_read_boolean (void *_ctx, /* IN */
                          int   val)  /* IN */
 {
-   BASIC_YAJL_CB_PREAMBLE;
+   BASIC_CB_PREAMBLE;
 
-   if (bson->read_state == BSON_JSON_IN_BSON_TYPE && bson->bson_state ==
-       BSON_JSON_LF_UNDEFINED) {
+   if (bson->read_state == BSON_JSON_IN_BSON_TYPE &&
+       bson->bson_state == BSON_JSON_LF_UNDEFINED) {
       bson->bson_type_data.undefined.has_undefined = true;
       return 1;
    }
 
-   BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL ("boolean");
+   BASIC_CB_BAIL_IF_NOT_NORMAL ("boolean");
 
    bson_append_bool (STACK_BSON_CHILD, key, (int)len, val);
 
@@ -418,21 +387,21 @@ _bson_json_read_integer (void    *_ctx, /* IN */
    bson_json_read_state_t rs;
    bson_json_read_bson_state_t bs;
 
-   BASIC_YAJL_CB_PREAMBLE;
+   BASIC_CB_PREAMBLE;
 
    rs = bson->read_state;
    bs = bson->bson_state;
 
    if (rs == BSON_JSON_REGULAR) {
-      BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL ("integer");
+      BASIC_CB_BAIL_IF_NOT_NORMAL ("integer");
 
       if (val <= INT32_MAX && val >= INT32_MIN) {
          bson_append_int32 (STACK_BSON_CHILD, key, (int)len, (int)val);
       } else {
          bson_append_int64 (STACK_BSON_CHILD, key, (int)len, val);
       }
-   } else if (rs == BSON_JSON_IN_BSON_TYPE || rs ==
-              BSON_JSON_IN_BSON_TYPE_TIMESTAMP_VALUES) {
+   } else if (rs == BSON_JSON_IN_BSON_TYPE ||
+              rs == BSON_JSON_IN_BSON_TYPE_TIMESTAMP_VALUES) {
       switch (bs) {
       case BSON_JSON_LF_DATE:
          bson->bson_type_data.date.has_date = true;
@@ -480,8 +449,8 @@ static int
 _bson_json_read_double (void   *_ctx, /* IN */
                         double  val)  /* IN */
 {
-   BASIC_YAJL_CB_PREAMBLE;
-   BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL ("double");
+   BASIC_CB_PREAMBLE;
+   BASIC_CB_BAIL_IF_NOT_NORMAL ("double");
 
    bson_append_double (STACK_BSON_CHILD, key, (int)len, val);
 
@@ -497,28 +466,37 @@ _bson_json_read_string (void                *_ctx, /* IN */
    bson_json_read_state_t rs;
    bson_json_read_bson_state_t bs;
 
-   BASIC_YAJL_CB_PREAMBLE;
+   BASIC_CB_PREAMBLE;
 
    rs = bson->read_state;
    bs = bson->bson_state;
 
+   if (!bson_utf8_validate ((const char *) val, vlen, true /*allow null*/)) {
+      bson_set_error (reader->error, BSON_ERROR_JSON,
+                      BSON_JSON_ERROR_READ_CORRUPT_JS,
+                      "invalid bytes in UTF8 string");
+      return 0;
+   }
+
    if (rs == BSON_JSON_REGULAR) {
-      BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL ("string");
-      bson_append_utf8 (STACK_BSON_CHILD, key, (int)len, (const char *)val, (int)vlen);
-   } else if (rs == BSON_JSON_IN_BSON_TYPE || rs ==
-              BSON_JSON_IN_BSON_TYPE_TIMESTAMP_VALUES || rs == BSON_JSON_IN_BSON_TYPE_DATE_NUMBERLONG) {
+      BASIC_CB_BAIL_IF_NOT_NORMAL ("string");
+      bson_append_utf8 (STACK_BSON_CHILD, key, (int) len, (const char *) val,
+                        (int) vlen);
+   } else if (rs == BSON_JSON_IN_BSON_TYPE ||
+              rs == BSON_JSON_IN_BSON_TYPE_TIMESTAMP_VALUES ||
+              rs == BSON_JSON_IN_BSON_TYPE_DATE_NUMBERLONG) {
       const char *val_w_null;
-      _bson_json_buf_set (&bson->bson_type_buf[2], val, vlen, true);
+      _bson_json_buf_set (&bson->bson_type_buf[2], val, vlen);
       val_w_null = (const char *)bson->bson_type_buf[2].buf;
 
       switch (bs) {
       case BSON_JSON_LF_REGEX:
          bson->bson_type_data.regex.has_regex = true;
-         _bson_json_buf_set (&bson->bson_type_buf[0], val, vlen, true);
+         _bson_json_buf_set (&bson->bson_type_buf[0], val, vlen);
          break;
       case BSON_JSON_LF_OPTIONS:
          bson->bson_type_data.regex.has_options = true;
-         _bson_json_buf_set (&bson->bson_type_buf[1], val, vlen, true);
+         _bson_json_buf_set (&bson->bson_type_buf[1], val, vlen);
          break;
       case BSON_JSON_LF_OID:
 
@@ -640,9 +618,10 @@ _bson_json_read_string (void                *_ctx, /* IN */
 static int
 _bson_json_read_start_map (void *_ctx) /* IN */
 {
-   BASIC_YAJL_CB_PREAMBLE;
+   BASIC_CB_PREAMBLE;
 
-   if (bson->read_state == BSON_JSON_IN_BSON_TYPE && bson->bson_state == BSON_JSON_LF_DATE) {
+   if (bson->read_state == BSON_JSON_IN_BSON_TYPE &&
+       bson->bson_state == BSON_JSON_LF_DATE) {
       bson->read_state = BSON_JSON_IN_BSON_TYPE_DATE_NUMBERLONG;
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_TIMESTAMP_STARTMAP) {
       bson->read_state = BSON_JSON_IN_BSON_TYPE_TIMESTAMP_VALUES;
@@ -691,6 +670,13 @@ _bson_json_read_map_key (void          *_ctx, /* IN */
 {
    bson_json_reader_t *reader = (bson_json_reader_t *)_ctx;
    bson_json_reader_bson_t *bson = &reader->bson;
+
+   if (!bson_utf8_validate ((const char *) val, len, true /*allow null*/)) {
+      bson_set_error (reader->error, BSON_ERROR_JSON,
+                      BSON_JSON_ERROR_READ_CORRUPT_JS,
+                      "invalid bytes in UTF8 string");
+      return 0;
+   }
 
    if (bson->read_state == BSON_JSON_IN_START_MAP) {
       if (len > 0 && val[0] == '$' && _is_known_key ((const char *)val, len)) {
@@ -746,7 +732,7 @@ _bson_json_read_map_key (void          *_ctx, /* IN */
          return 0;
       }
    } else {
-      _bson_json_buf_set (&bson->key_buf, val, len, true);
+      _bson_json_buf_set (&bson->key_buf, val, len);
       bson->key = (const char *)bson->key_buf.buf;
    }
 
@@ -968,7 +954,7 @@ _bson_json_read_start_array (void *_ctx) /* IN */
       key = bson->key;
       len = bson->key_buf.len;
 
-      BASIC_YAJL_CB_BAIL_IF_NOT_NORMAL ("[");
+      BASIC_CB_BAIL_IF_NOT_NORMAL ("[");
 
       STACK_PUSH_ARRAY (bson_append_array_begin (STACK_BSON_PARENT, key, (int)len,
                                                  STACK_BSON_CHILD));
@@ -1001,60 +987,209 @@ _bson_json_read_end_array (void *_ctx) /* IN */
 }
 
 
-static yajl_callbacks read_cbs = {
-   _bson_json_read_null,
-   _bson_json_read_boolean,
-   _bson_json_read_integer,
-   _bson_json_read_double,
-   NULL,
-   _bson_json_read_string,
-   _bson_json_read_start_map,
-   _bson_json_read_map_key,
-   _bson_json_read_end_map,
-   _bson_json_read_start_array,
-   _bson_json_read_end_array
-};
+/* put unescaped text in reader->bson.unescaped, or set reader->error.
+ * json_text has length len and it is not null-terminated. */
+static bool
+_bson_json_unescape (bson_json_reader_t     *reader,
+                     struct jsonsl_state_st *state,
+                     const char             *json_text,
+                     ssize_t                 len)
+{
+   bson_json_reader_bson_t *reader_bson;
+   jsonsl_error_t err;
+
+   reader_bson = &reader->bson;
+
+   /* add 1 for NULL */
+   _bson_json_buf_ensure (&reader_bson->unescaped, (size_t) len + 1);
+
+   /* length of unescaped str is always <= len */
+   reader_bson->unescaped.len = jsonsl_util_unescape (
+      json_text,
+      (char *) reader_bson->unescaped.buf,
+      (size_t) len, NULL, &err);
+
+   reader_bson->unescaped.buf[reader_bson->unescaped.len] = '\0';
+
+   if (err != JSONSL_ERROR_SUCCESS) {
+      bson_set_error (reader->error, BSON_ERROR_JSON,
+                      BSON_JSON_ERROR_READ_CORRUPT_JS,
+                      "error near position %d: %s",
+                      (int) state->pos_begin, jsonsl_strerror (err));
+      return false;
+   }
+
+   return true;
+}
+
+
+/* read the buffered JSON plus new data, and fill out @len with its length */
+static const char *
+_get_json_text (jsonsl_t                json,  /* IN */
+                struct jsonsl_state_st *state, /* IN */
+                const char             *buf    /* IN */,
+                ssize_t                *len    /* OUT */)
+{
+   bson_json_reader_t *reader;
+   ssize_t bytes_available;
+
+   reader = (bson_json_reader_t *) json->data;
+
+   BSON_ASSERT (state->pos_cur > state->pos_begin);
+
+   *len = (ssize_t) (state->pos_cur - state->pos_begin);
+
+   bytes_available = buf - json->base;
+
+   if (*len <= bytes_available) {
+      /* read directly from stream, not from saved JSON */
+      return buf - (size_t) *len;
+   } else {
+      /* combine saved text with new data from the jsonsl_t */
+      ssize_t append = buf - json->base;
+
+      if (append > 0) {
+         _bson_json_buf_append (&reader->tok_accumulator,
+                                buf - append,
+                                (size_t) append);
+      }
+
+      return (const char *) reader->tok_accumulator.buf;
+   }
+}
+
+
+static void
+_push_callback (jsonsl_t                json,
+                jsonsl_action_t         action,
+                struct jsonsl_state_st *state,
+                const char             *buf)
+{
+   bson_json_reader_t *reader = (bson_json_reader_t *) json->data;
+
+   switch (state->type) {
+   case JSONSL_T_STRING:
+   case JSONSL_T_HKEY:
+   case JSONSL_T_SPECIAL:
+   case JSONSL_T_UESCAPE:
+      reader->json_text_pos = state->pos_begin;
+      break;
+   case JSONSL_T_OBJECT:
+      _bson_json_read_start_map (reader);
+      break;
+   case JSONSL_T_LIST:
+      _bson_json_read_start_array (reader);
+      break;
+   default:
+      break;
+   }
+}
+
+
+static void
+_pop_callback (jsonsl_t                json,
+               jsonsl_action_t         action,
+               struct jsonsl_state_st *state,
+               const char             *buf)
+{
+   bson_json_reader_t *reader;
+   bson_json_reader_bson_t *reader_bson;
+   ssize_t len;
+   double d;
+   const char *obj_text;
+   char *endptr;
+
+   reader = (bson_json_reader_t *) json->data;
+   reader_bson = &reader->bson;
+
+   switch (state->type) {
+   case JSONSL_T_HKEY:
+      obj_text = _get_json_text (json, state, buf, &len);
+      _bson_json_read_map_key (reader, (const unsigned char *) (obj_text + 1),
+                               (size_t) (len - 1));
+      break;
+   case JSONSL_T_STRING:
+      obj_text = _get_json_text (json, state, buf, &len);
+      BSON_ASSERT (obj_text[0] == '"');
+
+      /* remove start/end quotes, replace backslash-escapes, null-terminate */
+      if (!_bson_json_unescape (reader, state, obj_text + 1, len - 1)) {
+         /* reader->error is set */
+         jsonsl_stop (json);
+         break;
+      }
+
+      _bson_json_read_string (reader,
+                              reader_bson->unescaped.buf,
+                              reader_bson->unescaped.len);
+      break;
+   case JSONSL_T_OBJECT:
+      _bson_json_read_end_map (reader);
+      break;
+   case JSONSL_T_LIST:
+      _bson_json_read_end_array (reader);
+      break;
+   case JSONSL_T_SPECIAL:
+      obj_text = _get_json_text (json, state, buf, &len);
+      if (state->special_flags & JSONSL_SPECIALf_NUMNOINT) {
+         d = strtod (obj_text, &endptr);
+
+         if ((d == HUGE_VAL || d == -HUGE_VAL) && errno == ERANGE) {
+            _bson_json_read_set_error (reader,
+                                       "Number \"%.*s\" is out of range",
+                                       (int) len, obj_text);
+            break;
+         }
+
+         if (endptr - obj_text != len) {
+            jsonsl_stop (json);
+         }
+
+         _bson_json_read_double (reader, d);
+      } else if (state->special_flags & JSONSL_SPECIALf_NUMERIC) {
+         int64_t i = state->nelem;
+         /* jsonsl puts the unsigned value in state->nelem */
+         if (state->special_flags & JSONSL_SPECIALf_SIGNED) {
+            i *= -1;
+         }
+
+         _bson_json_read_integer (reader, i);
+      } else if (state->special_flags & JSONSL_SPECIALf_BOOLEAN) {
+         _bson_json_read_boolean (reader, obj_text[0] == 't' ? 1 : 0);
+      } else if (state->special_flags & JSONSL_SPECIALf_NULL) {
+         _bson_json_read_null (reader);
+      }
+      break;
+   default:
+      break;
+   }
+
+   reader->json_text_pos = -1;
+   reader->tok_accumulator.len = 0;
+}
 
 
 static int
-_bson_json_read_parse_error (bson_json_reader_t *reader, /* IN */
-                             yajl_status         ys,     /* IN */
-                             bson_error_t       *error)  /* OUT */
+_error_callback (jsonsl_t                json,
+                 jsonsl_error_t          err,
+                 struct jsonsl_state_st *state,
+                 char                   *errat)
 {
-   unsigned char *str;
-   int r;
-   yajl_handle yh = reader->yh;
-   bson_json_reader_bson_t *bson = &reader->bson;
-   bson_json_reader_producer_t *p = &reader->producer;
+   bson_json_reader_t *reader = (bson_json_reader_t *) json->data;
 
-   if (ys == yajl_status_client_canceled) {
-      if (bson->read_state == BSON_JSON_DONE) {
-         r = 1;
-      } else {
-         r = -1;
-      }
-   } else if (p->all_whitespace) {
-      r = 0;
-   } else {
-      if (error) {
-         str = yajl_get_error (yh, 1, p->buf + p->bytes_parsed,
-                               p->bytes_read - p->bytes_parsed);
-         bson_set_error (error,
-                         BSON_ERROR_JSON,
-                         BSON_JSON_ERROR_READ_CORRUPT_JS,
-                         "%s", str);
-         yajl_free_error (yh, str);
-      }
-
-      r = -1;
+   if (err == JSONSL_ERROR_CANT_INSERT && *errat == '{') {
+      /* start the next document */
+      reader->should_reset = true;
+      reader->advance = errat - json->base;
+      return 0;
    }
 
-   p->bytes_parsed += yajl_get_bytes_consumed (yh);
+   bson_set_error (reader->error, BSON_ERROR_JSON,
+                   BSON_JSON_ERROR_READ_CORRUPT_JS,
+                   "Got parse error at '%c', position %d: %s",
+                   *errat, (int) json->pos, jsonsl_strerror (err));
 
-   yh->stateStack.used = 0;
-   yajl_bs_push (yh->stateStack, yajl_state_start);
-
-   return r;
+   return 0;
 }
 
 
@@ -1088,43 +1223,38 @@ bson_json_reader_read (bson_json_reader_t *reader, /* IN */
                        bson_error_t       *error)  /* OUT */
 {
    bson_json_reader_producer_t *p;
-   yajl_status ys;
-   yajl_handle yh;
+   ssize_t start_pos;
    ssize_t r;
-   bool read_something = false;
+   ssize_t buf_offset;
+   ssize_t accum;
+   bson_error_t error_tmp;
    int ret = 0;
 
    BSON_ASSERT (reader);
    BSON_ASSERT (bson);
 
    p = &reader->producer;
-   yh = reader->yh;
 
    reader->bson.bson = bson;
    reader->bson.n = -1;
    reader->bson.read_state = BSON_JSON_REGULAR;
-   reader->error = error;
-   reader->producer.all_whitespace = true;
+   reader->error = error ? error : &error_tmp;
+   memset (reader->error, 0, sizeof (bson_error_t));
 
-   for (;; ) {
-      if (!read_something &&
-          p->bytes_parsed &&
-          (p->bytes_read > p->bytes_parsed)) {
-         r = p->bytes_read - p->bytes_parsed;
+   for (;;) {
+      start_pos = reader->json->pos;
+
+      if (p->bytes_read > 0) {
+         /* leftover data from previous JSON doc in the stream */
+         r = p->bytes_read;
       } else {
-         r = p->cb (p->data, p->buf, p->buf_size - 1);
-
-         if (r > 0) {
-            p->bytes_read = r;
-            p->bytes_parsed = 0;
-            p->buf[r] = '\0';
-         }
+         /* read a chunk of bytes by executing the callback */
+         r = p->cb (p->data, p->buf, p->buf_size);
       }
 
       if (r < 0) {
          if (error) {
-            bson_set_error (error,
-                            BSON_ERROR_JSON,
+            bson_set_error (error, BSON_ERROR_JSON,
                             BSON_JSON_ERROR_READ_CB_FAILURE,
                             "reader cb failed");
          }
@@ -1133,32 +1263,54 @@ bson_json_reader_read (bson_json_reader_t *reader, /* IN */
       } else if (r == 0) {
          break;
       } else {
-         read_something = true;
+         ret = 1;
+         p->bytes_read = (size_t) r;
 
-         if (p->all_whitespace) {
-            p->all_whitespace = _bson_json_all_whitespace (
-               (char *)(p->buf + p->bytes_parsed));
-         }
+         jsonsl_feed (reader->json, (const jsonsl_char_t *) p->buf, (size_t) r);
 
-         ys = yajl_parse (yh, p->buf + p->bytes_parsed, r);
+         if (reader->should_reset) {
+            /* end of a document */
+            jsonsl_reset (reader->json);
+            reader->should_reset = false;
 
-         if (ys != yajl_status_ok) {
-            ret = _bson_json_read_parse_error (reader, ys, error);
+            /* advance past already-parsed data */
+            memmove (p->buf, p->buf + reader->advance, r - reader->advance);
+            p->bytes_read -= reader->advance;
+            ret = 1;
             goto cleanup;
          }
-      }
-   }
 
-   if (read_something) {
-      ys = yajl_complete_parse (yh);
+         if (reader->error->domain) {
+            ret = -1;
+            goto cleanup;
+         }
 
-      if (ys != yajl_status_ok) {
-         ret = _bson_json_read_parse_error (reader, ys, error);
-         goto cleanup;
+         /* accumulate a key or string value */
+         if (reader->json_text_pos != -1) {
+            if (reader->json_text_pos < reader->json->pos) {
+               accum = BSON_MIN (reader->json->pos - reader->json_text_pos, r);
+               /* if this chunk stopped mid-token, buf_offset is how far into
+                * our current chunk the token begins. */
+               buf_offset = AT_LEAST_0 (reader->json_text_pos - start_pos);
+               _bson_json_buf_append (&reader->tok_accumulator,
+                                      p->buf + buf_offset,
+                                      (size_t) accum);
+            }
+         }
+
+         p->bytes_read = 0;
       }
    }
 
 cleanup:
+   if (ret == 1 && reader->bson.read_state != BSON_JSON_DONE) {
+      /* data ended in the middle */
+      bson_set_error (reader->error,
+                      BSON_ERROR_JSON,
+                      BSON_JSON_ERROR_READ_CORRUPT_JS,
+                      "%s", "Incomplete JSON");
+      return -1;
+   }
 
    return ret;
 }
@@ -1175,6 +1327,13 @@ bson_json_reader_new (void                 *data,           /* IN */
    bson_json_reader_producer_t *p;
 
    r = bson_malloc0 (sizeof *r);
+   r->json = jsonsl_new (STACK_MAX);
+   r->json->error_callback = _error_callback;
+   r->json->action_callback_PUSH = _push_callback;
+   r->json->action_callback_POP = _pop_callback;
+   r->json->data = r;
+   r->json_text_pos = -1;
+   jsonsl_enable_all_callbacks (r->json);
 
    p = &r->producer;
 
@@ -1183,8 +1342,6 @@ bson_json_reader_new (void                 *data,           /* IN */
    p->dcb = dcb;
    p->buf_size = buf_size ? buf_size : BSON_JSON_DEFAULT_BUF_SIZE;
    p->buf = bson_malloc (p->buf_size);
-
-   r->yh = yajl_alloc (&read_cbs, &gYajlAllocFuncs, r);
 
    return r;
 }
@@ -1203,13 +1360,14 @@ bson_json_reader_destroy (bson_json_reader_t *reader) /* IN */
 
    bson_free (p->buf);
    bson_free (b->key_buf.buf);
+   bson_free (b->unescaped.buf);
 
    for (i = 0; i < 3; i++) {
       bson_free (b->bson_type_buf[i].buf);
    }
 
-   yajl_free (reader->yh);
-
+   bson_free (reader->json);
+   bson_free (reader->tok_accumulator.buf);
    bson_free (reader);
 }
 

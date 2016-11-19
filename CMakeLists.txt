@@ -153,15 +153,7 @@ set (SOURCES
    ${SOURCE_DIR}/src/bson/bson-value.c
    ${SOURCE_DIR}/src/bson/bson-version-functions.c
    ${SOURCE_DIR}/src/bson/bson-writer.c
-   ${SOURCE_DIR}/src/yajl/yajl_alloc.c
-   ${SOURCE_DIR}/src/yajl/yajl_buf.c
-   ${SOURCE_DIR}/src/yajl/yajl.c
-   ${SOURCE_DIR}/src/yajl/yajl_encode.c
-   ${SOURCE_DIR}/src/yajl/yajl_gen.c
-   ${SOURCE_DIR}/src/yajl/yajl_lex.c
-   ${SOURCE_DIR}/src/yajl/yajl_parser.c
-   ${SOURCE_DIR}/src/yajl/yajl_tree.c
-   ${SOURCE_DIR}/src/yajl/yajl_version.c
+   ${SOURCE_DIR}/src/jsonsl/jsonsl.c
 )
 
 set (HEADERS

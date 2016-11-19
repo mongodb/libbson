@@ -1,8 +1,12 @@
+/* required on old Windows for rand_s to be defined */
+#define _CRT_RAND_S
+
 #include <bson.h>
 #include <bcon.h>
 #include <assert.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <bson-string.h>
 
 #include "bson-tests.h"
 #include "TestSuite.h"
@@ -423,6 +427,112 @@ test_bson_corrupt_binary (void)
    bson_free(buf);
 }
 
+#ifdef _WIN32
+# define RAND_R rand_s
+#else
+# define RAND_R rand_r
+#endif
+
+static char *
+rand_str (size_t maxlen, unsigned int *seed /* IN / OUT */,
+          char *buf  /* IN / OUT */)
+{
+   size_t len = RAND_R (seed) % (maxlen - 1);
+   size_t i;
+
+   for (i = 0; i < len; i++) {
+      buf[i] = (char) ('a' + i % 26);
+   }
+
+   buf[len] = '\0';
+   return buf;
+}
+
+/* test with random buffer sizes to ensure we parse whole keys and values when
+ * reads pause and resume in the middle of tokens */
+static void
+test_bson_json_read_buffering (void)
+{
+   bson_t **bsons;
+   char *json_tmp;
+   bson_string_t *json;
+   bson_error_t error;
+   bson_t bson_out = BSON_INITIALIZER;
+   int i;
+   unsigned int seed = 42;
+   int n_docs, docs_idx;
+   int n_elems, elem_idx;
+   char key[25];
+   char val[25];
+   bson_json_reader_t *reader;
+   int r;
+
+   json = bson_string_new (NULL);
+
+   /* parse between 1 and 10 JSON objects */
+   for (n_docs = 1; n_docs < 10; n_docs++) {
+      /* do 50 trials */
+      for (i = 0; i < 50; i++) {
+         bsons = bson_malloc (n_docs * sizeof (bson_t *));
+         for (docs_idx = 0; docs_idx < n_docs; docs_idx++) {
+            /* a BSON document with up to 10 strings and numbers */
+            bsons[docs_idx] = bson_new ();
+            n_elems = RAND_R (&seed) % 5;
+            for (elem_idx = 0; elem_idx < n_elems; elem_idx++) {
+               bson_append_utf8 (bsons[docs_idx],
+                                 rand_str (sizeof key, &seed, key), -1,
+                                 rand_str (sizeof val, &seed, val), -1);
+
+               bson_append_int32 (bsons[docs_idx],
+                                  rand_str (sizeof key, &seed, key), -1,
+                                  RAND_R (&seed) % INT32_MAX);
+            }
+
+            /* append the BSON document's JSON representation to "json" */
+            json_tmp = bson_as_json (bsons[docs_idx], NULL);
+            assert (json_tmp);
+            bson_string_append (json, json_tmp);
+            bson_free (json_tmp);
+         }
+
+         reader = bson_json_data_reader_new (
+            true                          /* "allow_multiple" is unused */,
+            (size_t) RAND_R (&seed) % 100 /* bufsize*/);
+
+         bson_json_data_reader_ingest (reader, (uint8_t *) json->str,
+                                       json->len);
+
+         for (docs_idx = 0; docs_idx < n_docs; docs_idx++) {
+            bson_reinit (&bson_out);
+            r = bson_json_reader_read (reader, &bson_out, &error);
+            if (r == -1) {
+               fprintf (stderr, "%s\n", error.message);
+               abort ();
+            }
+
+            assert (r);
+            bson_eq_bson (&bson_out, bsons[docs_idx]);
+         }
+
+         /* finished parsing */
+         assert_cmpint (0, ==,
+                        bson_json_reader_read (reader, &bson_out, &error));
+
+         bson_json_reader_destroy (reader);
+         bson_string_truncate (json, 0);
+
+         for (docs_idx = 0; docs_idx < n_docs; docs_idx++) {
+            bson_destroy (bsons[docs_idx]);
+         }
+
+         bson_free (bsons);
+      }
+   }
+
+   bson_string_free (json, true);
+   bson_destroy (&bson_out);
+}
+
 static void
 _test_bson_json_read_compare (const char *json,
                               int         size,
@@ -831,7 +941,7 @@ test_bson_json_dbref (void)
 
    const char *json_with_int_id = "{ \"key\": {"
       "\"$ref\": \"collection\","
-      "\"$id\": 1}}}";
+      "\"$id\": 1}}";
 
    bson_t *bson_with_int_id = BCON_NEW (
       "key", "{",
@@ -891,6 +1001,87 @@ test_bson_json_dbref (void)
       bson_destroy (tests[i].expected_bson);
    }
 }
+
+static void
+test_bson_json_uescape (void)
+{
+   bson_error_t error;
+   bson_t b;
+   bool r;
+
+   const char *euro = "{ \"euro\": \"\\u20AC\"}";
+   bson_t *bson_euro = BCON_NEW ("euro", BCON_UTF8 ("\xE2\x82\xAC"));
+
+   const char *crlf = "{ \"crlf\": \"\\r\\n\"}";
+   bson_t *bson_crlf = BCON_NEW ("crlf", BCON_UTF8 ("\r\n"));
+
+   const char *quote = "{ \"quote\": \"\\\"\"}";
+   bson_t *bson_quote = BCON_NEW ("quote", BCON_UTF8 ("\""));
+
+   const char *backslash = "{ \"backslash\": \"\\\\\"}";
+   bson_t *bson_backslash = BCON_NEW ("backslash", BCON_UTF8 ("\\"));
+
+   const char *empty = "{ \"\": \"\"}";
+   bson_t *bson_empty = BCON_NEW ("", BCON_UTF8 (""));
+
+   const char *escapes = "{ \"escapes\": \"\\f\\b\\t\"}";
+   bson_t *bson_escapes = BCON_NEW ("escapes", BCON_UTF8 ("\f\b\t"));
+
+   const char *nil_byte = "{ \"nil\": \"\\u0000\"}";
+   bson_t *bson_nil_byte = bson_new ();  /* we'll append "\0" to it, below */
+
+   typedef struct
+   {
+      const char *json;
+      bson_t     *expected_bson;
+   } uencode_test_t;
+
+   uencode_test_t tests[] = {
+      { euro,      bson_euro      },
+      { crlf,      bson_crlf      },
+      { quote,     bson_quote     },
+      { backslash, bson_backslash },
+      { empty,     bson_empty     },
+      { escapes,   bson_escapes   },
+      { nil_byte,  bson_nil_byte  },
+   };
+
+   int n_tests = sizeof (tests) / sizeof (uencode_test_t);
+   int i;
+
+   bson_append_utf8 (bson_nil_byte, "nil", -1, "\0", 1);
+
+   for (i = 0; i < n_tests; i++) {
+      r = bson_init_from_json (&b, tests[i].json, -1, &error);
+
+      if (!r) {
+         fprintf (stderr, "%s\n", error.message);
+      }
+
+      assert (r);
+      bson_eq_bson (&b, tests[i].expected_bson);
+      bson_destroy (&b);
+   }
+
+   for (i = 0; i < n_tests; i++) {
+      bson_destroy (tests[i].expected_bson);
+   }
+}
+
+static void
+test_bson_json_double_overflow (void)
+{
+   bson_error_t error;
+   bson_t b;
+
+   const char *j = "{ \"d\": 2e400 }";
+
+   assert (!bson_init_from_json (&b, j, -1, &error));
+   ASSERT_ERROR_CONTAINS (error, BSON_ERROR_JSON,
+                          BSON_JSON_ERROR_READ_INVALID_PARAM,
+                          "out of range");
+}
+
 
 static void
 test_bson_json_number_decimal (void) {
@@ -1107,6 +1298,7 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/as_json_special_keys_at_top", test_bson_json_special_keys_at_top);
    TestSuite_Add (suite, "/bson/array_as_json", test_bson_array_as_json);
    TestSuite_Add (suite, "/bson/json/allow_multiple", test_bson_json_allow_multiple);
+   TestSuite_Add (suite, "/bson/json/read/buffering", test_bson_json_read_buffering);
    TestSuite_Add (suite, "/bson/json/read", test_bson_json_read);
    TestSuite_Add (suite, "/bson/json/inc", test_bson_json_inc);
    TestSuite_Add (suite, "/bson/json/array", test_bson_json_array);
@@ -1120,10 +1312,11 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/json/read/decimal128", test_bson_json_read_decimal128);
    TestSuite_Add (suite, "/bson/json/read/file", test_json_reader_new_from_file);
    TestSuite_Add (suite, "/bson/json/read/bad_path", test_json_reader_new_from_bad_path);
-   TestSuite_Add (suite, "/bson/json/read/invalid", test_bson_json_read_invalid);
    TestSuite_Add (suite, "/bson/json/read/$numberLong", test_bson_json_number_long);
    TestSuite_Add (suite, "/bson/json/read/$numberLong/zero", test_bson_json_number_long_zero);
    TestSuite_Add (suite, "/bson/json/read/dbref", test_bson_json_dbref);
+   TestSuite_Add (suite, "/bson/json/read/uescape", test_bson_json_uescape);
+   TestSuite_Add (suite, "/bson/json/read/double/overflow", test_bson_json_double_overflow);
    TestSuite_Add (suite, "/bson/as_json/decimal128", test_bson_as_json_decimal128);
    TestSuite_Add (suite, "/bson/json/read/$numberDecimal", test_bson_json_number_decimal);
    TestSuite_Add (suite, "/bson/integer/width", test_bson_integer_width);
