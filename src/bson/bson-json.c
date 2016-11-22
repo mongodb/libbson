@@ -1009,8 +1009,6 @@ _bson_json_unescape (bson_json_reader_t     *reader,
       (char *) reader_bson->unescaped.buf,
       (size_t) len, NULL, &err);
 
-   reader_bson->unescaped.buf[reader_bson->unescaped.len] = '\0';
-
    if (err != JSONSL_ERROR_SUCCESS) {
       bson_set_error (reader->error, BSON_ERROR_JSON,
                       BSON_JSON_ERROR_READ_CORRUPT_JS,
@@ -1018,6 +1016,8 @@ _bson_json_unescape (bson_json_reader_t     *reader,
                       (int) state->pos_begin, jsonsl_strerror (err));
       return false;
    }
+
+   reader_bson->unescaped.buf[reader_bson->unescaped.len] = '\0';
 
    return true;
 }
