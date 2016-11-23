@@ -1069,6 +1069,23 @@ test_bson_json_uescape (void)
 }
 
 static void
+test_bson_json_uescape_key (void)
+{
+   bson_error_t error;
+   bson_t b;
+   bool r;
+
+   bson_t *bson_euro = BCON_NEW ("\xE2\x82\xAC", BCON_UTF8 ("euro"));
+
+   r = bson_init_from_json (&b, "{ \"\\u20AC\": \"euro\"}", -1, &error);
+   assert (r);
+   bson_eq_bson (&b, bson_euro);
+
+   bson_destroy (&b);
+   bson_destroy (bson_euro);
+}
+
+static void
 test_bson_json_uescape_bad (void)
 {
    bson_error_t error;
@@ -1332,6 +1349,7 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/json/read/$numberLong/zero", test_bson_json_number_long_zero);
    TestSuite_Add (suite, "/bson/json/read/dbref", test_bson_json_dbref);
    TestSuite_Add (suite, "/bson/json/read/uescape", test_bson_json_uescape);
+   TestSuite_Add (suite, "/bson/json/read/uescape/key", test_bson_json_uescape_key);
    TestSuite_Add (suite, "/bson/json/read/uescape/bad", test_bson_json_uescape_bad);
    TestSuite_Add (suite, "/bson/json/read/double/overflow", test_bson_json_double_overflow);
    TestSuite_Add (suite, "/bson/as_json/decimal128", test_bson_as_json_decimal128);

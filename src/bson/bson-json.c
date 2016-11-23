@@ -1104,10 +1104,6 @@ _pop_callback (jsonsl_t                json,
 
    switch (state->type) {
    case JSONSL_T_HKEY:
-      obj_text = _get_json_text (json, state, buf, &len);
-      _bson_json_read_map_key (reader, (const unsigned char *) (obj_text + 1),
-                               (size_t) (len - 1));
-      break;
    case JSONSL_T_STRING:
       obj_text = _get_json_text (json, state, buf, &len);
       BSON_ASSERT (obj_text[0] == '"');
@@ -1119,9 +1115,13 @@ _pop_callback (jsonsl_t                json,
          break;
       }
 
-      _bson_json_read_string (reader,
-                              reader_bson->unescaped.buf,
-                              reader_bson->unescaped.len);
+      if (state->type == JSONSL_T_HKEY) {
+         _bson_json_read_map_key (reader, reader_bson->unescaped.buf,
+                                  reader_bson->unescaped.len);
+      } else {
+         _bson_json_read_string (reader, reader_bson->unescaped.buf,
+                                 reader_bson->unescaped.len);
+      }
       break;
    case JSONSL_T_OBJECT:
       _bson_json_read_end_map (reader);
