@@ -1098,7 +1098,6 @@ _pop_callback (jsonsl_t                json,
    ssize_t len;
    double d;
    const char *obj_text;
-   char *endptr;
 
    reader = (bson_json_reader_t *) json->data;
    reader_bson = &reader->bson;
@@ -1133,17 +1132,13 @@ _pop_callback (jsonsl_t                json,
    case JSONSL_T_SPECIAL:
       obj_text = _get_json_text (json, state, buf, &len);
       if (state->special_flags & JSONSL_SPECIALf_NUMNOINT) {
-         d = strtod (obj_text, &endptr);
+         d = strtod (obj_text, NULL);
 
          if ((d == HUGE_VAL || d == -HUGE_VAL) && errno == ERANGE) {
             _bson_json_read_set_error (reader,
                                        "Number \"%.*s\" is out of range",
                                        (int) len, obj_text);
             break;
-         }
-
-         if (endptr - obj_text != len) {
-            jsonsl_stop (json);
          }
 
          _bson_json_read_double (reader, d);
