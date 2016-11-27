@@ -1109,6 +1109,8 @@ _pop_callback (jsonsl_t                json,
       BSON_ASSERT (obj_text[0] == '"');
 
       /* remove start/end quotes, replace backslash-escapes, null-terminate */
+      /* you'd think it would be faster to check if state->nescapes > 0 first,
+       * but tests show no improvement */
       if (!_bson_json_unescape (reader, state, obj_text + 1, len - 1)) {
          /* reader->error is set */
          jsonsl_stop (json);
