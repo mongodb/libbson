@@ -1364,7 +1364,7 @@ bson_json_reader_destroy (bson_json_reader_t *reader) /* IN */
       bson_free (b->bson_type_buf[i].buf);
    }
 
-   bson_free (reader->json);
+   jsonsl_destroy (reader->json);
    bson_free (reader->tok_accumulator.buf);
    bson_free (reader);
 }
