@@ -290,6 +290,35 @@ _bson_json_read_set_error (bson_json_reader_t *reader, /* IN */
 
 
 static void
+_bson_json_read_corrupt (bson_json_reader_t *reader,
+                         const char         *fmt,
+                         ...)
+   BSON_GNUC_PRINTF (2, 3);
+
+
+static void
+_bson_json_read_corrupt (bson_json_reader_t *reader, /* IN */
+                         const char         *fmt,    /* IN */
+                         ...)
+{
+   va_list ap;
+
+   if (reader->error) {
+      reader->error->domain = BSON_ERROR_JSON;
+      reader->error->code = BSON_JSON_ERROR_READ_CORRUPT_JS;
+      va_start (ap, fmt);
+      bson_vsnprintf (reader->error->message, sizeof reader->error->message,
+                      fmt, ap);
+      va_end (ap);
+      reader->error->message [sizeof reader->error->message - 1] = '\0';
+   }
+
+   reader->bson.read_state = BSON_JSON_ERROR;
+   jsonsl_stop (reader->json);
+}
+
+
+static void
 _bson_json_buf_ensure (bson_json_buf_t *buf, /* IN */
                        size_t           len) /* IN */
 {
@@ -461,9 +490,7 @@ _bson_json_read_string (bson_json_reader_t  *reader, /* IN */
    bs = bson->bson_state;
 
    if (!bson_utf8_validate ((const char *) val, vlen, true /*allow null*/)) {
-      bson_set_error (reader->error, BSON_ERROR_JSON,
-                      BSON_JSON_ERROR_READ_CORRUPT_JS,
-                      "invalid bytes in UTF8 string");
+      _bson_json_read_corrupt (reader, "invalid bytes in UTF8 string");
       return;
    }
 
@@ -655,9 +682,7 @@ _bson_json_read_map_key (bson_json_reader_t *reader, /* IN */
    bson_json_reader_bson_t *bson = &reader->bson;
 
    if (!bson_utf8_validate ((const char *) val, len, true /* allow null */)) {
-      bson_set_error (reader->error, BSON_ERROR_JSON,
-                      BSON_JSON_ERROR_READ_CORRUPT_JS,
-                      "invalid bytes in UTF8 string");
+      _bson_json_read_corrupt (reader, "invalid bytes in UTF8 string");
       return;
    }
 
@@ -811,10 +836,7 @@ _bson_json_read_append_timestamp (bson_json_reader_t      *reader, /* IN */
 static void
 _bad_extended_json (bson_json_reader_t *reader)
 {
-   bson_set_error (reader->error,
-                   BSON_ERROR_JSON,
-                   BSON_JSON_ERROR_READ_CORRUPT_JS,
-                   "Invalid MongoDB extended JSON");
+   _bson_json_read_corrupt (reader, "Invalid MongoDB extended JSON");
 }
 
 
@@ -1284,10 +1306,7 @@ bson_json_reader_read (bson_json_reader_t *reader, /* IN */
 cleanup:
    if (ret == 1 && reader->bson.read_state != BSON_JSON_DONE) {
       /* data ended in the middle */
-      bson_set_error (reader->error,
-                      BSON_ERROR_JSON,
-                      BSON_JSON_ERROR_READ_CORRUPT_JS,
-                      "%s", "Incomplete JSON");
+      _bson_json_read_corrupt (reader, "%s", "Incomplete JSON");
       return -1;
    }
 

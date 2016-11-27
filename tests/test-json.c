@@ -654,11 +654,16 @@ test_bson_json_read(void)
 static void
 test_bson_json_read_corrupt_utf8 (void)
 {
-   const char *json = "{ \"a\" : \"\x80\"}";
+   const char *bad_key = "{ \"\x80\" : \"a\"}";
+   const char *bad_value = "{ \"a\" : \"\x80\"}";
    bson_error_t error = { 0 };
 
-   assert (!bson_new_from_json ((uint8_t *) json, -1, &error));
+   assert (!bson_new_from_json ((uint8_t *) bad_key, -1, &error));
+   ASSERT_ERROR_CONTAINS (error, BSON_ERROR_JSON,
+                          BSON_JSON_ERROR_READ_CORRUPT_JS,
+                          "invalid bytes in UTF8 string");
 
+   assert (!bson_new_from_json ((uint8_t *) bad_value, -1, &error));
    ASSERT_ERROR_CONTAINS (error, BSON_ERROR_JSON,
                           BSON_JSON_ERROR_READ_CORRUPT_JS,
                           "invalid bytes in UTF8 string");
