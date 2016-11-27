@@ -366,7 +366,9 @@ _bson_json_buf_append (bson_json_buf_t *buf,
 static void
 _bson_json_read_fixup_key (bson_json_reader_bson_t *bson) /* IN */
 {
-   if (bson->n >= 0 && STACK_IS_ARRAY) {
+   bson_json_read_state_t rs = bson->read_state;
+
+   if (bson->n >= 0 && STACK_IS_ARRAY && rs == BSON_JSON_REGULAR) {
       _bson_json_buf_ensure (&bson->key_buf, 12);
       bson->key_buf.len = bson_uint32_to_string (STACK_I, &bson->key,
                                                  (char *) bson->key_buf.buf,

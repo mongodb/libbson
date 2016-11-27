@@ -1206,6 +1206,70 @@ test_bson_json_array (void)
 }
 
 static void
+test_bson_json_array_single (void)
+{
+   bson_error_t error;
+   const char *json = "[ 0 ]";
+   bson_t b, compare;
+   bool r;
+
+   bson_init(&compare);
+   bson_append_int32(&compare, "0", 1, 0);
+
+   r = bson_init_from_json (&b, json, -1, &error);
+   if (!r) fprintf (stderr, "%s\n", error.message);
+   assert (r);
+
+   bson_eq_bson (&b, &compare);
+   bson_destroy (&compare);
+   bson_destroy (&b);
+}
+
+static void
+test_bson_json_array_int64 (void)
+{
+   bson_error_t error;
+   const char *json = "[ { \"$numberLong\" : \"123\" },"
+                      "  { \"$numberLong\" : \"42\" } ]";
+   bson_t b, compare;
+   bool r;
+
+   bson_init(&compare);
+   bson_append_int64 (&compare, "0", 1, 123);
+   bson_append_int64 (&compare, "1", 1, 42);
+
+   r = bson_init_from_json (&b, json, -1, &error);
+   if (!r) fprintf (stderr, "%s\n", error.message);
+   assert (r);
+
+   bson_eq_bson (&b, &compare);
+   bson_destroy (&compare);
+   bson_destroy (&b);
+}
+
+static void
+test_bson_json_array_subdoc (void)
+{
+   bson_error_t error;
+   const char *json = "[ { \"a\" : 123 } ]";
+   bson_t b, compare, subdoc;
+   bool r;
+
+   bson_init (&compare);
+   bson_init (&subdoc);
+   bson_append_int32 (&subdoc, "a", 1, 123);
+   bson_append_document (&compare, "0", 1, &subdoc);
+
+   r = bson_init_from_json (&b, json, -1, &error);
+   if (!r) fprintf (stderr, "%s\n", error.message);
+   assert (r);
+
+   bson_eq_bson (&b, &compare);
+   bson_destroy (&compare);
+   bson_destroy (&b);
+}
+
+static void
 test_bson_json_date_check (bool        should_work,
                            const char *json,
                            int64_t     value)
@@ -1361,6 +1425,9 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/json/read", test_bson_json_read);
    TestSuite_Add (suite, "/bson/json/inc", test_bson_json_inc);
    TestSuite_Add (suite, "/bson/json/array", test_bson_json_array);
+   TestSuite_Add (suite, "/bson/json/array/single", test_bson_json_array_single);
+   TestSuite_Add (suite, "/bson/json/array/int64", test_bson_json_array_int64);
+   TestSuite_Add (suite, "/bson/json/array/subdoc", test_bson_json_array_subdoc);
    TestSuite_Add (suite, "/bson/json/date", test_bson_json_date);
    TestSuite_Add (suite, "/bson/json/read/missing_complex", test_bson_json_read_missing_complex);
    TestSuite_Add (suite, "/bson/json/read/invalid_binary", test_bson_json_read_invalid_binary);
