@@ -1,23 +1,7 @@
-Libbson-1.4.2
-=============
+Libbson-1.4.0-beta1
+===================
 
-No change since 1.4.1; released to keep pace with libmongoc's version.
-
--- A. Jesse Jiryu Davis
-
-
-Libbson-1.4.1
-=============
-
-This release improves the HTML documentation's Makefile.
-
--- A. Jesse Jiryu Davis
-
-
-Libbson-1.4.0
-=============
-
-It is my pleasure to announce Libbson-1.4.0.
+It is my pleasure to announce the beta release of Libbson-1.4.0.
 
 New features and bug fixes:
 
