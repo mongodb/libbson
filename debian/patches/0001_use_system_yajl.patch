@@ -14,15 +14,7 @@ Index: libbson/src/bson/bson-json.c
  
  #ifdef _WIN32
  # include <io.h>
-@@ -166,6 +165,7 @@ struct _bson_json_reader_t
- {
-    bson_json_reader_producer_t  producer;
-    bson_json_reader_bson_t      bson;
-+   bool                         allow_multiple;
-    yajl_handle                  yh;
-    bson_error_t                *error;
- };
-@@ -1024,6 +1024,34 @@ static yajl_callbacks read_cbs = {
+@@ -1016,6 +1015,28 @@ static yajl_callbacks read_cbs = {
  };
  
  
@@ -31,13 +23,7 @@ Index: libbson/src/bson/bson-json.c
 +{
 +   if (!reader->yh) {
 +      reader->yh = yajl_alloc (&read_cbs, &gYajlAllocFuncs, reader);
-+      yajl_option opt = yajl_dont_validate_strings;
-+
-+      if (reader->allow_multiple) {
-+         opt |= yajl_allow_multiple_values;
-+      }
-+
-+      yajl_config (reader->yh, opt, 1);
++      yajl_config (reader->yh, yajl_allow_multiple_values, 1);
 +   }
 +
 +   return reader->yh;
@@ -57,7 +43,7 @@ Index: libbson/src/bson/bson-json.c
  static int
  _bson_json_read_parse_error (bson_json_reader_t *reader, /* IN */
                               yajl_status         ys,     /* IN */
-@@ -1058,9 +1086,7 @@ _bson_json_read_parse_error (bson_json_r
+@@ -1050,9 +1071,7 @@ _bson_json_read_parse_error (bson_json_r
     }
  
     p->bytes_parsed += yajl_get_bytes_consumed (yh);
@@ -68,7 +54,7 @@ Index: libbson/src/bson/bson-json.c
  
     return r;
  }
-@@ -1106,7 +1132,7 @@ bson_json_reader_read (bson_json_reader_
+@@ -1098,7 +1117,7 @@ bson_json_reader_read (bson_json_reader_
     BSON_ASSERT (bson);
  
     p = &reader->producer;
@@ -77,23 +63,16 @@ Index: libbson/src/bson/bson-json.c
  
     reader->bson.bson = bson;
     reader->bson.n = -1;
-@@ -1192,13 +1218,8 @@ bson_json_reader_new (void
+@@ -1184,7 +1203,7 @@ bson_json_reader_new (void
     p->buf_size = buf_size ? buf_size : BSON_JSON_DEFAULT_BUF_SIZE;
     p->buf = bson_malloc (p->buf_size);
  
 -   r->yh = yajl_alloc (&read_cbs, &gYajlAllocFuncs, r);
--
--   yajl_config (r->yh,
--                yajl_dont_validate_strings |
--                (allow_multiple ?  yajl_allow_multiple_values : 0)
--                , 1);
--
-+   r->allow_multiple = allow_multiple;
 +   _bson_json_reader_yajl_handle (r);
+ 
     return r;
  }
- 
-@@ -1221,7 +1242,7 @@ bson_json_reader_destroy (bson_json_read
+@@ -1208,7 +1227,7 @@ bson_json_reader_destroy (bson_json_read
        bson_free (b->bson_type_buf[i].buf);
     }
  
@@ -106,7 +85,7 @@ Index: libbson/tests/test-json.c
 ===================================================================
 --- libbson.orig/tests/test-json.c
 +++ libbson/tests/test-json.c
-@@ -566,6 +566,30 @@ test_bson_json_read_invalid_json(void)
+@@ -684,6 +684,30 @@ test_bson_json_read_invalid_json(void)
     assert (!b);
  }
  
@@ -137,14 +116,14 @@ Index: libbson/tests/test-json.c
  static ssize_t
  test_bson_json_read_bad_cb_helper(void *_ctx, uint8_t * buf, size_t len)
  {
-@@ -981,6 +1005,7 @@ test_json_install (TestSuite *suite)
+@@ -1114,6 +1138,7 @@ test_json_install (TestSuite *suite)
     TestSuite_Add (suite, "/bson/json/read/missing_complex", test_bson_json_read_missing_complex);
     TestSuite_Add (suite, "/bson/json/read/invalid_binary", test_bson_json_read_invalid_binary);
     TestSuite_Add (suite, "/bson/json/read/invalid_json", test_bson_json_read_invalid_json);
 +   TestSuite_Add (suite, "/bson/json/read/multiple_errors", test_bson_json_multiple_errors);
     TestSuite_Add (suite, "/bson/json/read/bad_cb", test_bson_json_read_bad_cb);
     TestSuite_Add (suite, "/bson/json/read/invalid", test_bson_json_read_invalid);
- #ifdef BSON_EXPERIMENTAL_FEATURES
+    TestSuite_Add (suite, "/bson/json/read/corrupt_utf8", test_bson_json_read_corrupt_utf8);
 Index: libbson/src/Makefile.am
 ===================================================================
 --- libbson.orig/src/Makefile.am
@@ -158,8 +137,8 @@ Index: libbson/src/Makefile.am
  	-lm
  libbson_1_0_la_LDFLAGS = \
  	$(OPTIMIZE_LDFLAGS) \
-@@ -18,7 +18,6 @@ libbson_1_0_la_LDFLAGS += -export-symbol
- endif
+@@ -12,7 +12,6 @@ libbson_1_0_la_LDFLAGS = \
+ 	-rpath $(libdir)
  
  include src/bson/Makefile.am
 -include src/yajl/Makefile.am
@@ -170,7 +149,7 @@ Index: libbson/src/bson/Makefile.am
 ===================================================================
 --- libbson.orig/src/bson/Makefile.am
 +++ libbson/src/bson/Makefile.am
-@@ -55,7 +55,6 @@ libbson_la_CPPFLAGS = \
+@@ -51,7 +51,6 @@ libbson_la_CPPFLAGS = \
  	-DBSON_COMPILATION \
  	-I$(top_srcdir)/src \
  	-I$(top_srcdir)/src/bson \
