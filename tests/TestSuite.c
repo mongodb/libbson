@@ -652,6 +652,9 @@ TestSuite_ParallelWorker (void *data) /* IN */
       exit (status);
    }
 
+   /* an info is allocated for each thread in TestSuite_RunParallel */
+   bson_free (info);
+
    return NULL;
 }
 

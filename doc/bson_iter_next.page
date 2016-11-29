@@ -26,11 +26,12 @@ bson_iter_next (bson_iter_t *iter);
 
   <section id="description">
     <title>Description</title>
-    <p>Advances <code>iter</code> to the next element in the document if one exists.</p>
+    <p>Advances <code>iter</code> to the next element in the document.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>true if <code>iter</code> was advanced, otherwise false and <code>iter</code> should be considered invalid.</p>
+    <p>true if <code>iter</code> was advanced. Returns false if <code>iter</code> has passed the last element in the document or encountered invalid BSON.</p>
+    <p>It is a programming error to use <code>iter</code> after this function has returned false.</p>
   </section>
 </page>

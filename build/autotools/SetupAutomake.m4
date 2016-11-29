@@ -15,8 +15,6 @@ AM_CONDITIONAL([COMPILER_CLANG],[test "$c_compiler" = "clang" && test "$cxx_comp
 
 # Feature Conditionals
 AM_CONDITIONAL([ENABLE_DEBUG],[test "$enable_debug" = "yes"])
-AM_CONDITIONAL([ENABLE_EXPERIMENTAL_FEATURES],
-               [test "$enable_experimental_features" = "yes"])
 
 # C99 Features
 AM_CONDITIONAL([ENABLE_STDBOOL],[test "$enable_stdbool" = "yes"])
@@ -24,8 +22,11 @@ AM_CONDITIONAL([ENABLE_STDBOOL],[test "$enable_stdbool" = "yes"])
 # Should we use pthreads
 AM_CONDITIONAL([ENABLE_PTHREADS], test "$enable_pthreads" = "yes")
 
-# Can we run the abicheck?
-AM_CONDITIONAL([CAN_ABI_CHECK], [test "os_linux" = "yes" && test "$have_sync_add_and_fetch_8" = "yes"])
+# Should we build the examples.
+AM_CONDITIONAL([ENABLE_EXAMPLES],[test "$enable_examples" = "yes"])
+
+# Should we build the tests.
+AM_CONDITIONAL([ENABLE_TESTS],[test "$enable_tests" = "yes"])
 
 # Should we build man pages
 AM_CONDITIONAL([ENABLE_MAN_PAGES],[test "$enable_man_pages" = "yes"])

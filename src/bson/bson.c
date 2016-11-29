@@ -952,7 +952,7 @@ bson_append_code_with_scope (bson_t       *bson,         /* IN */
    BSON_ASSERT (key);
    BSON_ASSERT (javascript);
 
-   if (bson_empty0 (scope)) {
+   if (scope == NULL) {
       return bson_append_code (bson, key, key_length, javascript);
    }
 
@@ -1159,7 +1159,6 @@ bson_append_int64 (bson_t      *bson,
 }
 
 
-#ifdef BSON_EXPERIMENTAL_FEATURES
 bool
 bson_append_decimal128 (bson_t                  *bson,
                         const char              *key,
@@ -1187,7 +1186,6 @@ bson_append_decimal128 (bson_t                  *bson,
                         1, &gZero,
                         16, value_le);
 }
-#endif
 
 
 bool
@@ -1345,7 +1343,6 @@ bson_append_iter (bson_t            *bson,
    case BSON_TYPE_INT64:
       ret = bson_append_int64 (bson, key, key_length, bson_iter_int64 (iter));
       break;
-#ifdef BSON_EXPERIMENTAL_FEATURES
    case BSON_TYPE_DECIMAL128:
       {
          bson_decimal128_t dec;
@@ -1356,7 +1353,6 @@ bson_append_iter (bson_t            *bson,
 
          ret = bson_append_decimal128 (bson, key, key_length, &dec);
       }
-#endif /* BSON_EXPERIMENTAL_FEATURES */
       break;
    case BSON_TYPE_MAXKEY:
       ret = bson_append_maxkey (bson, key, key_length);
@@ -1807,10 +1803,8 @@ bson_append_value (bson_t             *bson,
    case BSON_TYPE_INT64:
       ret = bson_append_int64 (bson, key, key_length, value->value.v_int64);
       break;
-#ifdef BSON_EXPERIMENTAL_FEATURES
    case BSON_TYPE_DECIMAL128:
       ret = bson_append_decimal128 (bson, key, key_length, &(value->value.v_decimal128));
-#endif
       break;
    case BSON_TYPE_MAXKEY:
       ret = bson_append_maxkey (bson, key, key_length);
@@ -2439,7 +2433,6 @@ _bson_as_json_visit_int64 (const bson_iter_t *iter,
 }
 
 
-#ifdef BSON_EXPERIMENTAL_FEATURES
 static bool
 _bson_as_json_visit_decimal128 (const bson_iter_t       *iter,
                                 const char              *key,
@@ -2456,7 +2449,6 @@ _bson_as_json_visit_decimal128 (const bson_iter_t       *iter,
 
    return false;
 }
-#endif /* BSON_EXPERIMENTAL_FEATURES */
 
 
 static bool
@@ -2719,9 +2711,9 @@ _bson_as_json_visit_code (const bson_iter_t *iter,
    escaped = bson_utf8_escape_for_json (v_code, v_code_len);
 
    if (escaped) {
-      bson_string_append (state->str, "\"");
+      bson_string_append (state->str, "{ \"$code\" : \"");
       bson_string_append (state->str, escaped);
-      bson_string_append (state->str, "\"");
+      bson_string_append (state->str, "\" }");
       bson_free (escaped);
       return false;
    }
@@ -2756,19 +2748,30 @@ _bson_as_json_visit_codewscope (const bson_iter_t *iter,
                                 void              *data)
 {
    bson_json_state_t *state = data;
-   char *escaped;
+   char *code_escaped;
+   char *scope;
 
-   escaped = bson_utf8_escape_for_json (v_code, v_code_len);
-
-   if (escaped) {
-      bson_string_append (state->str, "\"");
-      bson_string_append (state->str, escaped);
-      bson_string_append (state->str, "\"");
-      bson_free (escaped);
-      return false;
+   code_escaped = bson_utf8_escape_for_json (v_code, v_code_len);
+   if (!code_escaped) {
+      return true;  /* error */
    }
 
-   return true;
+   scope = bson_as_json (v_scope, NULL);
+   if (!scope) {
+      bson_free (code_escaped);
+      return true;
+   }
+
+   bson_string_append (state->str, "{ \"$code\" : \"");
+   bson_string_append (state->str, code_escaped);
+   bson_string_append (state->str, "\", \"$scope\" : ");
+   bson_string_append (state->str, scope);
+   bson_string_append (state->str, " }");
+
+   bson_free (code_escaped);
+   bson_free (scope);
+
+   return false;
 }
 
 
@@ -2797,9 +2800,7 @@ static const bson_visitor_t bson_as_json_visitors = {
    _bson_as_json_visit_maxkey,
    _bson_as_json_visit_minkey,
    NULL, /* visit_unsupported_type */
-#ifdef BSON_EXPERIMENTAL_FEATURES
    _bson_as_json_visit_decimal128,
-#endif /* BSON_EXPERIMENTAL_FEATURES */
 };
 
 
@@ -3011,6 +3012,13 @@ _bson_iter_validate_before (const bson_iter_t *iter,
                             void              *data)
 {
    bson_validate_state_t *state = data;
+
+   if ((state->flags & BSON_VALIDATE_EMPTY_KEYS)) {
+      if (key[0] == '\0') {
+         state->err_offset = iter->off;
+         return true;
+      }
+   }
 
    if ((state->flags & BSON_VALIDATE_DOLLAR_KEYS)) {
       if (key[0] == '$') {

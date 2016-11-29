@@ -172,7 +172,6 @@ BSON_STATIC_ASSERT (sizeof (bson_oid_t) == 12);
  * type.  The structure stores the 128 bits such that they correspond to the
  * native format for the IEEE decimal128 type, if it is implemented.
  **/
-#ifdef BSON_EXPERIMENTAL_FEATURES
 typedef struct
 {
 #if BSON_BYTE_ORDER == BSON_LITTLE_ENDIAN
@@ -183,7 +182,6 @@ typedef struct
    uint64_t low;
 #endif
 } bson_decimal128_t;
-#endif  /* BSON_EXPERIMENTAL_FEATURES */
 
 
 /**
@@ -197,6 +195,7 @@ typedef struct
  * %BSON_VALIDATE_DOLLAR_KEYS: Check that keys do not start with $.
  * %BSON_VALIDATE_DOT_KEYS: Check that keys do not contain a period.
  * %BSON_VALIDATE_UTF8_ALLOW_NULL: Allow NUL bytes in UTF-8 text.
+ * %BSON_VALIDATE_EMPTY_KEYS: Prohibit zero-length field names
  */
 typedef enum
 {
@@ -205,6 +204,7 @@ typedef enum
    BSON_VALIDATE_DOLLAR_KEYS = (1 << 1),
    BSON_VALIDATE_DOT_KEYS = (1 << 2),
    BSON_VALIDATE_UTF8_ALLOW_NULL = (1 << 3),
+   BSON_VALIDATE_EMPTY_KEYS = (1 << 4),
 } bson_validate_flags_t;
 
 
@@ -235,9 +235,7 @@ typedef enum
    BSON_TYPE_INT32 = 0x10,
    BSON_TYPE_TIMESTAMP = 0x11,
    BSON_TYPE_INT64 = 0x12,
-#ifdef BSON_EXPERIMENTAL_FEATURES
    BSON_TYPE_DECIMAL128 = 0x13,
-#endif
    BSON_TYPE_MAXKEY = 0x7F,
    BSON_TYPE_MINKEY = 0xFF,
 } bson_type_t;
@@ -328,9 +326,7 @@ typedef struct _bson_value_t
          char           *symbol;
          uint32_t        len;
       } v_symbol;
-#ifdef BSON_EXPERIMENTAL_FEATURES
       bson_decimal128_t  v_decimal128;
-#endif
    } value;
 } bson_value_t
 BSON_ALIGNED_END (8);
@@ -507,16 +503,12 @@ typedef struct
                                    const char        *key,
                                    uint32_t           type_code,
                                    void              *data);
-#ifdef BSON_EXPERIMENTAL_FEATURES
    bool (*visit_decimal128)       (const bson_iter_t       *iter,
                                    const char              *key,
                                    const bson_decimal128_t *v_decimal128,
                                    void                    *data);
 
    void *padding[7];
-#else
-   void *padding[8];
-#endif
 } bson_visitor_t
 BSON_ALIGNED_END (8);
 

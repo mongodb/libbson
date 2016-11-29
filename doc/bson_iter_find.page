@@ -28,12 +28,12 @@ bson_iter_find (bson_iter_t *iter,
 
   <section id="description">
     <title>Description</title>
-    <p>The <code>bson_iter_find()</code>function shall advance <code>iter</code>to the element named <code>key</code>or exhaust all elements of <code>iter</code>. If <code>iter</code>is exhausted, false is returned and <code>iter</code>should be considered invalid.</p>
+    <p>The <code>bson_iter_find()</code> function shall advance <code>iter</code> to the element named <code>key</code> or exhaust all elements of <code>iter</code>. If <code>iter</code> is exhausted, false is returned and <code>iter</code> should be considered invalid.</p>
     <p><code>key</code> is case-sensitive. For a case-folded version, see <code xref="bson_iter_find_case">bson_iter_find_case()</code>.</p>
   </section>
 
   <section id="return">
     <title>Returns</title>
-    <p>true is returned if the requested key was found. If not, <code>iter</code>was exhausted and should now be considered invalid.</p>
+    <p>true is returned if the requested key was found. If not, <code>iter</code> was exhausted and should now be considered invalid.</p>
   </section>
 </page>

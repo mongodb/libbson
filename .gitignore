@@ -38,9 +38,14 @@ stamp-h1
 *.swp
 test-libbson
 test.log
+test-results.json
 .DS_Store
 xcuserdata
 tags
 .lvimrc
 doc/installing.page
 doc/version.page
+.coverage.lcov
+coverage
+*.gcda
+*.gcno

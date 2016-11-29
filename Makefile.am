@@ -9,8 +9,6 @@ noinst_LTLIBRARIES =
 noinst_PROGRAMS =
 
 include src/Makefile.am
-include tests/Makefile.am
-include examples/Makefile.am
 include doc/Makefile.am
 if ENABLE_MAN_PAGES
 include doc/man/Makefile.am
@@ -18,18 +16,26 @@ endif
 if ENABLE_HTML_DOCS
 include doc/html/Makefile.am
 endif
+if ENABLE_TESTS
+include tests/Makefile.am
+endif
+
+if ENABLE_EXAMPLES
+include examples/Makefile.am
+endif
 
 # for various extra dist
 include build/cmake/Makefile.am
 
 ACLOCAL_AMFLAGS = -I build/autotools/m4 ${ACLOCAL_FLAGS}
-DISTCHECK_CONFIGURE_FLAGS = --enable-maintainer-flags --enable-silent-rules --enable-hardening --enable-optimizations --enable-html-docs --enable-man-pages
+DISTCHECK_CONFIGURE_FLAGS = --enable-maintainer-flags --enable-silent-rules --enable-optimizations --enable-html-docs --enable-man-pages
 
 bsondocdir = ${docdir}
 bsondoc_DATA = \
 	COPYING \
 	NEWS \
-	README
+	README \
+	THIRD_PARTY_NOTICES
 
 EXTRA_DIST += $(bsondoc_DATA)
 
@@ -49,4 +55,5 @@ dist-hook:
 	fi
 
 uninstall-local:
+	-rmdir $(bsondocdir)/doc $(bsondocdir)/html
 	-rm -r $(bsondocdir)

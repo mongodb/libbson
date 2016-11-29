@@ -25,9 +25,12 @@ case "$CC" in
    ;;
 esac
 
+rm -rf cbuild
+mkdir cbuild
+cd cbuild
+
 CMAKE="/cygdrive/c/cmake/bin/cmake"
-"$CMAKE" -G "$CC" "-DENABLE_EXPERIMENTAL_FEATURES=ON" \
-    "-DCMAKE_INSTALL_PREFIX=C:/libbson"
+"$CMAKE" -G "$CC" "-DCMAKE_INSTALL_PREFIX=C:/libbson" ..
 "$BUILD" /m ALL_BUILD.vcxproj
 "$BUILD" /m INSTALL.vcxproj
 

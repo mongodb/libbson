@@ -41,6 +41,9 @@ extern "C" {
 #    define YAJL_API
 #  endif
 #endif 
+/* CDRIVER-1347: Do not export the YAJL API as part of libbson */
+#undef YAJL_API
+#define YAJL_API
 
 /** pointer to a malloc function, supporting client overriding memory
  *  allocation routines */

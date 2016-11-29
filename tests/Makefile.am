@@ -10,6 +10,7 @@ test_libbson_SOURCES = \
 	tests/test-bson.c \
 	tests/test-endian.c \
 	tests/test-clock.c \
+	tests/test-decimal128.c \
 	tests/test-error.c \
 	tests/test-iso8601.c \
 	tests/test-iter.c \
@@ -17,6 +18,7 @@ test_libbson_SOURCES = \
 	tests/test-oid.c \
 	tests/test-reader.c \
 	tests/test-string.c \
+	tests/test-type.c \
 	tests/test-utf8.c \
 	tests/test-value.c \
 	tests/test-version.c \
@@ -25,13 +27,6 @@ test_libbson_SOURCES = \
 	tests/test-bcon-extract.c \
 	tests/json-test.c \
 	tests/json-test.h
-
-if ENABLE_EXPERIMENTAL_FEATURES
-test_libbson_SOURCES += \
-    tests/test-decimal128.c \
-    tests/test-type.c
-endif
-
 
 test_libbson_CPPFLAGS = \
 	-I$(top_srcdir)/src \
@@ -71,9 +66,6 @@ test: $(TEST_PROGS)
 	@ for TEST_PROG in $(TEST_PROGS) ; do \
 		$(LIBTOOL) --mode=execute $$VALGRIND ./$$TEST_PROG $(TEST_ARGS) -F test-results.json; \
 	done
-if CAN_ABI_CHECK
-	@ $(srcdir)/tests/abicheck.sh "$(srcdir)/src/libbson.symbols"
-endif
 
 valgrind: $(TEST_PROGS)
 	$(LIBTOOL) --mode=execute valgrind --error-exitcode=1 --leak-check=full ./test-libbson $(TEST_ARGS) --no-fork
@@ -81,17 +73,24 @@ valgrind: $(TEST_PROGS)
 debug: $(TEST_PROGS)
 	$(LIBTOOL) --mode=execute $(DEBUGGER) ./test-libbson $(TEST_ARGS)
 
-DISTCLEANFILES += test.log
+DISTCLEANFILES += \
+	test.log \
+	test-results.json
+
+CLEANFILES += \
+	tests/*.gcda \
+	tests/*.gcno
 
 
 EXTRA_DIST += \
-	tests/abicheck.sh \
 	tests/bson-tests.h \
 	tests/binary/binary_deprecated.bson \
 	tests/binary/codewscope.bson \
+	tests/binary/code_w_empty_scope.bson \
 	tests/binary/dollarquery.bson \
 	tests/binary/dotkey.bson \
 	tests/binary/dotquery.bson \
+	tests/binary/empty_key.bson \
 	tests/binary/eurokey.bson \
 	tests/binary/overflow1.bson \
 	tests/binary/overflow2.bson \
@@ -134,7 +133,6 @@ EXTRA_DIST += \
 	tests/binary/test38.bson \
 	tests/binary/test39.bson \
 	tests/binary/test3.bson \
-	tests/binary/test4.bson \
 	tests/binary/test40.bson \
 	tests/binary/test41.bson \
 	tests/binary/test42.bson \
@@ -145,7 +143,7 @@ EXTRA_DIST += \
 	tests/binary/test47.bson \
 	tests/binary/test48.bson \
 	tests/binary/test49.bson \
-	tests/binary/test5.bson \
+	tests/binary/test4.bson \
 	tests/binary/test50.bson \
 	tests/binary/test51.bson \
 	tests/binary/test52.bson \
@@ -155,15 +153,13 @@ EXTRA_DIST += \
 	tests/binary/test56.bson \
 	tests/binary/test57.bson \
 	tests/binary/test58.bson \
+	tests/binary/test5.bson \
 	tests/binary/test6.bson \
 	tests/binary/test7.bson \
 	tests/binary/test8.bson \
 	tests/binary/test9.bson \
 	tests/binary/trailingnull.bson \
-	tests/json/test.json
-
-if ENABLE_EXPERIMENTAL_FEATURES
-EXTRA_DIST += \
+	tests/json/test.json \
 	tests/json/type/decimal128/decimal128-1.json \
 	tests/json/type/decimal128/decimal128-2.json \
 	tests/json/type/decimal128/decimal128-3.json \
@@ -171,4 +167,3 @@ EXTRA_DIST += \
 	tests/json/type/decimal128/decimal128-5.json \
 	tests/json/type/decimal128/decimal128-6.json \
 	tests/json/type/decimal128/decimal128-7.json
-endif

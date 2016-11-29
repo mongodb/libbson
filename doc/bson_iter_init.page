@@ -33,7 +33,7 @@ bson_iter_init (bson_iter_t  *iter,
 
   <section id="return">
     <title>Returns</title>
-    <p>Returns true if the iter was successfuly initialized.</p>
+    <p>Returns true if the iter was successfully initialized.</p>
   </section>
 
   <section id="example">

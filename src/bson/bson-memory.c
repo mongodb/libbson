@@ -62,10 +62,12 @@ static bson_mem_vtable_t gMemVtable = {
 void *
 bson_malloc (size_t num_bytes) /* IN */
 {
-   void *mem;
+   void *mem = NULL;
 
-   if (!(mem = gMemVtable.malloc (num_bytes))) {
-      abort ();
+   if (BSON_LIKELY (num_bytes)) {
+      if (BSON_UNLIKELY (!(mem = gMemVtable.malloc (num_bytes)))) {
+         abort ();
+      }
    }
 
    return mem;

@@ -25,10 +25,15 @@
 
 #include "bson-types.h"
 
+BSON_API
 int bson_get_major_version (void);
+BSON_API
 int bson_get_minor_version (void);
+BSON_API
 int bson_get_micro_version (void);
+BSON_API
 const char *bson_get_version (void);
+BSON_API
 bool bson_check_version (int required_major,
                            int required_minor,
                            int required_micro);

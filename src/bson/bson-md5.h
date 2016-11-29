@@ -77,10 +77,13 @@ typedef struct
 } bson_md5_t;
 
 
+BSON_API
 void bson_md5_init   (bson_md5_t         *pms);
+BSON_API
 void bson_md5_append (bson_md5_t         *pms,
                       const uint8_t *data,
                       uint32_t       nbytes);
+BSON_API
 void bson_md5_finish (bson_md5_t         *pms,
                       uint8_t        digest[16]);
 

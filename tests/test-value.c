@@ -84,7 +84,6 @@ test_value_basic (void)
 }
 
 
-#ifdef BSON_EXPERIMENTAL_FEATURES
 static void
 test_value_decimal128 (void)
 {
@@ -106,14 +105,11 @@ test_value_decimal128 (void)
    bson_destroy (doc);
    bson_destroy (&other);
 }
-#endif
 
 
 void
 test_value_install (TestSuite *suite)
 {
    TestSuite_Add (suite, "/bson/value/basic", test_value_basic);
-#ifdef BSON_EXPERIMENTAL_FEATURES
    TestSuite_Add (suite, "/bson/value/decimal128", test_value_decimal128);
-#endif
 }

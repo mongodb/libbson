@@ -132,7 +132,6 @@ These are not availble when using the alternate CMake build system.
 --enable-optimizations    Enable various compile and link optimizations.
 --enable-debug            Enable debugging features.
 --enable-debug-symbols    Link with debug symbols in tact.
---enable-hardening        Enable stack protector and other hardening features.
 --enable-silent-rules     Force silent rules like the Linux kernel.
 --enable-coverage         Compile with gcov support.
 --enable-static           Build static archives (.a).

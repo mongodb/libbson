@@ -26,8 +26,10 @@
 BSON_BEGIN_DECLS
 
 
+BSON_API
 void bson_value_copy    (const bson_value_t *src,
                          bson_value_t       *dst);
+BSON_API
 void bson_value_destroy (bson_value_t       *value);
 
 

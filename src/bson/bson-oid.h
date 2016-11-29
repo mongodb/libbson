@@ -35,24 +35,35 @@
 BSON_BEGIN_DECLS
 
 
+BSON_API
 int      bson_oid_compare          (const bson_oid_t *oid1,
                                     const bson_oid_t *oid2);
+BSON_API
 void     bson_oid_copy             (const bson_oid_t *src,
                                     bson_oid_t       *dst);
+BSON_API
 bool     bson_oid_equal            (const bson_oid_t *oid1,
                                     const bson_oid_t *oid2);
+BSON_API
 bool     bson_oid_is_valid         (const char       *str,
                                     size_t            length);
+BSON_API
 time_t   bson_oid_get_time_t       (const bson_oid_t *oid);
+BSON_API
 uint32_t bson_oid_hash             (const bson_oid_t *oid);
+BSON_API
 void     bson_oid_init             (bson_oid_t       *oid,
                                     bson_context_t   *context);
+BSON_API
 void     bson_oid_init_from_data   (bson_oid_t       *oid,
                                     const uint8_t    *data);
+BSON_API
 void     bson_oid_init_from_string (bson_oid_t       *oid,
                                     const char       *str);
+BSON_API
 void     bson_oid_init_sequence    (bson_oid_t       *oid,
                                     bson_context_t   *context);
+BSON_API
 void     bson_oid_to_string        (const bson_oid_t *oid,
                                     char              str[25]);
 

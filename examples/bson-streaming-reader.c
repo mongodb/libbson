@@ -147,15 +147,17 @@ main (int   argc,
          fprintf (stdout,
                   "Usage: %s [-s SERVER_NAME] [-p PORT_NUM]\n",
                   argv[0]);
+         free (hostname);
+         free (port);
          return EXIT_SUCCESS;
       case 'p':
          free (port);
-         port = (char *)malloc (strlen (optarg));
+         port = (char *)malloc (strlen (optarg) + 1);
          strcpy (port, optarg);
          break;
       case 's':
          free (hostname);
-         hostname = (char *)malloc (strlen (optarg));
+         hostname = (char *)malloc (strlen (optarg) + 1);
          strcpy (hostname, optarg);
          break;
       default:
@@ -170,6 +172,8 @@ main (int   argc,
     */
    fd = bson_streaming_remote_open (hostname, port);
    if (fd == -1) {
+      free (hostname);
+      free (port);
       return EXIT_FAILURE;
    }
 

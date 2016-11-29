@@ -27,16 +27,12 @@ LT_INIT
 m4_include([build/autotools/ReadCommandLineArguments.m4])
 m4_include([build/autotools/FindDependencies.m4])
 m4_include([build/autotools/CheckAtomics.m4])
-m4_include([build/autotools/AutoHarden.m4])
 m4_include([build/autotools/MaintainerFlags.m4])
 m4_include([build/autotools/Optimizations.m4])
 m4_include([build/autotools/Coverage.m4])
-m4_include([build/autotools/LDVersionScript.m4])
-m4_include([build/autotools/CheckDecimal.m4])
 
 # We would put AM_INIT_AUTOMAKE into SetupAutomake.m4, but seems to cause autoconf errors.
 AM_INIT_AUTOMAKE([foreign subdir-objects tar-ustar])
-AM_MAINTAINER_MODE([enable])
 m4_include([build/autotools/SetupAutomake.m4])
 
 AC_CONFIG_FILES([

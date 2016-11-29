@@ -31,7 +31,7 @@
 
 
 /**
- * BSON_DEC_128_STRING:
+ * BSON_DECIMAL128_STRING:
  *
  * The length of a decimal128 string (with null terminator).
  *
@@ -41,38 +41,24 @@
  * 4  for exponent digits
  */
 #define BSON_DECIMAL128_STRING 43
+#define BSON_DECIMAL128_INF "Infinity"
+#define BSON_DECIMAL128_NAN "NaN"
 
 
 BSON_BEGIN_DECLS
 
+BSON_API
 void
 bson_decimal128_to_string (const bson_decimal128_t *dec,
                            char                    *str);
 
 
 /* Note: @string must be ASCII characters only! */
+BSON_API
 bool
 bson_decimal128_from_string (const char        *string,
                              bson_decimal128_t *dec);
 
-
-#ifdef BSON_HAVE_DECIMAL128
-static _Decimal128 BSON_INLINE
-bson_decimal128_to_Decimal128 (bson_decimal128_t *dec)
-{
-   _Decimal128 decimal128;
-   memcpy (&decimal128, dec, sizeof(decimal128));
-   return decimal128;
-}
-
-
-static void BSON_INLINE
-bson_Decimal128_to_decimal128 (_Decimal128        decimal128,
-                               bson_decimal128_t *dec)
-{
-   memcpy (dec, &decimal128, sizeof(decimal128));
-}
-#endif /* BSON_HAVE_DECIMAL128 */
 
 BSON_END_DECLS
 

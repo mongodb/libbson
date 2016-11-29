@@ -123,8 +123,12 @@ typedef struct
                                    const char        *key,
                                    uint32_t           type_code,
                                    void              *data);
+   bool (*visit_decimal128)       (const bson_iter_t       *iter,
+                                   const char              *key,
+                                   const bson_decimal128_t *v_decimal128,
+                                   void                    *data);
 
-   void *padding[8];
+   void *padding[7];
 } bson_visitor_t bson_visitor_t;]]></code></synopsis>
   </section>
 

@@ -58,6 +58,8 @@
 
 #ifdef __clang__
 #pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-pragmas"
+#pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wshift-negative-value"
 #endif
 
@@ -72,6 +74,7 @@ static time_t const time_t_max =
         : -1);
 
 #ifdef __clang__
+#pragma clang diagnostic pop
 #pragma clang diagnostic pop
 #endif
 

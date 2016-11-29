@@ -411,10 +411,9 @@ test_bson_append_code_with_scope (void)
    bson_t *b2;
    bson_t *scope;
 
-   /* Test with empty bson, which converts to just CODE type. */
+   /* Test with NULL bson, which converts to just CODE type. */
    b = bson_new();
-   scope = bson_new();
-   assert(bson_append_code_with_scope(b, "code", -1, "var a = {};", scope));
+   assert(bson_append_code_with_scope(b, "code", -1, "var a = {};", NULL));
    b2 = get_bson("test30.bson");
    assert_bson_equal(b, b2);
    r = bson_iter_init_find(&iter, b, "code");
@@ -422,9 +421,19 @@ test_bson_append_code_with_scope (void)
    assert(BSON_ITER_HOLDS_CODE(&iter)); /* Not codewscope */
    bson_destroy(b);
    bson_destroy(b2);
+
+   /* Empty scope is still CODEWSCOPE. */
+   b = bson_new();
+   scope = bson_new ();
+   assert(bson_append_code_with_scope(b, "code", -1, "var a = {};", scope));
+   b2 = get_bson("code_w_empty_scope.bson");
+   assert_bson_equal(b, b2);
+   r = bson_iter_init_find(&iter, b, "code");
+   assert(r);
+   assert(BSON_ITER_HOLDS_CODEWSCOPE(&iter));
+   bson_destroy(b);
+   bson_destroy(b2);
    bson_destroy(scope);
-
-
 
    /* Test with non-empty scope */
    b = bson_new();
@@ -495,7 +504,6 @@ test_bson_append_int64 (void)
 }
 
 
-#ifdef BSON_EXPERIMENTAL_FEATURES
 static void
 test_bson_append_decimal128 (void)
 {
@@ -512,7 +520,6 @@ test_bson_append_decimal128 (void)
    bson_destroy(b);
    bson_destroy(b2);
 }
-#endif /* BSON_EXPERIMENTAL_FEATURES */
 
 
 static void
@@ -951,6 +958,74 @@ test_bson_validate_dbref (void)
 }
 
 
+/* BSON spec requires bool value to be exactly 0 or 1 */
+static void
+test_bson_validate_bool (void)
+{
+   /* {"b": true}, with implicit NULL at end */
+   uint8_t data[] = "\x09\x00\x00\x00\x08\x62\x00\x01";
+   bson_t bson;
+   bson_iter_t iter;
+   size_t err_offset = 0;
+
+   ASSERT (bson_init_static (&bson, data, sizeof data));
+   ASSERT (bson_validate (&bson, BSON_VALIDATE_NONE, &err_offset));
+   ASSERT (bson_iter_init (&iter, &bson));
+   ASSERT (bson_iter_next (&iter));
+   ASSERT (BSON_ITER_HOLDS_BOOL (&iter));
+   ASSERT (bson_iter_bool (&iter));
+
+   /* replace boolean value 1 with 255 */
+   ASSERT (data[7] == '\x01');
+   data[7] = '\xff';
+
+   ASSERT (bson_init_static (&bson, data, 9));
+   ASSERT (!bson_validate (&bson, BSON_VALIDATE_NONE, &err_offset));
+   assert_cmpint (err_offset, ==, 7);
+
+   ASSERT (bson_iter_init (&iter, &bson));
+   ASSERT (!bson_iter_next (&iter));
+}
+
+
+/* BSON spec requires the deprecated DBPointer's value to be NULL-termed */
+static void
+test_bson_validate_dbpointer (void)
+{
+   /* { "a": DBPointer(ObjectId(...), Collection="b") }, implicit NULL at end */
+   uint8_t data[] =
+      "\x1A\x00\x00\x00\x0C\x61\x00\x02\x00\x00\x00\x62\x00"
+      "\x56\xE1\xFC\x72\xE0\xC9\x17\xE9\xC4\x71\x41\x61";
+
+   bson_t bson;
+   bson_iter_t iter;
+   size_t err_offset = 0;
+   uint32_t collection_len;
+   const char *collection;
+   const bson_oid_t *oid;
+
+   ASSERT (bson_init_static (&bson, data, sizeof data));
+   ASSERT (bson_validate (&bson, BSON_VALIDATE_NONE, &err_offset));
+   ASSERT (bson_iter_init (&iter, &bson));
+   ASSERT (bson_iter_next (&iter));
+   ASSERT (BSON_ITER_HOLDS_DBPOINTER (&iter));
+   bson_iter_dbpointer (&iter, &collection_len, &collection, &oid);
+   assert_cmpstr (collection, "b");
+   assert_cmpint (collection_len, ==, 1);
+
+   /* replace the NULL terminator of "b" with 255 */
+   ASSERT (data[12] == '\0');
+   data[12] = '\xff';
+
+   ASSERT (bson_init_static (&bson, data, sizeof data));
+   ASSERT (!bson_validate (&bson, BSON_VALIDATE_NONE, &err_offset));
+   assert_cmpint (err_offset, ==, 12);
+
+   ASSERT (bson_iter_init (&iter, &bson));
+   ASSERT (!bson_iter_next (&iter));
+}
+
+
 static void
 test_bson_validate (void)
 {
@@ -995,6 +1070,14 @@ test_bson_validate (void)
 
    b = get_bson("codewscope.bson");
    assert(bson_validate (b, BSON_VALIDATE_NONE, &offset));
+   bson_destroy(b);
+
+   b = get_bson("empty_key.bson");
+   assert(bson_validate (b, BSON_VALIDATE_NONE |
+                            BSON_VALIDATE_UTF8 |
+                            BSON_VALIDATE_DOLLAR_KEYS |
+                            BSON_VALIDATE_DOT_KEYS, &offset));
+   assert(!bson_validate (b, BSON_VALIDATE_EMPTY_KEYS, &offset));
    bson_destroy(b);
 
 #define ENSURE_FAILURE(file) \
@@ -1454,17 +1537,13 @@ test_bson_macros (void)
    const uint8_t data [] = { 1, 2, 3, 4 };
    bson_t b = BSON_INITIALIZER;
    bson_t ar = BSON_INITIALIZER;
-#ifdef BSON_EXPERIMENTAL_FEATURES
    bson_decimal128_t dec;
-#endif
    bson_oid_t oid;
    struct timeval tv;
    time_t t;
 
-#ifdef BSON_EXPERIMENTAL_FEATURES
    dec.high = 0x3040000000000000ULL;
    dec.low = 0x0ULL;
-#endif
 
    t = time (NULL);
 #ifdef BSON_OS_WIN32
@@ -1497,9 +1576,7 @@ test_bson_macros (void)
    BSON_APPEND_DATE_TIME (&b, "19", 123);
    BSON_APPEND_TIMESTAMP (&b, "20", 123, 0);
    BSON_APPEND_UNDEFINED (&b, "21");
-#ifdef BSON_EXPERIMENTAL_FEATURES
    BSON_APPEND_DECIMAL128 (&b, "22", &dec);
-#endif /* BSON_EXPERIMENTAL_FEATURES */
 
    bson_destroy (&b);
    bson_destroy (&ar);
@@ -1679,6 +1756,9 @@ test_bson_reserve_buffer_errors (void)
    bson_t child;
    uint8_t data[5] = { 0 };
    uint32_t len_le;
+
+   /* too big */
+   ASSERT (!bson_reserve_buffer (&bson, (uint32_t) (INT32_MAX - bson.len - 1)));
 
    /* make a static bson, it refuses bson_reserve_buffer since it's read-only */
    len_le = BSON_UINT32_TO_LE (5);
@@ -1961,9 +2041,7 @@ test_bson_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/append_double", test_bson_append_double);
    TestSuite_Add (suite, "/bson/append_int32", test_bson_append_int32);
    TestSuite_Add (suite, "/bson/append_int64", test_bson_append_int64);
-#ifdef BSON_EXPERIMENTAL_FEATURES
    TestSuite_Add (suite, "/bson/append_decimal128", test_bson_append_decimal128);
-#endif /* BSON_EXPERIMENTAL_FEATURES */
    TestSuite_Add (suite, "/bson/append_iter", test_bson_append_iter);
    TestSuite_Add (suite, "/bson/append_maxkey", test_bson_append_maxkey);
    TestSuite_Add (suite, "/bson/append_minkey", test_bson_append_minkey);
@@ -1981,6 +2059,8 @@ test_bson_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/utf8_key", test_bson_utf8_key);
    TestSuite_Add (suite, "/bson/validate", test_bson_validate);
    TestSuite_Add (suite, "/bson/validate/dbref", test_bson_validate_dbref);
+   TestSuite_Add (suite, "/bson/validate/bool", test_bson_validate_bool);
+   TestSuite_Add (suite, "/bson/validate/dbpointer", test_bson_validate_dbpointer);
    TestSuite_Add (suite, "/bson/new_1mm", test_bson_new_1mm);
    TestSuite_Add (suite, "/bson/init_1mm", test_bson_init_1mm);
    TestSuite_Add (suite, "/bson/build_child", test_bson_build_child);

@@ -59,15 +59,6 @@ AC_ARG_ENABLE(debug_symbols,
     ])
 AC_MSG_RESULT([$enable_debug_symbols])
 
-# Check for enabling decimal floating point
-AC_ARG_ENABLE(decimal-bid,
-   AS_HELP_STRING([--enable-decimal-bid], [Enable decimal floating point native types (default=yes on supported systems). Only supported on compilers with BID formatted _Decimal128.]),
-   [
-      enable_decimal=$enableval
-      AC_MSG_CHECKING([whether to force enable native decimal floating point])
-      AC_MSG_RESULT([$enable_decimal])
-   ])
-
 # use strict compiler flags only on development releases
 m4_define([maintainer_flags_default], [m4_ifset([BSON_PRERELEASE_VERSION], [yes], [no])])
 AC_ARG_ENABLE([maintainer-flags],
@@ -75,16 +66,6 @@ AC_ARG_ENABLE([maintainer-flags],
                               [Use strict compiler flags @<:@default=]maintainer_flags_default[@:>@])],
               [],
               [enable_maintainer_flags=maintainer_flags_default])
-
-# Experimental BSON features
-AC_ARG_ENABLE(experimental-features,
-   AC_HELP_STRING([--enable-experimental-features=@<:@no/yes@:>@],
-                  [Experimental support for future BSON features [default=no]]),
-   [enable_experimental_features=$enableval])
-
-AS_IF([test "$enable_experimental_features" = "yes"],
-      [AC_SUBST(BSON_EXPERIMENTAL_FEATURES, 1)],
-      [AC_SUBST(BSON_EXPERIMENTAL_FEATURES, 0)])
 
 AC_ARG_ENABLE([html-docs],
               [AS_HELP_STRING([--enable-html-docs=@<:@yes/no@:>@],
@@ -103,3 +84,15 @@ AC_ARG_ENABLE([yelp],
                               [Install yelp manuals.])],
               [],
               [enable_yelp=no])
+
+AC_ARG_ENABLE([examples],
+              [AS_HELP_STRING([--enable-examples=@<:@yes/no@:>@],
+                              [Build libbson examples.])],
+              [],
+              [enable_examples=yes])
+
+AC_ARG_ENABLE([tests],
+              [AS_HELP_STRING([--enable-tests=@<:@yes/no@:>@],
+                              [Build libbson tests.])],
+              [],
+              [enable_tests=yes])
