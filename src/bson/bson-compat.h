@@ -87,7 +87,7 @@ BSON_BEGIN_DECLS
 #ifdef _MSC_VER
 # include "bson-stdint-win32.h"
 # ifndef __cplusplus
-   /* benign redefinition of type */
+   /* begin redefinition of type */
 #  pragma warning (disable :4142)
 #  ifndef _SSIZE_T_DEFINED
 #   define _SSIZE_T_DEFINED
