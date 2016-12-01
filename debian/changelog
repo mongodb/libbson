@@ -1,8 +1,13 @@
 libbson (1.5.0-1) unstable; urgency=low
 
+  [ A. Jesse Jiryu Davis ]
   * New upstream release
+  * Refresh use_system_yajl.patch for libbson 1.5.0
 
- -- A. Jesse Jiryu Davis <jesse@mongodb.com>  Tue, 29 Nov 2016 03:57:33 +0000
+  [ Ondřej Surý ]
+  * Update symbols for 1.5.0 release
+
+ -- Ondřej Surý <ondrej@debian.org>  Thu, 01 Dec 2016 12:24:24 +0100
 
 libbson (1.4.2-1) unstable; urgency=low
 
