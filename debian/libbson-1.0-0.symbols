@@ -41,6 +41,8 @@ libbson-1.0.so.0 libbson-1.0-0 #MINVER#
  bson_array_as_json@Base 1.5.0
  bson_as_json@Base 1.5.0
  bson_ascii_strtoll@Base 1.5.0
+ (optional)bson_atomic_int64_add@Base 1.5.0
+ (optional)bson_atomic_int_add@Base 1.5.0
  bson_bcon_magic@Base 1.5.0
  bson_bcone_magic@Base 1.5.0
  bson_check_version@Base 1.5.0
