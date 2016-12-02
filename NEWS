@@ -6,6 +6,8 @@ New features and bug fixes:
 
   * Use jsonsl instead of libyajl as our JSON parsing library, parse JSON more
     strictly, fix minor parsing bugs.
+  * Extended JSON documents like '{"$code": "...", "$scope": {}}' are now parsed
+    into BSON code elements.
 
 =============
 Libbson-1.5.0

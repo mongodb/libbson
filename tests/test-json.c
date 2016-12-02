@@ -915,6 +915,171 @@ test_bson_json_number_long_zero (void)
    bson_destroy (&b);
 }
 
+static void
+test_bson_json_code (void)
+{
+   const char *json_code = "{\"a\": {\"$code\": \"b\"}}";
+   bson_t *bson_code = BCON_NEW ("a", BCON_CODE ("b"));
+
+   const char *json_code_w_nulls = "{\"a\": {\"$code\": \"b\\u0000c\\u0000\"}}";
+   bson_t *bson_code_w_nulls = BCON_NEW ("a", BCON_CODE ("b\0c\0"));
+
+   const char *json_code_w_scope = "{\"a\": {\"$code\": \"b\", "
+                                   "         \"$scope\": {\"var\": 1}}}";
+   bson_t *scope1 = BCON_NEW ("var", BCON_INT32 (1));
+   bson_t *bson_code_w_scope = BCON_NEW ("a", BCON_CODEWSCOPE ("b", scope1));
+
+   const char *json_code_w_scope_special =
+      "{\"a\": {\"$code\": \"b\", "
+      "         \"$scope\": {\"var2\": {\"$numberLong\": \"2\"}}}}";
+   bson_t *scope2 = BCON_NEW ("var2", BCON_INT64 (2));
+   bson_t *bson_code_w_scope_special = BCON_NEW ("a", BCON_CODEWSCOPE ("b", scope2));
+
+   const char *json_2_codes_w_scope =
+      "{\"a\": {\"$code\": \"b\", "
+      "         \"$scope\": {\"var\": 1}},"
+      " \"c\": {\"$code\": \"d\", "
+      "         \"$scope\": {\"var2\": {\"$numberLong\": \"2\"}}}}";
+   bson_t *bson_2_codes_w_scope = BCON_NEW ("a", BCON_CODEWSCOPE ("b", scope1),
+                                            "c", BCON_CODEWSCOPE ("d", scope2));
+
+   const char *json_code_then_regular =
+      "{\"a\": {\"$code\": \"b\", "
+      "         \"$scope\": {\"var\": 1}},"
+      " \"c\": {\"key1\": \"value\", "
+      "         \"subdoc\": {\"key2\": \"value2\"}}}";
+
+   bson_t *bson_code_then_regular = BCON_NEW (
+      "a", BCON_CODEWSCOPE ("b", scope1),
+      "c", "{",
+         "key1", BCON_UTF8 ("value"),
+         "subdoc", "{", "key2", BCON_UTF8 ("value2"), "}",
+      "}");
+
+   const char *json_code_w_scope_reverse = "{\"a\": {\"$scope\": {\"var\": 1}, "
+                                           "         \"$code\": \"b\"}}";
+   bson_t *bson_code_w_scope_reverse = BCON_NEW ("a",
+                                                 BCON_CODEWSCOPE ("b", scope1));
+
+   const char *json_code_w_scope_nest = "{\"a\": {\"$code\": \"b\", "
+                                        "         \"$scope\": {\"var\": {}}}}";
+   bson_t *scope3 = BCON_NEW ("var", "{", "}");
+   bson_t *bson_code_w_scope_nest = BCON_NEW ("a",
+                                              BCON_CODEWSCOPE ("b", scope3));
+
+   const char *json_code_w_scope_nest_deep =
+      "{\"a\": {\"$code\": \"b\", "
+      "         \"$scope\": {\"arr\": [1, 2], \"d\": {},"
+      "                      \"n\": {\"$numberLong\": \"1\"},"
+      "                      \"d2\": {\"x\": 1, \"d3\": {\"z\": 3}}}}}";
+
+   bson_t *scope_deep = BCON_NEW ("arr", "[", BCON_INT32 (1), BCON_INT32 (2), "]",
+                                  "d", "{", "}",
+                                  "n", BCON_INT64 (1),
+                                  "d2", "{",
+                                  "x", BCON_INT32 (1),
+                                  "d3", "{", "z", BCON_INT32 (3), "}",
+                                  "}");
+
+   bson_t *bson_code_w_scope_nest_deep = BCON_NEW (
+      "a", BCON_CODEWSCOPE ("b", scope_deep));
+
+   const char *json_code_w_empty_scope = "{\"a\": {\"$code\": \"b\", "
+                                         "         \"$scope\": {}}}";
+   bson_t *empty = bson_new ();
+   bson_t *bson_code_w_empty_scope = BCON_NEW (
+      "a", BCON_CODEWSCOPE ("b", empty));
+
+   const char *json_code_in_scope =
+      "{\"a\": {\"$code\": \"b\", "
+      "         \"$scope\": {\"x\": {\"$code\": \"c\"}}}}";
+
+   bson_t *code_in_scope = BCON_NEW ("x", "{", "$code", BCON_UTF8 ("c"), "}");
+   bson_t *bson_code_in_scope = BCON_NEW (
+      "a", BCON_CODEWSCOPE ("b", code_in_scope));
+
+   typedef struct {
+      const char *json;
+      bson_t *expected_bson;
+   } code_test_t;
+
+   code_test_t tests[] = {
+      {json_code, bson_code},
+      {json_code_w_nulls, bson_code_w_nulls},
+      {json_code_w_scope, bson_code_w_scope},
+      {json_code_w_scope_special, bson_code_w_scope_special},
+      {json_code_then_regular, bson_code_then_regular},
+      {json_2_codes_w_scope, bson_2_codes_w_scope},
+      {json_code_w_scope_reverse, bson_code_w_scope_reverse},
+      {json_code_w_scope_nest, bson_code_w_scope_nest},
+      {json_code_w_scope_nest_deep, bson_code_w_scope_nest_deep},
+      {json_code_w_empty_scope, bson_code_w_empty_scope},
+      {json_code_in_scope, bson_code_in_scope},
+   };
+
+   int n_tests = sizeof (tests) / sizeof (code_test_t);
+   int i;
+   bson_t b;
+   bool r;
+   bson_error_t error;
+
+   for (i = 0; i < n_tests; i++) {
+      r = bson_init_from_json (&b, tests[i].json, -1, &error);
+      if (!r) {
+         fprintf (stderr, "%s\n", error.message);
+      }
+
+      assert (r);
+      bson_eq_bson (&b, tests[i].expected_bson);
+      bson_destroy (&b);
+   }
+
+   for (i = 0; i < n_tests; i++) {
+      bson_destroy (tests[i].expected_bson);
+   }
+
+   bson_destroy (scope1);
+   bson_destroy (scope2);
+   bson_destroy (scope3);
+   bson_destroy (scope_deep);
+   bson_destroy (code_in_scope);
+   bson_destroy (empty);
+}
+
+static void
+test_bson_json_code_errors (void)
+{
+   bson_error_t error;
+   bson_t b;
+   bool r;
+   size_t i;
+
+   typedef struct {
+      const char *json;
+      const char *error_message;
+   } code_error_test_t;
+
+   code_error_test_t tests[] = {
+      {"{\"a\": {\"$scope\": {}}", "Missing $code after $scope"},
+      {"{\"a\": {\"$scope\": {}, \"$x\": 1}", "Invalid key $x"},
+      {"{\"a\": {\"$scope\": {\"a\": 1}}", "Missing $code after $scope"},
+      {"{\"a\": {\"$code\": \"\", \"$scope\": \"a\"}}", "Invalid read of a"},
+      {"{\"a\": {\"$code\": \"\", \"$scope\": 1}}", "Invalid state for integer read"},
+      {"{\"a\": {\"$code\": \"\", \"$scope\": []}}", "Invalid read of ["},
+      {"{\"a\": {\"$code\": \"\", \"x\": 1}}", "Invalid key x"},
+      {"{\"a\": {\"$code\": \"\", \"$x\": 1}}", "Invalid key $x"},
+      {"{\"a\": {\"$code\": \"\", \"$numberLong\": \"1\"}}", "Invalid key $numberLong"},
+   };
+
+   for (i = 0; i < sizeof (tests) / (sizeof (code_error_test_t)); i++) {
+      r = bson_init_from_json (&b, tests[i].json, -1, &error);
+      assert (!r);
+      ASSERT_ERROR_CONTAINS (error, BSON_ERROR_JSON,
+                             BSON_JSON_ERROR_READ_INVALID_PARAM,
+                             tests[i].error_message);
+   }
+}
+
 static const bson_oid_t *
 oid_zero (void)
 {
@@ -1440,6 +1605,8 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/json/read/bad_path", test_json_reader_new_from_bad_path);
    TestSuite_Add (suite, "/bson/json/read/$numberLong", test_bson_json_number_long);
    TestSuite_Add (suite, "/bson/json/read/$numberLong/zero", test_bson_json_number_long_zero);
+   TestSuite_Add (suite, "/bson/json/read/code", test_bson_json_code);
+   TestSuite_Add (suite, "/bson/json/read/code/errors", test_bson_json_code_errors);
    TestSuite_Add (suite, "/bson/json/read/dbref", test_bson_json_dbref);
    TestSuite_Add (suite, "/bson/json/read/uescape", test_bson_json_uescape);
    TestSuite_Add (suite, "/bson/json/read/uescape/key", test_bson_json_uescape_key);

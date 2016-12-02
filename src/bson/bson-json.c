@@ -51,6 +51,8 @@ typedef enum
    BSON_JSON_IN_BSON_TYPE_TIMESTAMP_STARTMAP,
    BSON_JSON_IN_BSON_TYPE_TIMESTAMP_VALUES,
    BSON_JSON_IN_BSON_TYPE_TIMESTAMP_ENDMAP,
+   BSON_JSON_IN_BSON_TYPE_SCOPE_STARTMAP,
+   BSON_JSON_IN_SCOPE,
 } bson_json_read_state_t;
 
 
@@ -58,6 +60,8 @@ typedef enum
 {
    BSON_JSON_LF_REGEX,
    BSON_JSON_LF_OPTIONS,
+   BSON_JSON_LF_CODE,
+   BSON_JSON_LF_SCOPE,
    BSON_JSON_LF_OID,
    BSON_JSON_LF_BINARY,
    BSON_JSON_LF_TYPE,
@@ -84,6 +88,7 @@ typedef struct
 {
    int    i;
    bool   is_array;
+   bool   is_scope;
    bson_t bson;
 } bson_json_stack_frame_t;
 
@@ -131,6 +136,25 @@ typedef union
 } bson_json_bson_data_t;
 
 
+/* collect info while parsing a {$code: "...", $scope: {...}} object */
+typedef struct
+{
+   bool            has_code;
+   bool            has_scope;
+   bool            in_scope;
+   bson_json_buf_t key_buf;
+   bson_json_buf_t code_buf;
+} bson_json_code_t;
+
+
+static void
+_bson_json_code_cleanup (bson_json_code_t *code_data)
+{
+   bson_free (code_data->key_buf.buf);
+   bson_free (code_data->code_buf.buf);
+}
+
+
 typedef struct
 {
    bson_t                      *bson;
@@ -144,7 +168,7 @@ typedef struct
    bson_type_t                  bson_type;
    bson_json_buf_t              bson_type_buf [3];
    bson_json_bson_data_t        bson_type_data;
-   bool                         known_bson_type;
+   bson_json_code_t             code_data;
 } bson_json_reader_bson_t;
 
 
@@ -193,12 +217,14 @@ _noop (void)
 #define STACK_BSON_CHILD STACK_BSON (0)
 #define STACK_I STACK_ELE (0, i)
 #define STACK_IS_ARRAY STACK_ELE (0, is_array)
+#define STACK_IS_SCOPE STACK_ELE (0, is_scope)
 #define STACK_PUSH_ARRAY(statement) \
    do { \
       if (bson->n >= (STACK_MAX - 1)) { return; } \
       bson->n++; \
       STACK_I = 0; \
       STACK_IS_ARRAY = 1; \
+      STACK_IS_SCOPE = 0; \
       if (bson->n != 0) { \
          statement; \
       } \
@@ -208,6 +234,18 @@ _noop (void)
       if (bson->n >= (STACK_MAX - 1)) { return; } \
       bson->n++; \
       STACK_IS_ARRAY = 0; \
+      STACK_IS_SCOPE = 0; \
+      if (bson->n != 0) { \
+         statement; \
+      } \
+   } while (0)
+#define STACK_PUSH_SCOPE(statement) \
+   do { \
+      if (bson->n >= (STACK_MAX - 1)) { return; } \
+      bson->n++; \
+      STACK_IS_ARRAY = 0; \
+      STACK_IS_SCOPE = 1; \
+      bson->code_data.in_scope = true; \
       if (bson->n != 0) { \
          statement; \
       } \
@@ -230,6 +268,11 @@ _noop (void)
       } \
       bson->n--; \
    } while (0)
+#define STACK_POP_SCOPE \
+   do { \
+      STACK_POP_DOC (_noop ()); \
+      bson->code_data.in_scope = false; \
+   } while (0);
 #define BASIC_CB_PREAMBLE \
    const char *key; \
    size_t len; \
@@ -249,7 +292,7 @@ _noop (void)
    }
 #define HANDLE_OPTION(_key, _type, _state) \
    (len == strlen (_key) && strncmp ((const char *)val, (_key), len) == 0) { \
-      if (bson->known_bson_type && bson->bson_type != (_type)) { \
+      if (bson->bson_type && bson->bson_type != (_type)) { \
          _bson_json_read_set_error (reader, \
                                     "Invalid key %s.  Looking for values for %d", \
                                     (_key), bson->bson_type); \
@@ -449,6 +492,8 @@ _bson_json_read_integer (bson_json_reader_t *reader, /* IN */
          break;
       case BSON_JSON_LF_REGEX:
       case BSON_JSON_LF_OPTIONS:
+      case BSON_JSON_LF_CODE:
+      case BSON_JSON_LF_SCOPE:
       case BSON_JSON_LF_OID:
       case BSON_JSON_LF_BINARY:
       case BSON_JSON_LF_TYPE:
@@ -500,6 +545,9 @@ _bson_json_read_string (bson_json_reader_t  *reader, /* IN */
       BASIC_CB_BAIL_IF_NOT_NORMAL ("string");
       bson_append_utf8 (STACK_BSON_CHILD, key, (int) len, (const char *) val,
                         (int) vlen);
+   } else if (rs == BSON_JSON_IN_BSON_TYPE_SCOPE_STARTMAP) {
+      _bson_json_read_set_error (reader, "Invalid read of %s in state %d",
+                                 val, rs);
    } else if (rs == BSON_JSON_IN_BSON_TYPE ||
               rs == BSON_JSON_IN_BSON_TYPE_TIMESTAMP_VALUES ||
               rs == BSON_JSON_IN_BSON_TYPE_DATE_NUMBERLONG) {
@@ -609,6 +657,10 @@ _bson_json_read_string (bson_json_reader_t  *reader, /* IN */
             }
          }
          break;
+      case BSON_JSON_LF_CODE:
+         _bson_json_buf_set (&bson->code_data.code_buf, val, vlen);
+         break;
+      case BSON_JSON_LF_SCOPE:
       case BSON_JSON_LF_TIMESTAMP_T:
       case BSON_JSON_LF_TIMESTAMP_I:
       case BSON_JSON_LF_UNDEFINED:
@@ -640,6 +692,8 @@ _bson_json_read_start_map (bson_json_reader_t *reader) /* IN */
       bson->read_state = BSON_JSON_IN_BSON_TYPE_DATE_NUMBERLONG;
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_TIMESTAMP_STARTMAP) {
       bson->read_state = BSON_JSON_IN_BSON_TYPE_TIMESTAMP_VALUES;
+   } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_SCOPE_STARTMAP) {
+      bson->read_state = BSON_JSON_IN_SCOPE;
    } else {
       bson->read_state = BSON_JSON_IN_START_MAP;
    }
@@ -659,6 +713,8 @@ _is_known_key (const char *key, size_t len)
 
    ret = (IS_KEY ("$regex") ||
           IS_KEY ("$options") ||
+          IS_KEY ("$code") ||
+          IS_KEY ("$scope") ||
           IS_KEY ("$oid") ||
           IS_KEY ("$binary") ||
           IS_KEY ("$type") ||
@@ -673,6 +729,54 @@ _is_known_key (const char *key, size_t len)
 #undef IS_KEY
 
    return ret;
+}
+
+static void
+_bson_json_save_map_key (bson_json_reader_bson_t *bson,
+                         const uint8_t           *val,
+                         size_t                   len)
+{
+   _bson_json_buf_set (&bson->key_buf, val, len);
+   bson->key = (const char *) bson->key_buf.buf;
+}
+
+
+static void
+_bson_json_read_code_or_scope_key (bson_json_reader_bson_t *bson,
+                                   bool                     is_scope,
+                                   const uint8_t           *val,
+                                   size_t                   len)
+{
+   bson_json_code_t *code = &bson->code_data;
+
+   if (code->in_scope) {
+      /* we're reading something weirdly nested, e.g. we just read "$code" in
+       * "$scope: {x: {$code: {}}}". just create the subdoc within the scope. */
+      bson->read_state = BSON_JSON_REGULAR;
+      STACK_PUSH_DOC (bson_append_document_begin (STACK_BSON_PARENT,
+                                                  bson->key,
+                                                  (int) bson->key_buf.len,
+                                                  STACK_BSON_CHILD));
+      _bson_json_save_map_key (bson, val, len);
+   } else {
+      if (!bson->code_data.key_buf.len) {
+         /* save the key, e.g. {"key": {"$code": "return x", "$scope":{"x":1}}},
+          * in case it is overwritten while parsing scope sub-object */
+         _bson_json_buf_set (&bson->code_data.key_buf, bson->key_buf.buf,
+                             bson->key_buf.len);
+      }
+
+      if (is_scope) {
+         bson->bson_type = BSON_TYPE_CODEWSCOPE;
+         bson->read_state = BSON_JSON_IN_BSON_TYPE_SCOPE_STARTMAP;
+         bson->bson_state = BSON_JSON_LF_SCOPE;
+         bson->code_data.has_scope = true;
+      } else {
+         bson->bson_type = BSON_TYPE_CODE;
+         bson->bson_state = BSON_JSON_LF_CODE;
+         bson->code_data.has_code = true;
+      }
+   }
 }
 
 
@@ -700,6 +804,11 @@ _bson_json_read_map_key (bson_json_reader_t *reader, /* IN */
                                                      (int)bson->key_buf.len,
                                                      STACK_BSON_CHILD));
       }
+   } else if (bson->read_state == BSON_JSON_IN_SCOPE) {
+      /* just read "key" in {$code: "", $scope: {key: ""}}*/
+      bson->read_state = BSON_JSON_REGULAR;
+      STACK_PUSH_SCOPE (bson_init (STACK_BSON_CHILD));
+      _bson_json_save_map_key (bson, val, len);
    }
 
    if (bson->read_state == BSON_JSON_IN_BSON_TYPE) {
@@ -715,10 +824,13 @@ _bson_json_read_map_key (bson_json_reader_t *reader, /* IN */
       if HANDLE_OPTION ("$maxKey", BSON_TYPE_MAXKEY, BSON_JSON_LF_MAXKEY) else
       if HANDLE_OPTION ("$numberLong", BSON_TYPE_INT64, BSON_JSON_LF_INT64) else
       if HANDLE_OPTION ("$numberDecimal", BSON_TYPE_DECIMAL128, BSON_JSON_LF_DECIMAL128) else
-      if (len == strlen ("$timestamp") &&
-          memcmp (val, "$timestamp", len) == 0) {
+      if (!strcmp ("$timestamp", (const char *) val)) {
          bson->bson_type = BSON_TYPE_TIMESTAMP;
          bson->read_state = BSON_JSON_IN_BSON_TYPE_TIMESTAMP_STARTMAP;
+      } else if (!strcmp ("$code", (const char *) val)) {
+         _bson_json_read_code_or_scope_key (bson, false /* is_scope */, val, len);
+      } else if (!strcmp ("$scope", (const char *) val)) {
+         _bson_json_read_code_or_scope_key (bson, true /* is_scope */, val, len);
       } else {
          _bson_json_read_set_error (reader,
                                     "Invalid key %s.  Looking for values for %d",
@@ -739,8 +851,7 @@ _bson_json_read_map_key (bson_json_reader_t *reader, /* IN */
                                     val, bson->bson_type);
       }
    } else {
-      _bson_json_buf_set (&bson->key_buf, val, len);
-      bson->key = (const char *)bson->key_buf.buf;
+      _bson_json_save_map_key (bson, val, len);
    }
 }
 
@@ -789,6 +900,49 @@ _bson_json_read_append_regex (bson_json_reader_t      *reader, /* IN */
                            regex, options)) {
       _bson_json_read_set_error (reader, "Error storing regex");
    }
+}
+
+
+static void
+_bson_json_read_append_code (bson_json_reader_t      *reader, /* IN */
+                             bson_json_reader_bson_t *bson)   /* IN */
+{
+   bson_json_code_t *code_data;
+   char *code = NULL;
+   bson_t *scope = NULL;
+   bool r;
+
+   code_data = &bson->code_data;
+
+   BSON_ASSERT (!code_data->in_scope);
+
+   if (!code_data->has_code) {
+      _bson_json_read_set_error (reader, "Missing $code after $scope");
+      return;
+   }
+
+   code = (char *) code_data->code_buf.buf;
+
+   if (code_data->has_scope) {
+      scope = STACK_BSON (1);
+   }
+
+   /* creates BSON "code" elem, or "code with scope" if scope is not NULL */
+   r = bson_append_code_with_scope (STACK_BSON_CHILD,
+                                    (const char *) code_data->key_buf.buf,
+                                    (int) code_data->key_buf.len, code, scope);
+
+   if (!r) {
+      _bson_json_read_set_error (reader, "Error storing Javascript code");
+   }
+
+   if (scope) {
+      bson_destroy (scope);
+   }
+
+   /* keep the buffer but truncate it */
+   code_data->key_buf.len = 0;
+   code_data->has_code = code_data->has_scope = false;
 }
 
 
@@ -852,6 +1006,9 @@ _bson_json_read_end_map (bson_json_reader_t *reader) /* IN */
       STACK_PUSH_DOC (bson_append_document_begin (STACK_BSON_PARENT, bson->key,
                                                   (int)bson->key_buf.len,
                                                   STACK_BSON_CHILD));
+   } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_SCOPE_STARTMAP) {
+      bson->read_state = BSON_JSON_REGULAR;
+      STACK_PUSH_SCOPE (bson_init (STACK_BSON_CHILD));
    }
 
    if (bson->read_state == BSON_JSON_IN_BSON_TYPE) {
@@ -865,6 +1022,11 @@ _bson_json_read_end_map (bson_json_reader_t *reader) /* IN */
       switch (bson->bson_type) {
       case BSON_TYPE_REGEX:
          _bson_json_read_append_regex (reader, bson);
+         break;
+      case BSON_TYPE_CODE:
+      case BSON_TYPE_CODEWSCOPE:
+         /* we've read the closing "}" in "{$code: ..., $scope: ...}" */
+         _bson_json_read_append_code (reader, bson);
          break;
       case BSON_TYPE_OID:
          _bson_json_read_append_oid (reader, bson);
@@ -904,9 +1066,7 @@ _bson_json_read_end_map (bson_json_reader_t *reader) /* IN */
       case BSON_TYPE_ARRAY:
       case BSON_TYPE_BOOL:
       case BSON_TYPE_NULL:
-      case BSON_TYPE_CODE:
       case BSON_TYPE_SYMBOL:
-      case BSON_TYPE_CODEWSCOPE:
       case BSON_TYPE_INT32:
       case BSON_TYPE_TIMESTAMP:
       case BSON_TYPE_DBPOINTER:
@@ -937,12 +1097,25 @@ _bson_json_read_end_map (bson_json_reader_t *reader) /* IN */
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_DATE_ENDMAP) {
       bson->read_state = BSON_JSON_REGULAR;
    } else if (bson->read_state == BSON_JSON_REGULAR) {
-      STACK_POP_DOC (bson_append_document_end (STACK_BSON_PARENT,
-                                               STACK_BSON_CHILD));
+      if (STACK_IS_SCOPE) {
+         bson->read_state = BSON_JSON_IN_BSON_TYPE;
+         bson->bson_type = BSON_TYPE_CODE;
+         STACK_POP_SCOPE;
+      } else {
+         STACK_POP_DOC (
+            bson_append_document_end (STACK_BSON_PARENT, STACK_BSON_CHILD));
+      }
 
       if (bson->n == -1) {
          bson->read_state = BSON_JSON_DONE;
       }
+   } else if (bson->read_state == BSON_JSON_IN_SCOPE) {
+      /* empty $scope */
+      BSON_ASSERT (bson->code_data.has_scope);
+      STACK_PUSH_SCOPE (bson_init (STACK_BSON_CHILD));
+      STACK_POP_SCOPE;
+      bson->read_state = BSON_JSON_IN_BSON_TYPE;
+      bson->bson_type = BSON_TYPE_CODE;
    } else {
       _bson_json_read_set_error (reader, "Invalid state %d", bson->read_state);
    }
@@ -1362,6 +1535,8 @@ bson_json_reader_destroy (bson_json_reader_t *reader) /* IN */
    for (i = 0; i < 3; i++) {
       bson_free (b->bson_type_buf[i].buf);
    }
+
+   _bson_json_code_cleanup (&b->code_data);
 
    jsonsl_destroy (reader->json);
    bson_free (reader->tok_accumulator.buf);
