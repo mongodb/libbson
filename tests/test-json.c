@@ -1122,6 +1122,27 @@ test_bson_json_double_overflow (void)
 
 
 static void
+test_bson_json_empty_final_object (void)
+{
+   const char *json = "{\"a\": {\"b\": {}}}";
+   bson_t *bson = BCON_NEW ("a", "{", "b", "{", "}", "}");
+   bson_t b = BSON_INITIALIZER;
+   bool r;
+   bson_error_t error;
+
+   r = bson_init_from_json (&b, json, -1, &error);
+   if (!r) {
+      fprintf (stderr, "%s\n", error.message);
+   }
+
+   assert (r);
+   bson_eq_bson (&b, bson);
+
+   bson_destroy (&b);
+   bson_destroy (bson);
+}
+
+static void
 test_bson_json_number_decimal (void) {
    bson_error_t error;
    bson_iter_t iter;
@@ -1357,6 +1378,7 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/json/read/uescape/key", test_bson_json_uescape_key);
    TestSuite_Add (suite, "/bson/json/read/uescape/bad", test_bson_json_uescape_bad);
    TestSuite_Add (suite, "/bson/json/read/double/overflow", test_bson_json_double_overflow);
+   TestSuite_Add (suite, "/bson/json/read/empty_final", test_bson_json_empty_final_object);
    TestSuite_Add (suite, "/bson/as_json/decimal128", test_bson_as_json_decimal128);
    TestSuite_Add (suite, "/bson/json/read/$numberDecimal", test_bson_json_number_decimal);
    TestSuite_Add (suite, "/bson/integer/width", test_bson_integer_width);
