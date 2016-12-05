@@ -68,18 +68,6 @@ License: ZLib
  ghost@aladdin.com
 
 
-Files: build/autotools/LDVersionScript.m4
-Copyright: 2008-2013 Free Software Foundation, Inc.
-License: Other-FSF
- This file is free software; the Free Software Foundation
- gives unlimited permission to copy and/or distribute it,
- with or without modifications, as long as this notice is preserved.
-
-Files: build/autotools/m4/ax_pthread.m4
-Copyright: 2008 Steven G. Johnson <stevenj@alum.mit.edu>
-           2011 Daniel Richard G. <skunk@iSKUNK.ORG>
-License: GPL-3+
-
 Files: build/autotools/m4/ax_check_link_flag.m4 build/autotools/m4/ax_check_compile_flag.m4
 Copyright: 2008 Guido U. Draheim <guidod@gmx.de>
            2011 Maarten Bosmans <mkbosmans@gmail.com>

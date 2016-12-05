@@ -1,6 +1,8 @@
 libbson (1.5.0-1) unstable; urgency=low
 
   * New upstream release
+  * Refresh use_system_yajl.patch for libbson 1.5.0
+  * Remove symbols file
 
  -- A. Jesse Jiryu Davis <jesse@mongodb.com>  Tue, 29 Nov 2016 03:57:33 +0000
 
