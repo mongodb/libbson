@@ -4,7 +4,8 @@ Next Release
 
 New features and bug fixes:
 
-  * Use jsonsl instead of libyajl as our JSON parsing library.
+  * Use jsonsl instead of libyajl as our JSON parsing library, parse JSON more
+    strictly, fix minor parsing bugs.
 
 =============
 Libbson-1.5.0
