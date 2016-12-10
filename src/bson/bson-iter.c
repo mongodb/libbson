@@ -453,6 +453,7 @@ _bson_iter_next_internal (bson_iter_t  *iter,         /* INOUT */
    iter->d3 = 0;
    iter->d4 = 0;
 
+   /* iterate from start to end of NULL-terminated key string */
    for (o = iter->off + 1; o < len; o++) {
       if (!data [o]) {
          iter->d1 = ++o;
