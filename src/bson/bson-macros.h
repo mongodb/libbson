@@ -77,6 +77,10 @@
 #  define BSON_API
 #endif
 
+#ifdef __hpux__
+#undef MIN
+#undef MAX
+#endif
 
 #ifdef MIN
 #  define BSON_MIN MIN
