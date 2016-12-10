@@ -573,6 +573,12 @@ fill_data_fields:
    case BSON_TYPE_BOOL:
       {
           char val;
+
+          if (iter->d1 >= len) {
+              iter->err_off = o;
+              goto mark_invalid;
+          }
+
           memcpy (&val, iter->raw + iter->d1, 1);
           if (val != 0x00 && val != 0x01) {
               iter->err_off = o;
