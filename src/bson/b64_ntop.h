@@ -44,7 +44,9 @@
 #include "bson-macros.h"
 #include "bson-types.h"
 
-#define Assert(Cond) if (!(Cond)) abort ()
+#define Assert(Cond) \
+   if (!(Cond))      \
+   abort ()
 
 static const char Base64[] =
    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -113,10 +115,7 @@ static const char Pad64 = '=';
  */
 
 static ssize_t
-b64_ntop (uint8_t const *src,
-          size_t         srclength,
-          char          *target,
-          size_t         targsize)
+b64_ntop (uint8_t const *src, size_t srclength, char *target, size_t targsize)
 {
    size_t datalength = 0;
    uint8_t input[3];
@@ -170,7 +169,7 @@ b64_ntop (uint8_t const *src,
 
       if (srclength == 1) {
          target[datalength++] = Pad64;
-      } else{
+      } else {
          target[datalength++] = Base64[output[2]];
       }
       target[datalength++] = Pad64;

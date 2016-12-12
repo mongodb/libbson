@@ -26,23 +26,18 @@
 BSON_BEGIN_DECLS
 
 
-struct _bson_context_t
-{
+struct _bson_context_t {
    bson_context_flags_t flags : 7;
-   bool                 pidbe_once : 1;
-   uint8_t              pidbe[2];
-   uint8_t              md5[3];
-   int32_t              seq32;
-   int64_t              seq64;
+   bool pidbe_once : 1;
+   uint8_t pidbe[2];
+   uint8_t md5[3];
+   int32_t seq32;
+   int64_t seq64;
 
-   void (*oid_get_host)  (bson_context_t *context,
-                          bson_oid_t     *oid);
-   void (*oid_get_pid)   (bson_context_t *context,
-                          bson_oid_t     *oid);
-   void (*oid_get_seq32) (bson_context_t *context,
-                          bson_oid_t     *oid);
-   void (*oid_get_seq64) (bson_context_t *context,
-                          bson_oid_t     *oid);
+   void (*oid_get_host) (bson_context_t *context, bson_oid_t *oid);
+   void (*oid_get_pid) (bson_context_t *context, bson_oid_t *oid);
+   void (*oid_get_seq32) (bson_context_t *context, bson_oid_t *oid);
+   void (*oid_get_seq64) (bson_context_t *context, bson_oid_t *oid);
 };
 
 

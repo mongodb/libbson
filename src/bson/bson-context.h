@@ -19,8 +19,8 @@
 #define BSON_CONTEXT_H
 
 
-#if !defined (BSON_INSIDE) && !defined (BSON_COMPILATION)
-# error "Only <bson.h> can be included directly."
+#if !defined(BSON_INSIDE) && !defined(BSON_COMPILATION)
+#error "Only <bson.h> can be included directly."
 #endif
 
 
@@ -32,11 +32,14 @@ BSON_BEGIN_DECLS
 
 
 BSON_API
-bson_context_t *bson_context_new         (bson_context_flags_t flags);
+bson_context_t *
+bson_context_new (bson_context_flags_t flags);
 BSON_API
-void            bson_context_destroy     (bson_context_t *context);
+void
+bson_context_destroy (bson_context_t *context);
 BSON_API
-bson_context_t *bson_context_get_default (void) BSON_GNUC_CONST;
+bson_context_t *
+bson_context_get_default (void) BSON_GNUC_CONST;
 
 
 BSON_END_DECLS

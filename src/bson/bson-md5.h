@@ -58,8 +58,8 @@
 #define BSON_MD5_H
 
 
-#if !defined (BSON_INSIDE) && !defined (BSON_COMPILATION)
-#  error "Only <bson.h> can be included directly."
+#if !defined(BSON_INSIDE) && !defined(BSON_COMPILATION)
+#error "Only <bson.h> can be included directly."
 #endif
 
 
@@ -69,23 +69,22 @@
 BSON_BEGIN_DECLS
 
 
-typedef struct
-{
+typedef struct {
    uint32_t count[2]; /* message length in bits, lsw first */
    uint32_t abcd[4];  /* digest buffer */
-   uint8_t  buf[64];  /* accumulate block */
+   uint8_t buf[64];   /* accumulate block */
 } bson_md5_t;
 
 
 BSON_API
-void bson_md5_init   (bson_md5_t         *pms);
+void
+bson_md5_init (bson_md5_t *pms);
 BSON_API
-void bson_md5_append (bson_md5_t         *pms,
-                      const uint8_t *data,
-                      uint32_t       nbytes);
+void
+bson_md5_append (bson_md5_t *pms, const uint8_t *data, uint32_t nbytes);
 BSON_API
-void bson_md5_finish (bson_md5_t         *pms,
-                      uint8_t        digest[16]);
+void
+bson_md5_finish (bson_md5_t *pms, uint8_t digest[16]);
 
 
 BSON_END_DECLS

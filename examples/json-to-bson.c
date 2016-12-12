@@ -27,8 +27,7 @@
 
 
 int
-main (int   argc,
-      char *argv[])
+main (int argc, char *argv[])
 {
    bson_json_reader_t *reader;
    bson_error_t error;
@@ -58,8 +57,8 @@ main (int   argc,
          reader = bson_json_reader_new_from_fd (STDIN_FILENO, false);
       } else {
          if (!(reader = bson_json_reader_new_from_file (filename, &error))) {
-            fprintf (stderr, "Failed to open \"%s\": %s\n",
-                     filename, error.message);
+            fprintf (
+               stderr, "Failed to open \"%s\": %s\n", filename, error.message);
             continue;
          }
       }
@@ -73,7 +72,7 @@ main (int   argc,
             abort ();
          }
 
-         if (fwrite (bson_get_data(&doc), 1, doc.len, stdout) != doc.len) {
+         if (fwrite (bson_get_data (&doc), 1, doc.len, stdout) != doc.len) {
             fprintf (stderr, "Failed to write to stdout, exiting.\n");
             exit (1);
          }

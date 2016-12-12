@@ -24,39 +24,40 @@
 
 #ifdef _MSC_VER
 #define PATH_MAX 1024
-#define realpath(path, expanded) GetFullPathName (path, PATH_MAX, expanded, NULL)
+#define realpath(path, expanded) \
+   GetFullPathName (path, PATH_MAX, expanded, NULL)
 #endif
 
-typedef void (*test_bson_type_valid_cb)(const uint8_t *bson_str,
-                                        uint32_t       bson_str_len,
-                                        const uint8_t *canonical_bson_str,
-                                        uint32_t       canonical_bson_str_len,
-                                        const uint8_t *extjson_str,
-                                        uint32_t       extjson_str_len,
-                                        const uint8_t *canonical_extjson_str,
-                                        uint32_t       canonical_extjson_str_len,
-                                        bool           lossy);
+typedef void (*test_bson_type_valid_cb) (const uint8_t *bson_str,
+                                         uint32_t bson_str_len,
+                                         const uint8_t *canonical_bson_str,
+                                         uint32_t canonical_bson_str_len,
+                                         const uint8_t *extjson_str,
+                                         uint32_t extjson_str_len,
+                                         const uint8_t *canonical_extjson_str,
+                                         uint32_t canonical_extjson_str_len,
+                                         bool lossy);
 
 #ifdef _MSC_VER
-# define SSCANF sscanf_s
+#define SSCANF sscanf_s
 #else
-# define SSCANF sscanf
+#define SSCANF sscanf
 #endif
 
 #ifndef JSON_DIR
-# define JSON_DIR "tests/json"
+#define JSON_DIR "tests/json"
 #endif
 
 void
 test_bson_type_decimal128 (const uint8_t *bson_str,
-                           uint32_t       bson_str_len,
+                           uint32_t bson_str_len,
                            const uint8_t *canonical_bson_str,
-                           uint32_t       canonical_bson_str_len,
+                           uint32_t canonical_bson_str_len,
                            const uint8_t *extjson_str,
-                           uint32_t       extjson_str_len,
+                           uint32_t extjson_str_len,
                            const uint8_t *canonical_extjson_str,
-                           uint32_t       canonical_extjson_str_len,
-                           bool           lossy)
+                           uint32_t canonical_extjson_str_len,
+                           bool lossy)
 {
    bson_t bson;
    bson_t canonical_bson;
@@ -70,7 +71,8 @@ test_bson_type_decimal128 (const uint8_t *bson_str,
    BSON_ASSERT (canonical_extjson_str);
 
    bson_init_static (&bson, bson_str, bson_str_len);
-   bson_init_static (&canonical_bson, canonical_bson_str, canonical_bson_str_len);
+   bson_init_static (
+      &canonical_bson, canonical_bson_str, canonical_bson_str_len);
 
 
    ASSERT_CMPUINT8 (bson_get_data (&bson), bson_str);
@@ -80,22 +82,25 @@ test_bson_type_decimal128 (const uint8_t *bson_str,
    ASSERT_CMPUINT8 (bson_get_data (&canonical_bson), canonical_bson_str);
 
    extjson = bson_new_from_json (extjson_str, extjson_str_len, &error);
-   canonical_extjson = bson_new_from_json (canonical_extjson_str, canonical_extjson_str_len, &error);
+   canonical_extjson = bson_new_from_json (
+      canonical_extjson_str, canonical_extjson_str_len, &error);
 
    /* B->cE */
    ASSERT_CMPJSON (bson_as_json (&bson, NULL), canonical_extjson_str);
 
    /* E->cE */
    ASSERT_CMPJSON (bson_as_json (extjson, NULL), canonical_extjson_str);
-   
+
    /* cb->cE */
-   ASSERT_CMPUINT8 (bson_get_data (&canonical_bson), bson_get_data (canonical_extjson));
+   ASSERT_CMPUINT8 (bson_get_data (&canonical_bson),
+                    bson_get_data (canonical_extjson));
 
    /* cE->cE */
-   ASSERT_CMPJSON (bson_as_json (canonical_extjson, NULL), canonical_extjson_str);
+   ASSERT_CMPJSON (bson_as_json (canonical_extjson, NULL),
+                   canonical_extjson_str);
 
    if (!lossy) {
-   /* E->cB */
+      /* E->cB */
       ASSERT_CMPJSON (bson_as_json (extjson, NULL), canonical_extjson_str);
 
       /* cE->cB */
@@ -130,16 +135,16 @@ test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
 
       bson_iter_recurse (&iter, &inner_iter);
       while (bson_iter_next (&inner_iter)) {
-         bson_iter_t    test;
-         uint8_t       *bson_str = NULL;
-         uint32_t       bson_str_len = 0;
+         bson_iter_t test;
+         uint8_t *bson_str = NULL;
+         uint32_t bson_str_len = 0;
          const uint8_t *extjson_str = NULL;
-         uint32_t       extjson_str_len = 0;
+         uint32_t extjson_str_len = 0;
          const uint8_t *canonical_extjson_str = NULL;
-         uint32_t       canonical_extjson_str_len = 0;
-         bool           lossy = false;
-         bool           have_extjson = false;
-         bool           have_canonical_extjson = false;
+         uint32_t canonical_extjson_str_len = 0;
+         bool lossy = false;
+         bool have_extjson = false;
+         bool have_canonical_extjson = false;
 
          bson_iter_recurse (&inner_iter, &test);
          _test_bson_type_print_description (&test);
@@ -163,15 +168,19 @@ test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
             }
 
             if (!strcmp (key, "extjson") && BSON_ITER_HOLDS_UTF8 (&test)) {
-               extjson_str = (const uint8_t *)bson_iter_utf8 (&test, &extjson_str_len);
+               extjson_str =
+                  (const uint8_t *) bson_iter_utf8 (&test, &extjson_str_len);
                have_extjson = true;
             }
 
-            if (!strcmp (key, "canonical_extjson") && BSON_ITER_HOLDS_UTF8 (&test)) {
-               canonical_extjson_str = (const uint8_t *)bson_iter_utf8 (&test, &canonical_extjson_str_len);
+            if (!strcmp (key, "canonical_extjson") &&
+                BSON_ITER_HOLDS_UTF8 (&test)) {
+               canonical_extjson_str = (const uint8_t *) bson_iter_utf8 (
+                  &test, &canonical_extjson_str_len);
                have_canonical_extjson = true;
             }
-            if (!strcmp (key, "canonical_extjson") && BSON_ITER_HOLDS_BOOL (&test)) {
+            if (!strcmp (key, "canonical_extjson") &&
+                BSON_ITER_HOLDS_BOOL (&test)) {
                lossy = bson_iter_bool (&test);
             }
          }
@@ -183,7 +192,8 @@ test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
                 have_extjson ? extjson_str : NULL,
                 have_extjson ? extjson_str_len : 0,
                 have_canonical_extjson ? canonical_extjson_str : extjson_str,
-                have_canonical_extjson ? canonical_extjson_str_len : extjson_str_len,
+                have_canonical_extjson ? canonical_extjson_str_len
+                                       : extjson_str_len,
                 lossy);
          bson_free (bson_str);
       }
@@ -222,23 +232,40 @@ test_add_spec_test (TestSuite *suite, const char *filename, test_hook callback)
    bson_t *test;
    char *skip_json;
 
-   test = get_bson_from_json_file ((char *)filename);
-   skip_json = strstr (filename, "json")+4;
-   skip_json = bson_strndup (skip_json, strlen (skip_json)-5);
+   test = get_bson_from_json_file ((char *) filename);
+   skip_json = strstr (filename, "json") + 4;
+   skip_json = bson_strndup (skip_json, strlen (skip_json) - 5);
 
-   TestSuite_AddWC (suite, skip_json, (void (*)(void *))callback, (void (*)(void*))bson_destroy, test);
+   TestSuite_AddWC (suite,
+                    skip_json,
+                    (void (*) (void *)) callback,
+                    (void (*) (void *)) bson_destroy,
+                    test);
    bson_free (skip_json);
 }
 
 void
 test_bson_type_install (TestSuite *suite)
 {
-   test_add_spec_test (suite, JSON_DIR "/type/decimal128/decimal128-1.json", test_bson_type_decimal128_cb);
-   test_add_spec_test (suite, JSON_DIR "/type/decimal128/decimal128-2.json", test_bson_type_decimal128_cb);
-   test_add_spec_test (suite, JSON_DIR "/type/decimal128/decimal128-3.json", test_bson_type_decimal128_cb);
-   test_add_spec_test (suite, JSON_DIR "/type/decimal128/decimal128-4.json", test_bson_type_decimal128_cb);
-   test_add_spec_test (suite, JSON_DIR "/type/decimal128/decimal128-5.json", test_bson_type_decimal128_cb);
-   test_add_spec_test (suite, JSON_DIR "/type/decimal128/decimal128-6.json", test_bson_type_decimal128_cb);
-   test_add_spec_test (suite, JSON_DIR "/type/decimal128/decimal128-7.json", test_bson_type_decimal128_cb);
+   test_add_spec_test (suite,
+                       JSON_DIR "/type/decimal128/decimal128-1.json",
+                       test_bson_type_decimal128_cb);
+   test_add_spec_test (suite,
+                       JSON_DIR "/type/decimal128/decimal128-2.json",
+                       test_bson_type_decimal128_cb);
+   test_add_spec_test (suite,
+                       JSON_DIR "/type/decimal128/decimal128-3.json",
+                       test_bson_type_decimal128_cb);
+   test_add_spec_test (suite,
+                       JSON_DIR "/type/decimal128/decimal128-4.json",
+                       test_bson_type_decimal128_cb);
+   test_add_spec_test (suite,
+                       JSON_DIR "/type/decimal128/decimal128-5.json",
+                       test_bson_type_decimal128_cb);
+   test_add_spec_test (suite,
+                       JSON_DIR "/type/decimal128/decimal128-6.json",
+                       test_bson_type_decimal128_cb);
+   test_add_spec_test (suite,
+                       JSON_DIR "/type/decimal128/decimal128-7.json",
+                       test_bson_type_decimal128_cb);
 }
-

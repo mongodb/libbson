@@ -23,7 +23,7 @@
 
 
 #ifndef BINARY_DIR
-# define BINARY_DIR "tests/binary"
+#define BINARY_DIR "tests/binary"
 #endif
 
 
@@ -36,32 +36,32 @@ test_reader_from_data (void)
    uint32_t i;
    bool eof = false;
 
-   buffer = bson_malloc0(4095);
+   buffer = bson_malloc0 (4095);
    for (i = 0; i < 4095; i += 5) {
       buffer[i] = 5;
    }
 
-   reader = bson_reader_new_from_data(buffer, 4095);
+   reader = bson_reader_new_from_data (buffer, 4095);
 
-   for (i = 0; (b = bson_reader_read(reader, &eof)); i++) {
-      const uint8_t *buf = bson_get_data(b);
+   for (i = 0; (b = bson_reader_read (reader, &eof)); i++) {
+      const uint8_t *buf = bson_get_data (b);
 
       /* do nothing */
-      assert(b->len == 5);
-      assert(buf[0] == 5);
-      assert(buf[1] == 0);
-      assert(buf[2] == 0);
-      assert(buf[3] == 0);
-      assert(buf[4] == 0);
+      assert (b->len == 5);
+      assert (buf[0] == 5);
+      assert (buf[1] == 0);
+      assert (buf[2] == 0);
+      assert (buf[3] == 0);
+      assert (buf[4] == 0);
    }
 
-   assert(i == (4095/5));
+   assert (i == (4095 / 5));
 
-   assert_cmpint(eof, ==, true);
+   assert_cmpint (eof, ==, true);
 
-   bson_free(buffer);
+   bson_free (buffer);
 
-   bson_reader_destroy(reader);
+   bson_reader_destroy (reader);
 }
 
 
@@ -74,33 +74,33 @@ test_reader_from_data_overflow (void)
    uint32_t i;
    bool eof = false;
 
-   buffer = bson_malloc0(4096);
+   buffer = bson_malloc0 (4096);
    for (i = 0; i < 4095; i += 5) {
       buffer[i] = 5;
    }
 
    buffer[4095] = 5;
 
-   reader = bson_reader_new_from_data(buffer, 4096);
+   reader = bson_reader_new_from_data (buffer, 4096);
 
-   for (i = 0; (b = bson_reader_read(reader, &eof)); i++) {
-      const uint8_t *buf = bson_get_data(b);
-      assert(b->len == 5);
-      assert(buf[0] == 5);
-      assert(buf[1] == 0);
-      assert(buf[2] == 0);
-      assert(buf[3] == 0);
-      assert(buf[4] == 0);
+   for (i = 0; (b = bson_reader_read (reader, &eof)); i++) {
+      const uint8_t *buf = bson_get_data (b);
+      assert (b->len == 5);
+      assert (buf[0] == 5);
+      assert (buf[1] == 0);
+      assert (buf[2] == 0);
+      assert (buf[3] == 0);
+      assert (buf[4] == 0);
       eof = false;
    }
 
-   assert(i == (4095/5));
+   assert (i == (4095 / 5));
 
-   assert_cmpint(eof, ==, false);
+   assert_cmpint (eof, ==, false);
 
-   bson_free(buffer);
+   bson_free (buffer);
 
-   bson_reader_destroy(reader);
+   bson_reader_destroy (reader);
 }
 
 static void
@@ -110,16 +110,16 @@ test_reader_from_data_document_length_too_large (void)
    uint8_t *buffer;
    bool eof = false;
 
-   buffer = bson_malloc0(5);
+   buffer = bson_malloc0 (5);
    buffer[0] = 6;
 
-   reader = bson_reader_new_from_data(buffer, 5);
-   assert(!bson_reader_read(reader, &eof));
-   assert_cmpint(eof, ==, false);
+   reader = bson_reader_new_from_data (buffer, 5);
+   assert (!bson_reader_read (reader, &eof));
+   assert_cmpint (eof, ==, false);
 
-   bson_free(buffer);
+   bson_free (buffer);
 
-   bson_reader_destroy(reader);
+   bson_reader_destroy (reader);
 }
 
 static void
@@ -129,28 +129,28 @@ test_reader_from_data_document_length_too_small (void)
    uint8_t *buffer;
    bool eof = false;
 
-   buffer = bson_malloc0(5);
+   buffer = bson_malloc0 (5);
    buffer[0] = 4;
 
-   reader = bson_reader_new_from_data(buffer, 5);
-   assert(!bson_reader_read(reader, &eof));
-   assert_cmpint(eof, ==, false);
+   reader = bson_reader_new_from_data (buffer, 5);
+   assert (!bson_reader_read (reader, &eof));
+   assert_cmpint (eof, ==, false);
 
-   bson_free(buffer);
+   bson_free (buffer);
 
-   bson_reader_destroy(reader);
+   bson_reader_destroy (reader);
 }
 
 static ssize_t
-test_reader_from_handle_read(void * handle, void * buf, size_t len)
+test_reader_from_handle_read (void *handle, void *buf, size_t len)
 {
-   return bson_read(*(int *)handle, buf, len);
+   return bson_read (*(int *) handle, buf, len);
 }
 
 static void
-test_reader_from_handle_destroy(void * handle)
+test_reader_from_handle_destroy (void *handle)
 {
-   bson_close(*(int *)handle);
+   bson_close (*(int *) handle);
 }
 
 static void
@@ -163,26 +163,26 @@ test_reader_from_handle (void)
    bool eof;
    int fd;
 
-   fd  = bson_open(BINARY_DIR"/stream.bson", O_RDONLY);
-   assert(-1 != fd);
+   fd = bson_open (BINARY_DIR "/stream.bson", O_RDONLY);
+   assert (-1 != fd);
 
-   reader = bson_reader_new_from_handle ((void *)&fd,
+   reader = bson_reader_new_from_handle ((void *) &fd,
                                          &test_reader_from_handle_read,
                                          &test_reader_from_handle_destroy);
 
    for (i = 0; i < 1000; i++) {
       eof = false;
-      b = bson_reader_read(reader, &eof);
-      assert(b);
-      assert(bson_iter_init(&iter, b));
-      assert(!bson_iter_next(&iter));
+      b = bson_reader_read (reader, &eof);
+      assert (b);
+      assert (bson_iter_init (&iter, b));
+      assert (!bson_iter_next (&iter));
    }
 
-   assert_cmpint(eof, ==, false);
-   b = bson_reader_read(reader, &eof);
-   assert(!b);
-   assert_cmpint(eof, ==, true);
-   bson_reader_destroy(reader);
+   assert_cmpint (eof, ==, false);
+   b = bson_reader_read (reader, &eof);
+   assert (!b);
+   assert_cmpint (eof, ==, true);
+   bson_reader_destroy (reader);
 }
 
 
@@ -196,32 +196,32 @@ test_reader_tell (void)
    bool eof;
    int fd;
 
-   fd  = bson_open(BINARY_DIR"/stream.bson", O_RDONLY);
-   assert(-1 != fd);
+   fd = bson_open (BINARY_DIR "/stream.bson", O_RDONLY);
+   assert (-1 != fd);
 
-   reader = bson_reader_new_from_handle ((void *)&fd,
+   reader = bson_reader_new_from_handle ((void *) &fd,
                                          &test_reader_from_handle_read,
                                          &test_reader_from_handle_destroy);
 
    for (i = 0; i < 1000; i++) {
       if (i) {
-         assert_cmpint(5 * i, ==, bson_reader_tell(reader));
+         assert_cmpint (5 * i, ==, bson_reader_tell (reader));
       } else {
-         assert_cmpint(0, ==, bson_reader_tell(reader));
+         assert_cmpint (0, ==, bson_reader_tell (reader));
       }
       eof = false;
-      b = bson_reader_read(reader, &eof);
-      assert(b);
-      assert(bson_iter_init(&iter, b));
-      assert(!bson_iter_next(&iter));
+      b = bson_reader_read (reader, &eof);
+      assert (b);
+      assert (bson_iter_init (&iter, b));
+      assert (!bson_iter_next (&iter));
    }
 
-   assert_cmpint(5000, ==, bson_reader_tell(reader));
-   assert_cmpint(eof, ==, false);
-   b = bson_reader_read(reader, &eof);
-   assert(!b);
-   assert_cmpint(eof, ==, true);
-   bson_reader_destroy(reader);
+   assert_cmpint (5000, ==, bson_reader_tell (reader));
+   assert_cmpint (eof, ==, false);
+   b = bson_reader_read (reader, &eof);
+   assert (!b);
+   assert_cmpint (eof, ==, true);
+   bson_reader_destroy (reader);
 }
 
 
@@ -235,23 +235,23 @@ test_reader_from_handle_corrupt (void)
    bool eof;
    int fd;
 
-   fd  = bson_open(BINARY_DIR"/stream_corrupt.bson", O_RDONLY);
-   assert(-1 != fd);
+   fd = bson_open (BINARY_DIR "/stream_corrupt.bson", O_RDONLY);
+   assert (-1 != fd);
 
-   reader = bson_reader_new_from_handle ((void *)&fd,
+   reader = bson_reader_new_from_handle ((void *) &fd,
                                          &test_reader_from_handle_read,
                                          &test_reader_from_handle_destroy);
 
    for (i = 0; i < 1000; i++) {
-      b = bson_reader_read(reader, &eof);
-      assert(b);
-      assert(bson_iter_init(&iter, b));
-      assert(!bson_iter_next(&iter));
+      b = bson_reader_read (reader, &eof);
+      assert (b);
+      assert (bson_iter_init (&iter, b));
+      assert (!bson_iter_next (&iter));
    }
 
-   b = bson_reader_read(reader, &eof);
-   assert(!b);
-   bson_reader_destroy(reader);
+   b = bson_reader_read (reader, &eof);
+   assert (!b);
+   bson_reader_destroy (reader);
 }
 
 
@@ -263,22 +263,22 @@ test_reader_grow_buffer (void)
    bool eof = false;
    int fd;
 
-   fd  = bson_open(BINARY_DIR"/readergrow.bson", O_RDONLY);
-   assert(-1 != fd);
+   fd = bson_open (BINARY_DIR "/readergrow.bson", O_RDONLY);
+   assert (-1 != fd);
 
-   reader = bson_reader_new_from_handle ((void *)&fd,
+   reader = bson_reader_new_from_handle ((void *) &fd,
                                          &test_reader_from_handle_read,
                                          &test_reader_from_handle_destroy);
 
-   b = bson_reader_read(reader, &eof);
-   assert(b);
-   assert(!eof);
+   b = bson_reader_read (reader, &eof);
+   assert (b);
+   assert (!eof);
 
-   b = bson_reader_read(reader, &eof);
-   assert(!b);
-   assert(eof);
+   b = bson_reader_read (reader, &eof);
+   assert (!b);
+   assert (eof);
 
-   bson_reader_destroy(reader);
+   bson_reader_destroy (reader);
 }
 
 
@@ -296,20 +296,20 @@ test_reader_reset (void)
 
    reader = bson_reader_new_from_data (buffer, sizeof buffer);
 
-   assert (bson_reader_read(reader, &eof)->len == 5 && !eof);
-   assert (bson_reader_read(reader, &eof)->len == 5 && !eof);
-   assert (!bson_reader_read(reader, &eof) && eof);
+   assert (bson_reader_read (reader, &eof)->len == 5 && !eof);
+   assert (bson_reader_read (reader, &eof)->len == 5 && !eof);
+   assert (!bson_reader_read (reader, &eof) && eof);
    assert (bson_reader_tell (reader) == 10);
 
    bson_reader_reset (reader);
 
    assert (bson_reader_tell (reader) == 0);
-   assert (bson_reader_read(reader, &eof)->len == 5 && !eof);
-   assert (bson_reader_read(reader, &eof)->len == 5 && !eof);
-   assert (!bson_reader_read(reader, &eof) && eof);
+   assert (bson_reader_read (reader, &eof)->len == 5 && !eof);
+   assert (bson_reader_read (reader, &eof)->len == 5 && !eof);
+   assert (!bson_reader_read (reader, &eof) && eof);
    assert (bson_reader_tell (reader) == 10);
 
-   bson_reader_destroy(reader);
+   bson_reader_destroy (reader);
 }
 
 
@@ -317,15 +317,20 @@ void
 test_reader_install (TestSuite *suite)
 {
    TestSuite_Add (suite, "/bson/reader/new_from_data", test_reader_from_data);
-   TestSuite_Add (suite, "/bson/reader/new_from_data_overflow",
+   TestSuite_Add (suite,
+                  "/bson/reader/new_from_data_overflow",
                   test_reader_from_data_overflow);
-   TestSuite_Add (suite, "/bson/reader/new_from_data_document_length_too_large",
+   TestSuite_Add (suite,
+                  "/bson/reader/new_from_data_document_length_too_large",
                   test_reader_from_data_document_length_too_large);
-   TestSuite_Add (suite, "/bson/reader/new_from_data_document_length_too_small",
+   TestSuite_Add (suite,
+                  "/bson/reader/new_from_data_document_length_too_small",
                   test_reader_from_data_document_length_too_small);
-   TestSuite_Add (suite, "/bson/reader/new_from_handle", test_reader_from_handle);
+   TestSuite_Add (
+      suite, "/bson/reader/new_from_handle", test_reader_from_handle);
    TestSuite_Add (suite, "/bson/reader/tell", test_reader_tell);
-   TestSuite_Add (suite, "/bson/reader/new_from_handle_corrupt",
+   TestSuite_Add (suite,
+                  "/bson/reader/new_from_handle_corrupt",
                   test_reader_from_handle_corrupt);
    TestSuite_Add (suite, "/bson/reader/grow_buffer", test_reader_grow_buffer);
    TestSuite_Add (suite, "/bson/reader/reset", test_reader_reset);

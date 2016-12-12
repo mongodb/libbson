@@ -31,12 +31,15 @@
 #define BSON_DECIMAL128_EXPONENT_BIAS 6176
 #define BSON_DECIMAL128_MAX_DIGITS 34
 
-#define BSON_DECIMAL128_SET_NAN(dec) \
-   do { (dec).high = 0x7c00000000000000ull; (dec).low = 0; } while (0);
-#define BSON_DECIMAL128_SET_INF(dec, isneg) \
-   do { \
+#define BSON_DECIMAL128_SET_NAN(dec)      \
+   do {                                   \
+      (dec).high = 0x7c00000000000000ull; \
+      (dec).low = 0;                      \
+   } while (0);
+#define BSON_DECIMAL128_SET_INF(dec, isneg)                                 \
+   do {                                                                     \
       (dec).high = 0x7800000000000000ull + 0x8000000000000000ull * (isneg); \
-      (dec).low = 0; \
+      (dec).low = 0;                                                        \
    } while (0);
 
 /**
@@ -44,8 +47,7 @@
  *
  * This struct represents a 128 bit integer.
  */
-typedef struct
-{
+typedef struct {
    uint32_t parts[4]; /* 32-bit words stored high to low. */
 } _bson_uint128_t;
 
@@ -73,16 +75,16 @@ typedef struct
  *------------------------------------------------------------------------------
  */
 static void
-_bson_uint128_divide1B (_bson_uint128_t  value,    /* IN */
+_bson_uint128_divide1B (_bson_uint128_t value,     /* IN */
                         _bson_uint128_t *quotient, /* OUT */
-                        uint32_t        *rem) /* OUT */
+                        uint32_t *rem)             /* OUT */
 {
    const uint32_t DIVISOR = 1000 * 1000 * 1000;
    uint64_t _rem = 0;
    int i = 0;
 
-   if (!value.parts[0] && !value.parts[1] &&
-       !value.parts[2] && !value.parts[3]) {
+   if (!value.parts[0] && !value.parts[1] && !value.parts[2] &&
+       !value.parts[3]) {
       *quotient = value;
       *rem = 0;
       return;
@@ -90,10 +92,10 @@ _bson_uint128_divide1B (_bson_uint128_t  value,    /* IN */
 
 
    for (i = 0; i <= 3; i++) {
-      _rem <<= 32;  /* Adjust remainder to match value of next dividend */
-      _rem += value.parts[i];                      /* Add the divided to _rem */
-      value.parts[i] = (uint32_t)(_rem / DIVISOR);
-      _rem %= DIVISOR;                             /* Store the remainder */
+      _rem <<= 32; /* Adjust remainder to match value of next dividend */
+      _rem += value.parts[i]; /* Add the divided to _rem */
+      value.parts[i] = (uint32_t) (_rem / DIVISOR);
+      _rem %= DIVISOR; /* Store the remainder */
    }
 
    *quotient = value;
@@ -110,7 +112,8 @@ _bson_uint128_divide1B (_bson_uint128_t  value,    /* IN */
  *    accepting a &bson_decimal128_t as @dec.  The string is stored at @str.
  *
  * @dec : The BID formatted decimal to convert.
- * @str : The output decimal128 string. At least %BSON_DECIMAL128_STRING characters.
+ * @str : The output decimal128 string. At least %BSON_DECIMAL128_STRING
+ *characters.
  *
  * Returns:
  *    None.
@@ -121,8 +124,8 @@ _bson_uint128_divide1B (_bson_uint128_t  value,    /* IN */
  *------------------------------------------------------------------------------
  */
 void
-bson_decimal128_to_string (const bson_decimal128_t *dec,        /* IN  */
-                           char                    *str)        /* OUT */
+bson_decimal128_to_string (const bson_decimal128_t *dec, /* IN  */
+                           char *str)                    /* OUT */
 {
    uint32_t COMBINATION_MASK = 0x1f;   /* Extract least significant 5 bits */
    uint32_t EXPONENT_MASK = 0x3fff;    /* Extract least significant 14 bits */
@@ -130,48 +133,47 @@ bson_decimal128_to_string (const bson_decimal128_t *dec,        /* IN  */
    uint32_t COMBINATION_NAN = 31;      /* Value of combination field for NaN */
    uint32_t EXPONENT_BIAS = 6176;      /* decimal128 exponent bias */
 
-   char *str_out = str;                /* output pointer in string */
-   char significand_str[35];           /* decoded significand digits */
+   char *str_out = str;      /* output pointer in string */
+   char significand_str[35]; /* decoded significand digits */
 
 
    /* Note: bits in this routine are referred to starting at 0, */
    /* from the sign bit, towards the coefficient. */
-   uint32_t high;                    /* bits 0 - 31 */
-   uint32_t midh;                    /* bits 32 - 63 */
-   uint32_t midl;                    /* bits 64 - 95 */
-   uint32_t low;                     /* bits 96 - 127 */
-   uint32_t combination;             /* bits 1 - 5 */
-   uint32_t biased_exponent;         /* decoded biased exponent (14 bits) */
-   uint32_t significand_digits = 0;  /* the number of significand digits */
-   uint32_t significand[36] = { 0 }; /* the base-10 digits in the significand */
+   uint32_t high;                   /* bits 0 - 31 */
+   uint32_t midh;                   /* bits 32 - 63 */
+   uint32_t midl;                   /* bits 64 - 95 */
+   uint32_t low;                    /* bits 96 - 127 */
+   uint32_t combination;            /* bits 1 - 5 */
+   uint32_t biased_exponent;        /* decoded biased exponent (14 bits) */
+   uint32_t significand_digits = 0; /* the number of significand digits */
+   uint32_t significand[36] = {0};  /* the base-10 digits in the significand */
    uint32_t *significand_read = significand; /* read pointer into significand */
-   int32_t exponent;                 /* unbiased exponent */
-   int32_t scientific_exponent;      /* the exponent if scientific notation is
-                                      * used */
-   bool is_zero = false;             /* true if the number is zero */
+   int32_t exponent;                         /* unbiased exponent */
+   int32_t scientific_exponent; /* the exponent if scientific notation is
+                                 * used */
+   bool is_zero = false;        /* true if the number is zero */
 
-   uint8_t significand_msb;          /* the most signifcant significand bits (50-46) */
-   _bson_uint128_t significand128;   /* temporary storage for significand decoding */
-   size_t i;                         /* indexing variables */
+   uint8_t significand_msb; /* the most signifcant significand bits (50-46) */
+   _bson_uint128_t
+      significand128; /* temporary storage for significand decoding */
+   size_t i;          /* indexing variables */
    int j, k;
 
    memset (significand_str, 0, sizeof (significand_str));
 
-   if ((int64_t)dec->high < 0) {  /* negative */
+   if ((int64_t) dec->high < 0) { /* negative */
       *(str_out++) = '-';
    }
 
-   low = (uint32_t)dec->low,
-   midl = (uint32_t)(dec->low >> 32),
-   midh = (uint32_t)dec->high,
-   high = (uint32_t)(dec->high >> 32);
+   low = (uint32_t) dec->low, midl = (uint32_t) (dec->low >> 32),
+   midh = (uint32_t) dec->high, high = (uint32_t) (dec->high >> 32);
 
    /* Decode combination field and exponent */
    combination = (high >> 26) & COMBINATION_MASK;
 
    if (BSON_UNLIKELY ((combination >> 3) == 3)) {
       /* Check for 'special' values */
-      if (combination == COMBINATION_INFINITY) {  /* Infinity */
+      if (combination == COMBINATION_INFINITY) { /* Infinity */
          strcpy (str_out, BSON_DECIMAL128_INF);
          return;
       } else if (combination == COMBINATION_NAN) { /* NaN */
@@ -213,12 +215,14 @@ bson_decimal128_to_string (const bson_decimal128_t *dec,        /* IN  */
    } else {
       for (k = 3; k >= 0; k--) {
          uint32_t least_digits = 0;
-         _bson_uint128_divide1B (significand128, &significand128,
-                                 &least_digits);
+         _bson_uint128_divide1B (
+            significand128, &significand128, &least_digits);
 
          /* We now have the 9 least significant digits (in base 2). */
          /* Convert and output to string. */
-         if (!least_digits) { continue; }
+         if (!least_digits) {
+            continue;
+         }
 
          for (j = 8; j >= 0; j--) {
             significand[k * 9 + j] = least_digits % 10;
@@ -277,16 +281,16 @@ bson_decimal128_to_string (const bson_decimal128_t *dec,        /* IN  */
       } else {
          int32_t radix_position = significand_digits + exponent;
 
-         if (radix_position > 0) {        /* non-zero digits before radix */
+         if (radix_position > 0) { /* non-zero digits before radix */
             for (i = 0; i < radix_position; i++) {
                *(str_out++) = *(significand_read++) + '0';
             }
-         } else {                         /* leading zero before radix point */
+         } else { /* leading zero before radix point */
             *(str_out++) = '0';
          }
 
          *(str_out++) = '.';
-         while (radix_position++ < 0) {   /* add leading zeros after radix */
+         while (radix_position++ < 0) { /* add leading zeros after radix */
             *(str_out++) = '0';
          }
 
@@ -299,10 +303,8 @@ bson_decimal128_to_string (const bson_decimal128_t *dec,        /* IN  */
    }
 }
 
-typedef struct
-{
-   uint64_t high,
-            low;
+typedef struct {
+   uint64_t high, low;
 } _bson_uint128_6464_t;
 
 
@@ -322,14 +324,13 @@ typedef struct
  *-------------------------------------------------------------------------
  */
 static void
-_mul_64x64 (uint64_t              left,    /* IN */
-            uint64_t              right,   /* IN */
+_mul_64x64 (uint64_t left,                 /* IN */
+            uint64_t right,                /* IN */
             _bson_uint128_6464_t *product) /* OUT */
 {
-   uint64_t left_high, left_low,
-            right_high, right_low,
-            product_high, product_mid, product_mid2, product_low;
-   _bson_uint128_6464_t rt = { 0 };
+   uint64_t left_high, left_low, right_high, right_low, product_high,
+      product_mid, product_mid2, product_low;
+   _bson_uint128_6464_t rt = {0};
 
    if (!left && !right) {
       *product = rt;
@@ -337,9 +338,9 @@ _mul_64x64 (uint64_t              left,    /* IN */
    }
 
    left_high = left >> 32;
-   left_low = (uint32_t)left;
+   left_low = (uint32_t) left;
    right_high = right >> 32;
-   right_low = (uint32_t)right;
+   right_low = (uint32_t) right;
 
    product_high = left_high * right_high;
    product_mid = left_high * right_low;
@@ -347,10 +348,10 @@ _mul_64x64 (uint64_t              left,    /* IN */
    product_low = left_low * right_low;
 
    product_high += product_mid >> 32;
-   product_mid = (uint32_t)product_mid + product_mid2 + (product_low >> 32);
+   product_mid = (uint32_t) product_mid + product_mid2 + (product_low >> 32);
 
    product_high = product_high + (product_mid >> 32);
-   product_low = (product_mid << 32) + (uint32_t)product_low;
+   product_low = (product_mid << 32) + (uint32_t) product_low;
 
    rt.high = product_high;
    rt.low = product_low;
@@ -435,36 +436,36 @@ _dec128_istreq (const char *a, /* IN */
  *------------------------------------------------------------------------------
  */
 bool
-bson_decimal128_from_string (const char        *string, /* IN */
+bson_decimal128_from_string (const char *string,     /* IN */
                              bson_decimal128_t *dec) /* OUT */
 {
-   _bson_uint128_6464_t significand = { 0 };
+   _bson_uint128_6464_t significand = {0};
 
-   const char *str_read = string;  /* Read pointer for consuming str. */
+   const char *str_read = string; /* Read pointer for consuming str. */
 
    /* Parsing state tracking */
    bool is_negative = false;
    bool saw_radix = false;
-   bool includes_sign = false;  /* True if the input string contains a sign. */
+   bool includes_sign = false; /* True if the input string contains a sign. */
    bool found_nonzero = false;
 
-   size_t significant_digits = 0;    /* Total number of significant digits
-                                      * (no leading or trailing zero) */
-   size_t ndigits_read = 0;   /* Total number of significand digits read */
+   size_t significant_digits = 0; /* Total number of significant digits
+                                   * (no leading or trailing zero) */
+   size_t ndigits_read = 0;       /* Total number of significand digits read */
    size_t ndigits = 0;        /* Total number of digits (no leading zeros) */
    size_t radix_position = 0; /* The number of the digits after radix */
    size_t first_nonzero = 0;  /* The index of the first non-zero in *str* */
 
-   uint16_t digits[BSON_DECIMAL128_MAX_DIGITS] = { 0 };
+   uint16_t digits[BSON_DECIMAL128_MAX_DIGITS] = {0};
    uint16_t ndigits_stored = 0;      /* The number of digits in digits */
-   uint16_t *digits_insert = digits;  /* Insertion pointer for digits */
-   size_t first_digit = 0;      /* The index of the first non-zero digit */
-   size_t last_digit = 0;       /* The index of the last digit */
+   uint16_t *digits_insert = digits; /* Insertion pointer for digits */
+   size_t first_digit = 0;           /* The index of the first non-zero digit */
+   size_t last_digit = 0;            /* The index of the last digit */
 
    int32_t exponent = 0;
-   uint64_t significand_high = 0;  /* The high 17 digits of the significand */
-   uint64_t significand_low = 0;   /* The low 17 digits of the significand */
-   uint16_t biased_exponent = 0;   /* The biased exponent */
+   uint64_t significand_high = 0; /* The high 17 digits of the significand */
+   uint64_t significand_low = 0;  /* The low 17 digits of the significand */
+   uint16_t biased_exponent = 0;  /* The biased exponent */
 
    BSON_ASSERT (dec);
    dec->high = 0;
@@ -536,9 +537,9 @@ bson_decimal128_from_string (const char        *string, /* IN */
    if (*str_read == 'e' || *str_read == 'E') {
       int nread = 0;
 #ifdef _MSC_VER
-# define SSCANF sscanf_s
+#define SSCANF sscanf_s
 #else
-# define SSCANF sscanf
+#define SSCANF sscanf
 #endif
       int read_exponent = SSCANF (++str_read, "%d%n", &exponent, &nread);
       str_read += nread;
@@ -560,7 +561,7 @@ bson_decimal128_from_string (const char        *string, /* IN */
    /* Find first non-zero digit in digits */
    first_digit = 0;
 
-   if (!ndigits_stored) {  /* value is zero */
+   if (!ndigits_stored) { /* value is zero */
       first_digit = 0;
       last_digit = 0;
       digits[0] = 0;
@@ -571,15 +572,16 @@ bson_decimal128_from_string (const char        *string, /* IN */
       last_digit = ndigits_stored - 1;
       significant_digits = ndigits;
       /* Mark trailing zeros as non-significant */
-      while (string[first_nonzero + significant_digits - 1 +
-                    includes_sign + saw_radix] == '0') {
+      while (string[first_nonzero + significant_digits - 1 + includes_sign +
+                    saw_radix] == '0') {
          significant_digits--;
       }
    }
 
 
    /* Normalization of exponent */
-   /* Correct exponent based on radix position, and shift significand as needed */
+   /* Correct exponent based on radix position, and shift significand as needed
+    */
    /* to represent user input */
 
    /* Overflow prevention */
@@ -610,8 +612,7 @@ bson_decimal128_from_string (const char        *string, /* IN */
       exponent--;
    }
 
-   while (exponent < BSON_DECIMAL128_EXPONENT_MIN ||
-          ndigits_stored < ndigits) {
+   while (exponent < BSON_DECIMAL128_EXPONENT_MIN || ndigits_stored < ndigits) {
       /* Shift last digit */
       if (last_digit == 0) {
          /* underflow is not allowed, but zero clamping is */
@@ -670,10 +671,10 @@ bson_decimal128_from_string (const char        *string, /* IN */
    }
 
    /* Encode significand */
-   significand_high = 0,  /* The high 17 digits of the significand */
-   significand_low = 0;   /* The low 17 digits of the significand */
+   significand_high = 0,   /* The high 17 digits of the significand */
+      significand_low = 0; /* The low 17 digits of the significand */
 
-   if (significant_digits == 0) {  /* read a zero */
+   if (significant_digits == 0) { /* read a zero */
       significand_high = 0;
       significand_low = 0;
    } else if (last_digit - first_digit < 17) {
@@ -702,9 +703,7 @@ bson_decimal128_from_string (const char        *string, /* IN */
       }
    }
 
-   _mul_64x64 (significand_high,
-               100000000000000000ull,
-               &significand);
+   _mul_64x64 (significand_high, 100000000000000000ull, &significand);
    significand.low += significand_low;
 
    if (significand.low < significand_low) {
@@ -712,7 +711,7 @@ bson_decimal128_from_string (const char        *string, /* IN */
    }
 
 
-   biased_exponent = (exponent + (int16_t)BSON_DECIMAL128_EXPONENT_BIAS);
+   biased_exponent = (exponent + (int16_t) BSON_DECIMAL128_EXPONENT_BIAS);
 
    /* Encode combination, exponent, and significand. */
    if ((significand.high >> 49) & 1) {
@@ -729,7 +728,7 @@ bson_decimal128_from_string (const char        *string, /* IN */
 
    /* Encode sign */
    if (is_negative) {
-	   dec->high |= 0x8000000000000000ull;
+      dec->high |= 0x8000000000000000ull;
    }
 
    return true;

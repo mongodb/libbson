@@ -23,7 +23,7 @@
 
 #define MAX_NUM_TESTS 100
 
-typedef void (* test_hook)(bson_t *test);
+typedef void (*test_hook) (bson_t *test);
 
 bson_t *
 get_bson_from_json_file (char *filename);
@@ -31,17 +31,17 @@ get_bson_from_json_file (char *filename);
 int
 collect_tests_from_dir (char (*paths)[MAX_TEST_NAME_LENGTH] /* OUT */,
                         const char *dir_path,
-                        int         paths_index,
-                        int         max_paths);
+                        int paths_index,
+                        int max_paths);
 
 void
 assemble_path (const char *parent_path,
                const char *child_name,
-               char       *dst /* OUT */);
+               char *dst /* OUT */);
 
 void
-install_json_test_suite(TestSuite  *suite,
-                        const char *dir_path,
-                        test_hook   callback);
+install_json_test_suite (TestSuite *suite,
+                         const char *dir_path,
+                         test_hook callback);
 
 #endif

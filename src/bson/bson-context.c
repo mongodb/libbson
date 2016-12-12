@@ -73,10 +73,10 @@ gettid (void)
  */
 
 static void
-_bson_context_get_oid_host (bson_context_t *context,  /* IN */
-                            bson_oid_t     *oid)      /* OUT */
+_bson_context_get_oid_host (bson_context_t *context, /* IN */
+                            bson_oid_t *oid)         /* OUT */
 {
-   uint8_t *bytes = (uint8_t *)oid;
+   uint8_t *bytes = (uint8_t *) oid;
    uint8_t digest[16];
    bson_md5_t md5;
    char hostname[HOST_NAME_MAX];
@@ -88,7 +88,8 @@ _bson_context_get_oid_host (bson_context_t *context,  /* IN */
    hostname[HOST_NAME_MAX - 1] = '\0';
 
    bson_md5_init (&md5);
-   bson_md5_append (&md5, (const uint8_t *)hostname, (uint32_t)strlen (hostname));
+   bson_md5_append (
+      &md5, (const uint8_t *) hostname, (uint32_t) strlen (hostname));
    bson_md5_finish (&md5, &digest[0]);
 
    bytes[4] = digest[0];
@@ -115,7 +116,7 @@ _bson_context_get_oid_host (bson_context_t *context,  /* IN */
 
 static void
 _bson_context_get_oid_host_cached (bson_context_t *context, /* IN */
-                                   bson_oid_t     *oid)     /* OUT */
+                                   bson_oid_t *oid)         /* OUT */
 {
    BSON_ASSERT (context);
    BSON_ASSERT (oid);
@@ -163,10 +164,10 @@ _bson_getpid (void)
 
 static void
 _bson_context_get_oid_pid (bson_context_t *context, /* IN */
-                           bson_oid_t     *oid)     /* OUT */
+                           bson_oid_t *oid)         /* OUT */
 {
    uint16_t pid = _bson_getpid ();
-   uint8_t *bytes = (uint8_t *)&pid;
+   uint8_t *bytes = (uint8_t *) &pid;
 
    BSON_ASSERT (context);
    BSON_ASSERT (oid);
@@ -198,7 +199,7 @@ _bson_context_get_oid_pid (bson_context_t *context, /* IN */
 
 static void
 _bson_context_get_oid_pid_cached (bson_context_t *context, /* IN */
-                                  bson_oid_t     *oid)     /* OUT */
+                                  bson_oid_t *oid)         /* OUT */
 {
    oid->bytes[7] = context->pidbe[0];
    oid->bytes[8] = context->pidbe[1];
@@ -223,12 +224,12 @@ _bson_context_get_oid_pid_cached (bson_context_t *context, /* IN */
 
 static void
 _bson_context_get_oid_seq32 (bson_context_t *context, /* IN */
-                             bson_oid_t     *oid)     /* OUT */
+                             bson_oid_t *oid)         /* OUT */
 {
    uint32_t seq = context->seq32++;
 
    seq = BSON_UINT32_TO_BE (seq);
-   memcpy (&oid->bytes[9], ((uint8_t *)&seq) + 1, 3);
+   memcpy (&oid->bytes[9], ((uint8_t *) &seq) + 1, 3);
 }
 
 
@@ -250,12 +251,12 @@ _bson_context_get_oid_seq32 (bson_context_t *context, /* IN */
 
 static void
 _bson_context_get_oid_seq32_threadsafe (bson_context_t *context, /* IN */
-                                        bson_oid_t     *oid)     /* OUT */
+                                        bson_oid_t *oid)         /* OUT */
 {
    int32_t seq = bson_atomic_int_add (&context->seq32, 1);
 
    seq = BSON_UINT32_TO_BE (seq);
-   memcpy (&oid->bytes[9], ((uint8_t *)&seq) + 1, 3);
+   memcpy (&oid->bytes[9], ((uint8_t *) &seq) + 1, 3);
 }
 
 
@@ -277,7 +278,7 @@ _bson_context_get_oid_seq32_threadsafe (bson_context_t *context, /* IN */
 
 static void
 _bson_context_get_oid_seq64 (bson_context_t *context, /* IN */
-                             bson_oid_t     *oid)     /* OUT */
+                             bson_oid_t *oid)         /* OUT */
 {
    uint64_t seq;
 
@@ -307,7 +308,7 @@ _bson_context_get_oid_seq64 (bson_context_t *context, /* IN */
 
 static void
 _bson_context_get_oid_seq64_threadsafe (bson_context_t *context, /* IN */
-                                        bson_oid_t     *oid)     /* OUT */
+                                        bson_oid_t *oid)         /* OUT */
 {
    int64_t seq = bson_atomic_int64_add (&context->seq64, 1);
 
@@ -341,15 +342,15 @@ _bson_context_init (bson_context_t *context,    /* IN */
     * and pid xored together. I welcome better solutions if at all necessary.
     */
    bson_gettimeofday (&tv);
-   seed[0] = (unsigned int)tv.tv_sec;
-   seed[1] = (unsigned int)tv.tv_usec;
+   seed[0] = (unsigned int) tv.tv_sec;
+   seed[1] = (unsigned int) tv.tv_usec;
    seed[2] = _bson_getpid ();
    real_seed = seed[0] ^ seed[1] ^ seed[2];
 
 #ifdef BSON_OS_WIN32
    /* ms's runtime is multithreaded by default, so no rand_r */
-   srand(real_seed);
-   context->seq32 = rand() & 0x007FFFF0;
+   srand (real_seed);
+   context->seq32 = rand () & 0x007FFFF0;
 #else
    context->seq32 = rand_r (&real_seed) & 0x007FFFF0;
 #endif
@@ -371,7 +372,7 @@ _bson_context_init (bson_context_t *context,    /* IN */
    if ((flags & BSON_CONTEXT_DISABLE_PID_CACHE)) {
       context->oid_get_pid = _bson_context_get_oid_pid;
    } else {
-      pid = BSON_UINT16_TO_BE (_bson_getpid());
+      pid = BSON_UINT16_TO_BE (_bson_getpid ());
 #ifdef BSON_HAVE_SYSCALL_TID
 
       if ((flags & BSON_CONTEXT_USE_TASK_ID)) {
@@ -454,7 +455,7 @@ bson_context_new (bson_context_flags_t flags)
  */
 
 void
-bson_context_destroy (bson_context_t *context)  /* IN */
+bson_context_destroy (bson_context_t *context) /* IN */
 {
    if (context != &gContextDefault) {
       memset (context, 0, sizeof *context);
@@ -463,12 +464,11 @@ bson_context_destroy (bson_context_t *context)  /* IN */
 }
 
 
-static
-BSON_ONCE_FUN(_bson_context_init_default)
+static BSON_ONCE_FUN (_bson_context_init_default)
 {
-   _bson_context_init (&gContextDefault,
-                       (BSON_CONTEXT_THREAD_SAFE |
-                        BSON_CONTEXT_DISABLE_PID_CACHE));
+   _bson_context_init (
+      &gContextDefault,
+      (BSON_CONTEXT_THREAD_SAFE | BSON_CONTEXT_DISABLE_PID_CACHE));
    BSON_ONCE_RETURN;
 }
 

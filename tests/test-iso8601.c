@@ -8,14 +8,13 @@
 #include "TestSuite.h"
 
 #ifndef BINARY_DIR
-# define BINARY_DIR "tests/binary"
+#define BINARY_DIR "tests/binary"
 #endif
 
 #define IS_TIME_T_SMALL (sizeof (time_t) == sizeof (int32_t))
 
 static void
-test_date (const char *str,
-           int64_t     millis)
+test_date (const char *str, int64_t millis)
 {
    int64_t v;
 
@@ -25,8 +24,10 @@ test_date (const char *str,
    }
 
    if (v != millis) {
-      fprintf (stderr, "parsed value not correct: %" PRId64 " != %" PRId64 "\n",
-               millis, v);
+      fprintf (stderr,
+               "parsed value not correct: %" PRId64 " != %" PRId64 "\n",
+               millis,
+               v);
       abort ();
    }
 }
@@ -47,7 +48,8 @@ test_bson_iso8601_utc (void)
 {
    /* Allowed date format:
     * YYYY-MM-DDTHH:MM[:SS[.m[m[m]]]]Z
-    * Year, month, day, hour, and minute are required, while the seconds component and one to
+    * Year, month, day, hour, and minute are required, while the seconds
+    * component and one to
     * three milliseconds are optional.
     */
 
@@ -72,8 +74,10 @@ test_bson_iso8601_local (void)
 {
    /* Allowed date format:
     * YYYY-MM-DDTHH:MM[:SS[.m[m[m]]]]+HHMM
-    * Year, month, day, hour, and minute are required, while the seconds component and one to
-    * three milliseconds are optional.  The time zone offset must be four digits.
+    * Year, month, day, hour, and minute are required, while the seconds
+    * component and one to
+    * three milliseconds are optional.  The time zone offset must be four
+    * digits.
     */
 
    test_date ("1971-02-03T09:16:06.789+0511", 34401906789ULL);
@@ -332,6 +336,6 @@ test_iso8601_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/iso8601/utc", test_bson_iso8601_utc);
    TestSuite_Add (suite, "/bson/iso8601/local", test_bson_iso8601_local);
    TestSuite_Add (suite, "/bson/iso8601/invalid", test_bson_iso8601_invalid);
-   TestSuite_Add (suite, "/bson/iso8601/leap_year",
-                  test_bson_iso8601_leap_year);
+   TestSuite_Add (
+      suite, "/bson/iso8601/leap_year", test_bson_iso8601_leap_year);
 }

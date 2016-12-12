@@ -21,16 +21,16 @@
 #include "bson-iso8601-private.h"
 
 #ifndef _WIN32
-# include "bson-timegm-private.h"
+#include "bson-timegm-private.h"
 #endif
 
 
 static bool
-get_tok (const char  *terminals,
+get_tok (const char *terminals,
          const char **ptr,
-         int32_t     *remaining,
+         int32_t *remaining,
          const char **out,
-         int32_t     *out_len)
+         int32_t *out_len)
 {
    const char *terminal;
    bool found_terminal = false;
@@ -61,13 +61,12 @@ get_tok (const char  *terminals,
 }
 
 static bool
-digits_only (const char *str,
-             int32_t     len)
+digits_only (const char *str, int32_t len)
 {
    int i;
 
    for (i = 0; i < len; i++) {
-      if (!isdigit(str[i])) {
+      if (!isdigit (str[i])) {
          return false;
       }
    }
@@ -77,11 +76,11 @@ digits_only (const char *str,
 
 static bool
 parse_num (const char *str,
-           int32_t     len,
-           int32_t     digits,
-           int32_t     min,
-           int32_t     max,
-           int32_t    *out)
+           int32_t len,
+           int32_t digits,
+           int32_t min,
+           int32_t max,
+           int32_t *out)
 {
    int i;
    int magnitude = 1;
@@ -105,9 +104,7 @@ parse_num (const char *str,
 }
 
 bool
-_bson_iso8601_date_parse (const char *str,
-                          int32_t     len,
-                          int64_t    *out)
+_bson_iso8601_date_parse (const char *str, int32_t len, int64_t *out)
 {
    const char *ptr;
    int32_t remaining = len;
@@ -145,20 +142,16 @@ _bson_iso8601_date_parse (const char *str,
    int64_t win_time_offset;
    int64_t win_epoch_difference;
 #else
-   struct tm posix_date = { 0 };
+   struct tm posix_date = {0};
 #endif
 
    ptr = str;
 
    /* we have to match at least yyyy-mm-ddThh:mm[:+-Z] */
-   if (!(get_tok ("-", &ptr, &remaining, &year_ptr,
-                  &year_len) &&
-         get_tok ("-", &ptr, &remaining, &month_ptr,
-                  &month_len) &&
-         get_tok ("T", &ptr, &remaining, &day_ptr,
-                  &day_len) &&
-         get_tok (":", &ptr, &remaining, &hour_ptr,
-                  &hour_len) &&
+   if (!(get_tok ("-", &ptr, &remaining, &year_ptr, &year_len) &&
+         get_tok ("-", &ptr, &remaining, &month_ptr, &month_len) &&
+         get_tok ("T", &ptr, &remaining, &day_ptr, &day_len) &&
+         get_tok (":", &ptr, &remaining, &hour_ptr, &hour_len) &&
          get_tok (":+-Z", &ptr, &remaining, &min_ptr, &min_len))) {
       return false;
    }
@@ -290,7 +283,7 @@ _bson_iso8601_date_parse (const char *str,
    win_sys_time.wMinute = min;
    win_sys_time.wHour = hour;
    win_sys_time.wDay = day;
-   win_sys_time.wDayOfWeek = -1;  /* ignored */
+   win_sys_time.wDayOfWeek = -1; /* ignored */
    win_sys_time.wMonth = month + 1;
    win_sys_time.wYear = year + 1900;
 
@@ -299,12 +292,12 @@ _bson_iso8601_date_parse (const char *str,
       return 0;
    }
 
-   /* The Windows FILETIME structure contains two parts of a 64-bit value representing the
+   /* The Windows FILETIME structure contains two parts of a 64-bit value
+    * representing the
     * number of 100-nanosecond intervals since January 1, 1601
     */
-   win_time_offset =
-      (((uint64_t)win_file_time.dwHighDateTime) << 32) |
-      win_file_time.dwLowDateTime;
+   win_time_offset = (((uint64_t) win_file_time.dwHighDateTime) << 32) |
+                     win_file_time.dwLowDateTime;
 
    /* There are 11644473600 seconds between the unix epoch and the windows epoch
     * 100-nanoseconds = milliseconds * 10000
@@ -326,7 +319,7 @@ _bson_iso8601_date_parse (const char *str,
    posix_date.tm_wday = 0;
    posix_date.tm_yday = 0;
 
-   millis = (1000 * ((uint64_t)_bson_timegm (&posix_date))) + millis;
+   millis = (1000 * ((uint64_t) _bson_timegm (&posix_date))) + millis;
 
 #endif
 

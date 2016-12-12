@@ -27,23 +27,27 @@
 BSON_BEGIN_DECLS
 
 
-#define assert_cmpstr(a, b)                                             \
-   do {                                                                 \
-      if (((a) != (b)) && !!strcmp((a), (b))) {                         \
-         fprintf(stderr, "FAIL\n\nAssert Failure: (line#%d) \"%s\" != \"%s\"\n",  \
-                         __LINE__, a, b);                               \
-         abort();                                                       \
-      }                                                                 \
+#define assert_cmpstr(a, b)                                               \
+   do {                                                                   \
+      if (((a) != (b)) && !!strcmp ((a), (b))) {                          \
+         fprintf (stderr,                                                 \
+                  "FAIL\n\nAssert Failure: (line#%d) \"%s\" != \"%s\"\n", \
+                  __LINE__,                                               \
+                  a,                                                      \
+                  b);                                                     \
+         abort ();                                                        \
+      }                                                                   \
    } while (0)
 
 
-#define assert_cmpint(a, eq, b)                                         \
-   do {                                                                 \
-      if (!((a) eq (b))) {                                              \
-         fprintf(stderr, "FAIL\n\nAssert Failure: (line#%d)"            \
-                         #a " " #eq " " #b "\n", __LINE__);             \
-         abort();                                                       \
-      }                                                                 \
+#define assert_cmpint(a, eq, b)                                               \
+   do {                                                                       \
+      if (!((a) eq (b))) {                                                    \
+         fprintf (stderr,                                                     \
+                  "FAIL\n\nAssert Failure: (line#%d)" #a " " #eq " " #b "\n", \
+                  __LINE__);                                                  \
+         abort ();                                                            \
+      }                                                                       \
    } while (0)
 
 
@@ -51,73 +55,78 @@ BSON_BEGIN_DECLS
 #include <stdarg.h>
 #include <share.h>
 static __inline int
-bson_open (const char *filename,
-           int flags,
-           ...)
+bson_open (const char *filename, int flags, ...)
 {
    int fd = -1;
    int mode = 0;
 
-   if (_sopen_s (&fd, filename, flags|_O_BINARY, _SH_DENYNO, _S_IREAD | _S_IWRITE) == NO_ERROR) {
+   if (_sopen_s (
+          &fd, filename, flags | _O_BINARY, _SH_DENYNO, _S_IREAD | _S_IWRITE) ==
+       NO_ERROR) {
       return fd;
    }
 
    return -1;
 }
-# define bson_close _close
-# define bson_read(f,b,c) ((ssize_t)_read((f), (b), (int)(c)))
-# define bson_write _write
+#define bson_close _close
+#define bson_read(f, b, c) ((ssize_t) _read ((f), (b), (int) (c)))
+#define bson_write _write
 #else
-# define bson_open open
-# define bson_read read
-# define bson_close close
-# define bson_write write
+#define bson_open open
+#define bson_read read
+#define bson_close close
+#define bson_write write
 #endif
 
 
-#define bson_eq_bson(bson,expected) \
-   do { \
-      char *bson_json, *expected_json; \
-      const uint8_t *bson_data = bson_get_data ((bson)); \
-      const uint8_t *expected_data = bson_get_data ((expected)); \
-      int unequal; \
-      unsigned o; \
-      int off = -1; \
-      unequal = ((expected)->len != (bson)->len) \
-                || memcmp (bson_get_data ((expected)), bson_get_data ( \
-                              (bson)), (expected)->len); \
-      if (unequal) { \
-         bson_json = bson_as_json (bson, NULL); \
-         expected_json = bson_as_json ((expected), NULL); \
-         for (o = 0; o < (bson)->len && o < (expected)->len; o++) { \
-            if (bson_data [o] != expected_data [o]) { \
-               off = o; \
-               break; \
-            } \
-         } \
-         if (off == -1) { \
-            off = BSON_MAX ((expected)->len, (bson)->len) - 1; \
-         } \
-         fprintf (stderr, "bson objects unequal (byte %u):\n(%s)\n(%s)\n", \
-                  off, bson_json, expected_json); \
-         { \
+#define bson_eq_bson(bson, expected)                                          \
+   do {                                                                       \
+      char *bson_json, *expected_json;                                        \
+      const uint8_t *bson_data = bson_get_data ((bson));                      \
+      const uint8_t *expected_data = bson_get_data ((expected));              \
+      int unequal;                                                            \
+      unsigned o;                                                             \
+      int off = -1;                                                           \
+      unequal = ((expected)->len != (bson)->len) ||                           \
+                memcmp (bson_get_data ((expected)),                           \
+                        bson_get_data ((bson)),                               \
+                        (expected)->len);                                     \
+      if (unequal) {                                                          \
+         bson_json = bson_as_json (bson, NULL);                               \
+         expected_json = bson_as_json ((expected), NULL);                     \
+         for (o = 0; o < (bson)->len && o < (expected)->len; o++) {           \
+            if (bson_data[o] != expected_data[o]) {                           \
+               off = o;                                                       \
+               break;                                                         \
+            }                                                                 \
+         }                                                                    \
+         if (off == -1) {                                                     \
+            off = BSON_MAX ((expected)->len, (bson)->len) - 1;                \
+         }                                                                    \
+         fprintf (stderr,                                                     \
+                  "bson objects unequal (byte %u):\n(%s)\n(%s)\n",            \
+                  off,                                                        \
+                  bson_json,                                                  \
+                  expected_json);                                             \
+         {                                                                    \
             int fd1 = bson_open ("failure.bad.bson", O_RDWR | O_CREAT, 0640); \
-            int fd2 = bson_open ("failure.expected.bson", O_RDWR | O_CREAT, 0640); \
-            assert (fd1 != -1); \
-            assert (fd2 != -1); \
+            int fd2 =                                                         \
+               bson_open ("failure.expected.bson", O_RDWR | O_CREAT, 0640);   \
+            assert (fd1 != -1);                                               \
+            assert (fd2 != -1);                                               \
             assert ((bson)->len == bson_write (fd1, bson_data, (bson)->len)); \
-            assert ((expected)->len == bson_write (fd2, expected_data, (expected)->len)); \
-            bson_close (fd1); \
-            bson_close (fd2); \
-         } \
-         assert (0); \
-      } \
+            assert ((expected)->len ==                                        \
+                    bson_write (fd2, expected_data, (expected)->len));        \
+            bson_close (fd1);                                                 \
+            bson_close (fd2);                                                 \
+         }                                                                    \
+         assert (0);                                                          \
+      }                                                                       \
    } while (0)
 
 
 static BSON_INLINE void
-run_test (const char *name,
-          void (*func) (void))
+run_test (const char *name, void (*func) (void))
 {
    struct timeval begin;
    struct timeval end;
@@ -125,12 +134,12 @@ run_test (const char *name,
    long usec;
    double format;
 
-   fprintf(stdout, "%-42s : ", name);
-   fflush(stdout);
-   bson_gettimeofday(&begin);
-   func();
-   bson_gettimeofday(&end);
-   fprintf(stdout, "PASS");
+   fprintf (stdout, "%-42s : ", name);
+   fflush (stdout);
+   bson_gettimeofday (&begin);
+   func ();
+   bson_gettimeofday (&end);
+   fprintf (stdout, "PASS");
 
    diff.tv_sec = end.tv_sec - begin.tv_sec;
    diff.tv_usec = usec = end.tv_usec - begin.tv_usec;
@@ -140,7 +149,7 @@ run_test (const char *name,
    }
 
    format = diff.tv_sec + (diff.tv_usec / 1000000.0);
-   fprintf(stdout, " : %lf\n", format);
+   fprintf (stdout, " : %lf\n", format);
 }
 
 
