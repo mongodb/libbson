@@ -31,20 +31,15 @@
 BSON_BEGIN_DECLS
 
 
-BSON_API
-bool
+BSON_EXPORT (bool)
 bson_utf8_validate (const char *utf8, size_t utf8_len, bool allow_null);
-BSON_API
-char *
+BSON_EXPORT (char *)
 bson_utf8_escape_for_json (const char *utf8, ssize_t utf8_len);
-BSON_API
-bson_unichar_t
+BSON_EXPORT (bson_unichar_t)
 bson_utf8_get_char (const char *utf8);
-BSON_API
-const char *
+BSON_EXPORT (const char *)
 bson_utf8_next_char (const char *utf8);
-BSON_API
-void
+BSON_EXPORT (void)
 bson_utf8_from_unichar (bson_unichar_t unichar, char utf8[6], uint32_t *len);
 
 

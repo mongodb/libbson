@@ -66,13 +66,11 @@ BSON_BEGIN_DECLS
 #endif
 
 #ifdef __BSON_NEED_ATOMIC_32
-BSON_API
-int32_t
+BSON_EXPORT (int32_t)
 bson_atomic_int_add (volatile int32_t *p, int32_t n);
 #endif
 #ifdef __BSON_NEED_ATOMIC_64
-BSON_API
-int64_t
+BSON_EXPORT (int64_t)
 bson_atomic_int64_add (volatile int64_t *p, int64_t n);
 #endif
 
@@ -94,8 +92,7 @@ bson_atomic_int64_add (volatile int64_t *p, int64_t n);
 #else
 #define __BSON_NEED_BARRIER 1
 #warning "Unknown compiler, using lock for compiler barrier."
-BSON_API
-void
+BSON_EXPORT (void)
 bson_memory_barrier (void);
 #endif
 

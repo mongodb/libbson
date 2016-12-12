@@ -47,14 +47,12 @@
 
 BSON_BEGIN_DECLS
 
-BSON_API
-void
+BSON_EXPORT (void)
 bson_decimal128_to_string (const bson_decimal128_t *dec, char *str);
 
 
 /* Note: @string must be ASCII characters only! */
-BSON_API
-bool
+BSON_EXPORT (bool)
 bson_decimal128_from_string (const char *string, bson_decimal128_t *dec);
 
 

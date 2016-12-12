@@ -90,38 +90,28 @@ typedef ssize_t (*bson_reader_read_func_t) (void *handle,  /* IN */
 typedef void (*bson_reader_destroy_func_t) (void *handle); /* IN */
 
 
-BSON_API
-bson_reader_t *
+BSON_EXPORT (bson_reader_t *)
 bson_reader_new_from_handle (void *handle,
                              bson_reader_read_func_t rf,
                              bson_reader_destroy_func_t df);
-BSON_API
-bson_reader_t *
+BSON_EXPORT (bson_reader_t *)
 bson_reader_new_from_fd (int fd, bool close_on_destroy);
-BSON_API
-bson_reader_t *
+BSON_EXPORT (bson_reader_t *)
 bson_reader_new_from_file (const char *path, bson_error_t *error);
-BSON_API
-bson_reader_t *
+BSON_EXPORT (bson_reader_t *)
 bson_reader_new_from_data (const uint8_t *data, size_t length);
-BSON_API
-void
+BSON_EXPORT (void)
 bson_reader_destroy (bson_reader_t *reader);
-BSON_API
-void
+BSON_EXPORT (void)
 bson_reader_set_read_func (bson_reader_t *reader, bson_reader_read_func_t func);
-BSON_API
-void
+BSON_EXPORT (void)
 bson_reader_set_destroy_func (bson_reader_t *reader,
                               bson_reader_destroy_func_t func);
-BSON_API
-const bson_t *
+BSON_EXPORT (const bson_t *)
 bson_reader_read (bson_reader_t *reader, bool *reached_eof);
-BSON_API
-off_t
+BSON_EXPORT (off_t)
 bson_reader_tell (bson_reader_t *reader);
-BSON_API
-void
+BSON_EXPORT (void)
 bson_reader_reset (bson_reader_t *reader);
 
 BSON_END_DECLS

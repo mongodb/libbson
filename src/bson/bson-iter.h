@@ -91,8 +91,7 @@ BSON_BEGIN_DECLS
    (0 == strcmp ((key), bson_iter_key ((iter))))
 
 
-BSON_API
-const bson_value_t *
+BSON_EXPORT (const bson_value_t *)
 bson_iter_value (bson_iter_t *iter);
 
 
@@ -115,23 +114,20 @@ bson_iter_utf8_len_unsafe (const bson_iter_t *iter)
 }
 
 
-BSON_API
-void
+BSON_EXPORT (void)
 bson_iter_array (const bson_iter_t *iter,
                  uint32_t *array_len,
                  const uint8_t **array);
 
 
-BSON_API
-void
+BSON_EXPORT (void)
 bson_iter_binary (const bson_iter_t *iter,
                   bson_subtype_t *subtype,
                   uint32_t *binary_len,
                   const uint8_t **binary);
 
 
-BSON_API
-const char *
+BSON_EXPORT (const char *)
 bson_iter_code (const bson_iter_t *iter, uint32_t *length);
 
 
@@ -152,31 +148,27 @@ bson_iter_code_unsafe (const bson_iter_t *iter, uint32_t *length)
 }
 
 
-BSON_API
-const char *
+BSON_EXPORT (const char *)
 bson_iter_codewscope (const bson_iter_t *iter,
                       uint32_t *length,
                       uint32_t *scope_len,
                       const uint8_t **scope);
 
 
-BSON_API
-void
+BSON_EXPORT (void)
 bson_iter_dbpointer (const bson_iter_t *iter,
                      uint32_t *collection_len,
                      const char **collection,
                      const bson_oid_t **oid);
 
 
-BSON_API
-void
+BSON_EXPORT (void)
 bson_iter_document (const bson_iter_t *iter,
                     uint32_t *document_len,
                     const uint8_t **document);
 
 
-BSON_API
-double
+BSON_EXPORT (double)
 bson_iter_double (const bson_iter_t *iter);
 
 
@@ -198,25 +190,21 @@ bson_iter_double_unsafe (const bson_iter_t *iter)
 }
 
 
-BSON_API
-bool
+BSON_EXPORT (bool)
 bson_iter_init (bson_iter_t *iter, const bson_t *bson);
 
 
-BSON_API
-bool
+BSON_EXPORT (bool)
 bson_iter_init_find (bson_iter_t *iter, const bson_t *bson, const char *key);
 
 
-BSON_API
-bool
+BSON_EXPORT (bool)
 bson_iter_init_find_case (bson_iter_t *iter,
                           const bson_t *bson,
                           const char *key);
 
 
-BSON_API
-int32_t
+BSON_EXPORT (int32_t)
 bson_iter_int32 (const bson_iter_t *iter);
 
 
@@ -238,13 +226,11 @@ bson_iter_int32_unsafe (const bson_iter_t *iter)
 }
 
 
-BSON_API
-int64_t
+BSON_EXPORT (int64_t)
 bson_iter_int64 (const bson_iter_t *iter);
 
 
-BSON_API
-int64_t
+BSON_EXPORT (int64_t)
 bson_iter_as_int64 (const bson_iter_t *iter);
 
 
@@ -266,30 +252,25 @@ bson_iter_int64_unsafe (const bson_iter_t *iter)
 }
 
 
-BSON_API
-bool
+BSON_EXPORT (bool)
 bson_iter_find (bson_iter_t *iter, const char *key);
 
 
-BSON_API
-bool
+BSON_EXPORT (bool)
 bson_iter_find_case (bson_iter_t *iter, const char *key);
 
 
-BSON_API
-bool
+BSON_EXPORT (bool)
 bson_iter_find_descendant (bson_iter_t *iter,
                            const char *dotkey,
                            bson_iter_t *descendant);
 
 
-BSON_API
-bool
+BSON_EXPORT (bool)
 bson_iter_next (bson_iter_t *iter);
 
 
-BSON_API
-const bson_oid_t *
+BSON_EXPORT (const bson_oid_t *)
 bson_iter_oid (const bson_iter_t *iter);
 
 
@@ -308,8 +289,7 @@ bson_iter_oid_unsafe (const bson_iter_t *iter)
 }
 
 
-BSON_API
-bool
+BSON_EXPORT (bool)
 bson_iter_decimal128 (const bson_iter_t *iter, bson_decimal128_t *dec);
 
 
@@ -335,8 +315,7 @@ bson_iter_decimal128_unsafe (const bson_iter_t *iter, bson_decimal128_t *dec)
 }
 
 
-BSON_API
-const char *
+BSON_EXPORT (const char *)
 bson_iter_key (const bson_iter_t *iter);
 
 
@@ -355,8 +334,7 @@ bson_iter_key_unsafe (const bson_iter_t *iter)
 }
 
 
-BSON_API
-const char *
+BSON_EXPORT (const char *)
 bson_iter_utf8 (const bson_iter_t *iter, uint32_t *length);
 
 
@@ -375,18 +353,15 @@ bson_iter_utf8_unsafe (const bson_iter_t *iter, size_t *length)
 }
 
 
-BSON_API
-char *
+BSON_EXPORT (char *)
 bson_iter_dup_utf8 (const bson_iter_t *iter, uint32_t *length);
 
 
-BSON_API
-int64_t
+BSON_EXPORT (int64_t)
 bson_iter_date_time (const bson_iter_t *iter);
 
 
-BSON_API
-time_t
+BSON_EXPORT (time_t)
 bson_iter_time_t (const bson_iter_t *iter);
 
 
@@ -406,8 +381,7 @@ bson_iter_time_t_unsafe (const bson_iter_t *iter)
 }
 
 
-BSON_API
-void
+BSON_EXPORT (void)
 bson_iter_timeval (const bson_iter_t *iter, struct timeval *tv);
 
 
@@ -431,15 +405,13 @@ bson_iter_timeval_unsafe (const bson_iter_t *iter, struct timeval *tv)
 }
 
 
-BSON_API
-void
+BSON_EXPORT (void)
 bson_iter_timestamp (const bson_iter_t *iter,
                      uint32_t *timestamp,
                      uint32_t *increment);
 
 
-BSON_API
-bool
+BSON_EXPORT (bool)
 bson_iter_bool (const bson_iter_t *iter);
 
 
@@ -461,23 +433,19 @@ bson_iter_bool_unsafe (const bson_iter_t *iter)
 }
 
 
-BSON_API
-bool
+BSON_EXPORT (bool)
 bson_iter_as_bool (const bson_iter_t *iter);
 
 
-BSON_API
-const char *
+BSON_EXPORT (const char *)
 bson_iter_regex (const bson_iter_t *iter, const char **options);
 
 
-BSON_API
-const char *
+BSON_EXPORT (const char *)
 bson_iter_symbol (const bson_iter_t *iter, uint32_t *length);
 
 
-BSON_API
-bson_type_t
+BSON_EXPORT (bson_type_t)
 bson_iter_type (const bson_iter_t *iter);
 
 
@@ -496,38 +464,31 @@ bson_iter_type_unsafe (const bson_iter_t *iter)
 }
 
 
-BSON_API
-bool
+BSON_EXPORT (bool)
 bson_iter_recurse (const bson_iter_t *iter, bson_iter_t *child);
 
 
-BSON_API
-void
+BSON_EXPORT (void)
 bson_iter_overwrite_int32 (bson_iter_t *iter, int32_t value);
 
 
-BSON_API
-void
+BSON_EXPORT (void)
 bson_iter_overwrite_int64 (bson_iter_t *iter, int64_t value);
 
 
-BSON_API
-void
+BSON_EXPORT (void)
 bson_iter_overwrite_double (bson_iter_t *iter, double value);
 
 
-BSON_API
-void
+BSON_EXPORT (void)
 bson_iter_overwrite_decimal128 (bson_iter_t *iter, bson_decimal128_t *value);
 
 
-BSON_API
-void
+BSON_EXPORT (void)
 bson_iter_overwrite_bool (bson_iter_t *iter, bool value);
 
 
-BSON_API
-bool
+BSON_EXPORT (bool)
 bson_iter_visit_all (bson_iter_t *iter,
                      const bson_visitor_t *visitor,
                      void *data);

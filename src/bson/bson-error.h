@@ -31,13 +31,13 @@ BSON_BEGIN_DECLS
 #define BSON_ERROR_READER 2
 
 
-BSON_API
-void
-bson_set_error (
-   bson_error_t *error, uint32_t domain, uint32_t code, const char *format, ...)
-   BSON_GNUC_PRINTF (4, 5);
-BSON_API
-char *
+BSON_EXPORT (void)
+bson_set_error (bson_error_t *error,
+                uint32_t domain,
+                uint32_t code,
+                const char *format,
+                ...) BSON_GNUC_PRINTF (4, 5);
+BSON_EXPORT (char *)
 bson_strerror_r (int err_code, char *buf, size_t buflen);
 
 

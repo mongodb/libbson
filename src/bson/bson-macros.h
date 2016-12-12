@@ -67,12 +67,17 @@
 #define BSON_API __declspec(dllexport)
 #else
 #define BSON_API __declspec(dllimport)
+#define BSON_CALL __cdecl
 #endif
 #elif defined(__GNUC__)
 #define BSON_API __attribute__ ((visibility ("default")))
+#define BSON_CALL
 #else
 #define BSON_API
+#define BSON_CALL
 #endif
+
+#define BSON_EXPORT(type) BSON_API type BSON_CALL
 
 
 #ifdef MIN

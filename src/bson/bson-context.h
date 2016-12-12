@@ -31,14 +31,11 @@
 BSON_BEGIN_DECLS
 
 
-BSON_API
-bson_context_t *
+BSON_EXPORT (bson_context_t *)
 bson_context_new (bson_context_flags_t flags);
-BSON_API
-void
+BSON_EXPORT (void)
 bson_context_destroy (bson_context_t *context);
-BSON_API
-bson_context_t *
+BSON_EXPORT (bson_context_t *)
 bson_context_get_default (void) BSON_GNUC_CONST;
 
 
