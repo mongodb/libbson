@@ -277,8 +277,9 @@ test_bson_as_json_code (void)
    BSON_APPEND_INT32 (&scope, "x", 1);
    assert (BSON_APPEND_CODE_WITH_SCOPE (&code, "c", "function () {}", &scope));
    str = bson_as_json (&code, NULL);
-   ASSERT_CMPSTR (str, "{ \"c\" : { \"$code\" : \"function () {}\", \"$scope\" "
-                       ": { \"x\" : 1 } } }");
+   ASSERT_CMPSTR (str,
+                  "{ \"c\" : { \"$code\" : \"function () {}\", \"$scope\" "
+                  ": { \"x\" : 1 } } }");
 
    bson_free (str);
    bson_destroy (&code);
@@ -1508,57 +1509,121 @@ test_bson_json_array_subdoc (void)
 }
 
 static void
-test_bson_json_date_check (bool should_work, const char *json, int64_t value)
+test_bson_json_date_check (const char *json, int64_t value)
 {
    bson_error_t error = {0};
    bson_t b, compare;
    bool r;
 
-   if (should_work) {
-      bson_init (&compare);
+   bson_init (&compare);
 
-      BSON_APPEND_DATE_TIME (&compare, "dt", value);
+   BSON_APPEND_DATE_TIME (&compare, "dt", value);
 
-      r = bson_init_from_json (&b, json, -1, &error);
+   r = bson_init_from_json (&b, json, -1, &error);
 
-      if (!r) {
-         fprintf (stderr, "%s\n", error.message);
-      }
-
-      assert (r);
-
-      bson_eq_bson (&b, &compare);
-      bson_destroy (&compare);
-      bson_destroy (&b);
-   } else {
-      r = bson_init_from_json (&b, json, -1, &error);
-
-      if (r) {
-         fprintf (stderr, "parsing %s should fail\n", json);
-      }
-
-      assert (!r);
+   if (!r) {
+      fprintf (stderr, "%s\n", error.message);
    }
+
+   assert (r);
+
+   bson_eq_bson (&b, &compare);
+   bson_destroy (&compare);
+   bson_destroy (&b);
+}
+
+
+static void
+test_bson_json_date_error (const char *json, const char *msg)
+{
+   bson_error_t error = {0};
+   bson_t b;
+   bool r;
+   r = bson_init_from_json (&b, json, -1, &error);
+   if (r) {
+      fprintf (stderr, "parsing %s should fail\n", json);
+   }
+   assert (!r);
+   ASSERT_ERROR_CONTAINS (
+      error, BSON_ERROR_JSON, BSON_JSON_ERROR_READ_INVALID_PARAM, msg);
 }
 
 static void
 test_bson_json_date (void)
 {
+   /* to make a timestamp, "python3 -m pip install iso8601" and in Python 3:
+    * iso8601.parse_date("2016-12-13T12:34:56.123Z").timestamp() * 1000
+    */
    test_bson_json_date_check (
-      true, "{ \"dt\" : { \"$date\" : \"1970-01-01T00:00:00.000Z\" } }", 0);
+      "{ \"dt\" : { \"$date\" : \"2016-12-13T12:34:56.123Z\" } }",
+      1481632496123);
    test_bson_json_date_check (
-      true, "{ \"dt\" : { \"$date\" : \"1969-12-31T16:00:00.000-0800\" } }", 0);
+      "{ \"dt\" : { \"$date\" : \"1970-01-01T00:00:00.000Z\" } }", 0);
    test_bson_json_date_check (
-      true, "{ \"dt\" : { \"$date\" : -62135593139000 } }", -62135593139000);
+      "{ \"dt\" : { \"$date\" : \"1969-12-31T16:00:00.000-0800\" } }", 0);
+   test_bson_json_date_check ("{ \"dt\" : { \"$date\" : -62135593139000 } }",
+                              -62135593139000);
    test_bson_json_date_check (
-      true,
       "{ \"dt\" : { \"$date\" : { \"$numberLong\" : \"-62135593139000\" } } }",
       -62135593139000);
 
-   test_bson_json_date_check (
-      false,
+   test_bson_json_date_error (
       "{ \"dt\" : { \"$date\" : \"1970-01-01T01:00:00.000+01:00\" } }",
-      0);
+      "Could not parse");
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : \"1970-01-01T01:30:\" } }",
+      "reached end of date while looking for seconds");
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : \"1970-01-01T01:00:+01:00\" } }",
+      "seconds is required");
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : \"1970-01-01T01:30:00.\" } }",
+      "reached end of date while looking for milliseconds");
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : \"1970-01-01T01:00:00.+01:00\" } }",
+      "milliseconds is required");
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : \"foo-01-01T00:00:00.000Z\" } }",
+      "year must be an integer");
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : \"1970-foo-01T00:00:00.000Z\" } }",
+      "month must be an integer");
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : \"1970-01-fooT00:00:00.000Z\" } }",
+      "day must be an integer");
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : \"1970-01-01Tfoo:00:00.000Z\" } }",
+      "hour must be an integer");
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : \"1970-01-01T00:foo:00.000Z\" } }",
+      "minute must be an integer");
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : \"1970-01-01T00:00:foo.000Z\" } }",
+      "seconds must be an integer");
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : \"1970-01-01T01:00:00.000\" } }",
+      "timezone is required");
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : \"1970-01-01T01:00:00.000X\" } }",
+      "timezone is required");
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : \"1970-01-01T01:00:00.000+1\" } }",
+      "could not parse timezone");
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : \"1970-01-01T01:00:00.000+xx00\" } }",
+      "could not parse timezone");
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : \"1970-01-01T01:00:00.000+2400\" } }",
+      "timezone hour must be at most 23");
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : \"1970-01-01T01:00:00.000-2400\" } }",
+      "timezone hour must be at most 23");
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : \"1970-01-01T01:00:00.000+0060\" } }",
+      "timezone minute must be at most 59");
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : \"1970-01-01T01:00:00.000-0060\" } }",
+      "timezone minute must be at most 59");
 }
 
 static void

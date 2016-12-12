@@ -17,8 +17,9 @@ static void
 test_date (const char *str, int64_t millis)
 {
    int64_t v;
+   bson_error_t error;
 
-   if (!_bson_iso8601_date_parse (str, strlen (str), &v)) {
+   if (!_bson_iso8601_date_parse (str, strlen (str), &v, &error)) {
       fprintf (stderr, "could not parse (%s)\n", str);
       abort ();
    }
@@ -36,8 +37,9 @@ static void
 test_date_should_fail (const char *str)
 {
    int64_t v;
+   bson_error_t error;
 
-   if (_bson_iso8601_date_parse (str, strlen (str), &v)) {
+   if (_bson_iso8601_date_parse (str, strlen (str), &v, &error)) {
       fprintf (stderr, "should not be able to parse (%s)\n", str);
       abort ();
    }

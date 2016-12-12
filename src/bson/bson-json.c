@@ -632,9 +632,9 @@ _bson_json_read_string (bson_json_reader_t *reader, /* IN */
       case BSON_JSON_LF_DATE: {
          int64_t v64;
 
-         if (!_bson_iso8601_date_parse ((char *) val, (int) vlen, &v64)) {
-            _bson_json_read_set_error (
-               reader, "Could not parse \"%s\" as a date", val_w_null);
+         if (!_bson_iso8601_date_parse (
+                (char *) val, (int) vlen, &v64, reader->error)) {
+            jsonsl_stop (reader->json);
          } else {
             bson->bson_type_data.date.has_date = true;
             bson->bson_type_data.date.date = v64;
