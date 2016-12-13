@@ -19,10 +19,10 @@
 #include "bson-macros.h"
 #include "bson-error.h"
 #include "bson-iso8601-private.h"
+#include "bson-json.h"
 
 #ifndef _WIN32
 #include "bson-timegm-private.h"
-#include "bson-json.h"
 #endif
 
 
