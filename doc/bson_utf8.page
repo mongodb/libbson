@@ -20,7 +20,7 @@
    printf ("Validation failed.\n");
 }]]></code></synopsis>
 
-    <p>If <code>my_string</code> has NULL bytes within the string, you must provide the string length. Use the follwing format. Notice the <code>true</code> at the end indicationg <code>\0</code> is allowed.</p>
+    <p>If <code>my_string</code> has NULL bytes within the string, you must provide the string length. Use the following format. Notice the <code>true</code> at the end indicationg <code>\0</code> is allowed.</p>
 
     <synopsis><code mime="text/x-csrc"><![CDATA[if (!bson_utf8_validate (my_string, my_string_len, true)) {
    printf ("Validation failed.\n");

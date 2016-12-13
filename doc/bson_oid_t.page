@@ -25,7 +25,7 @@ typedef struct
 
   <section id="description">
     <title>Description</title>
-    <p>The <code xref="bson_oid_t">bson_oid_t</code> structure contains the 12-byte ObjectId notation defined by the <link href="http://docs.mongodb.org/manual/reference/object-id/">BSON ObjectID specificiation</link>.</p>
+    <p>The <code xref="bson_oid_t">bson_oid_t</code> structure contains the 12-byte ObjectId notation defined by the <link href="http://docs.mongodb.org/manual/reference/object-id/">BSON ObjectID specification</link>.</p>
     <p>ObjectId is a 12-byte BSON type, constructed using:</p>
     <list>
       <item><p>a 4-byte value representing the seconds since the Unix epoch (in Big Endian)</p></item>
