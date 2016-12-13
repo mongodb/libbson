@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <limits.h>
 #include <ctype.h>
+#include <bson-memory.h>
 
 #ifdef JSONSL_USE_METRICS
 #define XMETRICS             \
@@ -115,8 +116,8 @@ jsonsl_t
 jsonsl_new (int nlevels)
 {
    unsigned int ii;
-   struct jsonsl_st *jsn = (struct jsonsl_st *) calloc (
-      1, sizeof (*jsn) + ((nlevels - 1) * sizeof (struct jsonsl_state_st)));
+   struct jsonsl_st *jsn = (struct jsonsl_st *) bson_malloc0 (
+      sizeof (*jsn) + ((nlevels - 1) * sizeof (struct jsonsl_state_st)));
 
    jsn->levels_max = nlevels;
    jsn->max_callback_level = -1;
@@ -145,7 +146,7 @@ void
 jsonsl_destroy (jsonsl_t jsn)
 {
    if (jsn) {
-      free (jsn);
+      bson_free (jsn);
    }
 }
 
