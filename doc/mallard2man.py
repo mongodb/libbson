@@ -228,10 +228,11 @@ class Convert(object):
         self._writeCommand('.fi')
 
     def _generateCode(self, code):
+        if code.tag.endswith('output'):
+            self._writeCommand('.br')
         text = code.text
         is_synopsis = self._get_parent(code).tag.endswith('synopsis')
         if text and '\n' not in text and not is_synopsis:
-            text = text.replace('()', '(%s)' % self.section)
             self._writeCommand('.B', text)
         else:
             self._writeCommand('.nf')
@@ -258,6 +259,8 @@ class Convert(object):
                 self._writeLine(self._compressWhitespace(child.tail))
 
     def _generateScreen(self, screen):
+        if screen.text:
+            self._generateCode(screen)
         for child in screen.getchildren():
             self._generateElement(child)
 
