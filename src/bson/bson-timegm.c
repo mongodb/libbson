@@ -14,12 +14,9 @@
 #include "bson-macros.h"
 #include "bson-timegm-private.h"
 
-#ifndef BSON_OS_WIN32
-
 #include "errno.h"
 #include "string.h"
 #include "limits.h" /* for CHAR_BIT et al. */
-#include "time.h"
 
 /* Unlike <ctype.h>'s isdigit, this also works if c < 0 | c > UCHAR_MAX. */
 #define is_digit(c) ((unsigned) (c) - '0' <= 9)
@@ -56,10 +53,6 @@
 #define TYPE_BIT(type) (sizeof (type) * CHAR_BIT)
 #endif /* !defined TYPE_BIT */
 
-#ifndef TYPE_SIGNED
-#define TYPE_SIGNED(type) (((type) -1) < 0)
-#endif /* !defined TYPE_SIGNED */
-
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunknown-pragmas"
@@ -68,12 +61,8 @@
 #endif
 
 /* The minimum and maximum finite time values.  */
-static int64_t const time_t_min =
-   (TYPE_SIGNED (int64_t) ? (int64_t) -1 << (CHAR_BIT * sizeof (int64_t) - 1) : 0);
-static int64_t const time_t_max =
-   (TYPE_SIGNED (int64_t)
-       ? -(~0 < 0) - ((int64_t) -1 << (CHAR_BIT * sizeof (int64_t) - 1))
-       : -1);
+static int64_t const time_t_min = INT64_MIN;
+static int64_t const time_t_max = INT64_MAX;
 
 #ifdef __clang__
 #pragma clang diagnostic pop
@@ -389,9 +378,7 @@ timesub (const int64_t *const timep,
       register int64_t leapdays;
 
       tdelta = tdays / DAYSPERLYEAR;
-      if (!((!TYPE_SIGNED (int64_t) || INT_MIN <= tdelta) && tdelta <= INT_MAX))
-         return NULL;
-      idelta = (int64_t) tdelta;
+      idelta = tdelta;
       if (idelta == 0)
          idelta = (tdays < 0) ? -1 : 1;
       newy = y;
@@ -816,4 +803,3 @@ _bson_timegm (struct bson_tm *const tmp)
    return time1 (tmp, gmtsub, 0L);
 }
 
-#endif

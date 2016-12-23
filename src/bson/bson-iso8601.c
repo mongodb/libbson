@@ -20,10 +20,7 @@
 #include "bson-error.h"
 #include "bson-iso8601-private.h"
 #include "bson-json.h"
-
-#ifndef _WIN32
 #include "bson-timegm-private.h"
-#endif
 
 
 static bool
@@ -140,14 +137,7 @@ _bson_iso8601_date_parse (const char *str,
    int64_t millis = 0;
    int32_t tz_adjustment = 0;
 
-#ifdef BSON_OS_WIN32
-   SYSTEMTIME win_sys_time;
-   FILETIME win_file_time;
-   int64_t win_time_offset;
-   int64_t win_epoch_difference;
-#else
    struct bson_tm posix_date = {0};
-#endif
 
 #define DATE_PARSE_ERR(msg)                                \
    bson_set_error (error,                                  \
@@ -290,39 +280,6 @@ _bson_iso8601_date_parse (const char *str,
       }
    }
 
-#ifdef BSON_OS_WIN32
-   win_sys_time.wMilliseconds = millis;
-   win_sys_time.wSecond = sec;
-   win_sys_time.wMinute = min;
-   win_sys_time.wHour = hour;
-   win_sys_time.wDay = day;
-   win_sys_time.wDayOfWeek = -1; /* ignored */
-   win_sys_time.wMonth = month + 1;
-   win_sys_time.wYear = year + 1900;
-
-   /* the wDayOfWeek member of SYSTEMTIME is ignored by this function */
-   if (SystemTimeToFileTime (&win_sys_time, &win_file_time) == 0) {
-      return 0;
-   }
-
-   /* The Windows FILETIME structure contains two parts of a 64-bit value
-    * representing the
-    * number of 100-nanosecond intervals since January 1, 1601
-    */
-   win_time_offset = (((uint64_t) win_file_time.dwHighDateTime) << 32) |
-                     win_file_time.dwLowDateTime;
-
-   /* There are 11644473600 seconds between the unix epoch and the windows epoch
-    * 100-nanoseconds = milliseconds * 10000
-    */
-   win_epoch_difference = 11644473600000 * 10000;
-
-   /* removes the diff between 1970 and 1601 */
-   win_time_offset -= win_epoch_difference;
-
-   /* 1 milliseconds = 1000000 nanoseconds = 10000 100-nanosecond intervals */
-   millis = win_time_offset / 10000;
-#else
    posix_date.tm_sec = sec;
    posix_date.tm_min = min;
    posix_date.tm_hour = hour;
@@ -333,9 +290,6 @@ _bson_iso8601_date_parse (const char *str,
    posix_date.tm_yday = 0;
 
    millis = 1000 * _bson_timegm (&posix_date) + millis;
-
-#endif
-
    millis += tz_adjustment * 1000;
    *out = millis;
 
