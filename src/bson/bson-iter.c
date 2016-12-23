@@ -535,8 +535,18 @@ fill_data_fields:
       subtype = *(iter->raw + iter->d2);
 
       if (subtype == BSON_SUBTYPE_BINARY_DEPRECATED) {
+         int32_t binary_len;
+
          if (l < 4) {
             iter->err_off = o;
+            goto mark_invalid;
+         }
+
+         /* subtype 2 has a redundant length header in the data */
+         memcpy (&binary_len, (iter->raw + iter->d3), sizeof (binary_len));
+         binary_len = BSON_UINT32_FROM_LE (binary_len);
+         if (binary_len + 4 != l) {
+            iter->err_off = iter->d3;
             goto mark_invalid;
          }
       }
