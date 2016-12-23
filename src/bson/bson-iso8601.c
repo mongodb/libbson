@@ -204,10 +204,7 @@ _bson_iso8601_date_parse (const char *str,
 
    get_tok ("", &ptr, &remaining, &tz_ptr, &tz_len);
 
-   /* we want to include the last few hours in 1969 for timezones translate
-    * across 1970 GMT.  We'll check in timegm later on to make sure we're post
-    * 1970 */
-   if (!parse_num (year_ptr, year_len, 4, 1969, 9999, &year)) {
+   if (!parse_num (year_ptr, year_len, 4, -9999, 9999, &year)) {
       DATE_PARSE_ERR ("year must be an integer");
    }
 
@@ -340,11 +337,6 @@ _bson_iso8601_date_parse (const char *str,
 #endif
 
    millis += tz_adjustment * 1000;
-
-   if (millis < 0) {
-      DATE_PARSE_ERR ("must be after January 1, 1970");
-   }
-
    *out = millis;
 
    return true;

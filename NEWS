@@ -8,6 +8,8 @@ New features and bug fixes:
     strictly, fix minor parsing bugs.
   * Extended JSON documents like '{"$code": "...", "$scope": {}}' are now parsed
     into BSON code elements.
+  * ISO8601 dates now allow years from 0000 to 9999 inclusive. Before, years
+    before 1970 were prohibited.
 
 =============
 Libbson-1.5.0

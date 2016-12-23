@@ -29,6 +29,8 @@ test_date (const char *str, int64_t millis)
                "parsed value not correct: %" PRId64 " != %" PRId64 "\n",
                millis,
                v);
+
+      fprintf (stderr, "parsing: [%s]\n", str);
       abort ();
    }
 }
@@ -62,6 +64,7 @@ test_bson_iso8601_utc (void)
    test_date ("1971-02-03T04:05Z", 34401900000ULL);
    test_date ("1970-01-01T00:00:00.000Z", 0ULL);
    test_date ("1970-06-30T01:06:40.981Z", 15556000981ULL);
+   test_date ("1970-01-01T00:00:00.000+0100", -3600LL * 1000);
 
    if (!IS_TIME_T_SMALL) {
       test_date ("2058-02-20T18:29:11.100Z", 2781455351100ULL);
@@ -69,6 +72,11 @@ test_bson_iso8601_utc (void)
    }
 
    test_date ("2013-02-20T18:29:11.100Z", 1361384951100ULL);
+
+   /* from the BSON Corpus Tests */
+   test_date ("1970-01-01T00:00:00.000Z", 0);
+   test_date ("2012-12-24T12:15:30.500Z", 1356351330500);
+   test_date ("1960-12-24T12:15:30.500Z", -284643869500LL);
 }
 
 static void
@@ -101,6 +109,9 @@ test_bson_iso8601_local (void)
 
    test_date ("2013-02-20T13:29:11.100-0500", 1361384951100ULL);
    test_date ("2013-02-20T13:29:11.100-0501", 1361385011100ULL);
+   test_date ("0000-01-01T00:00:00.000Z", -62167219200000LL);
+   test_date ("0000-01-01T00:00:00.000+2300", -62167302000000LL);
+   test_date ("9999-01-01T00:00:00.000Z", 253370764800000ULL);
 }
 
 static void
@@ -139,8 +150,8 @@ test_bson_iso8601_invalid (void)
    test_date_should_fail ("1970-01-00T00:00:00.000Z");
    test_date_should_fail ("1970-13-01T00:00:00.000Z");
    test_date_should_fail ("1970-00-01T00:00:00.000Z");
-   test_date_should_fail ("1969-01-01T00:00:00.000Z");
-   test_date_should_fail ("1970-01-01T00:00:00.000+0100");
+   test_date_should_fail ("10000-01-01T00:00:00.000Z");
+   test_date_should_fail ("-10000-01-01T00:00:00.000Z");
 
    /* Invalid lengths */
    test_date_should_fail ("01970-01-01T00:00:00.000Z");
