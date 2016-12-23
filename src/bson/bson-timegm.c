@@ -1,11 +1,13 @@
 /*
-** This file is in the public domain, so clarified as of
+** The original version of this file is in the public domain, so clarified as of
 ** 1996-06-05 by Arthur David Olson.
 */
 
 /*
 ** Leap second handling from Bradley White.
 ** POSIX-style TZ environment variable handling from Guy Harris.
+** Updated to use int64_t's instead of system-dependent definitions of int64_t
+** and struct tm by A. Jesse Jiryu Davis for MongoDB, Inc.
 */
 
 #include "bson-compat.h"
@@ -66,11 +68,11 @@
 #endif
 
 /* The minimum and maximum finite time values.  */
-static time_t const time_t_min =
-   (TYPE_SIGNED (time_t) ? (time_t) -1 << (CHAR_BIT * sizeof (time_t) - 1) : 0);
-static time_t const time_t_max =
-   (TYPE_SIGNED (time_t)
-       ? -(~0 < 0) - ((time_t) -1 << (CHAR_BIT * sizeof (time_t) - 1))
+static int64_t const time_t_min =
+   (TYPE_SIGNED (int64_t) ? (int64_t) -1 << (CHAR_BIT * sizeof (int64_t) - 1) : 0);
+static int64_t const time_t_max =
+   (TYPE_SIGNED (int64_t)
+       ? -(~0 < 0) - ((int64_t) -1 << (CHAR_BIT * sizeof (int64_t) - 1))
        : -1);
 
 #ifdef __clang__
@@ -198,7 +200,7 @@ struct ttinfo {            /* time type information */
 };
 
 struct lsinfo {          /* leap second information */
-   time_t ls_trans;      /* transition time */
+   int64_t ls_trans;      /* transition time */
    int_fast64_t ls_corr; /* correction to apply */
 };
 
@@ -218,7 +220,7 @@ struct state {
    int charcnt;
    int goback;
    int goahead;
-   time_t ats[TZ_MAX_TIMES];
+   int64_t ats[TZ_MAX_TIMES];
    unsigned char types[TZ_MAX_TIMES];
    struct ttinfo ttis[TZ_MAX_TYPES];
    char chars[BIGGEST (TZ_MAX_CHARS + 1, (2 * (MY_TZNAME_MAX + 1)))];
@@ -244,40 +246,40 @@ struct rule {
 
 static void
 gmtload (struct state *sp);
-static struct tm *
-gmtsub (const time_t *timep, int_fast32_t offset, struct tm *tmp);
-static int
-increment_overflow (int *number, int delta);
-static int
-leaps_thru_end_of (int y) ATTRIBUTE_PURE;
-static int
-increment_overflow32 (int_fast32_t *number, int delta);
-static int
-normalize_overflow32 (int_fast32_t *tensptr, int *unitsptr, int base);
-static int
-normalize_overflow (int *tensptr, int *unitsptr, int base);
-static time_t
-time1 (struct tm *tmp,
-       struct tm *(*funcp) (const time_t *, int_fast32_t, struct tm *),
+static struct bson_tm *
+gmtsub (const int64_t *timep, int_fast32_t offset, struct bson_tm *tmp);
+static int64_t
+increment_overflow (int64_t *number, int64_t delta);
+static int64_t
+leaps_thru_end_of (int64_t y) ATTRIBUTE_PURE;
+static int64_t
+increment_overflow32 (int_fast32_t *number, int64_t delta);
+static int64_t
+normalize_overflow32 (int_fast32_t *tensptr, int64_t *unitsptr, int64_t base);
+static int64_t
+normalize_overflow (int64_t *tensptr, int64_t *unitsptr, int64_t base);
+static int64_t
+time1 (struct bson_tm *tmp,
+       struct bson_tm *(*funcp) (const int64_t *, int_fast32_t, struct bson_tm *),
        int_fast32_t offset);
-static time_t
-time2 (struct tm *tmp,
-       struct tm *(*funcp) (const time_t *, int_fast32_t, struct tm *),
+static int64_t
+time2 (struct bson_tm *tmp,
+       struct bson_tm *(*funcp) (const int64_t *, int_fast32_t, struct bson_tm *),
        int_fast32_t offset,
-       int *okayp);
-static time_t
-time2sub (struct tm *tmp,
-          struct tm *(*funcp) (const time_t *, int_fast32_t, struct tm *),
+       int64_t *okayp);
+static int64_t
+time2sub (struct bson_tm *tmp,
+          struct bson_tm *(*funcp) (const int64_t *, int_fast32_t, struct bson_tm *),
           int_fast32_t offset,
-          int *okayp,
-          int do_norm_secs);
-static struct tm *
-timesub (const time_t *timep,
+          int64_t *okayp,
+          int64_t do_norm_secs);
+static struct bson_tm *
+timesub (const int64_t *timep,
          int_fast32_t offset,
          const struct state *sp,
-         struct tm *tmp);
-static int
-tmcomp (const struct tm *atmp, const struct tm *btmp);
+         struct bson_tm *tmp);
+static int64_t
+tmcomp (const struct bson_tm *atmp, const struct bson_tm *btmp);
 
 static struct state gmtmem;
 #define gmtptr (&gmtmem)
@@ -305,12 +307,12 @@ gmtload (struct state *const sp)
 ** gmtsub is to gmtime as localsub is to localtime.
 */
 
-static struct tm *
-gmtsub (const time_t *const timep,
+static struct bson_tm *
+gmtsub (const int64_t *const timep,
         const int_fast32_t offset,
-        struct tm *const tmp)
+        struct bson_tm *const tmp)
 {
-   register struct tm *result;
+   register struct bson_tm *result;
 
    if (!gmt_is_set) {
       gmt_is_set = true;
@@ -333,28 +335,28 @@ gmtsub (const time_t *const timep,
 ** where, to make the math easy, the answer for year zero is defined as zero.
 */
 
-static int
-leaps_thru_end_of (register const int y)
+static int64_t
+leaps_thru_end_of (register const int64_t y)
 {
    return (y >= 0) ? (y / 4 - y / 100 + y / 400)
                    : -(leaps_thru_end_of (-(y + 1)) + 1);
 }
 
-static struct tm *
-timesub (const time_t *const timep,
+static struct bson_tm *
+timesub (const int64_t *const timep,
          const int_fast32_t offset,
          register const struct state *const sp,
-         register struct tm *const tmp)
+         register struct bson_tm *const tmp)
 {
    register const struct lsinfo *lp;
-   register time_t tdays;
-   register int idays; /* unsigned would be so 2003 */
+   register int64_t tdays;
+   register int64_t idays; /* unsigned would be so 2003 */
    register int_fast64_t rem;
-   int y;
+   int64_t y;
    register const int *ip;
    register int_fast64_t corr;
-   register int hit;
-   register int i;
+   register int64_t hit;
+   register int64_t i;
 
    corr = 0;
    hit = 0;
@@ -381,22 +383,22 @@ timesub (const time_t *const timep,
    tdays = *timep / SECSPERDAY;
    rem = *timep - tdays * SECSPERDAY;
    while (tdays < 0 || tdays >= year_lengths[isleap (y)]) {
-      int newy;
-      register time_t tdelta;
-      register int idelta;
-      register int leapdays;
+      int64_t newy;
+      register int64_t tdelta;
+      register int64_t idelta;
+      register int64_t leapdays;
 
       tdelta = tdays / DAYSPERLYEAR;
-      if (!((!TYPE_SIGNED (time_t) || INT_MIN <= tdelta) && tdelta <= INT_MAX))
+      if (!((!TYPE_SIGNED (int64_t) || INT_MIN <= tdelta) && tdelta <= INT_MAX))
          return NULL;
-      idelta = (int) tdelta;
+      idelta = (int64_t) tdelta;
       if (idelta == 0)
          idelta = (tdays < 0) ? -1 : 1;
       newy = y;
       if (increment_overflow (&newy, idelta))
          return NULL;
       leapdays = leaps_thru_end_of (newy - 1) - leaps_thru_end_of (y - 1);
-      tdays -= ((time_t) newy - y) * DAYSPERNYEAR;
+      tdays -= ((int64_t) newy - y) * DAYSPERNYEAR;
       tdays -= leapdays;
       y = newy;
    }
@@ -410,7 +412,7 @@ timesub (const time_t *const timep,
    /*
    ** Given the range, we can now fearlessly cast...
    */
-   idays = (int) tdays;
+   idays = (int64_t) tdays;
    rem += offset - corr;
    while (rem < 0) {
       rem += SECSPERDAY;
@@ -444,18 +446,18 @@ timesub (const time_t *const timep,
    tmp->tm_wday %= DAYSPERWEEK;
    if (tmp->tm_wday < 0)
       tmp->tm_wday += DAYSPERWEEK;
-   tmp->tm_hour = (int) (rem / SECSPERHOUR);
+   tmp->tm_hour = (int64_t) (rem / SECSPERHOUR);
    rem %= SECSPERHOUR;
-   tmp->tm_min = (int) (rem / SECSPERMIN);
+   tmp->tm_min = (int64_t) (rem / SECSPERMIN);
    /*
    ** A positive leap second requires a special
    ** representation. This uses "... ??:59:60" et seq.
    */
-   tmp->tm_sec = (int) (rem % SECSPERMIN) + hit;
+   tmp->tm_sec = (int64_t) (rem % SECSPERMIN) + hit;
    ip = mon_lengths[isleap (y)];
    for (tmp->tm_mon = 0; idays >= ip[tmp->tm_mon]; ++(tmp->tm_mon))
       idays -= ip[tmp->tm_mon];
-   tmp->tm_mday = (int) (idays + 1);
+   tmp->tm_mday = (int64_t) (idays + 1);
    tmp->tm_isdst = 0;
 #ifdef TM_GMTOFF
    tmp->TM_GMTOFF = offset;
@@ -467,7 +469,7 @@ timesub (const time_t *const timep,
 ** Adapted from code provided by Robert Elz, who writes:
 **	The "best" way to do mktime I think is based on an idea of Bob
 **	Kridle's (so its said...) from a long time ago.
-**	It does a binary search of the time_t space. Since time_t's are
+**	It does a binary search of the int64_t space. Since int64_t's are
 **	just 32 bits, its a max of 32 iterations (even at 64 bits it
 **	would still be very reasonable).
 */
@@ -480,10 +482,10 @@ timesub (const time_t *const timep,
 ** Normalize logic courtesy Paul Eggert.
 */
 
-static int
-increment_overflow (int *const ip, int j)
+static int64_t
+increment_overflow (int64_t *const ip, int64_t j)
 {
-   register int const i = *ip;
+   register int64_t const i = *ip;
 
    /*
    ** If i >= 0 there can only be overflow if i + j > INT_MAX
@@ -497,8 +499,8 @@ increment_overflow (int *const ip, int j)
    return false;
 }
 
-static int
-increment_overflow32 (int_fast32_t *const lp, int const m)
+static int64_t
+increment_overflow32 (int_fast32_t *const lp, int64_t const m)
 {
    register int_fast32_t const l = *lp;
 
@@ -508,10 +510,10 @@ increment_overflow32 (int_fast32_t *const lp, int const m)
    return false;
 }
 
-static int
-normalize_overflow (int *const tensptr, int *const unitsptr, const int base)
+static int64_t
+normalize_overflow (int64_t *const tensptr, int64_t *const unitsptr, const int64_t base)
 {
-   register int tensdelta;
+   register int64_t tensdelta;
 
    tensdelta =
       (*unitsptr >= 0) ? (*unitsptr / base) : (-1 - (-1 - *unitsptr) / base);
@@ -519,12 +521,12 @@ normalize_overflow (int *const tensptr, int *const unitsptr, const int base)
    return increment_overflow (tensptr, tensdelta);
 }
 
-static int
+static int64_t
 normalize_overflow32 (int_fast32_t *const tensptr,
-                      int *const unitsptr,
-                      const int base)
+                      int64_t *const unitsptr,
+                      const int64_t base)
 {
-   register int tensdelta;
+   register int64_t tensdelta;
 
    tensdelta =
       (*unitsptr >= 0) ? (*unitsptr / base) : (-1 - (-1 - *unitsptr) / base);
@@ -532,11 +534,11 @@ normalize_overflow32 (int_fast32_t *const tensptr,
    return increment_overflow32 (tensptr, tensdelta);
 }
 
-static int
-tmcomp (register const struct tm *const atmp,
-        register const struct tm *const btmp)
+static int64_t
+tmcomp (register const struct bson_tm *const atmp,
+        register const struct bson_tm *const btmp)
 {
-   register int result;
+   register int64_t result;
 
    if (atmp->tm_year != btmp->tm_year)
       return atmp->tm_year < btmp->tm_year ? -1 : 1;
@@ -548,24 +550,24 @@ tmcomp (register const struct tm *const atmp,
    return result;
 }
 
-static time_t
-time2sub (struct tm *const tmp,
-          struct tm *(*const funcp) (const time_t *, int_fast32_t, struct tm *),
+static int64_t
+time2sub (struct bson_tm *const tmp,
+          struct bson_tm *(*const funcp) (const int64_t *, int_fast32_t, struct bson_tm *),
           const int_fast32_t offset,
-          int *const okayp,
-          const int do_norm_secs)
+          int64_t *const okayp,
+          const int64_t do_norm_secs)
 {
    register const struct state *sp;
-   register int dir;
-   register int i, j;
-   register int saved_seconds;
+   register int64_t dir;
+   register int64_t i, j;
+   register int64_t saved_seconds;
    register int_fast32_t li;
-   register time_t lo;
-   register time_t hi;
+   register int64_t lo;
+   register int64_t hi;
    int_fast32_t y;
-   time_t newt;
-   time_t t;
-   struct tm yourtm, mytm;
+   int64_t newt;
+   int64_t t;
+   struct bson_tm yourtm, mytm;
 
    *okayp = false;
    yourtm = *tmp;
@@ -634,17 +636,13 @@ time2sub (struct tm *const tmp,
       yourtm.tm_sec = 0;
    }
    /*
-   ** Do a binary search (this works whatever time_t's type is).
+   ** Do a binary search.
    */
-   if (!TYPE_SIGNED (time_t)) {
-      lo = 0;
-      hi = lo - 1;
-   } else {
-      lo = 1;
-      for (i = 0; i < (int) TYPE_BIT (time_t) - 1; ++i)
-         lo *= 2;
-      hi = -(lo + 1);
-   }
+   lo = 1;
+   for (i = 0; i < (int64_t) TYPE_BIT (int64_t) - 1; ++i)
+      lo *= 2;
+   hi = -(lo + 1);
+
    for (;;) {
       t = lo / 2 + hi / 2;
       if (t < lo)
@@ -654,7 +652,7 @@ time2sub (struct tm *const tmp,
       if ((*funcp) (&t, offset, &mytm) == NULL) {
          /*
          ** Assume that t is too extreme to be represented in
-         ** a struct tm; arrange things so that it is less
+         ** a struct bson_tm; arrange things so that it is less
          ** extreme on the next pass.
          */
          dir = (t > 0) ? 1 : -1;
@@ -723,13 +721,13 @@ label:
    return t;
 }
 
-static time_t
-time2 (struct tm *const tmp,
-       struct tm *(*const funcp) (const time_t *, int_fast32_t, struct tm *),
+static int64_t
+time2 (struct bson_tm *const tmp,
+       struct bson_tm *(*const funcp) (const int64_t *, int_fast32_t, struct bson_tm *),
        const int_fast32_t offset,
-       int *const okayp)
+       int64_t *const okayp)
 {
-   time_t t;
+   int64_t t;
 
    /*
    ** First try without normalization of seconds
@@ -740,20 +738,20 @@ time2 (struct tm *const tmp,
    return *okayp ? t : time2sub (tmp, funcp, offset, okayp, true);
 }
 
-static time_t
-time1 (struct tm *const tmp,
-       struct tm *(*const funcp) (const time_t *, int_fast32_t, struct tm *),
+static int64_t
+time1 (struct bson_tm *const tmp,
+       struct bson_tm *(*const funcp) (const int64_t *, int_fast32_t, struct bson_tm *),
        const int_fast32_t offset)
 {
-   register time_t t;
+   register int64_t t;
    register const struct state *sp;
-   register int samei, otheri;
-   register int sameind, otherind;
-   register int i;
-   register int nseen;
-   int seen[TZ_MAX_TYPES];
-   int types[TZ_MAX_TYPES];
-   int okay;
+   register int64_t samei, otheri;
+   register int64_t sameind, otherind;
+   register int64_t i;
+   register int64_t nseen;
+   int64_t seen[TZ_MAX_TYPES];
+   int64_t types[TZ_MAX_TYPES];
+   int64_t okay;
 
    if (tmp == NULL) {
       errno = EINVAL;
@@ -810,8 +808,8 @@ time1 (struct tm *const tmp,
    return WRONG;
 }
 
-time_t
-_bson_timegm (struct tm *const tmp)
+int64_t
+_bson_timegm (struct bson_tm *const tmp)
 {
    if (tmp != NULL)
       tmp->tm_isdst = 0;

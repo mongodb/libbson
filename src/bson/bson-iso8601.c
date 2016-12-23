@@ -146,7 +146,7 @@ _bson_iso8601_date_parse (const char *str,
    int64_t win_time_offset;
    int64_t win_epoch_difference;
 #else
-   struct tm posix_date = {0};
+   struct bson_tm posix_date = {0};
 #endif
 
 #define DATE_PARSE_ERR(msg)                                \
@@ -332,7 +332,7 @@ _bson_iso8601_date_parse (const char *str,
    posix_date.tm_wday = 0;
    posix_date.tm_yday = 0;
 
-   millis = (1000 * ((uint64_t) _bson_timegm (&posix_date))) + millis;
+   millis = 1000 * _bson_timegm (&posix_date) + millis;
 
 #endif
 
