@@ -201,6 +201,10 @@ set_target_properties(bson_static PROPERTIES VERSION ${BSON_VERSION} SOVERSION $
 set_target_properties(bson_shared PROPERTIES OUTPUT_NAME "bson-${BSON_API_VERSION}" PREFIX "lib")
 set_target_properties(bson_static PROPERTIES OUTPUT_NAME "bson-static-${BSON_API_VERSION}")
 
+if (MSVC)
+	set_target_properties(bson_static PROPERTIES COMPILE_FLAGS "-MT")
+endif()
+
 if (RT_LIBRARY)
     target_link_libraries (bson_shared ${RT_LIBRARY})
     target_link_libraries (bson_static ${RT_LIBRARY})
