@@ -1627,6 +1627,17 @@ test_bson_json_date (void)
 }
 
 static void
+test_bson_json_date_numberlong (void)
+{
+   test_bson_json_date_check (
+      "{ \"dt\" : { \"$date\" : {\"$numberLong\": \"0\" } } }",
+      0);
+   test_bson_json_date_check (
+      "{ \"dt\" : { \"$date\" : {\"$numberLong\": \"1356351330500\" } } }",
+      1356351330500);
+}
+
+static void
 test_bson_json_special_keys_at_top (void)
 {
    const char *invalid[] = {
@@ -1742,6 +1753,7 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (
       suite, "/bson/json/array/subdoc", test_bson_json_array_subdoc);
    TestSuite_Add (suite, "/bson/json/date", test_bson_json_date);
+   TestSuite_Add (suite, "/bson/json/date/long", test_bson_json_date_numberlong);
    TestSuite_Add (suite,
                   "/bson/json/read/missing_complex",
                   test_bson_json_read_missing_complex);
