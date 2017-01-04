@@ -359,6 +359,35 @@ test_bson_iter_find_case (void)
 
 
 static void
+test_bson_iter_as_double (void)
+{
+   bson_iter_t iter;
+   bson_t b;
+
+   bson_init (&b);
+   assert (bson_append_double (&b, "key", -1, 1234.1234));
+   assert (bson_iter_init_find (&iter, &b, "key"));
+   assert (BSON_ITER_HOLDS_DOUBLE (&iter));
+   assert_cmpint (bson_iter_as_double (&iter), ==, 1234.1234);
+   bson_destroy (&b);
+
+   bson_init (&b);
+   assert (bson_append_int32 (&b, "key", -1, 1234));
+   assert (bson_iter_init_find (&iter, &b, "key"));
+   assert (BSON_ITER_HOLDS_INT32 (&iter));
+   assert_cmpint (bson_iter_as_double (&iter), ==, 1234.0);
+   bson_destroy (&b);
+
+   bson_init (&b);
+   assert (bson_append_int64 (&b, "key", -1, 4321));
+   assert (bson_iter_init_find (&iter, &b, "key"));
+   assert (BSON_ITER_HOLDS_INT64 (&iter));
+   assert_cmpint (bson_iter_as_double (&iter), ==, 4321.0);
+   bson_destroy (&b);
+}
+
+
+static void
 test_bson_iter_overwrite_int32 (void)
 {
    bson_iter_t iter;
@@ -593,6 +622,8 @@ test_iter_install (TestSuite *suite)
                   "/bson/iter/test_next_after_finish",
                   test_bson_iter_next_after_finish);
    TestSuite_Add (suite, "/bson/iter/test_find_case", test_bson_iter_find_case);
+   TestSuite_Add (
+      suite, "/bson/iter/test_bson_iter_as_double", test_bson_iter_as_double);
    TestSuite_Add (
       suite, "/bson/iter/test_overwrite_int32", test_bson_iter_overwrite_int32);
    TestSuite_Add (

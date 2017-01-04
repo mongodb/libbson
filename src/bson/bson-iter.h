@@ -171,6 +171,8 @@ bson_iter_document (const bson_iter_t *iter,
 BSON_EXPORT (double)
 bson_iter_double (const bson_iter_t *iter);
 
+BSON_EXPORT (double)
+bson_iter_as_double (const bson_iter_t *iter);
 
 /**
  * bson_iter_double_unsafe:
