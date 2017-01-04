@@ -1003,6 +1003,46 @@ bson_iter_double (const bson_iter_t *iter) /* IN */
 /*
  *--------------------------------------------------------------------------
  *
+ * bson_iter_as_double --
+ *
+ *       If @iter is on a field of type BSON_TYPE_DOUBLE,
+ *       returns the double. If it is on an integer field
+ *       such as int32, int64, or bool, it will convert
+ *       the value to a double.
+ *
+ *
+ * Returns:
+ *       A double.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+double
+bson_iter_as_double (const bson_iter_t *iter) /* IN */
+{
+  BSON_ASSERT (iter);
+
+  switch ((int) ITER_TYPE (iter)) {
+  case BSON_TYPE_BOOL:
+    return (double) bson_iter_bool (iter);
+  case BSON_TYPE_DOUBLE:
+    return bson_iter_double (iter);
+  case BSON_TYPE_INT32:
+    return (double) bson_iter_int32 (iter);
+  case BSON_TYPE_INT64:
+    return (double) bson_iter_int64 (iter);
+  default:
+    return 0;
+  }
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
  * bson_iter_int32 --
  *
  *       Retrieves the value of the field of type BSON_TYPE_INT32.
@@ -1027,7 +1067,6 @@ bson_iter_int32 (const bson_iter_t *iter) /* IN */
 
    return 0;
 }
-
 
 /*
  *--------------------------------------------------------------------------
