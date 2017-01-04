@@ -60,11 +60,11 @@
     <p>On Fedora, a libbson package is available in the default repositories and can be installed with:</p>
     <screen><output style="prompt">$ </output><input>dnf install libbson</input></screen>
     <p>On recent Red Hat systems, such as CentOS and RHEL 7, a libbson package
-      is available in the <link
-      href="https://fedoraproject.org/wiki/EPEL">EPEL</link> repository. To check
-      version available, see <link
-      href="https://apps.fedoraproject.org/packages/libbson">https://apps.fedoraproject.org/packages/libbson</link>.
-      The package can be installed with:</p>
+is available in the <link
+href="https://fedoraproject.org/wiki/EPEL">EPEL</link> repository. To check
+version available, see <link
+href="https://apps.fedoraproject.org/packages/libbson">https://apps.fedoraproject.org/packages/libbson</link>.
+The package can be installed with:</p>
     <screen><output style="prompt">$ </output><input>yum install libbson</input></screen>
   </section>
 

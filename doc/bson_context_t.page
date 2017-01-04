@@ -47,8 +47,7 @@ void            bson_context_destroy     (bson_context_t       *context);]]></co
   <section id="examples">
     <title>Example</title>
     <listing>
-      <title></title>
-      <synopsis><code mime="text/x-csrc"><![CDATA[#include <bson.h>
+<code mime="text/x-csrc"><![CDATA[#include <bson.h>
 
 int main (int argc, char *argv[])
 {
@@ -65,7 +64,7 @@ int main (int argc, char *argv[])
    bson_context_destroy (ctx);
 
    return 0;
-}]]></code></synopsis>
+}]]></code>
     </listing>
   </section>
 </page>

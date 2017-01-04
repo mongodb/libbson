@@ -37,6 +37,6 @@ bson_iter_decimal128 (const bson_iter_t *iter,      /* IN */
 
   <section id="return">
     <title>Returns</title>
-    <p>true if type was BSON_TYPE_DECIMAL128, otherwise false<code>error</code>.</p>
+    <p>true if type was BSON_TYPE_DECIMAL128, otherwise false.</p>
   </section>
 </page>

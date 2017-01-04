@@ -18,7 +18,7 @@ bson_uint32_to_string (uint32_t     value,
                        char        *str,
                        size_t       size);
 ]]></code></synopsis>
-    <p>See <link xref="performance#keys" /> for example usage.</p>
+    <p>See <link xref="performance#array_element_key_building">Array Element Key Building</link> for example usage.</p>
   </section>
 
   <section id="parameters">

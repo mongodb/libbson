@@ -32,8 +32,7 @@ BSON_APPEND_BOOL (&b, "bool", true);]]></code></example>
     <title>Sub-Documents and Sub-Arrays</title>
     <p>To simplify the creation of sub-documents and arrays, <code xref="bson_append_document_begin">bson_append_document_begin()</code> and <code xref="bson_append_array_begin">bson_append_array_begin()</code> exist. These can be used to build a sub-document using the parent documents memory region as the destination buffer.</p>
     <listing>
-      <title>Creating Sub-Documents</title>
-      <synopsis><code mime="text/x-csrc"><![CDATA[bson_t parent;
+<code mime="text/x-csrc"><![CDATA[bson_t parent;
 bson_t child;
 char *str;
 
@@ -47,9 +46,8 @@ printf ("%s\n", str);
 bson_free (str);
 
 bson_destroy (&parent);
-]]></code></synopsis>
+]]></code></listing>
       <screen><output>{ "foo" : { "baz" : 1 } }</output></screen>
-    </listing>
   </section>
 
   <section id="bcon">
@@ -57,17 +55,15 @@ bson_destroy (&parent);
     <p>Creating BSON documents by hand can be tedious and time consuming. BCON, or BSON C Object Notation, was added to allow for the creation of BSON documents in a format that looks closer to the destination format.</p>
     <p>The following example shows the use of BCON. Notice that values for fields are wrapped in the <code>BCON_*</code> macros. These are required for the variadic processor to determine the parameter type.</p>
     <listing>
-      <title></title>
-      <synopsis><code mime="text/x-csrc"><![CDATA[bson_t *doc;
+      <code mime="text/x-csrc"><![CDATA[bson_t *doc;
 
 doc = BCON_NEW ("foo", "{",
    "int", BCON_INT32 (1),
    "array", "[", BCON_INT32 (100), "{", "sub", BCON_UTF8 ("value"), "}", "]",
 "}");
-]]></code></synopsis>
+]]></code></listing>
       <p>Creates the following document</p>
       <screen><output>{ "foo" : { "int" : 1, "array" : [ 100, { "sub" : "value" } ] } }</output></screen>
-    </listing>
   </section>
 
 </page>
