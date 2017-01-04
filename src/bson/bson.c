@@ -2500,12 +2500,19 @@ _bson_as_json_visit_double (const bson_iter_t *iter,
                             void *data)
 {
    bson_json_state_t *state = data;
+   bson_string_t *str = state->str;
+   uint32_t start_len = str->len;
 
 #ifdef BSON_NEEDS_SET_OUTPUT_FORMAT
    unsigned int current_format = _set_output_format (_TWO_DIGIT_EXPONENT);
 #endif
 
-   bson_string_append_printf (state->str, "%.15g", v_double);
+   bson_string_append_printf (str, "%.20g", v_double);
+
+   /* ensure trailing ".0" to distinguish "3" from "3.0" */
+   if (strspn (&str->str[start_len], "0123456789-") == str->len - start_len) {
+      bson_string_append (str, ".0");
+   }
 
 #ifdef BSON_NEEDS_SET_OUTPUT_FORMAT
    _set_output_format (current_format);

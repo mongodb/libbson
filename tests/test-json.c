@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <bson-string.h>
 
+#include "bson-config.h"
 #include "bson-tests.h"
 #include "TestSuite.h"
 
@@ -208,21 +209,35 @@ test_bson_as_json_double (void)
    size_t len;
    bson_t *b;
    char *str;
+   char *expected;
+
+#ifdef BSON_NEEDS_SET_OUTPUT_FORMAT
+   unsigned int current_format = _set_output_format (_TWO_DIGIT_EXPONENT);
+#endif
 
    b = bson_new ();
-   assert (bson_append_double (b, "foo", -1, 123.456));
+   assert (bson_append_double (b, "foo", -1, 123.5));
    assert (bson_append_double (b, "bar", -1, 3));
    assert (bson_append_double (b, "baz", -1, -1));
-   assert (bson_append_double (b, "quux", -1, 1.0001));
+   assert (bson_append_double (b, "quux", -1, 0.03125));
    assert (bson_append_double (b, "huge", -1, 1e99));
    str = bson_as_json (b, &len);
-   ASSERT_CMPSTR (str,
-                  "{"
-                  " \"foo\" : 123.456,"
-                  " \"bar\" : 3,"
-                  " \"baz\" : -1,"
-                  " \"quux\" : 1.0001,"
-                  " \"huge\" : 1e+99 }");
+
+   expected = bson_strdup_printf ("{"
+                                  " \"foo\" : 123.5,"
+                                  " \"bar\" : 3.0,"
+                                  " \"baz\" : -1.0,"
+                                  " \"quux\" : 0.03125,"
+                                  " \"huge\" : %.20g }",
+                                  1e99);
+
+   ASSERT_CMPSTR (str, expected);
+
+#ifdef BSON_NEEDS_SET_OUTPUT_FORMAT
+   _set_output_format (current_format);
+#endif
+
+   bson_free (expected);
    bson_free (str);
    bson_destroy (b);
 }
@@ -1630,8 +1645,7 @@ static void
 test_bson_json_date_numberlong (void)
 {
    test_bson_json_date_check (
-      "{ \"dt\" : { \"$date\" : {\"$numberLong\": \"0\" } } }",
-      0);
+      "{ \"dt\" : { \"$date\" : {\"$numberLong\": \"0\" } } }", 0);
    test_bson_json_date_check (
       "{ \"dt\" : { \"$date\" : {\"$numberLong\": \"1356351330500\" } } }",
       1356351330500);
@@ -1753,7 +1767,8 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (
       suite, "/bson/json/array/subdoc", test_bson_json_array_subdoc);
    TestSuite_Add (suite, "/bson/json/date", test_bson_json_date);
-   TestSuite_Add (suite, "/bson/json/date/long", test_bson_json_date_numberlong);
+   TestSuite_Add (
+      suite, "/bson/json/date/long", test_bson_json_date_numberlong);
    TestSuite_Add (suite,
                   "/bson/json/read/missing_complex",
                   test_bson_json_read_missing_complex);
