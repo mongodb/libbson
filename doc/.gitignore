@@ -11,5 +11,3 @@ html/_static
 html/.buildinfo
 html/.nojekyll
 man/*.3
-bson_installing.page
-bson_version.page
