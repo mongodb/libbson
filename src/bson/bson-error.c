@@ -105,12 +105,12 @@ bson_strerror_r (int err_code,  /* IN */
    static const char *unknown_msg = "Unknown error";
    char *ret = NULL;
 
-#if defined(__GNUC__) && defined(_GNU_SOURCE)
-   ret = strerror_r (err_code, buf, buflen);
-#elif defined(_WIN32)
+#if defined(_WIN32)
    if (strerror_s (buf, buflen, err_code) != 0) {
       ret = buf;
    }
+#elif defined(__GNUC__) && defined(_GNU_SOURCE)
+   ret = strerror_r (err_code, buf, buflen);
 #else /* XSI strerror_r */
    if (strerror_r (err_code, buf, buflen) == 0) {
       ret = buf;
