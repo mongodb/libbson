@@ -794,6 +794,28 @@ test_bson_json_error (const char *json, int domain, bson_json_error_code_t code)
 }
 
 static void
+test_bson_json_read_empty (void)
+{
+   bson_error_t error;
+   bson_t *bson_ptr;
+   bson_t bson;
+
+   bson_ptr = bson_new_from_json ((uint8_t *) "", 0, &error);
+   assert (!bson_ptr);
+   ASSERT_ERROR_CONTAINS (error,
+                          BSON_ERROR_JSON,
+                          BSON_JSON_ERROR_READ_INVALID_PARAM,
+                          "Empty JSON string");
+
+   memset (&error, 0, sizeof error);
+   bson_init_from_json (&bson, "", 0, &error);
+   ASSERT_ERROR_CONTAINS (error,
+                          BSON_ERROR_JSON,
+                          BSON_JSON_ERROR_READ_INVALID_PARAM,
+                          "Empty JSON string");
+}
+
+static void
 test_bson_json_read_missing_complex (void)
 {
    const char *json = "{ \n\
@@ -1779,6 +1801,7 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/json/date", test_bson_json_date);
    TestSuite_Add (
       suite, "/bson/json/date/long", test_bson_json_date_numberlong);
+   TestSuite_Add (suite, "/bson/json/read/empty", test_bson_json_read_empty);
    TestSuite_Add (suite,
                   "/bson/json/read/missing_complex",
                   test_bson_json_read_missing_complex);
