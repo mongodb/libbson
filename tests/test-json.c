@@ -297,6 +297,16 @@ test_bson_as_json_code (void)
                   ": { \"x\" : 1 } } }");
 
    bson_free (str);
+   bson_reinit (&code);
+
+   /* test that embedded quotes are backslash-escaped */
+   assert (BSON_APPEND_CODE (&code, "c", "return \"a\""));
+   str = bson_as_json (&code, NULL);
+
+   /* hard to read, this is { "c" : { "$code" : "return \"a\"" } } */
+   ASSERT_CMPSTR (str, "{ \"c\" : { \"$code\" : \"return \\\"a\\\"\" } }");
+
+   bson_free (str);
    bson_destroy (&code);
    bson_destroy (&scope);
 }
