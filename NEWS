@@ -11,7 +11,18 @@ New features and bug fixes:
   * ISO8601 dates now allow years from 0000 to 9999 inclusive. Before, years
     before 1970 were prohibited.
 
+Libbson-1.5.2
 =============
+
+This is a patch release that fixes a build error with MinGW on Windows.
+
+Libbson-1.5.1
+=============
+
+No change since 1.5.0; released to keep pace with libmongoc's version.
+
+-- A. Jesse Jiryu Davis
+
 Libbson-1.5.0
 =============
 
