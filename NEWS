@@ -1,3 +1,21 @@
+Libbson-1.5.2
+=============
+
+It is my pleasure to announce Libbson-1.5.2.
+
+New bug fixes:
+
+  * CDRIVER-1982 fix ifdef for strerror_s with mingw.
+
+Thanks to everyone who contributed to the development of this release.
+
+  * A. Jesse Jiryu Davis
+
+Peace,
+
+    Hannes Magnusson
+
+
 Libbson-1.5.1
 =============
 
