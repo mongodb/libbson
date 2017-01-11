@@ -7,7 +7,7 @@ sys.path.append(os.path.dirname(__file__))
 
 extensions = [
     'mongoc',
-    'sphinx.ext.githubpages',
+    'githubpages',
 ]
 
 # General information about the project.
