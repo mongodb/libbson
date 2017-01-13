@@ -138,7 +138,7 @@ functions:
   "windows fix":
     - command: shell.exec
       params:
-        working_dir: "mongoc"
+        working_dir: "libbson"
         script: |
           for i in $(find .evergreen -name \*.sh); do
             cat $i | tr -d '\r' > $i.new
