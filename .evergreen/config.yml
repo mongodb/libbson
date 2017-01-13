@@ -559,3 +559,11 @@ buildvariants:
   tasks:
     - name: "release-compile"
 
+- name: windows-64-mingw
+  display_name: "MinGW-W64 Windows"
+  expansions:
+    CC: "mingw"
+  run_on:
+  - windows-64-vs2013-compile
+  tasks:
+    - name: "debug-compile"
