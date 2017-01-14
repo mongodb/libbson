@@ -63,7 +63,7 @@ The most recent release of libbson is |release| and can be `downloaded here <htt
   $ tar -xzf libbson-|release|.tar.gz
   $ cd libbson-|release|/
 
-Minimal dependencies are needed to build Libbson. On UNIX-like systems, pthreads (the POSIX threading library) is required.
+Minimal dependencies are needed to build libbson. On UNIX-like systems, pthreads (the POSIX threading library) is required.
 
 Make sure you have access to a :ref:`supported toolchain <installing_supported_platforms>` such as GCC, Clang, SolarisStudio, or MinGW. Optionally, ``pkg-config`` can be used if your system supports it to simplify locating proper compiler and linker arguments when compiling your program.
 
@@ -73,11 +73,13 @@ The following will configure for a typical 64-bit Linux system such as RedHat En
 
   $ ./configure --prefix=/usr --libdir=/usr/lib64
 
+For a list of all configure options, run ``./configure --help``.
+
 If ``configure`` completed successfully, you'll see something like the following describing your build configuration.
 
-.. code-block:: none
+.. parsed-literal::
 
-  libbson was configured with the following options:
+  libbson |release| was configured with the following options:
 
   Build configuration:
     Enable debugging (slow)                          : no
@@ -90,7 +92,7 @@ If ``configure`` completed successfully, you'll see something like the following
     Link Time Optimization (experimental)            : no
 
   Documentation:
-    man                                              : yes
+    man                                              : no
     HTML                                             : no
 
 We can now build libbson with the venerable ``make`` program.
