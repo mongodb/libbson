@@ -18,17 +18,17 @@ Parameters
 ----------
 
 * ``bson``: A :symbol:`bson_t <bson_t>`.
-* ``key``: An ASCII C string containing the name of the field.
-* ``key_length``: The length of ``key`` in bytes, or -1 to determine the length with ``strlen()``.
-* ``iter``: A bson_iter_t.
+* ``key``: Optional field name. If NULL, uses :symbol:`bson_iter_key(iter) <bson_iter_key>`.
+* ``key_length``: The length of ``key`` or -1 to use strlen().
+* ``iter``: A :symbol:`bson_iter_t` located on the position of the element to append.
 
 Description
 -----------
 
-TODO:
+Appends the value at the current position of ``iter`` to the document.
 
 Returns
 -------
 
-TODO:
-
+true if successful; false if append would overflow the maximum document size
+or another invalid state is detected.
