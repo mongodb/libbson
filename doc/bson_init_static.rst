@@ -28,3 +28,5 @@ Returns
 
 :symbol:`bson_init_static() <bson_init_static>` will return ``true`` if the :symbol:`bson_t <bson_t>` was successfully initialized.
 
+.. taglist:: See Also:
+  :tags: create-bson

@@ -27,3 +27,5 @@ Returns
 
 true if the operation was applied successfully, otherwise false and ``dst`` should be discarded.
 
+.. taglist:: See Also:
+  :tags: create-bson

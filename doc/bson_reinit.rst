@@ -23,3 +23,5 @@ The :symbol:`bson_reinit() <bson_reinit>` function shall be equivalent to callin
 
 However, if the :symbol:`bson_t <bson_t>` structure contains a malloc()'d buffer, it may be reused. To be certain that any buffer is freed, always call :symbol:`bson_destroy <bson_destroy>` on any :symbol:`bson_t <bson_t>` structure, whether initialized or reinitialized, after its final use.
 
+.. taglist:: See Also:
+  :tags: create-bson

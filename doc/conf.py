@@ -2,12 +2,13 @@
 import os.path
 import sys
 
-# Ensure we can import "mongoc" extension module.
+# Ensure we can import "mongoc" and "taglist" extension modules.
 sys.path.append(os.path.dirname(__file__))
 
 extensions = [
     'mongoc',
     'githubpages',
+    'taglist',
 ]
 
 # General information about the project.

@@ -35,3 +35,5 @@ Returns
 
 1 if successful and data was read. 0 if successful and no data was read. -1 if there was an error.
 
+.. taglist:: See Also:
+  :tags: json

@@ -39,3 +39,5 @@ Returns
 
 true if successful, otherwise false and ``error`` is set.
 
+.. taglist:: See Also:
+  :tags: create-bson json

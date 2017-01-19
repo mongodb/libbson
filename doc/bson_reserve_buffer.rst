@@ -106,5 +106,5 @@ Use ``bson_reserve_buffer`` to write a function that takes a :symbol:`bson_t <bs
      return 0;
   }
 
-See also :symbol:`bson_steal <bson_steal>` and :symbol:`bson_destroy_with_steal <bson_destroy_with_steal>`.
-
+.. taglist:: See Also:
+  :tags: create-bson
