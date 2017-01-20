@@ -1106,7 +1106,8 @@ _bson_json_read_end_map (bson_json_reader_t *reader) /* IN */
 
       bson->read_state = BSON_JSON_IN_BSON_TYPE_TIMESTAMP_ENDMAP;
 
-      return _bson_json_read_append_timestamp (reader, bson);
+      _bson_json_read_append_timestamp (reader, bson);
+	  return;
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_TIMESTAMP_ENDMAP) {
       bson->read_state = BSON_JSON_REGULAR;
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_DATE_NUMBERLONG) {
@@ -1117,7 +1118,8 @@ _bson_json_read_end_map (bson_json_reader_t *reader) /* IN */
 
       bson->read_state = BSON_JSON_IN_BSON_TYPE_DATE_ENDMAP;
 
-      return _bson_json_read_append_date_time (reader, bson);
+	  _bson_json_read_append_date_time (reader, bson);
+      return;
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_DATE_ENDMAP) {
       bson->read_state = BSON_JSON_REGULAR;
    } else if (bson->read_state == BSON_JSON_REGULAR) {
