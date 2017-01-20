@@ -113,9 +113,6 @@ functions:
         content_type: ${content_type|application/x-gzip}
 
   "upload artifacts":
-    - command: shell.exec
-      params:
-        script: tar czf artifacts.tar.gz libbson
     - command: archive.targz_pack
       params:
         target: "artifacts.tar.gz"
@@ -126,7 +123,7 @@ functions:
       params:
         aws_key: ${aws_key}
         aws_secret: ${aws_secret}
-        local_file: libbson.tar.gz
+        local_file: artifacts.tar.gz
         remote_file: libbson/${build_variant}/${revision}/${version_id}/${build_id}/artifacts/artifacts.tar.gz
         bucket: mciuploads
         permissions: public-read
