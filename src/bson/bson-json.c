@@ -851,14 +851,13 @@ _bson_json_read_map_key (bson_json_reader_t *reader, /* IN */
          HANDLE_OPTION ("t", BSON_TYPE_TIMESTAMP, BSON_JSON_LF_TIMESTAMP_T)
       else if
          HANDLE_OPTION ("i", BSON_TYPE_TIMESTAMP, BSON_JSON_LF_TIMESTAMP_I)
-      else
-         {
-            _bson_json_read_set_error (
-               reader,
-               "Invalid key %s.  Looking for values for %d",
-               val,
-               bson->bson_type);
-         }
+      else {
+         _bson_json_read_set_error (
+            reader,
+            "Invalid key %s.  Looking for values for %d",
+            val,
+            bson->bson_type);
+      }
    } else {
       _bson_json_save_map_key (bson, val, len);
    }
@@ -1107,7 +1106,7 @@ _bson_json_read_end_map (bson_json_reader_t *reader) /* IN */
       bson->read_state = BSON_JSON_IN_BSON_TYPE_TIMESTAMP_ENDMAP;
 
       _bson_json_read_append_timestamp (reader, bson);
-	  return;
+      return;
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_TIMESTAMP_ENDMAP) {
       bson->read_state = BSON_JSON_REGULAR;
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_DATE_NUMBERLONG) {
@@ -1118,7 +1117,7 @@ _bson_json_read_end_map (bson_json_reader_t *reader) /* IN */
 
       bson->read_state = BSON_JSON_IN_BSON_TYPE_DATE_ENDMAP;
 
-	  _bson_json_read_append_date_time (reader, bson);
+      _bson_json_read_append_date_time (reader, bson);
       return;
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_DATE_ENDMAP) {
       bson->read_state = BSON_JSON_REGULAR;
@@ -1646,8 +1645,10 @@ bson_new_from_json (const uint8_t *data, /* IN */
    bson_json_reader_destroy (reader);
 
    if (r == 0) {
-      bson_set_error (error, BSON_ERROR_JSON,
-                      BSON_JSON_ERROR_READ_INVALID_PARAM, "Empty JSON string");
+      bson_set_error (error,
+                      BSON_ERROR_JSON,
+                      BSON_JSON_ERROR_READ_INVALID_PARAM,
+                      "Empty JSON string");
    }
 
    if (r != 1) {
@@ -1683,8 +1684,10 @@ bson_init_from_json (bson_t *bson,        /* OUT */
    bson_json_reader_destroy (reader);
 
    if (r == 0) {
-      bson_set_error (error, BSON_ERROR_JSON,
-                      BSON_JSON_ERROR_READ_INVALID_PARAM, "Empty JSON string");
+      bson_set_error (error,
+                      BSON_ERROR_JSON,
+                      BSON_JSON_ERROR_READ_INVALID_PARAM,
+                      "Empty JSON string");
    }
 
    if (r != 1) {

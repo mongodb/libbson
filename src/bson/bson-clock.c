@@ -141,7 +141,7 @@ bson_get_monotonic_time (void)
    int64_t ticks = GetTickCount64 ();
    return (ticks * 1000L);
 #elif defined(__hpux)
-   int64_t nanosec = gethrtime();
+   int64_t nanosec = gethrtime ();
    return (nanosec / 1000UL);
 #else
 #warning "Monotonic clock is not yet supported on your platform."
