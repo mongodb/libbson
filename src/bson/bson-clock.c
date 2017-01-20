@@ -140,7 +140,7 @@ bson_get_monotonic_time (void)
    /* Despite it's name, this is in milliseconds! */
    int64_t ticks = GetTickCount64 ();
    return (ticks * 1000L);
-#elif defined(__hpux)
+#elif defined(__hpux__)
    int64_t nanosec = gethrtime ();
    return (nanosec / 1000UL);
 #else
