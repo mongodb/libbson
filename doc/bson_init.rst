@@ -21,5 +21,7 @@ Description
 
 The :symbol:`bson_init() <bson_init>` function shall initialize a :symbol:`bson_t <bson_t>` that is placed on the stack. This is equivalent to initializing a :symbol:`bson_t <bson_t>` to ``BSON_INITIALIZER``.
 
-.. taglist:: See Also:
-  :tags: create-bson
+.. only:: html
+
+  .. taglist:: See Also:
+    :tags: create-bson

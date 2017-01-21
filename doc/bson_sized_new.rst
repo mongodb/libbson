@@ -26,5 +26,7 @@ Returns
 
 A newly allocated :symbol:`bson_t <bson_t>` that should be freed with :symbol:`bson_destroy() <bson_destroy>`.
 
-.. taglist:: See Also:
-  :tags: create-bson
+.. only:: html
+
+  .. taglist:: See Also:
+    :tags: create-bson

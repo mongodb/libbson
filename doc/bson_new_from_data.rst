@@ -27,5 +27,7 @@ Returns
 
 A newly allocated :symbol:`bson_t <bson_t>` if successful, otherwise NULL.
 
-.. taglist:: See Also:
-  :tags: create-bson
+.. only:: html
+
+  .. taglist:: See Also:
+    :tags: create-bson

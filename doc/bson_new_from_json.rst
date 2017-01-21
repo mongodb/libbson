@@ -33,5 +33,7 @@ Returns
 
 A newly allocated :symbol:`bson_t <bson_t>` if successful, otherwise NULL and ``error`` is set.
 
-.. taglist:: See Also:
-  :tags: create-bson json
+.. only:: html
+
+  .. taglist:: See Also:
+    :tags: create-bson json

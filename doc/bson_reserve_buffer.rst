@@ -106,5 +106,7 @@ Use ``bson_reserve_buffer`` to write a function that takes a :symbol:`bson_t <bs
      return 0;
   }
 
-.. taglist:: See Also:
-  :tags: create-bson
+.. only:: html
+
+  .. taglist:: See Also:
+    :tags: create-bson
