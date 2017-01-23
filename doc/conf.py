@@ -7,7 +7,6 @@ sys.path.append(os.path.dirname(__file__))
 
 extensions = [
     'mongoc',
-    'githubpages',
     'taglist',
 ]
 
@@ -64,8 +63,17 @@ man_pages = [True]
 from docutils.nodes import title
 
 
+# To publish HTML docs at GitHub Pages, create .nojekyll file. In Sphinx 1.4 we
+# could use the githubpages extension, but old Ubuntu still has Sphinx 1.3.
+def create_nojekyll(app, env):
+    if app.builder.format == 'html':
+        path = os.path.join(app.builder.outdir, '.nojekyll')
+        open(path, 'wt').close()
+
+
 def setup(app):
     app.connect('doctree-read', process_nodes)
+    app.connect('env-updated', create_nojekyll)
 
 
 def process_nodes(app, doctree):

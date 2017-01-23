@@ -12,7 +12,7 @@ man3_MANS = $(BUILT_MAN_FILES)
 
 .PHONY: man
 
-# "E" is "ignore cache".
+# "E" is "ignore cache", "b" is build type.
 man:
 	-mkdir -p doc/man
 	$(SPHINX_BUILD) -qEW -b man $(top_srcdir)/doc doc/man
