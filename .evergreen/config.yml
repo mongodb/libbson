@@ -69,7 +69,7 @@ functions:
            # containing the exact folder name we'd like to upload the docs to,
            # depending on if its a patch build or regular evergreen build
            if [ "${is_patch}" = "true" ]; then
-              VERSION=$(git describe)-patch-${version_id}
+              VERSION=$(git describe --abbrev=7)-patch-${version_id}
            else
               VERSION=latest
            fi
