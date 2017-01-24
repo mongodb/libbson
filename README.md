@@ -80,7 +80,7 @@ Builds on Windows Vista and Higher require cmake to build Visual Studio project 
 Alternatively, you can use cygwin or mingw with the automake based build.
 
 ```sh
-git clone git://github.com/mongodb/libbson.git
+git clone git://github.com/mongodb/libbson.git --depth=1
 cd libbson
 cmake.exe -G "Visual Studio 10 Win64" "-DCMAKE_INSTALL_PREFIX=C:\install\path"
 msbuild.exe ALL_BUILD.vcxproj
@@ -97,7 +97,7 @@ sudo yum install mingw64-gcc automake autoconf libtool
 ### From Git
 
 ```sh
-git clone git://github.com/mongodb/libbson.git
+git clone git://github.com/mongodb/libbson.git -depth=1
 cd libbson/
 git checkout x.y.z  # To build a particular release
 ./autogen.sh
