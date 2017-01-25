@@ -1,16 +1,16 @@
 :man_page: bson_installing
 
-Installing Libbson
+Installing libbson
 ==================
 
-The following guide will step you through the process of downloading, building, and installing the current release of the Libbson.
+The following guide will step you through the process of downloading, building, and installing the current release of the libbson.
 
 .. _installing_supported_platforms:
 
 Supported Platforms
 -------------------
 
-Libbson is continuously tested on GNU/Linux, Windows 7, Mac OS X 10.10, and Solaris 11 (Intel and Sparc), with GCC, Clang, and Visual Studio 2010, 2013, and 2015.
+The library is continuously tested on GNU/Linux, Windows 7, Mac OS X 10.10, and Solaris 11 (Intel and Sparc), with GCC, Clang, and Visual Studio 2010, 2013, and 2015.
 
 The library supports the following operating systems and CPU architectures:
 
