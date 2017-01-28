@@ -14,7 +14,7 @@ Synopsis
 Parameters
 ----------
 
-* ``value``: A :symbol:`bson_value_t <bson_value_t>`.
+* ``value``: A :symbol:`bson_value_t`.
 
 Description
 -----------

@@ -14,7 +14,7 @@ Synopsis
 Parameters
 ----------
 
-* ``iter``: A :symbol:`bson_iter_t <bson_iter_t>`.
+* ``iter``: A :symbol:`bson_iter_t`.
 
 Description
 -----------
@@ -24,5 +24,5 @@ Fetches the value for the currently observed type as a boxed type. This allows p
 Returns
 -------
 
-A :symbol:`bson_value_t <bson_value_t>` that should not be modified or freed.
+A :symbol:`bson_value_t` that should not be modified or freed.
 

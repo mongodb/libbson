@@ -39,7 +39,7 @@ Synopsis
 Description
 -----------
 
-The :symbol:`bson_type_t <bson_type_t>` enumeration contains all of the types from the `BSON Specification <http://bsonspec.org>`_. It can be used to determine the type of a field at runtime.
+The :symbol:`bson_type_t` enumeration contains all of the types from the `BSON Specification <http://bsonspec.org>`_. It can be used to determine the type of a field at runtime.
 
 .. only:: html
 

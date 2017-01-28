@@ -16,8 +16,8 @@ Synopsis
 Parameters
 ----------
 
-* ``iter``: A :symbol:`bson_iter_t <bson_iter_t>`.
-* ``visitor``: A :symbol:`bson_visitor_t <bson_visitor_t>`.
+* ``iter``: A :symbol:`bson_iter_t`.
+* ``visitor``: A :symbol:`bson_visitor_t`.
 * ``data``: Optional data for ``visitor``.
 
 Description

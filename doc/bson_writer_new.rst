@@ -27,9 +27,9 @@ Parameters
 Description
 -----------
 
-Creates a new instance of :symbol:`bson_writer_t <bson_writer_t>` using the ``buffer``, ``length``, ``offset``, and _realloc()_ function supplied.
+Creates a new instance of :symbol:`bson_writer_t` using the ``buffer``, ``length``, ``offset``, and _realloc()_ function supplied.
 
-The caller is expected to clean up the structure when finished using :symbol:`bson_writer_destroy() <bson_writer_destroy>`.
+The caller is expected to clean up the structure when finished using :symbol:`bson_writer_destroy()`.
 
 Returns
 -------

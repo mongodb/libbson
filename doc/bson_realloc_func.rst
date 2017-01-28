@@ -20,5 +20,5 @@ Parameters
 Description
 -----------
 
-This is a prototype for pluggable realloc functions used through the Libbson library. If you wish to use a custom allocator this is one way to do it. Additionally, :symbol:`bson_realloc_ctx() <bson_realloc_ctx>` is a default implementation of this prototype.
+This is a prototype for pluggable realloc functions used through the Libbson library. If you wish to use a custom allocator this is one way to do it. Additionally, :symbol:`bson_realloc_ctx()` is a default implementation of this prototype.
 

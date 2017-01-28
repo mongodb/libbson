@@ -3,12 +3,12 @@
 Streaming BSON
 ==============
 
-:symbol:`bson_reader_t <bson_reader_t>` provides a streaming reader which can be initialized with a filedescriptor or memory region. :symbol:`bson_writer_t <bson_writer_t>` provides a streaming writer which can be initialized with a memory region. (Streaming BSON to a file descriptor is not yet supported.)
+:symbol:`bson_reader_t` provides a streaming reader which can be initialized with a filedescriptor or memory region. :symbol:`bson_writer_t` provides a streaming writer which can be initialized with a memory region. (Streaming BSON to a file descriptor is not yet supported.)
 
 Reading from a BSON Stream
 --------------------------
 
-:symbol:`bson_reader_t <bson_reader_t>` provides a convenient API to read sequential BSON documents from a file-descriptor or memory buffer. The :symbol:`bson_reader_read() <bson_reader_read>` function will read forward in the underlying stream and returna :symbol:`bson_t <bson_t>` that can be inspected and iterated upon.
+:symbol:`bson_reader_t` provides a convenient API to read sequential BSON documents from a file-descriptor or memory buffer. The :symbol:`bson_reader_read()` function will read forward in the underlying stream and returna :symbol:`bson_t` that can be inspected and iterated upon.
 
 .. code-block:: c
 
@@ -47,12 +47,12 @@ Reading from a BSON Stream
      return 0;
   }
 
-See :symbol:`bson_reader_new_from_fd() <bson_reader_new_from_fd>`, :symbol:`bson_reader_new_from_file() <bson_reader_new_from_file>`, and :symbol:`bson_reader_new_from_data() <bson_reader_new_from_data>` for more information.
+See :symbol:`bson_reader_new_from_fd()`, :symbol:`bson_reader_new_from_file()`, and :symbol:`bson_reader_new_from_data()` for more information.
 
 Writing a sequence of BSON Documents
 ------------------------------------
 
-:symbol:`bson_writer_t <bson_writer_t>` provides a convenient API to write a sequence of BSON documents to a memory buffer that can grow with ``realloc()``. The :symbol:`bson_writer_begin() <bson_writer_begin>` and :symbol:`bson_writer_end() <bson_writer_end>` functions will manage the underlying buffer while building the sequence of documents.
+:symbol:`bson_writer_t` provides a convenient API to write a sequence of BSON documents to a memory buffer that can grow with ``realloc()``. The :symbol:`bson_writer_begin()` and :symbol:`bson_writer_end()` functions will manage the underlying buffer while building the sequence of documents.
 
 This could also be useful if you want to write to a network packet while serializing the documents from a higher level language, (but do so just after the packets header).
 
@@ -89,5 +89,5 @@ This could also be useful if you want to write to a network packet while seriali
      return 0;
   }
 
-See :symbol:`bson_writer_new() <bson_writer_new>` for more information.
+See :symbol:`bson_writer_new()` for more information.
 

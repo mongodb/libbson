@@ -14,8 +14,8 @@ Synopsis
 Parameters
 ----------
 
-* ``iter``: A :symbol:`bson_iter_t <bson_iter_t>`.
-* ``bson``: A :symbol:`bson_t <bson_t>`.
+* ``iter``: A :symbol:`bson_iter_t`.
+* ``bson``: A :symbol:`bson_t`.
 * ``key``: A key to locate after initializing the iter.
 
 Description

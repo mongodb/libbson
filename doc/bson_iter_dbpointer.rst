@@ -17,10 +17,10 @@ Synopsis
 Parameters
 ----------
 
-* ``iter``: A :symbol:`bson_iter_t <bson_iter_t>`.
+* ``iter``: A :symbol:`bson_iter_t`.
 * ``collection_len``: A location for the length of the collection name.
 * ``collection``: A location for the collection name..
-* ``oid``: A location for a :symbol:`bson_oid_t <bson_oid_t>`.
+* ``oid``: A location for a :symbol:`bson_oid_t`.
 
 Description
 -----------

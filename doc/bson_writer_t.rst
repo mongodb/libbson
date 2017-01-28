@@ -26,7 +26,7 @@ Synopsis
 Description
 -----------
 
-The :symbol:`bson_writer_t <bson_writer_t>` API provides an abstraction for serializing many BSON documents to a single memory region. The memory region may be dynamically allocated and re-allocated as more memory is demanded. This can be useful when building network packets from a high-level language. For example, you can serialize a Python Dictionary directly to a single buffer destined for a TCP packet.
+The :symbol:`bson_writer_t` API provides an abstraction for serializing many BSON documents to a single memory region. The memory region may be dynamically allocated and re-allocated as more memory is demanded. This can be useful when building network packets from a high-level language. For example, you can serialize a Python Dictionary directly to a single buffer destined for a TCP packet.
 
 .. only:: html
 

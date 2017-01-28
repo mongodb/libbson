@@ -14,10 +14,10 @@ Synopsis
 Parameters
 ----------
 
-* ``writer``: A :symbol:`bson_writer_t <bson_writer_t>`.
+* ``writer``: A :symbol:`bson_writer_t`.
 
 Description
 -----------
 
-Complete writing of a :symbol:`bson_writer_t <bson_writer_t>` to the buffer supplied.
+Complete writing of a :symbol:`bson_writer_t` to the buffer supplied.
 

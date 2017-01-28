@@ -20,10 +20,10 @@ Parameters
 Description
 -----------
 
-The :symbol:`bson_reader_new_from_data() <bson_reader_new_from_data>` function shall create a new :symbol:`bson_reader_t <bson_reader_t>` using the buffer supplied. ``data`` is not copied and *MUST* be valid for the lifetime of the resulting :symbol:`bson_reader_t <bson_reader_t>`.
+The :symbol:`bson_reader_new_from_data()` function shall create a new :symbol:`bson_reader_t` using the buffer supplied. ``data`` is not copied and *MUST* be valid for the lifetime of the resulting :symbol:`bson_reader_t`.
 
 Returns
 -------
 
-A newly allocated :symbol:`bson_reader_t <bson_reader_t>`.
+A newly allocated :symbol:`bson_reader_t`.
 

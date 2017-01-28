@@ -14,12 +14,12 @@ Synopsis
 Parameters
 ----------
 
-* ``bson``: A :symbol:`bson_t <bson_t>`.
+* ``bson``: A :symbol:`bson_t`.
 
 Description
 -----------
 
-The :symbol:`bson_count_keys() <bson_count_keys>` function shall count the number of elements within ``bson``.
+The :symbol:`bson_count_keys()` function shall count the number of elements within ``bson``.
 
 Returns
 -------

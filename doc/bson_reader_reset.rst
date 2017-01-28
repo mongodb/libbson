@@ -14,10 +14,10 @@ Synopsis
 Parameters
 ----------
 
-* ``reader``: A :symbol:`bson_reader_t <bson_reader_t>`.
+* ``reader``: A :symbol:`bson_reader_t`.
 
 Description
 -----------
 
-Seeks to the beginning of the underlying buffer. Valid only for a reader created from a buffer with :symbol:`bson_reader_new_from_data <bson_reader_new_from_data>`, not one created from a file, file descriptor, or handle.
+Seeks to the beginning of the underlying buffer. Valid only for a reader created from a buffer with :symbol:`bson_reader_new_from_data`, not one created from a file, file descriptor, or handle.
 

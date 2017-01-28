@@ -14,8 +14,8 @@ Synopsis
 Parameters
 ----------
 
-* ``oid``: A :symbol:`bson_oid_t <bson_oid_t>`.
-* ``context``: An optional :symbol:`bson_context_t <bson_context_t>`.
+* ``oid``: A :symbol:`bson_oid_t`.
+* ``context``: An optional :symbol:`bson_context_t`.
 
 Description
 -----------

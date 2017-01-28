@@ -14,8 +14,8 @@ Synopsis
 Parameters
 ----------
 
-* ``oid1``: A :symbol:`bson_oid_t <bson_oid_t>`.
-* ``oid2``: A :symbol:`bson_oid_t <bson_oid_t>`.
+* ``oid1``: A :symbol:`bson_oid_t`.
+* ``oid2``: A :symbol:`bson_oid_t`.
 
 Description
 -----------

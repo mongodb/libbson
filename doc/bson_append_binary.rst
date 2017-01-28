@@ -19,7 +19,7 @@ Synopsis
 Parameters
 ----------
 
-* ``bson``: A :symbol:`bson_t <bson_t>`.
+* ``bson``: A :symbol:`bson_t`.
 * ``key``: The key name.
 * ``key_length``: The length of ``key`` in bytes or -1 to use strlen().
 * ``subtype``: A bson_subtype_t indicationg the binary subtype.
@@ -29,7 +29,7 @@ Parameters
 Description
 -----------
 
-The :symbol:`bson_append_binary() <bson_append_binary>` function shall append a new element to ``bson`` containing the binary data provided.
+The :symbol:`bson_append_binary()` function shall append a new element to ``bson`` containing the binary data provided.
 
 Returns
 -------

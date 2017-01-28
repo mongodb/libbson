@@ -18,16 +18,16 @@ Synopsis
 Parameters
 ----------
 
-* ``bson``: A :symbol:`bson_t <bson_t>`.
+* ``bson``: A :symbol:`bson_t`.
 * ``key``: An ASCII C string containing the name of the field.
 * ``key_length``: The length of ``key`` in bytes, or -1 to determine the length with ``strlen()``.
 * ``javascript``: A NULL-terminated UTF-8 encoded string containing the javascript fragment.
-* ``scope``: Optional :symbol:`bson_t <bson_t>` containing the scope for ``javascript``.
+* ``scope``: Optional :symbol:`bson_t` containing the scope for ``javascript``.
 
 Description
 -----------
 
-The :symbol:`bson_append_code_with_scope() <bson_append_code_with_scope>` function shall perform like :symbol:`bson_append_code() <bson_append_code>` except it allows providing a scope to the javascript function in the form of a bson document.
+The :symbol:`bson_append_code_with_scope()` function shall perform like :symbol:`bson_append_code()` except it allows providing a scope to the javascript function in the form of a bson document.
 
 If ``scope`` is NULL, this function appends an element with BSON type "code", otherwise with BSON type "code with scope".
 

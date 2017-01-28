@@ -19,7 +19,7 @@ Synopsis
 Parameters
 ----------
 
-* ``iter``: A :symbol:`bson_iter_t <bson_iter_t>`.
+* ``iter``: A :symbol:`bson_iter_t`.
 * ``timestamp``: A uint32_t.
 * ``increment``: A uint32_t.
 
@@ -28,7 +28,7 @@ Description
 
 The BSON_TYPE_TIMESTAMP type is not a date/time and is typically used for intra-server communication.
 
-You probably want :symbol:`bson_iter_date_time() <bson_iter_date_time>`.
+You probably want :symbol:`bson_iter_date_time()`.
 
-The :symbol:`bson_iter_timestamp() <bson_iter_timestamp>` function shall return the contents of a BSON_TYPE_TIMESTAMP element. It is invalid to call this function while observing an element that is not of type BSON_TYPE_TIMESTAMP.
+The :symbol:`bson_iter_timestamp()` function shall return the contents of a BSON_TYPE_TIMESTAMP element. It is invalid to call this function while observing an element that is not of type BSON_TYPE_TIMESTAMP.
 

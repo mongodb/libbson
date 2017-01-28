@@ -14,15 +14,15 @@ Synopsis
 Parameters
 ----------
 
-* ``bson``: A :symbol:`bson_t <bson_t>`.
+* ``bson``: A :symbol:`bson_t`.
 * ``length``: An optional location for the length of the resulting string.
 
 Description
 -----------
 
-The :symbol:`bson_as_json() <bson_as_json>` function shall encode ``bson`` as a JSON encoded UTF-8 string.
+The :symbol:`bson_as_json()` function shall encode ``bson`` as a JSON encoded UTF-8 string.
 
-The caller is responsible for freeing the resulting UTF-8 encoded string by calling :symbol:`bson_free() <bson_free>` with the result.
+The caller is responsible for freeing the resulting UTF-8 encoded string by calling :symbol:`bson_free()` with the result.
 
 If non-NULL, ``length`` will be set to the length of the result in bytes.
 

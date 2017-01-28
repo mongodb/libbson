@@ -14,14 +14,14 @@ Synopsis
 Parameters
 ----------
 
-* ``writer``: A :symbol:`bson_writer_t <bson_writer_t>`.
+* ``writer``: A :symbol:`bson_writer_t`.
 
 Description
 -----------
 
 Fetches the current length of the content written by the buffer (including the initial offset). This includes a partly written document currently being written.
 
-This is useful if you want to check to see if you've passed a given memory boundry that cannot be sent in a packet. See :symbol:`bson_writer_rollback() <bson_writer_rollback>` to abort the current document being written.
+This is useful if you want to check to see if you've passed a given memory boundry that cannot be sent in a packet. See :symbol:`bson_writer_rollback()` to abort the current document being written.
 
 Returns
 -------

@@ -19,12 +19,12 @@ Parameters
 Description
 -----------
 
-The :symbol:`bson_sized_new() <bson_sized_new>` function shall create a new :symbol:`bson_t <bson_t>` on the heap with a preallocated buffer. This is useful if you have a good idea of the size of the resulting document.
+The :symbol:`bson_sized_new()` function shall create a new :symbol:`bson_t` on the heap with a preallocated buffer. This is useful if you have a good idea of the size of the resulting document.
 
 Returns
 -------
 
-A newly allocated :symbol:`bson_t <bson_t>` that should be freed with :symbol:`bson_destroy() <bson_destroy>`.
+A newly allocated :symbol:`bson_t` that should be freed with :symbol:`bson_destroy()`.
 
 .. only:: html
 

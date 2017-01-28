@@ -14,7 +14,7 @@ Synopsis
 Parameters
 ----------
 
-* ``pms``: A :symbol:`bson_md5_t <bson_md5_t>`.
+* ``pms``: A :symbol:`bson_md5_t`.
 * ``data``: A memory region to feed to the md5 algorithm.
 * ``nbytes``: The length of ``data`` in bytes.
 

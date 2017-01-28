@@ -22,7 +22,7 @@ Parameters
 Description
 -----------
 
-A callback function that will be called by :symbol:`bson_reader_t <bson_reader_t>` to read the next chunk of data from the underlying opaque file descriptor.
+A callback function that will be called by :symbol:`bson_reader_t` to read the next chunk of data from the underlying opaque file descriptor.
 
 This function is meant to operate similar to the ``read(2)`` function as part of libc on UNIX-like systems.
 

@@ -14,7 +14,7 @@ Synopsis
 Parameters
 ----------
 
-* ``string``: A :symbol:`bson_string_t <bson_string_t>`.
+* ``string``: A :symbol:`bson_string_t`.
 * ``str``: An ASCII char.
 
 Description

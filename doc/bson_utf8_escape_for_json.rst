@@ -25,5 +25,5 @@ Escapes the string ``utf8`` to be placed inside of a JSON string.
 Returns
 -------
 
-A newly allocated string that should be freed with :symbol:`bson_free() <bson_free>`.
+A newly allocated string that should be freed with :symbol:`bson_free()`.
 

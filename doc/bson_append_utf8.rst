@@ -18,7 +18,7 @@ Synopsis
 Parameters
 ----------
 
-* ``bson``: A :symbol:`bson_t <bson_t>`.
+* ``bson``: A :symbol:`bson_t`.
 * ``key``: An ASCII C string containing the name of the field.
 * ``key_length``: The length of ``key`` in bytes, or -1 to determine the length with ``strlen()``.
 * ``value``: A UTF-8 encoded string.
@@ -27,7 +27,7 @@ Parameters
 Description
 -----------
 
-The :symbol:`bson_append_utf8() <bson_append_utf8>` function shall append a UTF-8 encoded string to ``bson``.
+The :symbol:`bson_append_utf8()` function shall append a UTF-8 encoded string to ``bson``.
 
 _value_ *MUST* be valid UTF-8.
 

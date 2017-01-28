@@ -16,12 +16,12 @@ Parameters
 
 * ``data``: A UTF-8 encoded string containing valid JSON.
 * ``len``: The length of ``data`` in bytes excluding a trailing ``\0`` or -1 to determine the length with ``strlen()``.
-* ``error``: An optional location for a :symbol:`bson_error_t <bson_error_t>`.
+* ``error``: An optional location for a :symbol:`bson_error_t`.
 
 Description
 -----------
 
-The ``bson_new_from_json()`` function allocates and initialize a new :symbol:`bson_t <bson_t>` by parsing the JSON found in ``data``. Only a single JSON object may exist in ``data`` or an error will be set and NULL returned.
+The ``bson_new_from_json()`` function allocates and initialize a new :symbol:`bson_t` by parsing the JSON found in ``data``. Only a single JSON object may exist in ``data`` or an error will be set and NULL returned.
 
 Errors
 ------
@@ -31,7 +31,7 @@ Errors are propagated via the ``error`` parameter.
 Returns
 -------
 
-A newly allocated :symbol:`bson_t <bson_t>` if successful, otherwise NULL and ``error`` is set.
+A newly allocated :symbol:`bson_t` if successful, otherwise NULL and ``error`` is set.
 
 .. only:: html
 

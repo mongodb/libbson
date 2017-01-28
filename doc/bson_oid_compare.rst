@@ -14,13 +14,13 @@ Synopsis
 Parameters
 ----------
 
-* ``oid1``: A :symbol:`bson_oid_t <bson_oid_t>`.
-* ``oid2``: A :symbol:`bson_oid_t <bson_oid_t>`.
+* ``oid1``: A :symbol:`bson_oid_t`.
+* ``oid2``: A :symbol:`bson_oid_t`.
 
 Description
 -----------
 
-The :symbol:`bson_oid_compare() <bson_oid_compare>` function shall return a qsort() style value of a lexicographical sort of _oid1_ and _oid2_.
+The :symbol:`bson_oid_compare()` function shall return a qsort() style value of a lexicographical sort of _oid1_ and _oid2_.
 
 Returns
 -------

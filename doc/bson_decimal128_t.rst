@@ -25,7 +25,7 @@ Synopsis
 Description
 -----------
 
-The :symbol:`bson_decimal128_t <bson_decimal128_t>` structure
+The :symbol:`bson_decimal128_t` structure
 represents the IEEE-754 Decimal128 data type.
 
 .. only:: html

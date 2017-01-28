@@ -14,13 +14,13 @@ Synopsis
 Parameters
 ----------
 
-* ``iter``: A :symbol:`bson_iter_t <bson_iter_t>`.
-* ``child``: A :symbol:`bson_iter_t <bson_iter_t>`.
+* ``iter``: A :symbol:`bson_iter_t`.
+* ``child``: A :symbol:`bson_iter_t`.
 
 Description
 -----------
 
-The :symbol:`bson_iter_recurse() <bson_iter_recurse>` function shall initialize ``child`` using the embedded document or array currently observed by ``iter``.
+The :symbol:`bson_iter_recurse()` function shall initialize ``child`` using the embedded document or array currently observed by ``iter``.
 
 If there was a failure to initialize the ``iter``, false is returned and both ``iter`` and ``child`` should be considered invalid.
 

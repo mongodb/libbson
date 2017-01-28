@@ -16,14 +16,14 @@ Synopsis
 Parameters
 ----------
 
-* ``iter``: A :symbol:`bson_iter_t <bson_iter_t>`.
+* ``iter``: A :symbol:`bson_iter_t`.
 * ``dotkey``: A dot-notation key like ``"a.b.c.d"``.
-* ``descendant``: A :symbol:`bson_iter_t <bson_iter_t>`.
+* ``descendant``: A :symbol:`bson_iter_t`.
 
 Description
 -----------
 
-The :symbol:`bson_iter_find_descendant() <bson_iter_find_descendant>` function shall follow standard MongoDB dot notation to recurse into subdocuments. ``descendant`` will be initialized and advanced to the descendant. If false is returned, both ``iter`` and ``descendant`` should be considered invalid.
+The :symbol:`bson_iter_find_descendant()` function shall follow standard MongoDB dot notation to recurse into subdocuments. ``descendant`` will be initialized and advanced to the descendant. If false is returned, both ``iter`` and ``descendant`` should be considered invalid.
 
 Returns
 -------

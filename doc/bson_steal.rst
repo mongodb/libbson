@@ -14,17 +14,17 @@ Synopsis
 Parameters
 ----------
 
-* ``dst``: An uninitialized :symbol:`bson_t <bson_t>`.
-* ``src``: A :symbol:`bson_t <bson_t>`.
+* ``dst``: An uninitialized :symbol:`bson_t`.
+* ``src``: A :symbol:`bson_t`.
 
 Description
 -----------
 
 Efficiently transfer the contents of ``src`` to ``dst`` and destroy ``src``.
 
-Before calling this function, ``src`` must be initialized and ``dst`` must be uninitialized. After this function returns successfully, ``src`` is destroyed, and ``dst`` is initialized and must be freed with :symbol:`bson_destroy <bson_destroy>`.
+Before calling this function, ``src`` must be initialized and ``dst`` must be uninitialized. After this function returns successfully, ``src`` is destroyed, and ``dst`` is initialized and must be freed with :symbol:`bson_destroy`.
 
-For example, if you have a higher-level structure that wraps a :symbol:`bson_t <bson_t>`, use ``bson_steal`` to transfer BSON data into it:
+For example, if you have a higher-level structure that wraps a :symbol:`bson_t`, use ``bson_steal`` to transfer BSON data into it:
 
 .. code-block:: c
 
@@ -70,7 +70,7 @@ For example, if you have a higher-level structure that wraps a :symbol:`bson_t <
      bson_wrapper_destroy (wrapper);
   }
 
-See also :symbol:`bson_destroy_with_steal <bson_destroy_with_steal>`, a lower-level function that returns the raw contents of a :symbol:`bson_t <bson_t>`.
+See also :symbol:`bson_destroy_with_steal`, a lower-level function that returns the raw contents of a :symbol:`bson_t`.
 
 Returns
 -------

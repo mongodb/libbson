@@ -21,7 +21,7 @@ Synopsis
 Description
 -----------
 
-:symbol:`bson_string_t <bson_string_t>` is an abstraction for building strings. As chunks are added to the string, allocations are performed in powers of two.
+:symbol:`bson_string_t` is an abstraction for building strings. As chunks are added to the string, allocations are performed in powers of two.
 
 This API is useful if you need to build UTF-8 encoded strings.
 
@@ -71,5 +71,5 @@ Example
 
 .. tip:
 
-  You can call :symbol:`bson_string_free() <bson_string_free>` with ``false`` if you would like to take ownership of ``str->str``. Some APIs that do this might call ``return bson_string_free (str, false);`` after building the string.
+  You can call :symbol:`bson_string_free()` with ``false`` if you would like to take ownership of ``str->str``. Some APIs that do this might call ``return bson_string_free (str, false);`` after building the string.
 

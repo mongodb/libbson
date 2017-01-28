@@ -31,7 +31,7 @@ Synopsis
 Description
 -----------
 
-:symbol:`bson_reader_t <bson_reader_t>` is a structure used for reading a sequence of BSON documents. The sequence can come from a file-descriptor, memory region, or custom callbacks.
+:symbol:`bson_reader_t` is a structure used for reading a sequence of BSON documents. The sequence can come from a file-descriptor, memory region, or custom callbacks.
 
 .. only:: html
 

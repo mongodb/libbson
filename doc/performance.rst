@@ -8,7 +8,7 @@ Performance Notes
 Array Element Key Building
 --------------------------
 
-When writing marshaling layers between higher level languages and Libbson, you will eventually need to build keys for array elements. Each element in a BSON array has a monotonic string key like ``"0"``, ``"1"``, etc. Using ``snprintf()`` and others tend to be rather slow on most ``libc`` implementations. Therefore, Libbson provides :symbol:`bson_uint32_to_string() <bson_uint32_to_string>` to improve this. Using this function allows an internal fast path to be used for numbers less than 1000 which is the vast majority of arrays. If the key is larger than that, a fallback of ``snprintf()`` will be used.
+When writing marshaling layers between higher level languages and Libbson, you will eventually need to build keys for array elements. Each element in a BSON array has a monotonic string key like ``"0"``, ``"1"``, etc. Using ``snprintf()`` and others tend to be rather slow on most ``libc`` implementations. Therefore, Libbson provides :symbol:`bson_uint32_to_string()` to improve this. Using this function allows an internal fast path to be used for numbers less than 1000 which is the vast majority of arrays. If the key is larger than that, a fallback of ``snprintf()`` will be used.
 
 .. code-block:: c
 
@@ -21,5 +21,5 @@ When writing marshaling layers between higher level languages and Libbson, you w
      printf ("Key: %s\n", key);
   }
 
-For more information, see :symbol:`bson_uint32_to_string() <bson_uint32_to_string>`.
+For more information, see :symbol:`bson_uint32_to_string()`.
 

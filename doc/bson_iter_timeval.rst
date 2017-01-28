@@ -14,11 +14,11 @@ Synopsis
 Parameters
 ----------
 
-* ``iter``: A :symbol:`bson_iter_t <bson_iter_t>`.
+* ``iter``: A :symbol:`bson_iter_t`.
 * ``tv``: A struct timeval.
 
 Description
 -----------
 
-The :symbol:`bson_iter_timeval() <bson_iter_timeval>` function shall return the number of seconds and microseconds since the UNIX epoch, as contained in the BSON_TYPE_DATE_TIME element into ``tv``.
+The :symbol:`bson_iter_timeval()` function shall return the number of seconds and microseconds since the UNIX epoch, as contained in the BSON_TYPE_DATE_TIME element into ``tv``.
 

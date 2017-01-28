@@ -16,7 +16,7 @@ Synopsis
 Parameters
 ----------
 
-* ``reader``: A :symbol:`bson_json_reader_t <bson_json_reader_t>`.
+* ``reader``: A :symbol:`bson_json_reader_t`.
 * ``data``: A uint8_t containing data to feed.
 * ``len``: A size_t containing the length of ``data``.
 

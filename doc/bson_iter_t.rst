@@ -19,9 +19,9 @@ Synopsis
 Description
 -----------
 
-:symbol:`bson_iter_t <bson_iter_t>` is a structure used to iterate through the elements of a :symbol:`bson_t <bson_t>`. It is meant to be used on the stack and can be discarded at any time as it contains no external allocation. The contents of the structure should be considered private and may change between releases, however the structure size will not change.
+:symbol:`bson_iter_t` is a structure used to iterate through the elements of a :symbol:`bson_t`. It is meant to be used on the stack and can be discarded at any time as it contains no external allocation. The contents of the structure should be considered private and may change between releases, however the structure size will not change.
 
-The :symbol:`bson_t <bson_t>` *MUST* be valid for the lifetime of the iter and it is an error to modify the :symbol:`bson_t <bson_t>` while using the iter.
+The :symbol:`bson_t` *MUST* be valid for the lifetime of the iter and it is an error to modify the :symbol:`bson_t` while using the iter.
 
 .. only:: html
 

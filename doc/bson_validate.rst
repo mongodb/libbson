@@ -23,7 +23,7 @@ Synopsis
 Parameters
 ----------
 
-* ``bson``: A :symbol:`bson_t <bson_t>`.
+* ``bson``: A :symbol:`bson_t`.
 * ``flags``: A bitwise-or of all desired :symbol:`bson_validate_flags_t <bson_validate>`.
 * ``offset``: A location for the offset within ``bson`` where the error ocurred.
 

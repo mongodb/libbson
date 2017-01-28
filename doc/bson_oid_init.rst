@@ -14,11 +14,11 @@ Synopsis
 Parameters
 ----------
 
-* ``oid``: A :symbol:`bson_oid_t <bson_oid_t>`.
-* ``context``: An *optional* :symbol:`bson_context_t <bson_context_t>` or NULL.
+* ``oid``: A :symbol:`bson_oid_t`.
+* ``context``: An *optional* :symbol:`bson_context_t` or NULL.
 
 Description
 -----------
 
-Generates a new :symbol:`bson_oid_t <bson_oid_t>` using either ``context`` or the default :symbol:`bson_context_t <bson_context_t>`.
+Generates a new :symbol:`bson_oid_t` using either ``context`` or the default :symbol:`bson_context_t`.
 

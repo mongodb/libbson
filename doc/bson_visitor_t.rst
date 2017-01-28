@@ -116,7 +116,7 @@ Synopsis
 Description
 -----------
 
-The :symbol:`bson_visitor_t <bson_visitor_t>` structure provides a series of callbacks that can be called while iterating a BSON document. This may simplify the conversion of a :symbol:`bson_t <bson_t>` to a higher level language structure.
+The :symbol:`bson_visitor_t` structure provides a series of callbacks that can be called while iterating a BSON document. This may simplify the conversion of a :symbol:`bson_t` to a higher level language structure.
 
 If the optional callback ``visit_unsupported_type`` is set, it is called instead of ``visit_corrupt`` in the specific case of an unrecognized field type. (Parsing is aborted in either case.) Use this callback to report an error like "unrecognized type" instead of simply "corrupt BSON". This future-proofs code that may use an older version of libbson to parse future BSON formats.
 

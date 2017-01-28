@@ -19,7 +19,7 @@ Synopsis
 Description
 -----------
 
-The :symbol:`bson_oid_t <bson_oid_t>` structure contains the 12-byte ObjectId notation defined by the `BSON ObjectID specification <http://docs.mongodb.org/manual/reference/object-id/>`_.
+The :symbol:`bson_oid_t` structure contains the 12-byte ObjectId notation defined by the `BSON ObjectID specification <http://docs.mongodb.org/manual/reference/object-id/>`_.
 
 ObjectId is a 12-byte BSON type, constructed using:
 
@@ -31,22 +31,22 @@ ObjectId is a 12-byte BSON type, constructed using:
 String Conversion
 -----------------
 
-You can convert an Object ID to a string using :symbol:`bson_oid_to_string() <bson_oid_to_string>` and back with :symbol:`bson_oid_init_from_string() <bson_oid_init_from_string>`.
+You can convert an Object ID to a string using :symbol:`bson_oid_to_string()` and back with :symbol:`bson_oid_init_from_string()`.
 
 Hashing
 -------
 
-A :symbol:`bson_oid_t <bson_oid_t>` can be used in hashtables using the function :symbol:`bson_oid_hash() <bson_oid_hash>` and :symbol:`bson_oid_equal() <bson_oid_equal>`.
+A :symbol:`bson_oid_t` can be used in hashtables using the function :symbol:`bson_oid_hash()` and :symbol:`bson_oid_equal()`.
 
 Comparing
 ---------
 
-A :symbol:`bson_oid_t <bson_oid_t>` can be compared to another using :symbol:`bson_oid_compare() <bson_oid_compare>` for ``qsort()`` style comparing and :symbol:`bson_oid_equal() <bson_oid_equal>` for direct equality.
+A :symbol:`bson_oid_t` can be compared to another using :symbol:`bson_oid_compare()` for ``qsort()`` style comparing and :symbol:`bson_oid_equal()` for direct equality.
 
 Validating
 ----------
 
-You can validate that a string containing a hex-encoded ObjectID is valid using the function :symbol:`bson_oid_is_valid() <bson_oid_is_valid>`.
+You can validate that a string containing a hex-encoded ObjectID is valid using the function :symbol:`bson_oid_is_valid()`.
 
 .. only:: html
 

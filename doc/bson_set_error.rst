@@ -16,7 +16,7 @@ Synopsis
 Parameters
 ----------
 
-* ``error``: A :symbol:`bson_error_t <bson_error_t>`.
+* ``error``: A :symbol:`bson_error_t`.
 * ``domain``: A ``uint32_t``.
 * ``code``: A ``uint32_t``.
 * ``format``: A ``printf()`` style format string.
@@ -24,5 +24,5 @@ Parameters
 Description
 -----------
 
-This is a helper function to set the parameters of a :symbol:`bson_error_t <bson_error_t>`. It handles the case where ``error`` is NULL by doing nothing.
+This is a helper function to set the parameters of a :symbol:`bson_error_t`. It handles the case where ``error`` is NULL by doing nothing.
 

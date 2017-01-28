@@ -18,8 +18,8 @@ Synopsis
 Parameters
 ----------
 
-* ``iter``: A :symbol:`bson_iter_t <bson_iter_t>`.
-* ``dec``: A location for a :symbol:`bson_decimal128_t <bson_decimal128_t>`.
+* ``iter``: A :symbol:`bson_iter_t`.
+* ``dec``: A location for a :symbol:`bson_decimal128_t`.
 
 Description
 -----------

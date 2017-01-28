@@ -6,7 +6,7 @@ Creating a BSON Document
 The bson_t structure
 --------------------
 
-BSON documents are created using the :symbol:`bson_t <bson_t>` structure. This structure encapsulates the necessary logic for encoding using the `BSON Specification <http://bsonspec.org>`_. At the core, :symbol:`bson_t <bson_t>` is a buffer manager and set of encoding routines.
+BSON documents are created using the :symbol:`bson_t` structure. This structure encapsulates the necessary logic for encoding using the `BSON Specification <http://bsonspec.org>`_. At the core, :symbol:`bson_t` is a buffer manager and set of encoding routines.
 
 .. tip:
 
@@ -47,12 +47,12 @@ Now let's take a look at an example that adds a few different field types to a B
   BSON_APPEND_UTF8 (&b, "hello", "world");
   BSON_APPEND_BOOL (&b, "bool", true);
 
-Notice that we omitted the call to :symbol:`bson_init() <bson_init>`. By specifying ``BSON_INITIALIZER`` we can remove the need to initialize the structure to a base state.
+Notice that we omitted the call to :symbol:`bson_init()`. By specifying ``BSON_INITIALIZER`` we can remove the need to initialize the structure to a base state.
 
 Sub-Documents and Sub-Arrays
 ----------------------------
 
-To simplify the creation of sub-documents and arrays, :symbol:`bson_append_document_begin() <bson_append_document_begin>` and :symbol:`bson_append_array_begin() <bson_append_array_begin>` exist. These can be used to build a sub-document using the parent documents memory region as the destination buffer.
+To simplify the creation of sub-documents and arrays, :symbol:`bson_append_document_begin()` and :symbol:`bson_append_array_begin()` exist. These can be used to build a sub-document using the parent documents memory region as the destination buffer.
 
 .. code-block:: c
 

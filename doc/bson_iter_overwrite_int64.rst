@@ -14,13 +14,13 @@ Synopsis
 Parameters
 ----------
 
-* ``iter``: A :symbol:`bson_iter_t <bson_iter_t>`.
+* ``iter``: A :symbol:`bson_iter_t`.
 * ``value``: A int64_t.
 
 Description
 -----------
 
-The :symbol:`bson_iter_overwrite_int64() <bson_iter_overwrite_int64>` function shall overwrite the contents of a BSON_TYPE_INT64 element in place.
+The :symbol:`bson_iter_overwrite_int64()` function shall overwrite the contents of a BSON_TYPE_INT64 element in place.
 
 This may only be done when the underlying bson document allows mutation.
 

@@ -15,7 +15,7 @@ Parameters
 ----------
 
 * ``string``: A string containing ASCII encoded Decimal128.
-* ``dec``: A :symbol:`bson_decimal128_t <bson_decimal128_t>`.
+* ``dec``: A :symbol:`bson_decimal128_t`.
 
 Description
 -----------

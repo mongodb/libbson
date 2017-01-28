@@ -19,12 +19,12 @@ Synopsis
 Parameters
 ----------
 
-* ``iter``: A :symbol:`bson_iter_t <bson_iter_t>`.
+* ``iter``: A :symbol:`bson_iter_t`.
 * ``document_len``: A location for the length of the document in bytes.
 * ``document``: A location for the document buffer.
 
 Description
 -----------
 
-The ``bson_iter_document()`` function shall retrieve the raw buffer of a sub-document from ``iter``. ``iter`` *MUST* be on an element that is of type BSON_TYPE_DOCUMENT. This can be verified with :symbol:`bson_iter_type() <bson_iter_type>` or the ``BSON_ITER_HOLDS_DOCUMENT()`` macro.
+The ``bson_iter_document()`` function shall retrieve the raw buffer of a sub-document from ``iter``. ``iter`` *MUST* be on an element that is of type BSON_TYPE_DOCUMENT. This can be verified with :symbol:`bson_iter_type()` or the ``BSON_ITER_HOLDS_DOCUMENT()`` macro.
 

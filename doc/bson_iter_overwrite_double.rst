@@ -14,13 +14,13 @@ Synopsis
 Parameters
 ----------
 
-* ``iter``: A :symbol:`bson_iter_t <bson_iter_t>`.
+* ``iter``: A :symbol:`bson_iter_t`.
 * ``value``: The new double value.
 
 Description
 -----------
 
-The :symbol:`bson_iter_overwrite_double() <bson_iter_overwrite_double>` function shall overwrite the contents of a BSON_TYPE_DOUBLE element in place.
+The :symbol:`bson_iter_overwrite_double()` function shall overwrite the contents of a BSON_TYPE_DOUBLE element in place.
 
 This may only be done when the underlying bson document allows mutation.
 

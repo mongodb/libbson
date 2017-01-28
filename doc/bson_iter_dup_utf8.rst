@@ -14,16 +14,16 @@ Synopsis
 Parameters
 ----------
 
-* ``iter``: A :symbol:`bson_iter_t <bson_iter_t>`.
+* ``iter``: A :symbol:`bson_iter_t`.
 * ``length``: An optional location for the length of the UTF-8 encoded string.
 
 Description
 -----------
 
-This function is similar to :symbol:`bson_iter_utf8() <bson_iter_utf8>` except that it calls :symbol:`bson_strndup() <bson_strndup>` on the result.
+This function is similar to :symbol:`bson_iter_utf8()` except that it calls :symbol:`bson_strndup()` on the result.
 
 Returns
 -------
 
-A newly allocated string that should be freed with :symbol:`bson_free() <bson_free>`.
+A newly allocated string that should be freed with :symbol:`bson_free()`.
 

@@ -14,12 +14,12 @@ Synopsis
 Parameters
 ----------
 
-* ``context``: A :symbol:`bson_context_t <bson_context_t>`.
+* ``context``: A :symbol:`bson_context_t`.
 
 Description
 -----------
 
 The ``bson_context_destroy()`` function shall release all resources associated with ``context``.
 
-This should be called when you are no longer using a :symbol:`bson_context_t <bson_context_t>` that you have allocated with :symbol:`bson_context_new() <bson_context_new>`.
+This should be called when you are no longer using a :symbol:`bson_context_t` that you have allocated with :symbol:`bson_context_new()`.
 

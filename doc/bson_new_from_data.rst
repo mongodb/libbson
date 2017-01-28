@@ -20,12 +20,12 @@ Parameters
 Description
 -----------
 
-The :symbol:`bson_new_from_data() <bson_new_from_data>` function shall create a new :symbol:`bson_t <bson_t>` on the heap and copy the contents of ``data``. This may be helpful when working with language bindings but is generally expected to be slower.
+The :symbol:`bson_new_from_data()` function shall create a new :symbol:`bson_t` on the heap and copy the contents of ``data``. This may be helpful when working with language bindings but is generally expected to be slower.
 
 Returns
 -------
 
-A newly allocated :symbol:`bson_t <bson_t>` if successful, otherwise NULL.
+A newly allocated :symbol:`bson_t` if successful, otherwise NULL.
 
 .. only:: html
 

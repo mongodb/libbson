@@ -6,11 +6,11 @@ Parsing and Iterating BSON Documents
 Parsing
 -------
 
-BSON documents are lazily parsed as necessary. To begin parsing a BSON document, use one of the provided Libbson functions to create a new :symbol:`bson_t <bson_t>` from existing data such as :symbol:`bson_new_from_data() <bson_new_from_data>`. This will make a copy of the data so that additional mutations may occur to the BSON document.
+BSON documents are lazily parsed as necessary. To begin parsing a BSON document, use one of the provided Libbson functions to create a new :symbol:`bson_t` from existing data such as :symbol:`bson_new_from_data()`. This will make a copy of the data so that additional mutations may occur to the BSON document.
 
 .. tip:
 
-  If you only want to parse a BSON document and have no need to mutate it, you may use :symbol:`bson_init_static() <bson_init_static>` to avoid making a copy of the data.
+  If you only want to parse a BSON document and have no need to mutate it, you may use :symbol:`bson_init_static()` to avoid making a copy of the data.
 
 .. code-block:: c
 
@@ -25,9 +25,9 @@ BSON documents are lazily parsed as necessary. To begin parsing a BSON document,
 
   bson_destroy (b);
 
-Only two checks are performed when creating a new :symbol:`bson_t <bson_t>` from an existing buffer. First, the document must begin with the buffer length, matching what was expected by the caller. Second, the document must end with the expected trailing ``\0`` byte.
+Only two checks are performed when creating a new :symbol:`bson_t` from an existing buffer. First, the document must begin with the buffer length, matching what was expected by the caller. Second, the document must end with the expected trailing ``\0`` byte.
 
-To parse the document further we use a :symbol:`bson_iter_t <bson_iter_t>` to iterate the elements within the document. Let's print all of the field names in the document.
+To parse the document further we use a :symbol:`bson_iter_t` to iterate the elements within the document. Let's print all of the field names in the document.
 
 .. code-block:: c
 
@@ -43,7 +43,7 @@ To parse the document further we use a :symbol:`bson_iter_t <bson_iter_t>` to it
      bson_destroy (b);
   }
 
-Converting a document to JSON uses a :symbol:`bson_iter_t <bson_iter_t>` and :symbol:`bson_visitor_t <bson_visitor_t>` to iterate all fields of a BSON document recursively and generate a UTF-8 encoded JSON string.
+Converting a document to JSON uses a :symbol:`bson_iter_t` and :symbol:`bson_visitor_t` to iterate all fields of a BSON document recursively and generate a UTF-8 encoded JSON string.
 
 .. code-block:: c
 
@@ -80,7 +80,7 @@ Libbson provides convenient sub-iterators to dive down into a sub-document or su
 Finding Fields using Dot Notation
 ---------------------------------
 
-Using the :symbol:`bson_iter_recurse() <bson_iter_recurse>` function exemplified above, :symbol:`bson_iter_find_descendant() <bson_iter_find_descendant>` can find a field for you using the MongoDB style path notation such as "foo.bar.0.baz".
+Using the :symbol:`bson_iter_recurse()` function exemplified above, :symbol:`bson_iter_find_descendant()` can find a field for you using the MongoDB style path notation such as "foo.bar.0.baz".
 
 Let's create a document like ``{"foo": {"bar": [{"baz: 1}]}}`` and locate the ``"baz"`` field.
 
@@ -104,7 +104,7 @@ Let's create a document like ``{"foo": {"bar": [{"baz: 1}]}}`` and locate the ``
 Validating a BSON Document
 --------------------------
 
-If all you want to do is validate that a BSON document is valid, you can use :symbol:`bson_validate() <bson_validate>`.
+If all you want to do is validate that a BSON document is valid, you can use :symbol:`bson_validate()`.
 
 .. code-block:: c
 
@@ -116,5 +116,5 @@ If all you want to do is validate that a BSON document is valid, you can use :sy
               (unsigned) err_offset);
   }
 
-See the :symbol:`bson_validate() <bson_validate>` documentation for more information and examples.
+See the :symbol:`bson_validate()` documentation for more information and examples.
 

@@ -14,11 +14,11 @@ Synopsis
 Parameters
 ----------
 
-* ``oid``: A :symbol:`bson_oid_t <bson_oid_t>`.
+* ``oid``: A :symbol:`bson_oid_t`.
 * ``data``: A buffer containing 12 bytes for the oid.
 
 Description
 -----------
 
-Initializes a :symbol:`bson_oid_t <bson_oid_t>` using the raw buffer provided.
+Initializes a :symbol:`bson_oid_t` using the raw buffer provided.
 

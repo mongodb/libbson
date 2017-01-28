@@ -14,7 +14,7 @@ Synopsis
 Parameters
 ----------
 
-* ``dec``: A :symbol:`bson_decimal128_t <bson_decimal128_t>`.
+* ``dec``: A :symbol:`bson_decimal128_t`.
 * ``str``: A location of length BSON_DECIMAL128_STRING for the resulting string.
 
 Description

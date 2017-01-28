@@ -20,7 +20,7 @@ Parameters
 Description
 -----------
 
-This function is like :symbol:`bson_strdup_printf() <bson_strdup_printf>` except takes a va_list of parameters.
+This function is like :symbol:`bson_strdup_printf()` except takes a va_list of parameters.
 
 Returns
 -------

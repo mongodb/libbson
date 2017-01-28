@@ -17,7 +17,7 @@ Synopsis
 Parameters
 ----------
 
-* ``bson``: A :symbol:`bson_t <bson_t>`.
+* ``bson``: A :symbol:`bson_t`.
 * ``key``: An ASCII C string containing the name of the field.
 * ``key_length``: The length of ``key`` in bytes, or -1 to determine the length with ``strlen()``.
 * ``value``: A time_t.
@@ -25,7 +25,7 @@ Parameters
 Description
 -----------
 
-The :symbol:`bson_append_time_t() <bson_append_time_t>` function is a helper that takes a ``time_t`` instead of milliseconds since the UNIX epoch.
+The :symbol:`bson_append_time_t()` function is a helper that takes a ``time_t`` instead of milliseconds since the UNIX epoch.
 
 Returns
 -------

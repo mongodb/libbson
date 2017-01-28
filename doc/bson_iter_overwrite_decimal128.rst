@@ -14,13 +14,13 @@ Synopsis
 Parameters
 ----------
 
-* ``iter``: A :symbol:`bson_iter_t <bson_iter_t>`.
+* ``iter``: A :symbol:`bson_iter_t`.
 * ``value``: The new Decimal128 value.
 
 Description
 -----------
 
-The :symbol:`bson_iter_overwrite_decimal128() <bson_iter_overwrite_decimal128>` function shall overwrite the contents of a BSON_TYPE_DECIMAL128 element in place.
+The :symbol:`bson_iter_overwrite_decimal128()` function shall overwrite the contents of a BSON_TYPE_DECIMAL128 element in place.
 
 This may only be done when the underlying bson document allows mutation.
 

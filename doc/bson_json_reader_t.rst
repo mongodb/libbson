@@ -23,13 +23,13 @@ Synopsis
 Description
 -----------
 
-The :symbol:`bson_json_reader_t <bson_json_reader_t>` structure is used for reading a sequence of JSON documents and transforming them to :symbol:`bson_t <bson_t>` documents.
+The :symbol:`bson_json_reader_t` structure is used for reading a sequence of JSON documents and transforming them to :symbol:`bson_t` documents.
 
 This can often be useful if you want to perform bulk operations that are defined in a file containing JSON documents.
 
 .. tip:
 
-  :symbol:`bson_json_reader_t <bson_json_reader_t>` works upon JSON documents formatted in `MongoDB extended JSON <http://docs.mongodb.org/manual/reference/mongodb-extended-json/>`_ format.
+  :symbol:`bson_json_reader_t` works upon JSON documents formatted in `MongoDB extended JSON <http://docs.mongodb.org/manual/reference/mongodb-extended-json/>`_ format.
 
 .. only:: html
 

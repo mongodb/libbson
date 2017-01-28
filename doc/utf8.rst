@@ -29,5 +29,5 @@ If ``my_string`` has NULL bytes within the string, you must provide the string l
      printf ("Validation failed.\n");
   }
 
-For more information see the API reference for :symbol:`bson_utf8_validate() <bson_utf8_validate>`.
+For more information see the API reference for :symbol:`bson_utf8_validate()`.
 

@@ -14,13 +14,13 @@ Synopsis
 Parameters
 ----------
 
-* ``iter``: A :symbol:`bson_iter_t <bson_iter_t>`.
+* ``iter``: A :symbol:`bson_iter_t`.
 * ``options``: A (null).
 
 Description
 -----------
 
-The :symbol:`bson_iter_regex() <bson_iter_regex>` function shall retrieve the contents of a BSON_TYPE_REGEX element currently observed by ``iter``.
+The :symbol:`bson_iter_regex()` function shall retrieve the contents of a BSON_TYPE_REGEX element currently observed by ``iter``.
 
 It is invalid to call this function when not observing an element of type BSON_TYPE_REGEX.
 

@@ -14,17 +14,17 @@ Synopsis
 Parameters
 ----------
 
-* ``bson``: A :symbol:`bson_t <bson_t>`.
+* ``bson``: A :symbol:`bson_t`.
 
 Description
 -----------
 
-The :symbol:`bson_copy() <bson_copy>` function shall copy the contents of a bson document into a new :symbol:`bson_t <bson_t>`.
+The :symbol:`bson_copy()` function shall copy the contents of a bson document into a new :symbol:`bson_t`.
 
-The resulting :symbol:`bson_t <bson_t>` should be freed with :symbol:`bson_destroy() <bson_destroy>`.
+The resulting :symbol:`bson_t` should be freed with :symbol:`bson_destroy()`.
 
 Returns
 -------
 
-A newly allocated :symbol:`bson_t <bson_t>` that should be freed with :symbol:`bson_destroy() <bson_destroy>`.
+A newly allocated :symbol:`bson_t` that should be freed with :symbol:`bson_destroy()`.
 

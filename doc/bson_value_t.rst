@@ -68,7 +68,7 @@ Synopsis
 Description
 -----------
 
-The :symbol:`bson_value_t <bson_value_t>` structure is a boxed type for encapsulating a runtime determined type.
+The :symbol:`bson_value_t` structure is a boxed type for encapsulating a runtime determined type.
 
 .. only:: html
 

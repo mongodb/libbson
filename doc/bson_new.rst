@@ -14,12 +14,12 @@ Synopsis
 Description
 -----------
 
-The :symbol:`bson_new() <bson_new>` function shall create a new :symbol:`bson_t <bson_t>` structure on the heap. It should be freed with :symbol:`bson_destroy() <bson_destroy>` when it is no longer in use.
+The :symbol:`bson_new()` function shall create a new :symbol:`bson_t` structure on the heap. It should be freed with :symbol:`bson_destroy()` when it is no longer in use.
 
 Returns
 -------
 
-A newly allocated :symbol:`bson_t <bson_t>` that should be freed with :symbol:`bson_destroy() <bson_destroy>`.
+A newly allocated :symbol:`bson_t` that should be freed with :symbol:`bson_destroy()`.
 
 .. only:: html
 

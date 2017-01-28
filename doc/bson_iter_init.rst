@@ -14,13 +14,13 @@ Synopsis
 Parameters
 ----------
 
-* ``iter``: A :symbol:`bson_iter_t <bson_iter_t>`.
-* ``bson``: A :symbol:`bson_t <bson_t>`.
+* ``iter``: A :symbol:`bson_iter_t`.
+* ``bson``: A :symbol:`bson_t`.
 
 Description
 -----------
 
-The ``bson_iter_init()`` function shall initialize ``iter`` to iterate upon the BSON document ``bson``. Upon initialization, ``iter`` is placed before the first element. Callers must call :symbol:`bson_iter_next() <bson_iter_next>`, :symbol:`bson_iter_find() <bson_iter_find>`, or :symbol:`bson_iter_find_case() <bson_iter_find_case>` to advance to an element.
+The ``bson_iter_init()`` function shall initialize ``iter`` to iterate upon the BSON document ``bson``. Upon initialization, ``iter`` is placed before the first element. Callers must call :symbol:`bson_iter_next()`, :symbol:`bson_iter_find()`, or :symbol:`bson_iter_find_case()` to advance to an element.
 
 Returns
 -------

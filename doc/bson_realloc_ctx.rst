@@ -21,5 +21,5 @@ Parameters
 Description
 -----------
 
-This function is identical to :symbol:`bson_realloc() <bson_realloc>` except it takes a context parameter. This is useful when working with pooled or specific memory allocators.
+This function is identical to :symbol:`bson_realloc()` except it takes a context parameter. This is useful when working with pooled or specific memory allocators.
 

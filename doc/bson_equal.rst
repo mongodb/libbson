@@ -14,13 +14,13 @@ Synopsis
 Parameters
 ----------
 
-* ``bson``: A :symbol:`bson_t <bson_t>`.
-* ``other``: A :symbol:`bson_t <bson_t>`.
+* ``bson``: A :symbol:`bson_t`.
+* ``other``: A :symbol:`bson_t`.
 
 Description
 -----------
 
-The :symbol:`bson_equal() <bson_equal>` function shall return true if both documents are equal.
+The :symbol:`bson_equal()` function shall return true if both documents are equal.
 
 Returns
 -------

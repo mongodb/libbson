@@ -15,7 +15,7 @@ Parameters
 ----------
 
 * ``filename``: A file-name in the system file-name encoding.
-* ``error``: A :symbol:`bson_error_t <bson_error_t>`.
+* ``error``: A :symbol:`bson_error_t`.
 
 Description
 -----------

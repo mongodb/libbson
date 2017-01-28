@@ -14,11 +14,11 @@ Synopsis
 Parameters
 ----------
 
-* ``src``: A :symbol:`bson_value_t <bson_value_t>` to copy from.
-* ``dst``: A :symbol:`bson_value_t <bson_value_t>` to copy into.
+* ``src``: A :symbol:`bson_value_t` to copy from.
+* ``dst``: A :symbol:`bson_value_t` to copy into.
 
 Description
 -----------
 
-This function will copy the boxed content in ``src`` into ``dst``. ``dst`` must be freed with :symbol:`bson_value_destroy() <bson_value_destroy>` when no longer in use.
+This function will copy the boxed content in ``src`` into ``dst``. ``dst`` must be freed with :symbol:`bson_value_destroy()` when no longer in use.
 

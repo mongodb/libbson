@@ -14,7 +14,7 @@ Synopsis
 Parameters
 ----------
 
-* ``bson``: A :symbol:`bson_t <bson_t>`.
+* ``bson``: A :symbol:`bson_t`.
 * ``key``: The name of the field.
 * ``key_length``: The length of ``key`` or -1 to use strlen().
 * ``value``: true or false.
@@ -22,7 +22,7 @@ Parameters
 Description
 -----------
 
-The :symbol:`bson_append_bool() <bson_append_bool>` function shall append a new element to ``bson`` containing the boolean provided.
+The :symbol:`bson_append_bool()` function shall append a new element to ``bson`` containing the boolean provided.
 
 Returns
 -------

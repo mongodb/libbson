@@ -17,8 +17,8 @@ Parameters
 ----------
 
 * ``handle``: A user-provided pointer or NULL.
-* ``rf``: A :symbol:`bson_reader_read_func_t <bson_reader_read_func_t>`.
-* ``df``: A :symbol:`bson_reader_destroy_func_t <bson_reader_destroy_func_t>`.
+* ``rf``: A :symbol:`bson_reader_read_func_t`.
+* ``df``: A :symbol:`bson_reader_destroy_func_t`.
 
 Description
 -----------

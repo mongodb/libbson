@@ -14,7 +14,7 @@ Synopsis
 Parameters
 ----------
 
-* ``bson``: An initialized :symbol:`bson_t <bson_t>`.
+* ``bson``: An initialized :symbol:`bson_t`.
 * ``size``: The length in bytes of the new buffer.
 
 Description
@@ -22,9 +22,9 @@ Description
 
 Grow the internal buffer of ``bson`` to ``size`` and set the document length to ``size``. Useful for eliminating copies when reading BSON bytes from a stream.
 
-First, initialize ``bson`` with :symbol:`bson_init <bson_init>` or :symbol:`bson_new <bson_new>`, then call this function. After it returns, the length of ``bson`` is set to ``size`` but its contents are uninitialized memory: you must fill the contents with a BSON document of the correct length before any other operations.
+First, initialize ``bson`` with :symbol:`bson_init` or :symbol:`bson_new`, then call this function. After it returns, the length of ``bson`` is set to ``size`` but its contents are uninitialized memory: you must fill the contents with a BSON document of the correct length before any other operations.
 
-The document must be freed with :symbol:`bson_destroy <bson_destroy>`.
+The document must be freed with :symbol:`bson_destroy`.
 
 Returns
 -------
@@ -34,7 +34,7 @@ A pointer to the internal buffer, which is at least ``size`` bytes, or NULL if t
 Example
 -------
 
-Use ``bson_reserve_buffer`` to write a function that takes a :symbol:`bson_t <bson_t>` pointer and reads a file into it directly:
+Use ``bson_reserve_buffer`` to write a function that takes a :symbol:`bson_t` pointer and reads a file into it directly:
 
 .. code-block:: c
 

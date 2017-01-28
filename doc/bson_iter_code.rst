@@ -16,7 +16,7 @@ Synopsis
 Parameters
 ----------
 
-* ``iter``: A :symbol:`bson_iter_t <bson_iter_t>`.
+* ``iter``: A :symbol:`bson_iter_t`.
 * ``length``: A location for the length of the UTF-8 encoded string or NULL.
 
 Description

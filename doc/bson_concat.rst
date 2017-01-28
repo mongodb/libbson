@@ -14,13 +14,13 @@ Synopsis
 Parameters
 ----------
 
-* ``dst``: A :symbol:`bson_t <bson_t>`.
-* ``src``: A :symbol:`bson_t <bson_t>`.
+* ``dst``: A :symbol:`bson_t`.
+* ``src``: A :symbol:`bson_t`.
 
 Description
 -----------
 
-The :symbol:`bson_concat() <bson_concat>` function shall append the contents of ``src`` to ``dst``.
+The :symbol:`bson_concat()` function shall append the contents of ``src`` to ``dst``.
 
 Returns
 -------

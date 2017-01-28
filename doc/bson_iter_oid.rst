@@ -16,15 +16,15 @@ Synopsis
 Parameters
 ----------
 
-* ``iter``: A :symbol:`bson_iter_t <bson_iter_t>`.
+* ``iter``: A :symbol:`bson_iter_t`.
 
 Description
 -----------
 
-Fetches the :symbol:`bson_oid_t <bson_oid_t>` for a BSON_TYPE_OID element. You should verify it is an element of type BSON_TYPE_OID before calling this function.
+Fetches the :symbol:`bson_oid_t` for a BSON_TYPE_OID element. You should verify it is an element of type BSON_TYPE_OID before calling this function.
 
 Returns
 -------
 
-A :symbol:`bson_oid_t <bson_oid_t>` that should not be modified or freed.
+A :symbol:`bson_oid_t` that should not be modified or freed.
 

@@ -17,7 +17,7 @@ Synopsis
 Parameters
 ----------
 
-* ``bson``: A :symbol:`bson_t <bson_t>`.
+* ``bson``: A :symbol:`bson_t`.
 * ``key``: An ASCII C string containing the name of the field.
 * ``key_length``: The length of ``key`` in bytes, or -1 to determine the length with ``strlen()``.
 * ``value``: A double value to append.
@@ -25,7 +25,7 @@ Parameters
 Description
 -----------
 
-The :symbol:`bson_append_double() <bson_append_double>` function shall append a new element to a bson document of type ``double``.
+The :symbol:`bson_append_double()` function shall append a new element to a bson document of type ``double``.
 
 Returns
 -------

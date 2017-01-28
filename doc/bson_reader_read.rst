@@ -14,13 +14,13 @@ Synopsis
 Parameters
 ----------
 
-* ``reader``: A :symbol:`bson_reader_t <bson_reader_t>`.
+* ``reader``: A :symbol:`bson_reader_t`.
 * ``reached_eof``: A UNKNOWN.
 
 Description
 -----------
 
-The :symbol:`bson_reader_read() <bson_reader_read>` function shall read the next document from the underlying file-descriptor or buffer.
+The :symbol:`bson_reader_read()` function shall read the next document from the underlying file-descriptor or buffer.
 
 If there are no further documents or a failure was detected, then NULL is returned.
 
@@ -31,7 +31,7 @@ To detect an error, check for NULL and ``reached_of`` is false.
 Returns
 -------
 
-A :symbol:`bson_t <bson_t>` that should not be modified or freed.
+A :symbol:`bson_t` that should not be modified or freed.
 
 Example
 -------

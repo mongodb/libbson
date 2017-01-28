@@ -14,7 +14,7 @@ Synopsis
 Parameters
 ----------
 
-* ``string``: A :symbol:`bson_string_t <bson_string_t>`.
+* ``string``: A :symbol:`bson_string_t`.
 * ``free_segment``: A bool indicating if ``str->str`` should be returned.
 
 Description

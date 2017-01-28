@@ -17,7 +17,7 @@ Synopsis
 Parameters
 ----------
 
-* ``bson``: A :symbol:`bson_t <bson_t>`.
+* ``bson``: A :symbol:`bson_t`.
 * ``key``: Optional field name. If NULL, uses :symbol:`bson_iter_key(iter) <bson_iter_key>`.
 * ``key_length``: The length of ``key`` or -1 to use strlen().
 * ``iter``: A :symbol:`bson_iter_t` located on the position of the element to append.

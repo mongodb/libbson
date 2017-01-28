@@ -17,7 +17,7 @@ Synopsis
 Parameters
 ----------
 
-* ``bson``: A :symbol:`bson_t <bson_t>`.
+* ``bson``: A :symbol:`bson_t`.
 * ``key``: An ASCII C string containing the name of the field.
 * ``key_length``: The length of ``key`` in bytes, or -1 to determine the length with ``strlen()``.
 * ``value``: A struct timeval.
@@ -25,7 +25,7 @@ Parameters
 Description
 -----------
 
-The :symbol:`bson_append_timeval() <bson_append_timeval>` function is a helper that takes a ``struct timeval`` instead of milliseconds since the UNIX epoch.
+The :symbol:`bson_append_timeval()` function is a helper that takes a ``struct timeval`` instead of milliseconds since the UNIX epoch.
 
 Returns
 -------

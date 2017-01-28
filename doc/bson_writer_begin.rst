@@ -14,13 +14,13 @@ Synopsis
 Parameters
 ----------
 
-* ``writer``: A :symbol:`bson_writer_t <bson_writer_t>`.
-* ``bson``: A :symbol:`bson_t <bson_t>`.
+* ``writer``: A :symbol:`bson_writer_t`.
+* ``bson``: A :symbol:`bson_t`.
 
 Description
 -----------
 
-Begins writing a new document. The caller may use the bson structure to write out a new BSON document. When completed, the caller must call either :symbol:`bson_writer_end() <bson_writer_end>` or :symbol:`bson_writer_rollback() <bson_writer_rollback>`.
+Begins writing a new document. The caller may use the bson structure to write out a new BSON document. When completed, the caller must call either :symbol:`bson_writer_end()` or :symbol:`bson_writer_rollback()`.
 
 Returns
 -------

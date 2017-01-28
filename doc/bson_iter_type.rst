@@ -38,7 +38,7 @@ Synopsis
 Parameters
 ----------
 
-* ``iter``: A :symbol:`bson_iter_t <bson_iter_t>`.
+* ``iter``: A :symbol:`bson_iter_t`.
 
 Description
 -----------
@@ -48,5 +48,5 @@ The ``bson_iter_type()`` function shall return the type of the observed element 
 Returns
 -------
 
-A :symbol:`bson_type_t <bson_type_t>`.
+A :symbol:`bson_type_t`.
 

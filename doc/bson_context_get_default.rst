@@ -14,5 +14,5 @@ Synopsis
 Returns
 -------
 
-The ``bson_context_get_default()`` function shall return the default, thread-safe, :symbol:`bson_context_t <bson_context_t>` for the process.
+The ``bson_context_get_default()`` function shall return the default, thread-safe, :symbol:`bson_context_t` for the process.
 

@@ -14,7 +14,7 @@ Synopsis
 Parameters
 ----------
 
-* ``pms``: A :symbol:`bson_md5_t <bson_md5_t>`.
+* ``pms``: A :symbol:`bson_md5_t`.
 * ``digest``: A location for the digest.
 
 Description

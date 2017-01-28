@@ -14,7 +14,7 @@ Synopsis
 Parameters
 ----------
 
-* ``iter``: A :symbol:`bson_iter_t <bson_iter_t>`.
+* ``iter``: A :symbol:`bson_iter_t`.
 * ``key``: A string containing the requested key.
 
 Description
@@ -22,7 +22,7 @@ Description
 
 The ``bson_iter_find()`` function shall advance ``iter`` to the element named ``key`` or exhaust all elements of ``iter``. If ``iter`` is exhausted, false is returned and ``iter`` should be considered invalid.
 
-``key`` is case-sensitive. For a case-folded version, see :symbol:`bson_iter_find_case() <bson_iter_find_case>`.
+``key`` is case-sensitive. For a case-folded version, see :symbol:`bson_iter_find_case()`.
 
 Returns
 -------

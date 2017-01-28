@@ -20,7 +20,7 @@ Synopsis
 Parameters
 ----------
 
-* ``iter``: A :symbol:`bson_iter_t <bson_iter_t>`.
+* ``iter``: A :symbol:`bson_iter_t`.
 * ``length``: An optional location for the length of the resulting UTF-8 encoded string.
 * ``scope_len``: A optional location for the length of ``scope``.
 * ``scope``: An optional location to store the immutable raw scope BSON document.
@@ -28,7 +28,7 @@ Parameters
 Description
 -----------
 
-The ``bson_iter_codewscope()`` function acts similar to :symbol:`bson_iter_code() <bson_iter_code>` except for BSON_TYPE_CODEWSCOPE elements. It also will provide a pointer to the buffer for scope, which can be loaded into a :symbol:`bson_t <bson_t>` using :symbol:`bson_init_static() <bson_init_static>`.
+The ``bson_iter_codewscope()`` function acts similar to :symbol:`bson_iter_code()` except for BSON_TYPE_CODEWSCOPE elements. It also will provide a pointer to the buffer for scope, which can be loaded into a :symbol:`bson_t` using :symbol:`bson_init_static()`.
 
 Returns
 -------

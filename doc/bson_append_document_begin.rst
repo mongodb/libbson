@@ -17,17 +17,17 @@ Synopsis
 Parameters
 ----------
 
-* ``bson``: A :symbol:`bson_t <bson_t>`.
+* ``bson``: A :symbol:`bson_t`.
 * ``key``: An ASCII C string containing the name of the field.
 * ``key_length``: The length of ``key`` in bytes, or -1 to determine the length with ``strlen()``.
-* ``child``: An uninitialized :symbol:`bson_t <bson_t>` to be initialized as the sub-document.
+* ``child``: An uninitialized :symbol:`bson_t` to be initialized as the sub-document.
 
 Description
 -----------
 
-The :symbol:`bson_append_document_begin() <bson_append_document_begin>` function shall begin appending a sub-document to ``bson``. Use ``child`` to add fields to the sub-document. When completed, call :symbol:`bson_append_document_end() <bson_append_document_end>` to complete the element.
+The :symbol:`bson_append_document_begin()` function shall begin appending a sub-document to ``bson``. Use ``child`` to add fields to the sub-document. When completed, call :symbol:`bson_append_document_end()` to complete the element.
 
-``child`` *MUST* be an uninitialized :symbol:`bson_t <bson_t>` to avoid leaking memory.
+``child`` *MUST* be an uninitialized :symbol:`bson_t` to avoid leaking memory.
 
 Returns
 -------

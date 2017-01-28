@@ -17,10 +17,10 @@ Synopsis
 Parameters
 ----------
 
-* ``bson``: A :symbol:`bson_t <bson_t>`.
+* ``bson``: A :symbol:`bson_t`.
 * ``key``: An ASCII C string containing the name of the field.
 * ``key_length``: The length of ``key`` in bytes, or -1 to determine the length with ``strlen()``.
-* ``value``: A :symbol:`bson_value_t <bson_value_t>`.
+* ``value``: A :symbol:`bson_value_t`.
 
 Description
 -----------
