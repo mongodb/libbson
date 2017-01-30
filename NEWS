@@ -13,6 +13,8 @@ New features and bug fixes:
     before 1970 were prohibited.
   * BSON floats and ints are now distinguished in JSON output.
   * The library is now built and continuously tested with MinGW-W64 on Windows.
+  * The documentation is ported from Mallard XML to ReStructured Text, the
+    HTML documentation is restyled, and numerous man page syntax errors fixed.
 
 Thanks to everyone who contributed to the development of this release.
 
