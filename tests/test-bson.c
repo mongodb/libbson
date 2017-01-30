@@ -982,7 +982,7 @@ test_bson_validate_bool (void)
 
    /* replace boolean value 1 with 255 */
    ASSERT (data[7] == '\x01');
-   data[7] = '\xff';
+   data[7] = (uint8_t) '\xff';
 
    ASSERT (bson_init_static (&bson, data, 9));
    ASSERT (!bson_validate (&bson, BSON_VALIDATE_NONE, &err_offset));
@@ -1019,7 +1019,7 @@ test_bson_validate_dbpointer (void)
 
    /* replace the NULL terminator of "b" with 255 */
    ASSERT (data[12] == '\0');
-   data[12] = '\xff';
+   data[12] = (uint8_t) '\xff';
 
    ASSERT (bson_init_static (&bson, data, sizeof data));
    ASSERT (!bson_validate (&bson, BSON_VALIDATE_NONE, &err_offset));
