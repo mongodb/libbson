@@ -23,6 +23,48 @@ No change since 1.5.0; released to keep pace with libmongoc's version.
 
 -- A. Jesse Jiryu Davis
 
+Libbson-1.5.4
+=============
+
+No change since 1.5.3; released to keep pace with libmongoc's version.
+
+-- A. Jesse Jiryu Davis
+
+
+Libbson-1.5.3
+=============
+
+No change since 1.5.2; released to keep pace with libmongoc's version.
+
+-- A. Jesse Jiryu Davis
+
+
+Libbson-1.5.2
+=============
+
+It is my pleasure to announce Libbson-1.5.2.
+
+New bug fixes:
+
+  * CDRIVER-1982 fix ifdef for strerror_s with mingw.
+
+Thanks to everyone who contributed to the development of this release.
+
+  * A. Jesse Jiryu Davis
+
+Peace,
+
+    Hannes Magnusson
+
+
+Libbson-1.5.1
+=============
+
+No change since 1.5.0; released to keep pace with libmongoc's version.
+
+-- A. Jesse Jiryu Davis
+
+
 Libbson-1.5.0
 =============
 
@@ -32,12 +74,12 @@ New features and bug fixes:
 
   * New BSON Type, Decimal128 (bson_decimal128_t) along with the following
     new functions and helpers:
-    * bson_decimal128_to_string ()
-    * bson_decimal128_from_string ()
-    * bson_iter_decimal128 ()
-    * bson_iter_overwrite_decimal128 ()
+    * bson_decimal128_to_string()
+    * bson_decimal128_from_string()
+    * bson_iter_decimal128()
+    * bson_iter_overwrite_decimal128()
     * BSON_ITER_HOLDS_DECIMAL128()
-    * bson_append_decimal128 ()
+    * bson_append_decimal128()
     * BSON_APPEND_DECIMAL128()
     * BCON_DECIMAL128()
     See the documentations for further details.
@@ -68,6 +110,7 @@ Thanks to everyone who contributed to the development of this release.
 Peace,
 
     A. Jesse Jiryu Davis
+
 
 Libbson-1.4.1
 =============
