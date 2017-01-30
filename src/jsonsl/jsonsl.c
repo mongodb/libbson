@@ -119,8 +119,12 @@ jsonsl_new (int nlevels)
    struct jsonsl_st *jsn = (struct jsonsl_st *) bson_malloc0 (
       sizeof (*jsn) + ((nlevels - 1) * sizeof (struct jsonsl_state_st)));
 
-   jsn->levels_max = nlevels;
-   jsn->max_callback_level = -1;
+   if (nlevels < 0) {
+      return NULL;
+   }
+
+   jsn->levels_max = (unsigned int) nlevels;
+   jsn->max_callback_level = UINT_MAX;
    jsonsl_reset (jsn);
    for (ii = 0; ii < jsn->levels_max; ii++) {
       jsn->stack[ii].level = ii;
