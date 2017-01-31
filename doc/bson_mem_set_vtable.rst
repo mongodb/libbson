@@ -1,7 +1,7 @@
 :man_page: bson_mem_set_vtable
 
-bson_mem_set_table()
-====================
+bson_mem_set_vtable()
+=====================
 
 Synopsis
 --------

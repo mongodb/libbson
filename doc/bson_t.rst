@@ -27,7 +27,7 @@ The :symbol:`bson_t` structure represents a BSON document. This structure manage
 Performance Notes
 -----------------
 
-The :symbol:`bson_t` structure attepts to use an inline allocation within the structure to speed up performance of small documents. When this internal buffer has been exhausted, a heap allocated buffer will be dynamically allocated. Therefore, it is essential to call :symbol:`bson_destroy()` on allocated documents.
+The :symbol:`bson_t` structure attempts to use an inline allocation within the structure to speed up performance of small documents. When this internal buffer has been exhausted, a heap allocated buffer will be dynamically allocated. Therefore, it is essential to call :symbol:`bson_destroy()` on allocated documents.
 
 .. only:: html
 
