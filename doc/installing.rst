@@ -3,7 +3,7 @@
 Installing libbson
 ==================
 
-The following guide will step you through the process of downloading, building, and installing the current release of the libbson.
+The following guide will step you through the process of downloading, building, and installing the current release of libbson.
 
 .. _installing_supported_platforms:
 

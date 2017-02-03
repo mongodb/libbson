@@ -29,7 +29,7 @@ Description
 
 The :symbol:`bson_append_utf8()` function shall append a UTF-8 encoded string to ``bson``.
 
-_value_ *MUST* be valid UTF-8.
+``value`` *MUST* be valid UTF-8.
 
 Some UTF-8 implementations allow for ``\0`` to be contained within the string (excluding the termination ``\0``. This is allowed, but remember that it could cause issues with communicating with external systems that do not support it.
 

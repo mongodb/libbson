@@ -24,7 +24,7 @@ The symbol element type is *DEPRECATED* in the bson specification at http://bson
 
 The :symbol:`bson_iter_symbol()` function shall return the contents of a BSON_TYPE_SYMBOL element.
 
-if non-NULL, ``length`` will be set to the length of the resulting string.
+If non-NULL, ``length`` will be set to the length of the resulting string.
 
 Returns
 -------
