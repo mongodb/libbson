@@ -44,15 +44,21 @@ EXTRA_DIST += CMakeLists.txt \
     VERSION_RELEASED
 
 dist-hook:
-	@if test -d "$(srcdir)/.git"; then                              \
-          (cd "$(srcdir)" &&                                            \
-           $(top_srcdir)/build/autotools/missing --run git log --stat ) > ChangeLog.tmp \
-           && mv -f ChangeLog.tmp $(top_distdir)/ChangeLog              \
-           || (rm -f ChangeLog.tmp;                                     \
-               echo Failed to generate ChangeLog >&2);                  \
-	else                                                            \
-	  echo A git checkout is required to generate a ChangeLog >&2;  \
+	-rm -rf $(distdir)/doc/html/.buildinfo $(distdir)/doc/html/.doctrees
+	-rm -rf $(distdir)/doc/man/.buildinfo $(distdir)/doc/man/.doctrees
+
+	@if test -d "$(srcdir)/.git"; then                                   \
+	       (cd "$(srcdir)" &&                                            \
+	        $(top_srcdir)/build/autotools/missing --run git log --stat ) > ChangeLog.tmp \
+	        && mv -f ChangeLog.tmp $(top_distdir)/ChangeLog              \
+	        || (rm -f ChangeLog.tmp;                                     \
+	            echo Failed to generate ChangeLog >&2);                  \
+	else                                                                 \
+	  echo A git checkout is required to generate a ChangeLog >&2;       \
 	fi
+
+clean-local:
+	rm -rf $(CLEANFILES)
 
 uninstall-local:
 	-rmdir $(bsondocdir)/doc $(bsondocdir)/html
