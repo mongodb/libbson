@@ -31,6 +31,8 @@
  *       Given a parent directory and filename, compile a full path to
  *       the child file.
  *
+ *       "dst" receives the joined path, delimited by "/" even on Windows.
+ *
  *-----------------------------------------------------------------------
  */
 void
@@ -38,6 +40,7 @@ assemble_path (const char *parent_path,
                const char *child_name,
                char *dst /* OUT */)
 {
+   char *p;
    int path_len = (int) strlen (parent_path);
    int name_len = (int) strlen (child_name);
 
@@ -47,6 +50,12 @@ assemble_path (const char *parent_path,
    strncat (dst, parent_path, path_len);
    strncat (dst, "/", 1);
    strncat (dst, child_name, name_len);
+
+   for (p = dst; *p; ++p) {
+      if (*p == '\\') {
+         *p = '/';
+      }
+   }
 }
 
 /*
@@ -111,18 +120,18 @@ collect_tests_from_dir (char (*paths)[MAX_TEST_NAME_LENGTH] /* OUT */,
    assert (dir);
    while ((entry = readdir (dir))) {
       assert (paths_index < max_paths);
+      if (strcmp (entry->d_name, "..") == 0 ||
+          strcmp (entry->d_name, ".") == 0) {
+         continue;
+      }
+
+      assemble_path (dir_path, entry->d_name, child_path);
 
       if (0 == stat (entry->d_name, &dir_stat) && S_ISDIR (dir_stat.st_mode)) {
          /* recursively call on child directories */
-         if (strcmp (entry->d_name, "..") != 0 &&
-             strcmp (entry->d_name, ".") != 0) {
-            assemble_path (dir_path, entry->d_name, child_path);
-            paths_index = collect_tests_from_dir (
-               paths, child_path, paths_index, max_paths);
-         }
-      } else if (strncmp (entry->d_name + (strlen (entry->d_name) - 5),
-                          ".json",
-                          5) == 0) {
+         paths_index =
+            collect_tests_from_dir (paths, child_path, paths_index, max_paths);
+      } else if (strstr (entry->d_name, ".json")) {
          /* if this is a JSON test, collect its path */
          assemble_path (dir_path, entry->d_name, paths[paths_index++]);
       }
