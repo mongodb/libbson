@@ -19,6 +19,7 @@ test_libbson_SOURCES = \
 	tests/test-reader.c \
 	tests/test-string.c \
 	tests/test-type.c \
+	tests/test-type.h \
 	tests/test-utf8.c \
 	tests/test-value.c \
 	tests/test-version.c \

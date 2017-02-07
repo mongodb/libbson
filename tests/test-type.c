@@ -19,6 +19,7 @@
 
 #include "TestSuite.h"
 #include "json-test.h"
+#include "test-type.h"
 
 #include <limits.h>
 
@@ -27,16 +28,6 @@
 #define realpath(path, expanded) \
    GetFullPathName (path, PATH_MAX, expanded, NULL)
 #endif
-
-typedef void (*test_bson_type_valid_cb) (const uint8_t *bson_str,
-                                         uint32_t bson_str_len,
-                                         const uint8_t *canonical_bson_str,
-                                         uint32_t canonical_bson_str_len,
-                                         const uint8_t *extjson_str,
-                                         uint32_t extjson_str_len,
-                                         const uint8_t *canonical_extjson_str,
-                                         uint32_t canonical_extjson_str_len,
-                                         bool lossy);
 
 #ifdef _MSC_VER
 #define SSCANF sscanf_s
@@ -123,7 +114,7 @@ _test_bson_type_print_description (bson_iter_t *iter)
 
 #define IS_NAN(dec) (dec).high == 0x7c00000000000000ull
 
-static void
+void
 test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
 {
    bson_iter_t iter;
@@ -223,47 +214,9 @@ test_bson_type_decimal128_cb (bson_t *scenario)
    test_bson_type (scenario, test_bson_type_decimal128);
 }
 
-
-void
-test_add_spec_test (TestSuite *suite, const char *filename, test_hook callback)
-{
-   bson_t *test;
-   char *skip_json;
-
-   test = get_bson_from_json_file ((char *) filename);
-   skip_json = strstr (filename, "json") + 4;
-   skip_json = bson_strndup (skip_json, strlen (skip_json) - 5);
-
-   TestSuite_AddWC (suite,
-                    skip_json,
-                    (void (*) (void *)) callback,
-                    (void (*) (void *)) bson_destroy,
-                    test);
-   bson_free (skip_json);
-}
-
 void
 test_bson_type_install (TestSuite *suite)
 {
-   test_add_spec_test (suite,
-                       JSON_DIR "/type/decimal128/decimal128-1.json",
-                       test_bson_type_decimal128_cb);
-   test_add_spec_test (suite,
-                       JSON_DIR "/type/decimal128/decimal128-2.json",
-                       test_bson_type_decimal128_cb);
-   test_add_spec_test (suite,
-                       JSON_DIR "/type/decimal128/decimal128-3.json",
-                       test_bson_type_decimal128_cb);
-   test_add_spec_test (suite,
-                       JSON_DIR "/type/decimal128/decimal128-4.json",
-                       test_bson_type_decimal128_cb);
-   test_add_spec_test (suite,
-                       JSON_DIR "/type/decimal128/decimal128-5.json",
-                       test_bson_type_decimal128_cb);
-   test_add_spec_test (suite,
-                       JSON_DIR "/type/decimal128/decimal128-6.json",
-                       test_bson_type_decimal128_cb);
-   test_add_spec_test (suite,
-                       JSON_DIR "/type/decimal128/decimal128-7.json",
-                       test_bson_type_decimal128_cb);
+   install_json_test_suite (
+      suite, JSON_DIR "/type/decimal128", test_bson_type_decimal128_cb);
 }

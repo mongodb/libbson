@@ -250,6 +250,7 @@ if (ENABLE_TESTS)
          ${SOURCE_DIR}/tests/test-reader.c
          ${SOURCE_DIR}/tests/test-string.c
          ${SOURCE_DIR}/tests/test-type.c
+         ${SOURCE_DIR}/tests/test-type.h
          ${SOURCE_DIR}/tests/test-utf8.c
          ${SOURCE_DIR}/tests/test-value.c
          ${SOURCE_DIR}/tests/test-version.c
