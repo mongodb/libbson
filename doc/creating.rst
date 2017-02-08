@@ -65,7 +65,7 @@ To simplify the creation of sub-documents and arrays, :symbol:`bson_append_docum
   bson_append_int32 (&child, "baz", 3, 1);
   bson_append_document_end (&parent, &child);
 
-  str = bson_as_json (&parent, NULL);
+  str = bson_as_extended_json (&parent, NULL);
   printf ("%s\n", str);
   bson_free (str);
 

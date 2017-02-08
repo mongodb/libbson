@@ -31,7 +31,7 @@ Reading from a BSON Stream
      }
 
      while ((doc = bson_reader_read (reader, &eof))) {
-        char *str = bson_as_json (doc, NULL);
+        char *str = bson_as_extended_json (doc, NULL);
         printf ("%s\n", str);
         bson_free (str);
      }

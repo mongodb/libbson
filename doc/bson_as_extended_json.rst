@@ -1,7 +1,7 @@
-:man_page: bson_as_json
+:man_page: bson_as_extended_json
 
-bson_as_json()
-==============
+bson_as_extended_json()
+=======================
 
 Synopsis
 --------
@@ -9,8 +9,7 @@ Synopsis
 .. code-block:: c
 
   char *
-  bson_as_json (const bson_t *bson, size_t *length)
-    BSON_GNUC_DEPRECATED_FOR (bson_as_extended_json);
+  bson_as_extended_json (const bson_t *bson, size_t *length);
 
 Parameters
 ----------
@@ -21,7 +20,7 @@ Parameters
 Description
 -----------
 
-The :symbol:`bson_as_json()` function shall encode ``bson`` as a UTF-8 string using libbson's legacy JSON format. This function is deprecated in favor of :symbol:`bson_as_extended_json()`, which uses the same `MongoDB Extended JSON format`_ as all other MongoDB drivers.
+The :symbol:`bson_as_extended_json()` encodes ``bson`` as a UTF-8 string in `MongoDB Extended JSON format`_.
 
 The caller is responsible for freeing the resulting UTF-8 encoded string by calling :symbol:`bson_free()` with the result.
 
@@ -39,7 +38,7 @@ Example
 
 .. code-block:: c
 
-  char *str = bson_as_json (doc, NULL);
+  char *str = bson_as_extended_json (doc, NULL);
   printf ("%s\n", str);
   bson_free (str);
 

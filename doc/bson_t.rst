@@ -68,6 +68,7 @@ The :symbol:`bson_t` structure attempts to use an inline allocation within the s
     bson_append_undefined
     bson_append_utf8
     bson_append_value
+    bson_as_extended_json
     bson_as_json
     bson_compare
     bson_concat
