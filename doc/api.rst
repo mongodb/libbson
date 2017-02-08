@@ -16,6 +16,7 @@ API Reference
   bson_md5_t
   bson_oid_t
   bson_reader_t
+  character_and_string_routines
   bson_string_t
   bson_subtype_t
   bson_type_t
