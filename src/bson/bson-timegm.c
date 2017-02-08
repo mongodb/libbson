@@ -17,6 +17,7 @@
 #include "errno.h"
 #include "string.h"
 #include "limits.h" /* for CHAR_BIT et al. */
+#include <stdint.h> /* for INT64_MAX and INT64_MIN */
 
 /* Unlike <ctype.h>'s isdigit, this also works if c < 0 | c > UCHAR_MAX. */
 #define is_digit(c) ((unsigned) (c) - '0' <= 9)
@@ -625,10 +626,8 @@ time2sub (struct bson_tm *const tmp,
    /*
    ** Do a binary search.
    */
-   lo = 1;
-   for (i = 0; i < (int64_t) TYPE_BIT (int64_t) - 1; ++i)
-      lo *= 2;
-   hi = -(lo + 1);
+   lo = INT64_MIN;
+   hi = INT64_MAX;
 
    for (;;) {
       t = lo / 2 + hi / 2;
