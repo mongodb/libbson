@@ -1,0 +1,77 @@
+{
+    "description": "Top-level document validity",
+    "bson_type": "0x00",
+    "decodeErrors": [
+        {
+            "description": "An object size that's too small to even include the object size, but is a well-formed, empty object",
+            "bson": "0100000000"
+        },
+        {
+            "description": "An object size that's only enough for the object size, but is a well-formed, empty object",
+            "bson": "0400000000"
+        },
+        {
+            "description": "One object, with length shorter than size (missing EOO)",
+            "bson": "05000000"
+        },
+        {
+            "description": "One object, sized correctly, with a spot for an EOO, but the EOO is 0x01",
+            "bson": "0500000001"
+        },
+        {
+            "description": "One object, sized correctly, with a spot for an EOO, but the EOO is 0xff",
+            "bson": "05000000FF"
+        },
+        {
+            "description": "One object, sized correctly, with a spot for an EOO, but the EOO is 0x70",
+            "bson": "0500000070"
+        },
+        {
+            "description": "Byte count is zero (with non-zero input length)",
+            "bson": "00000000000000000000"
+        },
+        {
+            "description": "Stated length exceeds byte count, with truncated document",
+            "bson": "1200000002666F6F0004000000626172"
+        },
+        {
+            "description": "Stated length less than byte count, with garbage after envelope",
+            "bson": "1200000002666F6F00040000006261720000DEADBEEF"
+        },
+        {
+            "description": "Stated length exceeds byte count, with valid envelope",
+            "bson": "1300000002666F6F00040000006261720000"
+        },
+        {
+            "description": "Stated length less than byte count, with valid envelope",
+            "bson": "1100000002666F6F00040000006261720000"
+        },
+        {
+            "description": "Invalid BSON type low range",
+            "bson": "07000000000000"
+        },
+        {
+            "description": "Invalid BSON type high range",
+            "bson": "07000000800000"
+        },
+        {
+            "description": "Document truncated mid-key",
+            "bson": "1200000002666F"
+        },
+        {
+            "description": "Document with keys that start with $",
+            "bson": "0f00000010246b6579002a00000000",
+            "extjson": "{\"$key\": 42}"
+        },
+        {
+            "description": "Document that resembles extended JSON, but with extra keys",
+            "bson": "3f000000022462616e616e6100050000007065656c0002246f7074696f6e730002000000690002247265676578000c0000006e6f742d612d72656765780000",
+            "extjson": "{\"$regex\": \"not-a-regex\", \"$options\": \"i\", \"$banana\": \"peel\"}"
+        },
+        {
+            "description": "Document that resembles extended JSON, but with missing keys",
+            "bson": "1a000000022462696e6172790008000000616263646566670000",
+            "extjson": "{\"$binary\": \"abcdefg\"}"
+        }
+    ]
+}

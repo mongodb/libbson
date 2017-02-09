@@ -234,6 +234,7 @@ if (ENABLE_TESTS)
          ${SOURCE_DIR}/tests/test-libbson.c
          ${SOURCE_DIR}/tests/test-atomic.c
          ${SOURCE_DIR}/tests/test-bson.c
+         ${SOURCE_DIR}/tests/test-bson-corpus.c
          ${SOURCE_DIR}/tests/test-endian.c
          ${SOURCE_DIR}/tests/test-clock.c
          ${SOURCE_DIR}/tests/test-decimal128.c

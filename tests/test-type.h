@@ -21,16 +21,33 @@
 
 #include <bson.h>
 
-typedef void (*test_bson_type_valid_cb) (const uint8_t *bson_str,
-                                         uint32_t bson_str_len,
-                                         const uint8_t *canonical_bson_str,
-                                         uint32_t canonical_bson_str_len,
-                                         const uint8_t *extjson_str,
-                                         uint32_t extjson_str_len,
-                                         const uint8_t *canonical_extjson_str,
-                                         uint32_t canonical_extjson_str_len,
-                                         bool lossy);
+/*
+See:
+github.com/mongodb/specifications/blob/master/source/bson-corpus/bson-corpus.rst
+#testing-validity
+*/
+typedef struct _test_bson_type_t {
+   const char *scenario_description;
+   bson_type_t bson_type;
+   const char *test_description;
+   uint8_t *B;          /* "bson" */
+   uint32_t B_len;
+   uint8_t *cB;         /* "canonical_bson" */
+   uint32_t cB_len;
+   char *E;             /* "extjson" */
+   uint32_t E_len;
+   char *cE;
+   uint32_t cE_len;     /* "canonical_extjson" */
+   bool lossy;
+} test_bson_type_t;
 
+
+typedef void (*test_bson_type_valid_cb) (test_bson_type_t *test);
+
+void
+test_bson_type_print_description (const char *description);
+uint8_t *
+test_bson_type_unhexlify (bson_iter_t *iter, uint32_t *bson_str_len);
 void
 test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid);
 

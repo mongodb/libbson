@@ -8,6 +8,7 @@ test_libbson_SOURCES = \
 	tests/test-libbson.c \
 	tests/test-atomic.c \
 	tests/test-bson.c \
+	tests/test-bson-corpus.c \
 	tests/test-endian.c \
 	tests/test-clock.c \
 	tests/test-decimal128.c \
