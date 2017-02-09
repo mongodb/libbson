@@ -704,6 +704,23 @@ test_bson_json_read (void)
 }
 
 static void
+test_bson_json_read_raw_utf8 (void)
+{
+   bson_t *bson;
+   bson_iter_t iter;
+
+   bson = bson_new_from_json (
+      (const uint8_t *) "{\"" EU "\": \"" EU "\"}", -1, NULL);
+   ASSERT (bson);
+   ASSERT (bson_iter_init_find (&iter, bson, EU));
+   ASSERT_CMPSTR (bson_iter_key (&iter), EU);
+   ASSERT_CMPSTR (bson_iter_utf8 (&iter, NULL), EU);
+   ASSERT (!bson_iter_next (&iter));
+
+   bson_destroy (bson);
+}
+
+static void
 test_bson_json_read_corrupt_utf8 (void)
 {
    const char *bad_key = "{ \"\x80\" : \"a\"}";
@@ -1816,6 +1833,8 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/json/read/bad_cb", test_bson_json_read_bad_cb);
    TestSuite_Add (
       suite, "/bson/json/read/invalid", test_bson_json_read_invalid);
+   TestSuite_Add (
+      suite, "/bson/json/read/raw_utf8", test_bson_json_read_raw_utf8);
    TestSuite_Add (
       suite, "/bson/json/read/corrupt_utf8", test_bson_json_read_corrupt_utf8);
    TestSuite_Add (

@@ -1903,6 +1903,11 @@ bson_iter_visit_all (bson_iter_t *iter,             /* INOUT */
          const char *options = NULL;
          regex = bson_iter_regex (iter, &options);
 
+         if (!bson_utf8_validate (regex, strlen (regex), true)) {
+            iter->err_off = iter->off;
+            return true;
+         }
+
          if (VISIT_REGEX (iter, key, regex, options, data)) {
             return true;
          }
@@ -1913,6 +1918,11 @@ bson_iter_visit_all (bson_iter_t *iter,             /* INOUT */
          const bson_oid_t *oid = NULL;
 
          bson_iter_dbpointer (iter, &collection_len, &collection, &oid);
+
+         if (!bson_utf8_validate (collection, collection_len, true)) {
+            iter->err_off = iter->off;
+            return true;
+         }
 
          if (VISIT_DBPOINTER (
                 iter, key, collection_len, collection, oid, data)) {
@@ -1925,6 +1935,11 @@ bson_iter_visit_all (bson_iter_t *iter,             /* INOUT */
 
          code = bson_iter_code (iter, &code_len);
 
+         if (!bson_utf8_validate (code, code_len, true)) {
+            iter->err_off = iter->off;
+            return true;
+         }
+
          if (VISIT_CODE (iter, key, code_len, code, data)) {
             return true;
          }
@@ -1934,6 +1949,11 @@ bson_iter_visit_all (bson_iter_t *iter,             /* INOUT */
          const char *symbol;
 
          symbol = bson_iter_symbol (iter, &symbol_len);
+
+         if (!bson_utf8_validate (symbol, symbol_len, true)) {
+            iter->err_off = iter->off;
+            return true;
+         }
 
          if (VISIT_SYMBOL (iter, key, symbol_len, symbol, data)) {
             return true;
@@ -1947,6 +1967,11 @@ bson_iter_visit_all (bson_iter_t *iter,             /* INOUT */
          bson_t b;
 
          code = bson_iter_codewscope (iter, &length, &doclen, &docbuf);
+
+         if (!bson_utf8_validate (code, length, true)) {
+            iter->err_off = iter->off;
+            return true;
+         }
 
          if (bson_init_static (&b, docbuf, doclen) &&
              VISIT_CODEWSCOPE (iter, key, length, code, &b, data)) {
