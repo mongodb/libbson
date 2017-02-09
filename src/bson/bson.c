@@ -2631,6 +2631,22 @@ _bson_as_json_visit_bool (const bson_iter_t *iter,
 
 
 static bool
+_bson_as_extended_json_visit_date_time (const bson_iter_t *iter,
+                                        const char *key,
+                                        int64_t msec_since_epoch,
+                                        void *data)
+{
+   bson_json_state_t *state = data;
+
+   bson_string_append (state->str, "{ \"$date\" : { \"$numberLong\" : \"");
+   bson_string_append_printf (state->str, "%" PRId64, msec_since_epoch);
+   bson_string_append (state->str, "\" } }");
+
+   return false;
+}
+
+
+static bool
 _bson_as_json_visit_date_time (const bson_iter_t *iter,
                                const char *key,
                                int64_t msec_since_epoch,
@@ -2867,7 +2883,7 @@ static const bson_visitor_t bson_as_extended_json_visitors = {
    _bson_as_json_visit_undefined,
    _bson_as_json_visit_oid,
    _bson_as_json_visit_bool,
-   _bson_as_json_visit_date_time,
+   _bson_as_extended_json_visit_date_time,
    _bson_as_json_visit_null,
    _bson_as_json_visit_regex,
    _bson_as_json_visit_dbpointer,
