@@ -471,13 +471,17 @@ bson_validate (const bson_t *bson, bson_validate_flags_t flags, size_t *offset);
 
 
 /**
- * bson_as_json:
+ * bson_as_extended_json:
  * @bson: A bson_t.
  * @length: A location for the string length, or NULL.
  *
- * Creates a new string containing @bson in extended JSON format. The caller
- * is responsible for freeing the resulting string. If @length is non-NULL,
- * then the length of the resulting string will be placed in @length.
+ * Creates a new string containing @bson in extended JSON format, conforming to
+ * the MongoDB Extended JSON Spec:
+ *
+ * github.com/mongodb/specifications/blob/master/source/extended-json.rst
+ *
+ * The caller is responsible for freeing the resulting string. If @length is
+ * non-NULL, then the length of the resulting string will be placed in @length.
  *
  * See http://docs.mongodb.org/manual/reference/mongodb-extended-json/ for
  * more information on extended JSON.
@@ -485,7 +489,24 @@ bson_validate (const bson_t *bson, bson_validate_flags_t flags, size_t *offset);
  * Returns: A newly allocated string that should be freed with bson_free().
  */
 BSON_EXPORT (char *)
-bson_as_json (const bson_t *bson, size_t *length);
+bson_as_extended_json (const bson_t *bson, size_t *length);
+
+
+/**
+ * bson_as_json:
+ * @bson: A bson_t.
+ * @length: A location for the string length, or NULL.
+ *
+ * Creates a new string containing @bson in libbson's legacy JSON format.
+ * Deprecated for bson_as_extended_json. The caller is responsible for freeing
+ * the resulting string. If @length is non-NULL, then the length of the
+ * resulting string will be placed in @length.
+ *
+ * Returns: A newly allocated string that should be freed with bson_free().
+ */
+BSON_EXPORT (char *)
+bson_as_json (const bson_t *bson, size_t *length)
+   BSON_GNUC_DEPRECATED_FOR (bson_as_extended_json);
 
 
 /* like bson_as_json() but for outermost arrays. */

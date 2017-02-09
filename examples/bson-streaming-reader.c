@@ -174,7 +174,7 @@ main (int argc, char *argv[])
 
    reader = bson_reader_new_from_fd (fd, true);
    while ((document = bson_reader_read (reader, NULL))) {
-      json = bson_as_json (document, NULL);
+      json = bson_as_extended_json (document, NULL);
       fprintf (stdout, "%s\n", json);
       bson_free (json);
    }

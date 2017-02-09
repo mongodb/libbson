@@ -65,10 +65,20 @@ typedef struct {
  * Forward declarations.
  */
 static bool
+_bson_as_extended_json_visit_array (const bson_iter_t *iter,
+                                    const char *key,
+                                    const bson_t *v_array,
+                                    void *data);
+static bool
 _bson_as_json_visit_array (const bson_iter_t *iter,
                            const char *key,
                            const bson_t *v_array,
                            void *data);
+static bool
+_bson_as_extended_json_visit_document (const bson_iter_t *iter,
+                                       const char *key,
+                                       const bson_t *v_document,
+                                       void *data);
 static bool
 _bson_as_json_visit_document (const bson_iter_t *iter,
                               const char *key,
@@ -80,7 +90,6 @@ _bson_as_json_visit_document (const bson_iter_t *iter,
  * Globals.
  */
 static const uint8_t gZero;
-
 
 /*
  *--------------------------------------------------------------------------
@@ -2448,6 +2457,21 @@ _bson_as_json_visit_utf8 (const bson_iter_t *iter,
 
 
 static bool
+_bson_as_extended_json_visit_int32 (const bson_iter_t *iter,
+                                    const char *key,
+                                    int32_t v_int32,
+                                    void *data)
+{
+   bson_json_state_t *state = data;
+
+   bson_string_append_printf (
+      state->str, "{ \"$numberInt\" : \"%" PRId32 "\" }", v_int32);
+
+   return false;
+}
+
+
+static bool
 _bson_as_json_visit_int32 (const bson_iter_t *iter,
                            const char *key,
                            int32_t v_int32,
@@ -2801,7 +2825,9 @@ _bson_as_json_visit_codewscope (const bson_iter_t *iter,
       return true; /* error */
    }
 
+BEGIN_IGNORE_DEPRECATIONS
    scope = bson_as_json (v_scope, NULL);
+END_IGNORE_DEPRECATIONS
    if (!scope) {
       bson_free (code_escaped);
       return true;
@@ -2820,6 +2846,36 @@ _bson_as_json_visit_codewscope (const bson_iter_t *iter,
 }
 
 
+/* canonical MongoDB Extended JSON format, complying with the spec */
+static const bson_visitor_t bson_as_extended_json_visitors = {
+   _bson_as_json_visit_before,
+   NULL, /* visit_after */
+   NULL, /* visit_corrupt */
+   _bson_as_json_visit_double,
+   _bson_as_json_visit_utf8,
+   _bson_as_extended_json_visit_document,
+   _bson_as_extended_json_visit_array,
+   _bson_as_json_visit_binary,
+   _bson_as_json_visit_undefined,
+   _bson_as_json_visit_oid,
+   _bson_as_json_visit_bool,
+   _bson_as_json_visit_date_time,
+   _bson_as_json_visit_null,
+   _bson_as_json_visit_regex,
+   _bson_as_json_visit_dbpointer,
+   _bson_as_json_visit_code,
+   _bson_as_json_visit_symbol,
+   _bson_as_json_visit_codewscope,
+   _bson_as_extended_json_visit_int32,
+   _bson_as_json_visit_timestamp,
+   _bson_as_json_visit_int64,
+   _bson_as_json_visit_maxkey,
+   _bson_as_json_visit_minkey,
+   NULL, /* visit_unsupported_type */
+   _bson_as_json_visit_decimal128,
+};
+
+/* legacy JSON format */
 static const bson_visitor_t bson_as_json_visitors = {
    _bson_as_json_visit_before,
    NULL, /* visit_after */
@@ -2850,10 +2906,11 @@ static const bson_visitor_t bson_as_json_visitors = {
 
 
 static bool
-_bson_as_json_visit_document (const bson_iter_t *iter,
-                              const char *key,
-                              const bson_t *v_document,
-                              void *data)
+_bson_as_json_visit_document_with_visitors (const bson_iter_t *iter,
+                                            const char *key,
+                                            const bson_t *v_document,
+                                            void *data,
+                                            const bson_visitor_t *visitor)
 {
    bson_json_state_t *state = data;
    bson_json_state_t child_state = {0, true};
@@ -2867,8 +2924,59 @@ _bson_as_json_visit_document (const bson_iter_t *iter,
    if (bson_iter_init (&child, v_document)) {
       child_state.str = bson_string_new ("{ ");
       child_state.depth = state->depth + 1;
-      bson_iter_visit_all (&child, &bson_as_json_visitors, &child_state);
+      bson_iter_visit_all (&child, visitor, &child_state);
       bson_string_append (child_state.str, " }");
+      bson_string_append (state->str, child_state.str->str);
+      bson_string_free (child_state.str, true);
+   }
+
+   return false;
+}
+
+
+static bool
+_bson_as_json_visit_document (const bson_iter_t *iter,
+                              const char *key,
+                              const bson_t *v_document,
+                              void *data)
+{
+   return _bson_as_json_visit_document_with_visitors (
+      iter, key, v_document, data, &bson_as_json_visitors);
+}
+
+
+static bool
+_bson_as_extended_json_visit_document (const bson_iter_t *iter,
+                                       const char *key,
+                                       const bson_t *v_document,
+                                       void *data)
+{
+   return _bson_as_json_visit_document_with_visitors (
+      iter, key, v_document, data, &bson_as_extended_json_visitors);
+}
+
+
+static bool
+_bson_as_json_visit_array_with_visitors (const bson_iter_t *iter,
+                                         const char *key,
+                                         const bson_t *v_array,
+                                         void *data,
+                                         const bson_visitor_t *visitor)
+{
+   bson_json_state_t *state = data;
+   bson_json_state_t child_state = {0, false};
+   bson_iter_t child;
+
+   if (state->depth >= BSON_MAX_RECURSION) {
+      bson_string_append (state->str, "{ ... }");
+      return false;
+   }
+
+   if (bson_iter_init (&child, v_array)) {
+      child_state.str = bson_string_new ("[ ");
+      child_state.depth = state->depth + 1;
+      bson_iter_visit_all (&child, visitor, &child_state);
+      bson_string_append (child_state.str, " ]");
       bson_string_append (state->str, child_state.str->str);
       bson_string_free (child_state.str, true);
    }
@@ -2883,30 +2991,26 @@ _bson_as_json_visit_array (const bson_iter_t *iter,
                            const bson_t *v_array,
                            void *data)
 {
-   bson_json_state_t *state = data;
-   bson_json_state_t child_state = {0, false};
-   bson_iter_t child;
-
-   if (state->depth >= BSON_MAX_RECURSION) {
-      bson_string_append (state->str, "{ ... }");
-      return false;
-   }
-
-   if (bson_iter_init (&child, v_array)) {
-      child_state.str = bson_string_new ("[ ");
-      child_state.depth = state->depth + 1;
-      bson_iter_visit_all (&child, &bson_as_json_visitors, &child_state);
-      bson_string_append (child_state.str, " ]");
-      bson_string_append (state->str, child_state.str->str);
-      bson_string_free (child_state.str, true);
-   }
-
-   return false;
+   return _bson_as_json_visit_array_with_visitors (
+      iter, key, v_array, data, &bson_as_json_visitors);
 }
 
 
-char *
-bson_as_json (const bson_t *bson, size_t *length)
+static bool
+_bson_as_extended_json_visit_array (const bson_iter_t *iter,
+                                    const char *key,
+                                    const bson_t *v_array,
+                                    void *data)
+{
+   return _bson_as_json_visit_array_with_visitors (
+      iter, key, v_array, data, &bson_as_extended_json_visitors);
+}
+
+
+static char *
+_bson_as_json_visit_all (const bson_t *bson,
+                         size_t *length,
+                         const bson_visitor_t *visitors)
 {
    bson_json_state_t state;
    bson_iter_t iter;
@@ -2934,8 +3038,7 @@ bson_as_json (const bson_t *bson, size_t *length)
    state.str = bson_string_new ("{ ");
    state.depth = 0;
 
-   if (bson_iter_visit_all (&iter, &bson_as_json_visitors, &state) ||
-       iter.err_off) {
+   if (bson_iter_visit_all (&iter, visitors, &state) || iter.err_off) {
       /*
        * We were prematurely exited due to corruption or failed visitor.
        */
@@ -2953,6 +3056,21 @@ bson_as_json (const bson_t *bson, size_t *length)
    }
 
    return bson_string_free (state.str, false);
+}
+
+
+char *
+bson_as_extended_json (const bson_t *bson, size_t *length)
+{
+   return _bson_as_json_visit_all (
+      bson, length, &bson_as_extended_json_visitors);
+}
+
+
+char *
+bson_as_json (const bson_t *bson, size_t *length)
+{
+   return _bson_as_json_visit_all (bson, length, &bson_as_json_visitors);
 }
 
 

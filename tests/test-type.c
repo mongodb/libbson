@@ -20,6 +20,7 @@
 #include "TestSuite.h"
 #include "json-test.h"
 #include "test-type.h"
+#include "bson-private.h"
 
 #include <limits.h>
 
@@ -38,6 +39,8 @@
 #ifndef JSON_DIR
 #define JSON_DIR "tests/json"
 #endif
+
+BEGIN_IGNORE_DEPRECATIONS
 
 void
 test_bson_type_decimal128 (const uint8_t *bson_str,
@@ -220,3 +223,5 @@ test_bson_type_install (TestSuite *suite)
    install_json_test_suite (
       suite, JSON_DIR "/type/decimal128", test_bson_type_decimal128_cb);
 }
+
+END_IGNORE_DEPRECATIONS

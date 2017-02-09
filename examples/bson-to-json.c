@@ -63,7 +63,7 @@ main (int argc, char *argv[])
        * Convert each incoming document to JSON and print to stdout.
        */
       while ((b = bson_reader_read (reader, NULL))) {
-         str = bson_as_json (b, NULL);
+         str = bson_as_extended_json (b, NULL);
          fprintf (stdout, "%s\n", str);
          bson_free (str);
       }
