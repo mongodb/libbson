@@ -69,6 +69,7 @@ typedef enum {
    BSON_JSON_LF_UNDEFINED,
    BSON_JSON_LF_MINKEY,
    BSON_JSON_LF_MAXKEY,
+   BSON_JSON_LF_INT32,
    BSON_JSON_LF_INT64,
    BSON_JSON_LF_DECIMAL128
 } bson_json_read_bson_state_t;
@@ -122,6 +123,9 @@ typedef union {
    struct {
       bool has_maxkey;
    } maxkey;
+   struct {
+      int32_t value;
+   } v_int32;
    struct {
       int64_t value;
    } v_int64;
@@ -498,6 +502,7 @@ _bson_json_read_integer (bson_json_reader_t *reader, /* IN */
       case BSON_JSON_LF_BINARY:
       case BSON_JSON_LF_TYPE:
       case BSON_JSON_LF_UNDEFINED:
+      case BSON_JSON_LF_INT32:
       case BSON_JSON_LF_INT64:
       case BSON_JSON_LF_DECIMAL128:
       default:
@@ -519,6 +524,31 @@ _bson_json_read_double (bson_json_reader_t *reader, /* IN */
    BASIC_CB_BAIL_IF_NOT_NORMAL ("double");
 
    bson_append_double (STACK_BSON_CHILD, key, (int) len, val);
+}
+
+
+static bool
+_bson_json_read_int64 (bson_json_reader_t *reader, /* IN */
+                       const unsigned char *val,   /* IN */
+                       size_t vlen,                /* IN */
+                       int64_t *v64                /* OUT */)
+{
+   bson_json_reader_bson_t *bson = &reader->bson;
+   char *endptr = NULL;
+
+   _bson_json_read_fixup_key (bson);
+   errno = 0;
+   *v64 = bson_ascii_strtoll ((const char *) val, &endptr, 10);
+
+   if (((*v64 == INT64_MIN) || (*v64 == INT64_MAX)) && (errno == ERANGE)) {
+      return false;
+   }
+
+   if (endptr != ((const char *) val + vlen)) {
+      return false;
+   }
+
+   return true;
 }
 
 
@@ -602,20 +632,26 @@ _bson_json_read_string (bson_json_reader_t *reader, /* IN */
          b64_pton (
             val_w_null, bson->bson_type_buf[0].buf, (size_t) binary_len + 1);
          bson->bson_type_buf[0].len = (size_t) binary_len;
-         break;
-      }
-      case BSON_JSON_LF_INT64: {
+      } break;
+      case BSON_JSON_LF_INT32: {
          int64_t v64;
-         char *endptr = NULL;
-
-         errno = 0;
-         v64 = bson_ascii_strtoll ((const char *) val, &endptr, 10);
-
-         if (((v64 == INT64_MIN) || (v64 == INT64_MAX)) && (errno == ERANGE)) {
+         if (!_bson_json_read_int64 (reader, val, vlen, &v64)) {
             goto BAD_PARSE;
          }
 
-         if (endptr != ((const char *) val + vlen)) {
+         if (v64 < INT32_MIN || v64 > INT32_MAX) {
+            goto BAD_PARSE;
+         }
+
+         if (bson->read_state == BSON_JSON_IN_BSON_TYPE) {
+            bson->bson_type_data.v_int32.value = (int32_t) v64;
+         } else {
+            goto BAD_PARSE;
+         }
+      } break;
+      case BSON_JSON_LF_INT64: {
+         int64_t v64;
+         if (!_bson_json_read_int64 (reader, val, vlen, &v64)) {
             goto BAD_PARSE;
          }
 
@@ -707,7 +743,7 @@ _is_known_key (const char *key, size_t len)
           IS_KEY ("$scope") || IS_KEY ("$oid") || IS_KEY ("$binary") ||
           IS_KEY ("$type") || IS_KEY ("$date") || IS_KEY ("$undefined") ||
           IS_KEY ("$maxKey") || IS_KEY ("$minKey") || IS_KEY ("$timestamp") ||
-          IS_KEY ("$numberLong")) ||
+          IS_KEY ("$numberInt") || IS_KEY ("$numberLong")) ||
          IS_KEY ("$numberDecimal");
 
 #undef IS_KEY
@@ -815,6 +851,8 @@ _bson_json_read_map_key (bson_json_reader_t *reader, /* IN */
          HANDLE_OPTION ("$minKey", BSON_TYPE_MINKEY, BSON_JSON_LF_MINKEY)
       else if
          HANDLE_OPTION ("$maxKey", BSON_TYPE_MAXKEY, BSON_JSON_LF_MAXKEY)
+      else if
+         HANDLE_OPTION ("$numberInt", BSON_TYPE_INT32, BSON_JSON_LF_INT32)
       else if
          HANDLE_OPTION ("$numberLong", BSON_TYPE_INT64, BSON_JSON_LF_INT64)
       else if
@@ -1070,6 +1108,12 @@ _bson_json_read_end_map (bson_json_reader_t *reader) /* IN */
          bson_append_maxkey (
             STACK_BSON_CHILD, bson->key, (int) bson->key_buf.len);
          break;
+      case BSON_TYPE_INT32:
+         bson_append_int32 (STACK_BSON_CHILD,
+                            bson->key,
+                            (int) bson->key_buf.len,
+                            bson->bson_type_data.v_int32.value);
+         break;
       case BSON_TYPE_INT64:
          bson_append_int64 (STACK_BSON_CHILD,
                             bson->key,
@@ -1090,7 +1134,6 @@ _bson_json_read_end_map (bson_json_reader_t *reader) /* IN */
       case BSON_TYPE_BOOL:
       case BSON_TYPE_NULL:
       case BSON_TYPE_SYMBOL:
-      case BSON_TYPE_INT32:
       case BSON_TYPE_TIMESTAMP:
       case BSON_TYPE_DBPOINTER:
       default:
