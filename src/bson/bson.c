@@ -2534,24 +2534,46 @@ _bson_as_json_visit_decimal128 (const bson_iter_t *iter,
 
 
 static bool
-_bson_as_json_visit_double (const bson_iter_t *iter,
-                            const char *key,
-                            double v_double,
-                            void *data)
+_bson_as_json_visit_double_common (const bson_iter_t *iter,
+                                   const char *key,
+                                   double v_double,
+                                   void *data,
+                                   bool legacy)
 {
    bson_json_state_t *state = data;
    bson_string_t *str = state->str;
-   uint32_t start_len = str->len;
+   uint32_t start_len;
 
 #ifdef BSON_NEEDS_SET_OUTPUT_FORMAT
    unsigned int current_format = _set_output_format (_TWO_DIGIT_EXPONENT);
 #endif
 
-   bson_string_append_printf (str, "%.20g", v_double);
+   if (!legacy) {
+      bson_string_append (state->str, "{ \"$numberDouble\" : \"");
+   }
 
-   /* ensure trailing ".0" to distinguish "3" from "3.0" */
-   if (strspn (&str->str[start_len], "0123456789-") == str->len - start_len) {
-      bson_string_append (str, ".0");
+   /* portable: some old platforms have no isinf or isnan */
+   if (v_double != v_double) {
+      bson_string_append (str, "NaN");
+   } else if (v_double * 0 != 0) {
+      if (v_double > 0) {
+         bson_string_append (str, "Infinity");
+      } else {
+         bson_string_append (str, "-Infinity");
+      }
+   } else {
+      start_len = str->len;
+      bson_string_append_printf (str, "%.20g", v_double);
+
+      /* ensure trailing ".0" to distinguish "3" from "3.0" */
+      if (legacy && strspn (&str->str[start_len], "0123456789-") ==
+          str->len - start_len) {
+         bson_string_append (str, ".0");
+      }
+   }
+
+   if (!legacy) {
+      bson_string_append (state->str, "\" }");
    }
 
 #ifdef BSON_NEEDS_SET_OUTPUT_FORMAT
@@ -2559,6 +2581,28 @@ _bson_as_json_visit_double (const bson_iter_t *iter,
 #endif
 
    return false;
+}
+
+
+static bool
+_bson_as_extended_json_visit_double (const bson_iter_t *iter,
+                                     const char *key,
+                                     double v_double,
+                                     void *data)
+{
+   return _bson_as_json_visit_double_common (
+      iter, key, v_double, data, false /* legacy */);
+}
+
+
+static bool
+_bson_as_json_visit_double (const bson_iter_t *iter,
+                            const char *key,
+                            double v_double,
+                            void *data)
+{
+   return _bson_as_json_visit_double_common (
+      iter, key, v_double, data, true /* legacy */);
 }
 
 
@@ -2922,7 +2966,7 @@ static const bson_visitor_t bson_as_extended_json_visitors = {
    _bson_as_json_visit_before,
    NULL, /* visit_after */
    _bson_as_json_visit_corrupt,
-   _bson_as_json_visit_double,
+   _bson_as_extended_json_visit_double,
    _bson_as_json_visit_utf8,
    _bson_as_extended_json_visit_document,
    _bson_as_extended_json_visit_array,

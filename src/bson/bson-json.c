@@ -71,6 +71,7 @@ typedef enum {
    BSON_JSON_LF_MAXKEY,
    BSON_JSON_LF_INT32,
    BSON_JSON_LF_INT64,
+   BSON_JSON_LF_DOUBLE,
    BSON_JSON_LF_DECIMAL128
 } bson_json_read_bson_state_t;
 
@@ -129,6 +130,9 @@ typedef union {
    struct {
       int64_t value;
    } v_int64;
+   struct {
+      double value;
+   } v_double;
    struct {
       bson_decimal128_t value;
    } v_decimal128;
@@ -504,6 +508,7 @@ _bson_json_read_integer (bson_json_reader_t *reader, /* IN */
       case BSON_JSON_LF_UNDEFINED:
       case BSON_JSON_LF_INT32:
       case BSON_JSON_LF_INT64:
+      case BSON_JSON_LF_DOUBLE:
       case BSON_JSON_LF_DECIMAL128:
       default:
          _bson_json_read_set_error (
@@ -513,6 +518,38 @@ _bson_json_read_integer (bson_json_reader_t *reader, /* IN */
       _bson_json_read_set_error (
          reader, "Invalid state for integer read %d", rs);
    }
+}
+
+
+static bool
+_bson_json_parse_double (bson_json_reader_t *reader,
+                         const char *val,
+                         size_t vlen,
+                         double *d)
+{
+   *d = strtod (val, NULL);
+
+#ifdef _MSC_VER
+   /* Microsoft's strtod parses "NaN" as 0 */
+   if (*d == 0.0 && !bson_strcasecmp (val, "nan")) {
+#ifndef NAN
+      /* Visual Studio 2010 doesn't define NaN at all,
+       * https://msdn.microsoft.com/en-us/library/w22adx1s(v=vs.100).aspx */
+      unsigned long nan[2] = {0xffffffff, 0x7fffffff};
+      *d = *(double *) nan;
+#else
+      *d = NAN;
+#endif
+   }
+#endif
+   if ((*d == HUGE_VAL || *d == -HUGE_VAL) && errno == ERANGE) {
+      _bson_json_read_set_error (
+         reader, "Number \"%.*s\" is out of range", (int) vlen, val);
+
+      return false;
+   }
+
+   return true;
 }
 
 
@@ -665,6 +702,12 @@ _bson_json_read_string (bson_json_reader_t *reader, /* IN */
             goto BAD_PARSE;
          }
       } break;
+      case BSON_JSON_LF_DOUBLE: {
+         _bson_json_parse_double (reader,
+                                  (const char *) val,
+                                  vlen,
+                                  &bson->bson_type_data.v_double.value);
+      } break;
       case BSON_JSON_LF_DATE: {
          int64_t v64;
 
@@ -743,8 +786,8 @@ _is_known_key (const char *key, size_t len)
           IS_KEY ("$scope") || IS_KEY ("$oid") || IS_KEY ("$binary") ||
           IS_KEY ("$type") || IS_KEY ("$date") || IS_KEY ("$undefined") ||
           IS_KEY ("$maxKey") || IS_KEY ("$minKey") || IS_KEY ("$timestamp") ||
-          IS_KEY ("$numberInt") || IS_KEY ("$numberLong")) ||
-         IS_KEY ("$numberDecimal");
+          IS_KEY ("$numberInt") || IS_KEY ("$numberLong") ||
+          IS_KEY ("$numberDouble") || IS_KEY ("$numberDecimal"));
 
 #undef IS_KEY
 
@@ -855,6 +898,8 @@ _bson_json_read_map_key (bson_json_reader_t *reader, /* IN */
          HANDLE_OPTION ("$numberInt", BSON_TYPE_INT32, BSON_JSON_LF_INT32)
       else if
          HANDLE_OPTION ("$numberLong", BSON_TYPE_INT64, BSON_JSON_LF_INT64)
+      else if
+         HANDLE_OPTION ("$numberDouble", BSON_TYPE_DOUBLE, BSON_JSON_LF_DOUBLE)
       else if
          HANDLE_OPTION (
             "$numberDecimal", BSON_TYPE_DECIMAL128, BSON_JSON_LF_DECIMAL128)
@@ -1120,6 +1165,12 @@ _bson_json_read_end_map (bson_json_reader_t *reader) /* IN */
                             (int) bson->key_buf.len,
                             bson->bson_type_data.v_int64.value);
          break;
+      case BSON_TYPE_DOUBLE:
+         bson_append_double (STACK_BSON_CHILD,
+                             bson->key,
+                             (int) bson->key_buf.len,
+                             bson->bson_type_data.v_double.value);
+         break;
       case BSON_TYPE_DECIMAL128:
          bson_append_decimal128 (STACK_BSON_CHILD,
                                  bson->key,
@@ -1127,7 +1178,6 @@ _bson_json_read_end_map (bson_json_reader_t *reader) /* IN */
                                  &bson->bson_type_data.v_decimal128.value);
          break;
       case BSON_TYPE_EOD:
-      case BSON_TYPE_DOUBLE:
       case BSON_TYPE_UTF8:
       case BSON_TYPE_DOCUMENT:
       case BSON_TYPE_ARRAY:
@@ -1376,15 +1426,9 @@ _pop_callback (jsonsl_t json,
    case JSONSL_T_SPECIAL:
       obj_text = _get_json_text (json, state, buf, &len);
       if (state->special_flags & JSONSL_SPECIALf_NUMNOINT) {
-         d = strtod (obj_text, NULL);
-
-         if ((d == HUGE_VAL || d == -HUGE_VAL) && errno == ERANGE) {
-            _bson_json_read_set_error (
-               reader, "Number \"%.*s\" is out of range", (int) len, obj_text);
-            break;
+         if (_bson_json_parse_double (reader, obj_text, (size_t) len, &d)) {
+            _bson_json_read_double (reader, d);
          }
-
-         _bson_json_read_double (reader, d);
       } else if (state->special_flags & JSONSL_SPECIALf_NUMERIC) {
          int64_t i = state->nelem;
          /* jsonsl puts the unsigned value in state->nelem */

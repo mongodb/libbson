@@ -1407,16 +1407,55 @@ test_bson_json_uescape_bad (void)
 static void
 test_bson_json_double_overflow (void)
 {
+   const char *nums[] = {"2e400", "-2e400", NULL};
+   const char **p;
+   char *j;
    bson_error_t error;
    bson_t b;
 
-   const char *j = "{ \"d\": 2e400 }";
+   for (p = nums; *p; p++) {
+      j = bson_strdup_printf ("{ \"d\" : %s }", *p);
+      assert (!bson_init_from_json (&b, j, -1, &error));
+      ASSERT_ERROR_CONTAINS (error,
+                             BSON_ERROR_JSON,
+                             BSON_JSON_ERROR_READ_INVALID_PARAM,
+                             "out of range");
 
-   assert (!bson_init_from_json (&b, j, -1, &error));
-   ASSERT_ERROR_CONTAINS (error,
-                          BSON_ERROR_JSON,
-                          BSON_JSON_ERROR_READ_INVALID_PARAM,
-                          "out of range");
+      bson_free (j);
+
+      /* same test with canonical Extended JSON */
+      j = bson_strdup_printf ("{ \"d\" : { \"$numberDouble\" : \"%s\" } }", *p);
+      assert (!bson_init_from_json (&b, j, -1, &error));
+      ASSERT_ERROR_CONTAINS (error,
+                             BSON_ERROR_JSON,
+                             BSON_JSON_ERROR_READ_INVALID_PARAM,
+                             "out of range");
+
+      bson_free (j);
+   }
+}
+
+
+static void
+test_bson_json_nan (void)
+{
+   bson_error_t error;
+   bson_t b;
+   double d;
+
+   /* should parse any capitalization of NaN */
+   const char *extj = "{ \"d\": {\"$numberDouble\": \"NaN\" } }";
+   const char *extj2 = "{ \"d\": {\"$numberDouble\": \"nAn\" } }";
+
+   assert (bson_init_from_json (&b, extj, -1, &error));
+   assert (BCON_EXTRACT (&b, "d", BCONE_DOUBLE (d)));
+   assert (d != d); /* not a number */
+   bson_destroy (&b);
+
+   assert (bson_init_from_json (&b, extj2, -1, &error));
+   assert (BCON_EXTRACT (&b, "d", BCONE_DOUBLE (d)));
+   assert (d != d);
+   bson_destroy (&b);
 }
 
 
@@ -1859,6 +1898,7 @@ test_json_install (TestSuite *suite)
       suite, "/bson/json/read/uescape/bad", test_bson_json_uescape_bad);
    TestSuite_Add (
       suite, "/bson/json/read/double/overflow", test_bson_json_double_overflow);
+   TestSuite_Add (suite, "/bson/json/read/double/nan", test_bson_json_nan);
    TestSuite_Add (
       suite, "/bson/json/read/empty_final", test_bson_json_empty_final_object);
    TestSuite_Add (
