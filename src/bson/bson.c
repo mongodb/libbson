@@ -56,6 +56,7 @@ typedef struct {
 typedef struct {
    uint32_t count;
    bool keys;
+   ssize_t *err_offset;
    uint32_t depth;
    bson_string_t *str;
 } bson_json_state_t;
@@ -2767,6 +2768,13 @@ _bson_as_json_visit_before (const bson_iter_t *iter,
 }
 
 
+static void
+_bson_as_json_visit_corrupt (const bson_iter_t *iter, void *data)
+{
+   *(((bson_json_state_t *) data)->err_offset) = iter->off;
+}
+
+
 static bool
 _bson_as_json_visit_code (const bson_iter_t *iter,
                           const char *key,
@@ -2822,7 +2830,7 @@ _bson_as_json_visit_codewscope (const bson_iter_t *iter,
 
    code_escaped = bson_utf8_escape_for_json (v_code, v_code_len);
    if (!code_escaped) {
-      return true; /* error */
+      return true;
    }
 
 BEGIN_IGNORE_DEPRECATIONS
@@ -2850,7 +2858,7 @@ END_IGNORE_DEPRECATIONS
 static const bson_visitor_t bson_as_extended_json_visitors = {
    _bson_as_json_visit_before,
    NULL, /* visit_after */
-   NULL, /* visit_corrupt */
+   _bson_as_json_visit_corrupt,
    _bson_as_json_visit_double,
    _bson_as_json_visit_utf8,
    _bson_as_extended_json_visit_document,
@@ -2879,7 +2887,7 @@ static const bson_visitor_t bson_as_extended_json_visitors = {
 static const bson_visitor_t bson_as_json_visitors = {
    _bson_as_json_visit_before,
    NULL, /* visit_after */
-   NULL, /* visit_corrupt */
+   _bson_as_json_visit_corrupt,
    _bson_as_json_visit_double,
    _bson_as_json_visit_utf8,
    _bson_as_json_visit_document,
@@ -2913,7 +2921,7 @@ _bson_as_json_visit_document_with_visitors (const bson_iter_t *iter,
                                             const bson_visitor_t *visitor)
 {
    bson_json_state_t *state = data;
-   bson_json_state_t child_state = {0, true};
+   bson_json_state_t child_state = {0, true, state->err_offset};
    bson_iter_t child;
 
    if (state->depth >= BSON_MAX_RECURSION) {
@@ -2924,7 +2932,10 @@ _bson_as_json_visit_document_with_visitors (const bson_iter_t *iter,
    if (bson_iter_init (&child, v_document)) {
       child_state.str = bson_string_new ("{ ");
       child_state.depth = state->depth + 1;
-      bson_iter_visit_all (&child, visitor, &child_state);
+      if (bson_iter_visit_all (&child, visitor, &child_state)) {
+         return true;
+      }
+
       bson_string_append (child_state.str, " }");
       bson_string_append (state->str, child_state.str->str);
       bson_string_free (child_state.str, true);
@@ -2964,7 +2975,7 @@ _bson_as_json_visit_array_with_visitors (const bson_iter_t *iter,
                                          const bson_visitor_t *visitor)
 {
    bson_json_state_t *state = data;
-   bson_json_state_t child_state = {0, false};
+   bson_json_state_t child_state = {0, false, state->err_offset};
    bson_iter_t child;
 
    if (state->depth >= BSON_MAX_RECURSION) {
@@ -2975,7 +2986,10 @@ _bson_as_json_visit_array_with_visitors (const bson_iter_t *iter,
    if (bson_iter_init (&child, v_array)) {
       child_state.str = bson_string_new ("[ ");
       child_state.depth = state->depth + 1;
-      bson_iter_visit_all (&child, visitor, &child_state);
+      if (bson_iter_visit_all (&child, visitor, &child_state)) {
+         return true;
+      }
+
       bson_string_append (child_state.str, " ]");
       bson_string_append (state->str, child_state.str->str);
       bson_string_free (child_state.str, true);
@@ -3014,6 +3028,7 @@ _bson_as_json_visit_all (const bson_t *bson,
 {
    bson_json_state_t state;
    bson_iter_t iter;
+   ssize_t err_offset = -1;
 
    BSON_ASSERT (bson);
 
@@ -3037,8 +3052,9 @@ _bson_as_json_visit_all (const bson_t *bson,
    state.keys = true;
    state.str = bson_string_new ("{ ");
    state.depth = 0;
+   state.err_offset = &err_offset;
 
-   if (bson_iter_visit_all (&iter, visitors, &state) || iter.err_off) {
+   if (bson_iter_visit_all (&iter, visitors, &state) || err_offset != -1) {
       /*
        * We were prematurely exited due to corruption or failed visitor.
        */
@@ -3079,6 +3095,7 @@ bson_array_as_json (const bson_t *bson, size_t *length)
 {
    bson_json_state_t state;
    bson_iter_t iter;
+   ssize_t err_offset = -1;
 
    BSON_ASSERT (bson);
 
@@ -3102,10 +3119,11 @@ bson_array_as_json (const bson_t *bson, size_t *length)
    state.keys = false;
    state.str = bson_string_new ("[ ");
    state.depth = 0;
+   state.err_offset = &err_offset;
    bson_iter_visit_all (&iter, &bson_as_json_visitors, &state);
 
    if (bson_iter_visit_all (&iter, &bson_as_json_visitors, &state) ||
-       iter.err_off) {
+       err_offset != -1) {
       /*
        * We were prematurely exited due to corruption or failed visitor.
        */
