@@ -87,6 +87,13 @@ _bson_as_json_visit_document (const bson_iter_t *iter,
                               void *data);
 
 
+static uint64_t
+_int64_timestamp (uint32_t timestamp, uint32_t increment)
+{
+   return (((uint64_t) timestamp) << 32) | (uint64_t) increment;
+}
+
+
 /*
  * Globals.
  */
@@ -1665,8 +1672,7 @@ bson_append_timestamp (bson_t *bson,
       key_length = (int) strlen (key);
    }
 
-   value = ((((uint64_t) timestamp) << 32) | ((uint64_t) increment));
-   value = BSON_UINT64_TO_LE (value);
+   value = BSON_UINT64_TO_LE (_int64_timestamp (timestamp, increment));
 
    return _bson_append (bson,
                         4,
@@ -2733,6 +2739,23 @@ _bson_as_json_visit_regex (const bson_iter_t *iter,
 
 
 static bool
+_bson_as_extended_json_visit_timestamp (const bson_iter_t *iter,
+                                        const char *key,
+                                        uint32_t v_timestamp,
+                                        uint32_t v_increment,
+                                        void *data)
+{
+   bson_json_state_t *state = data;
+
+   bson_string_append_printf (state->str,
+                              "{ \"$timestamp\" : \"%" PRIu64 "\" }",
+                              _int64_timestamp (v_timestamp, v_increment));
+
+   return false;
+}
+
+
+static bool
 _bson_as_json_visit_timestamp (const bson_iter_t *iter,
                                const char *key,
                                uint32_t v_timestamp,
@@ -2974,7 +2997,7 @@ static const bson_visitor_t bson_as_extended_json_visitors = {
    _bson_as_json_visit_symbol,
    _bson_as_extended_json_visit_codewscope,
    _bson_as_extended_json_visit_int32,
-   _bson_as_json_visit_timestamp,
+   _bson_as_extended_json_visit_timestamp,
    _bson_as_extended_json_visit_int64,
    _bson_as_json_visit_maxkey,
    _bson_as_json_visit_minkey,

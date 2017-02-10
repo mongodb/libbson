@@ -1733,6 +1733,35 @@ test_bson_json_date_numberlong (void)
       1356351330500);
 }
 
+
+static void
+test_bson_json_timestamp (void)
+{
+   bson_error_t error = {0};
+   bson_t b, compare;
+   bool r;
+
+   bson_init (&compare);
+
+   BSON_APPEND_TIMESTAMP (
+      &compare, "ts", (uint32_t) 1486785977, (uint32_t) 1234);
+
+   /* 1486785977 << 32 | 1234 */
+   r = bson_init_from_json (
+      &b, "{\"ts\": {\"$timestamp\": \"6385697147366409426\"}}", -1, &error);
+
+   if (!r) {
+      fprintf (stderr, "%s\n", error.message);
+   }
+
+   assert (r);
+
+   bson_eq_bson (&b, &compare);
+   bson_destroy (&compare);
+   bson_destroy (&b);
+}
+
+
 static void
 test_bson_json_special_keys_at_top (void)
 {
@@ -1851,6 +1880,7 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/json/date", test_bson_json_date);
    TestSuite_Add (
       suite, "/bson/json/date/long", test_bson_json_date_numberlong);
+   TestSuite_Add (suite, "/bson/json/timestamp", test_bson_json_timestamp);
    TestSuite_Add (suite, "/bson/json/read/empty", test_bson_json_read_empty);
    TestSuite_Add (suite,
                   "/bson/json/read/missing_complex",
