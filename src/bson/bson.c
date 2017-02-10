@@ -2833,12 +2833,13 @@ _bson_as_json_visit_symbol (const bson_iter_t *iter,
 
 
 static bool
-_bson_as_json_visit_codewscope (const bson_iter_t *iter,
-                                const char *key,
-                                size_t v_code_len,
-                                const char *v_code,
-                                const bson_t *v_scope,
-                                void *data)
+_bson_as_json_visit_codewscope_common (const bson_iter_t *iter,
+                                       const char *key,
+                                       size_t v_code_len,
+                                       const char *v_code,
+                                       const bson_t *v_scope,
+                                       void *data,
+                                       bool legacy)
 {
    bson_json_state_t *state = data;
    char *code_escaped;
@@ -2849,9 +2850,14 @@ _bson_as_json_visit_codewscope (const bson_iter_t *iter,
       return true;
    }
 
-BEGIN_IGNORE_DEPRECATIONS
-   scope = bson_as_json (v_scope, NULL);
-END_IGNORE_DEPRECATIONS
+   if (legacy) {
+      BEGIN_IGNORE_DEPRECATIONS
+      scope = bson_as_json (v_scope, NULL);
+      END_IGNORE_DEPRECATIONS
+   } else {
+      scope = bson_as_extended_json (v_scope, NULL);
+   }
+
    if (!scope) {
       bson_free (code_escaped);
       return true;
@@ -2867,6 +2873,32 @@ END_IGNORE_DEPRECATIONS
    bson_free (scope);
 
    return false;
+}
+
+
+static bool
+_bson_as_extended_json_visit_codewscope (const bson_iter_t *iter,
+                                         const char *key,
+                                         size_t v_code_len,
+                                         const char *v_code,
+                                         const bson_t *v_scope,
+                                         void *data)
+{
+   return _bson_as_json_visit_codewscope_common (
+      iter, key, v_code_len, v_code, v_scope, data, false /* legacy */);
+}
+
+
+static bool
+_bson_as_json_visit_codewscope (const bson_iter_t *iter,
+                                const char *key,
+                                size_t v_code_len,
+                                const char *v_code,
+                                const bson_t *v_scope,
+                                void *data)
+{
+   return _bson_as_json_visit_codewscope_common (
+      iter, key, v_code_len, v_code, v_scope, data, true /* legacy */);
 }
 
 
@@ -2889,7 +2921,7 @@ static const bson_visitor_t bson_as_extended_json_visitors = {
    _bson_as_json_visit_dbpointer,
    _bson_as_json_visit_code,
    _bson_as_json_visit_symbol,
-   _bson_as_json_visit_codewscope,
+   _bson_as_extended_json_visit_codewscope,
    _bson_as_extended_json_visit_int32,
    _bson_as_json_visit_timestamp,
    _bson_as_json_visit_int64,
