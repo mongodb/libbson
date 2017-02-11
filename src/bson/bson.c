@@ -2727,11 +2727,19 @@ _bson_as_json_visit_regex (const bson_iter_t *iter,
                            void *data)
 {
    bson_json_state_t *state = data;
+   const char *c;
 
    bson_string_append (state->str, "{ \"$regex\" : \"");
    bson_string_append (state->str, v_regex);
    bson_string_append (state->str, "\", \"$options\" : \"");
-   bson_string_append (state->str, v_options);
+
+   /* sort the options */
+   for (c = "ilmsux"; *c; c++) {
+      if (strchr (v_options, *c)) {
+         bson_string_append_c (state->str, *c);
+      }
+   }
+
    bson_string_append (state->str, "\" }");
 
    return false;
