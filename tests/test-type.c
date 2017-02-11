@@ -130,33 +130,6 @@ test_bson_type_unhexlify (bson_iter_t *iter, uint32_t *bson_str_len)
 }
 
 
-static char *
-unescape (bson_iter_t *iter, uint32_t *unescaped_len)
-{
-   const char *s;
-   uint32_t len;
-   char *unescaped;
-   jsonsl_error_t jsonsl_error;
-
-   s = bson_iter_utf8 (iter, &len);
-   unescaped = bson_malloc (len + 1);
-   *unescaped_len = (uint32_t) jsonsl_util_unescape (
-      s, unescaped, (size_t) len, NULL, &jsonsl_error);
-
-   if (!*unescaped_len) {
-      fprintf (stderr,
-               "Error unescaping %s: %s\n",
-               s,
-               jsonsl_strerror (jsonsl_error));
-      abort ();
-   }
-
-   unescaped[*unescaped_len] = '\0';
-
-   return unescaped;
-}
-
-
 void
 test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
 {
@@ -202,11 +175,11 @@ test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
             }
 
             if (!strcmp (key, "extjson")) {
-               test.E = unescape (&test_iter, &test.E_len);
+               test.E = bson_iter_utf8 (&test_iter, &test.E_len);
             }
 
             if (!strcmp (key, "canonical_extjson")) {
-               test.cE = unescape (&test_iter, &test.cE_len);
+               test.cE = bson_iter_utf8 (&test_iter, &test.cE_len);
             }
 
             if (!strcmp (key, "lossy")) {
@@ -234,12 +207,6 @@ test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
          }
 
          bson_free (test.B);
-
-         if (test.cE != test.E) {
-            bson_free (test.cE);
-         }
-
-         bson_free (test.E);
       }
    }
 }
