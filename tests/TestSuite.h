@@ -157,7 +157,10 @@ extern "C" {
       } while (*b);                                                        \
       if (!!strcmp ((aa), (bb))) {                                         \
          fprintf (                                                         \
-            stderr, "FAIL\n\nAssert Failure: \"%s\" != \"%s\"\n", aa, bb); \
+            stderr, "FAIL\n\nAssert Failure: \"%s\" != \"%s\"\n"           \
+                  "%s:%d  %s()\n",                                         \
+                  aa, bb,                                                  \
+                  __FILE__, __LINE__, BSON_FUNC);                          \
          abort ();                                                         \
       }                                                                    \
       bson_free (aa);                                                      \
