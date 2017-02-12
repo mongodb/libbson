@@ -1484,6 +1484,10 @@ _error_callback (jsonsl_t json,
       reader->should_reset = true;
       reader->advance = errat - json->base;
       return 0;
+   } else if (err == JSONSL_ERROR_WEIRD_WHITESPACE && *errat == '\0') {
+      /* embedded NULL is ok */
+      json->pos++;
+      return 1;
    }
 
    bson_set_error (reader->error,
