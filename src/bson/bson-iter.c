@@ -18,9 +18,6 @@
 #include "bson-iter.h"
 #include "bson-config.h"
 #include "bson-decimal128.h"
-#ifdef HAVE_STRINGS_H
-#include <strings.h>
-#endif
 
 
 #define ITER_TYPE(i) ((bson_type_t) * ((i)->raw + (i)->type))
@@ -278,11 +275,7 @@ bson_iter_find_case (bson_iter_t *iter, /* INOUT */
    BSON_ASSERT (key);
 
    while (bson_iter_next (iter)) {
-#ifdef BSON_OS_WIN32
-      if (!_stricmp (key, bson_iter_key (iter))) {
-#else
-      if (!strcasecmp (key, bson_iter_key (iter))) {
-#endif
+      if (!bson_strcasecmp (key, bson_iter_key (iter))) {
          return true;
       }
    }

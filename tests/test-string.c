@@ -286,6 +286,15 @@ test_bson_strncpy (void)
 }
 
 
+static void
+test_bson_strcasecmp (void)
+{
+   assert (!bson_strcasecmp ("FoO", "foo"));
+   assert (bson_strcasecmp ("Foa", "foo") < 0);
+   assert (bson_strcasecmp ("FoZ", "foo") > 0);
+}
+
+
 void
 test_string_install (TestSuite *suite)
 {
@@ -302,4 +311,5 @@ test_string_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/string/ascii_strtoll", test_bson_ascii_strtoll);
    TestSuite_Add (suite, "/bson/string/strncpy", test_bson_strncpy);
    TestSuite_Add (suite, "/bson/string/strnlen", test_bson_strnlen);
+   TestSuite_Add (suite, "/bson/string/strcasecmp", test_bson_strcasecmp);
 }

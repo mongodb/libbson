@@ -17,14 +17,17 @@
 
 #include <limits.h>
 #include <stdarg.h>
-#include <string.h>
 
 #include "bson-compat.h"
-#include "bson-config.h"
 #include "bson-string.h"
 #include "bson-memory.h"
 #include "bson-utf8.h"
 
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#else
+#include <string.h>
+#endif
 
 /*
  *--------------------------------------------------------------------------
@@ -797,4 +800,15 @@ bson_ascii_strtoll (const char *s, char **e, int base)
    }
 
    return number;
+}
+
+
+int
+bson_strcasecmp (const char *s1, const char *s2)
+{
+#ifdef BSON_OS_WIN32
+   return _stricmp (s1, s2);
+#else
+   return strcasecmp (s1, s2);
+#endif
 }

@@ -77,6 +77,8 @@ BSON_EXPORT (size_t)
 bson_strnlen (const char *s, size_t maxlen);
 BSON_EXPORT (int64_t)
 bson_ascii_strtoll (const char *str, char **endptr, int base);
+BSON_EXPORT (int)
+bson_strcasecmp (const char *s1, const char *s2);
 
 
 BSON_END_DECLS

@@ -105,12 +105,7 @@ test_bson_oid_init_from_string (void)
 
       bson_oid_init_from_string (&oid, gTestOidsCase[i]);
       bson_oid_to_string (&oid, str);
-
-#ifdef BSON_OS_WIN32
-      assert (!_stricmp (str, gTestOidsCase[i]));
-#else
-      assert (!strcasecmp (str, gTestOidsCase[i]));
-#endif
+      assert (!bson_strcasecmp (str, gTestOidsCase[i]));
 
       for (j = 0; gTestOidsCase[i][j]; j++) {
          oid_lower[j] = tolower (gTestOidsCase[i][j]);
