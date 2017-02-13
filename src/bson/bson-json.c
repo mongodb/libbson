@@ -868,7 +868,9 @@ _bson_json_read_map_key (bson_json_reader_t *reader, /* IN */
    }
 
    if (bson->read_state == BSON_JSON_IN_START_MAP) {
-      if (len > 0 && val[0] == '$' && _is_known_key ((const char *) val, len)) {
+      if (len > 0 && val[0] == '$' &&
+          _is_known_key ((const char *) val, len) &&
+          bson->n >= 0 /* key is in subdocument */) {
          bson->read_state = BSON_JSON_IN_BSON_TYPE;
          bson->bson_type = (bson_type_t) 0;
          memset (&bson->bson_type_data, 0, sizeof bson->bson_type_data);

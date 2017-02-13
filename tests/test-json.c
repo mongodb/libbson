@@ -1754,35 +1754,13 @@ test_bson_json_timestamp (void)
       fprintf (stderr, "%s\n", error.message);
    }
 
-   assert (r);
+   BSON_ASSERT (r);
 
    bson_eq_bson (&b, &compare);
    bson_destroy (&compare);
    bson_destroy (&b);
 }
 
-
-static void
-test_bson_json_special_keys_at_top (void)
-{
-   const char *invalid[] = {
-      /* needs outer key name, like {x: {$date: {$numberLong: "1234"}}} */
-      "{ \"$date\" : { \"$numberLong\" : \"1234\" } }",
-      "{  \"$oid\" : { \"$numberLong\" : \"1234\" } }",
-      "{  \"$oid\" : \"563b029096f9bc35c61df3a3\" }",
-   };
-
-   bson_t b;
-   bson_error_t error;
-   int i;
-
-   for (i = 0; i < sizeof (invalid) / sizeof (const char *); i++) {
-      BSON_ASSERT (!bson_init_from_json (&b, invalid[i], -1, &error));
-      ASSERT_CMPINT (error.domain, ==, BSON_ERROR_JSON);
-      ASSERT_CMPINT (error.code, ==, BSON_JSON_ERROR_READ_CORRUPT_JS);
-      ASSERT_CMPSTR (error.message, "Invalid MongoDB extended JSON");
-   }
-}
 
 static void
 test_bson_array_as_json (void)
@@ -1861,9 +1839,6 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (
       suite, "/bson/as_json/binary_order", test_bson_json_binary_order);
    TestSuite_Add (suite, "/bson/as_json_spacing", test_bson_as_json_spacing);
-   TestSuite_Add (suite,
-                  "/bson/as_json_special_keys_at_top",
-                  test_bson_json_special_keys_at_top);
    TestSuite_Add (suite, "/bson/array_as_json", test_bson_array_as_json);
    TestSuite_Add (
       suite, "/bson/json/allow_multiple", test_bson_json_allow_multiple);
