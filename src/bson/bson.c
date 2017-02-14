@@ -2785,7 +2785,7 @@ _bson_as_extended_json_visit_dbpointer (const bson_iter_t *iter,
    bson_json_state_t *state = data;
    char str[25];
 
-   bson_string_append (state->str, "{ \"$ref\" : \"");
+   bson_string_append (state->str, "{ \"$dbPointer\" : { \"$ref\" : \"");
    bson_string_append (state->str, v_collection);
    bson_string_append (state->str, "\"");
 
@@ -2796,7 +2796,7 @@ _bson_as_extended_json_visit_dbpointer (const bson_iter_t *iter,
       bson_string_append (state->str, "\" }");
    }
 
-   bson_string_append (state->str, " }");
+   bson_string_append (state->str, " } }");
 
    return false;
 }

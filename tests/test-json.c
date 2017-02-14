@@ -326,6 +326,27 @@ test_bson_as_json_utf8 (void)
 
 
 static void
+test_bson_as_extended_json_dbpointer (void)
+{
+   bson_oid_t oid;
+   bson_t *b;
+   size_t len;
+   char *str;
+
+   bson_oid_init_from_string (&oid, "12341234123412abcdababcd");
+   b = bson_new ();
+   BSON_ASSERT (BSON_APPEND_DBPOINTER (b, "p", "db.coll", &oid));
+   str = bson_as_extended_json (b, &len);
+   ASSERT_CMPJSON (str,
+                   "{ \"p\" : { \"$dbPointer\" : { \"$ref\" : "
+                   "\"db.coll\", \"$id\" : { \"$oid\" : "
+                   "\"12341234123412abcdababcd\" } } } }");
+
+   bson_destroy (b);
+}
+
+
+static void
 test_bson_as_json_stack_overflow (void)
 {
    uint8_t *buf;
@@ -744,6 +765,44 @@ test_bson_json_read_decimal128 (void)
 
    _test_bson_json_read_compare (json, 5, doc, NULL);
 }
+
+
+static void
+test_bson_json_read_dbpointer (void)
+{
+   bson_t b;
+   bson_error_t error;
+   bool r;
+
+   /* must have both $ref and $id, $id must be ObjectId */
+   const char *invalid[] = {
+      "{\"p\": {\"$dbPointer\": {\"$ref\": \"db.collection\"}}",
+      "$dbPointer requires both $id and $ref",
+
+      "{\"p\": {\"$dbPointer\": {\"$ref\": \"db.collection\", \"$id\": 1}}",
+      "$dbPointer.$id must be like {\"$oid\": ...\"}",
+
+      "{\"p\": {\"$dbPointer\": {\"$id\": {"
+      "\"$oid\": \"57e193d7a9cc81b4027498b1\"}}}}",
+      "$dbPointer requires both $id and $ref",
+
+      "{\"p\": {\"$dbPointer\": {}}}",
+      "Empty $dbPointer",
+
+      NULL};
+
+   const char **p;
+
+   for (p = invalid; *p; p += 2) {
+      r = bson_init_from_json (&b, *p, -1, &error);
+      BSON_ASSERT (!r);
+      ASSERT_ERROR_CONTAINS (
+         error, BSON_ERROR_JSON, BSON_JSON_ERROR_READ_INVALID_PARAM, *(p + 1));
+
+      bson_destroy (&b);
+   }
+}
+
 
 static void
 test_json_reader_new_from_file (void)
@@ -1830,6 +1889,9 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/as_json/double", test_bson_as_json_double);
    TestSuite_Add (suite, "/bson/as_json/code", test_bson_as_json_code);
    TestSuite_Add (suite, "/bson/as_json/utf8", test_bson_as_json_utf8);
+   TestSuite_Add (suite,
+                  "/bson/as_extended_json/dbpointer",
+                  test_bson_as_extended_json_dbpointer);
    TestSuite_Add (
       suite, "/bson/as_json/stack_overflow", test_bson_as_json_stack_overflow);
    TestSuite_Add (suite, "/bson/as_json/corrupt", test_bson_corrupt);
@@ -1874,6 +1936,8 @@ test_json_install (TestSuite *suite)
       suite, "/bson/json/read/corrupt_utf8", test_bson_json_read_corrupt_utf8);
    TestSuite_Add (
       suite, "/bson/json/read/decimal128", test_bson_json_read_decimal128);
+   TestSuite_Add (
+      suite, "/bson/json/read/dbpointer", test_bson_json_read_dbpointer);
    TestSuite_Add (
       suite, "/bson/json/read/file", test_json_reader_new_from_file);
    TestSuite_Add (
