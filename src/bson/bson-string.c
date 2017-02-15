@@ -599,7 +599,7 @@ bson_vsnprintf (char *str,          /* IN */
                 const char *format, /* IN */
                 va_list ap)         /* IN */
 {
-#ifdef BSON_OS_WIN32
+#ifdef _MSC_VER
    int r = -1;
 
    BSON_ASSERT (str);
