@@ -47,6 +47,8 @@
 
 static int test_flags;
 
+const int MAX_THREADS = 10;
+
 
 #define TEST_VERBOSE (1 << 0)
 #define TEST_NOFORK (1 << 1)
@@ -629,6 +631,7 @@ TestSuite_PrintJsonFooter (FILE *stream) /* IN */
 typedef struct {
    TestSuite *suite;
    Test *test;
+   int n_tests;
    Mutex *mutex;
    int *count;
 } ParallelInfo;
@@ -638,19 +641,26 @@ static void *
 TestSuite_ParallelWorker (void *data) /* IN */
 {
    ParallelInfo *info = (ParallelInfo *) data;
+   Test *test;
+   int i;
    int status;
 
    ASSERT (info);
+   test = info->test;
 
-   status =
-      TestSuite_RunTest (info->suite, info->test, info->mutex, info->count);
-
-   if (AtomicInt_DecrementAndTest (info->count)) {
-      TestSuite_PrintJsonFooter (stdout);
-      if (info->suite->outfile) {
-         TestSuite_PrintJsonFooter (info->suite->outfile);
+   /* there's MAX_THREADS threads, each runs n_tests tests */
+   for (i = 0; i < info->n_tests; i++) {
+      ASSERT (test);
+      status = TestSuite_RunTest (info->suite, test, info->mutex, info->count);
+      if (AtomicInt_DecrementAndTest (info->count)) {
+         TestSuite_PrintJsonFooter (stdout);
+         if (info->suite->outfile) {
+            TestSuite_PrintJsonFooter (info->suite->outfile);
+         }
+         exit (status);
       }
-      exit (status);
+
+      test = test->next;
    }
 
    /* an info is allocated for each thread in TestSuite_RunParallel */
@@ -658,6 +668,9 @@ TestSuite_ParallelWorker (void *data) /* IN */
 
    return NULL;
 }
+
+/* easier than having to link with math library */
+#define CEIL(d) ((int) (d) == d ? (int) (d) : (int) (d) + 1)
 
 
 static void
@@ -668,6 +681,8 @@ TestSuite_RunParallel (TestSuite *suite) /* IN */
    Mutex mutex;
    Test *test;
    int count = 0;
+   int starting_count;
+   int tests_per_thread;
    int i;
 
    ASSERT (suite);
@@ -678,19 +693,30 @@ TestSuite_RunParallel (TestSuite *suite) /* IN */
       count++;
    }
 
-   threads = (Thread *) calloc (count, sizeof *threads);
+   /* threads start decrementing count immediately, save a copy */
+   starting_count = count;
+   tests_per_thread = CEIL ((double) count / (double) MAX_THREADS);
+   threads = (Thread *) calloc (MAX_THREADS, sizeof *threads);
 
    Memory_Barrier ();
 
+   /* "tests" is a linked list, a->b->c->d->..., iterate it and every
+    * tests_per_thread start a new thread, point it at our position in the list,
+    * and tell it to run the next tests_per_thread tests. */
    for (test = suite->tests, i = 0; test; test = test->next, i++) {
-      info = (ParallelInfo *) calloc (1, sizeof *info);
-      info->suite = suite;
-      info->test = test;
-      info->count = &count;
-      info->mutex = &mutex;
-      Thread_Create (&threads[i], TestSuite_ParallelWorker, info);
+      if (!(i % tests_per_thread)) {
+         info = (ParallelInfo *) calloc (1, sizeof *info);
+         info->suite = suite;
+         info->test = test;
+         info->n_tests = BSON_MIN (tests_per_thread, starting_count - i);
+         info->count = &count;
+         info->mutex = &mutex;
+         Thread_Create (threads, TestSuite_ParallelWorker, info);
+         threads++;
+      }
    }
 
+/* wait for the thread that runs the last test to call exit (0) */
 #ifdef _WIN32
    Sleep (30000);
 #else
