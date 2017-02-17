@@ -2487,6 +2487,21 @@ _bson_as_json_visit_int32 (const bson_iter_t *iter,
 
 
 static bool
+_bson_as_extended_json_visit_int64 (const bson_iter_t *iter,
+                                    const char *key,
+                                    int64_t v_int64,
+                                    void *data)
+{
+   bson_json_state_t *state = data;
+
+   bson_string_append_printf (
+      state->str, "{ \"$numberLong\" : \"%" PRId64 "\"}", v_int64);
+
+   return false;
+}
+
+
+static bool
 _bson_as_json_visit_int64 (const bson_iter_t *iter,
                            const char *key,
                            int64_t v_int64,
@@ -2924,7 +2939,7 @@ static const bson_visitor_t bson_as_extended_json_visitors = {
    _bson_as_extended_json_visit_codewscope,
    _bson_as_extended_json_visit_int32,
    _bson_as_json_visit_timestamp,
-   _bson_as_json_visit_int64,
+   _bson_as_extended_json_visit_int64,
    _bson_as_json_visit_maxkey,
    _bson_as_json_visit_minkey,
    NULL, /* visit_unsupported_type */
