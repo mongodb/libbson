@@ -271,6 +271,7 @@ if (ENABLE_TESTS)
          DESTINATION ${PROJECT_BINARY_DIR}/tests)
 endif ()  # ENABLE_TESTS
 
+set (BSON_HEADER_INSTALL_DIR "include/libbson-${BSON_API_VERSION}")
 install(
   TARGETS bson_shared bson_static
   LIBRARY DESTINATION lib
@@ -279,7 +280,7 @@ install(
 )
 install(
   FILES ${HEADERS}
-  DESTINATION "include/libbson-${BSON_API_VERSION}"
+  DESTINATION ${BSON_HEADER_INSTALL_DIR}
 )
 
 set(VERSION "${BSON_VERSION}")
@@ -294,3 +295,5 @@ install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/libbson-1.0.pc
     DESTINATION lib/pkgconfig
 )
+
+include (build/cmake/BSONPackage.cmake)
