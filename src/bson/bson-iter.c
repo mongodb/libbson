@@ -70,6 +70,51 @@ bson_iter_init (bson_iter_t *iter,  /* OUT */
 /*
  *--------------------------------------------------------------------------
  *
+ * bson_iter_init_from_data --
+ *
+ *       Initializes @iter to be used to iterate @data of length @length
+ *
+ * Returns:
+ *       true if bson_iter_t was initialized. otherwise false.
+ *
+ * Side effects:
+ *       @iter is initialized.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+bool
+bson_iter_init_from_data (bson_iter_t *iter,   /* OUT */
+                          const uint8_t *data, /* IN */
+                          size_t length)       /* IN */
+{
+   BSON_ASSERT (iter);
+   BSON_ASSERT (data);
+
+   if (BSON_UNLIKELY ((length < 5) || (length > INT_MAX))) {
+      memset (iter, 0, sizeof *iter);
+      return false;
+   }
+
+   iter->raw = (uint8_t *) data;
+   iter->len = length;
+   iter->off = 0;
+   iter->type = 0;
+   iter->key = 0;
+   iter->d1 = 0;
+   iter->d2 = 0;
+   iter->d3 = 0;
+   iter->d4 = 0;
+   iter->next_off = 4;
+   iter->err_off = 0;
+
+   return true;
+}
+
+
+/*
+ *--------------------------------------------------------------------------
+ *
  * bson_iter_recurse --
  *
  *       Creates a new sub-iter looking at the document or array that @iter

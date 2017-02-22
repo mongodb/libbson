@@ -566,6 +566,18 @@ test_bson_iter_as_bool (void)
    bson_destroy (&b);
 }
 
+static void
+test_bson_iter_from_data (void)
+{
+   /* {"b": true}, with implicit NULL at end */
+   uint8_t data[] = "\x09\x00\x00\x00\x08\x62\x00\x01";
+   bson_iter_t iter;
+
+   ASSERT (bson_iter_init_from_data (&iter, data, sizeof data));
+   ASSERT (bson_iter_next (&iter));
+   ASSERT (BSON_ITER_HOLDS_BOOL (&iter));
+   ASSERT (bson_iter_bool (&iter));
+}
 
 void
 test_iter_install (TestSuite *suite)
@@ -602,4 +614,5 @@ test_iter_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/iter/as_bool", test_bson_iter_as_bool);
    TestSuite_Add (
       suite, "/bson/iter/binary_deprecated", test_bson_iter_binary_deprecated);
+   TestSuite_Add (suite, "/bson/iter/from_data", test_bson_iter_from_data);
 }
