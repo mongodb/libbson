@@ -321,7 +321,7 @@ tasks:
           type: test
           params:
             working_dir: "libbson"
-            script: "CC='${CC}' sh .evergreen/cmake.sh"
+            script: "CC='${CC}' sh .evergreen/compile-unix-cmake.sh"
 
     - name: release-compile-c11
       depends_on:
