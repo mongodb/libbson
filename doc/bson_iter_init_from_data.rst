@@ -1,4 +1,4 @@
-:man_page: bson_iter_init_from_data_
+:man_page: bson_iter_init_from_data
 
 bson_iter_init_from_data()
 ==========================
