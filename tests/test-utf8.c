@@ -16,8 +16,6 @@
 
 #include <bson.h>
 
-#include <assert.h>
-
 #include "bson-tests.h"
 #include "TestSuite.h"
 
@@ -29,17 +27,17 @@ test_bson_utf8_validate (void)
       0xe2, 0x82, 0xac, ' ', 0xe2, 0x82, 0xac, ' ', 0xe2, 0x82, 0xac, 0};
    static const unsigned char test2[] = {0xc0, 0x80, 0};
 
-   assert (bson_utf8_validate ("asdf", 4, false));
-   assert (bson_utf8_validate ("asdf", 4, true));
-   assert (bson_utf8_validate ("asdf", 5, true));
-   assert (!bson_utf8_validate ("asdf", 5, false));
+   BSON_ASSERT (bson_utf8_validate ("asdf", 4, false));
+   BSON_ASSERT (bson_utf8_validate ("asdf", 4, true));
+   BSON_ASSERT (bson_utf8_validate ("asdf", 5, true));
+   BSON_ASSERT (!bson_utf8_validate ("asdf", 5, false));
 
-   assert (bson_utf8_validate ((const char *) test1, 11, true));
-   assert (bson_utf8_validate ((const char *) test1, 11, false));
-   assert (bson_utf8_validate ((const char *) test1, 12, true));
-   assert (!bson_utf8_validate ((const char *) test1, 12, false));
+   BSON_ASSERT (bson_utf8_validate ((const char *) test1, 11, true));
+   BSON_ASSERT (bson_utf8_validate ((const char *) test1, 11, false));
+   BSON_ASSERT (bson_utf8_validate ((const char *) test1, 12, true));
+   BSON_ASSERT (!bson_utf8_validate ((const char *) test1, 12, false));
 
-   assert (bson_utf8_validate ((const char *) test2, 2, true));
+   BSON_ASSERT (bson_utf8_validate ((const char *) test2, 2, true));
 }
 
 
@@ -49,19 +47,19 @@ test_bson_utf8_escape_for_json (void)
    char *str;
 
    str = bson_utf8_escape_for_json ("my\0key", 6);
-   assert (0 == memcmp (str, "my\\u0000key", 7));
+   BSON_ASSERT (0 == memcmp (str, "my\\u0000key", 7));
    bson_free (str);
 
    str = bson_utf8_escape_for_json ("my\"key", 6);
-   assert (0 == memcmp (str, "my\\\"key", 8));
+   BSON_ASSERT (0 == memcmp (str, "my\\\"key", 8));
    bson_free (str);
 
    str = bson_utf8_escape_for_json ("my\\key", 6);
-   assert (0 == memcmp (str, "my\\\\key", 8));
+   BSON_ASSERT (0 == memcmp (str, "my\\\\key", 8));
    bson_free (str);
 
    str = bson_utf8_escape_for_json ("\\\"\\\"", -1);
-   assert (0 == memcmp (str, "\\\\\\\"\\\\\\\"", 9));
+   BSON_ASSERT (0 == memcmp (str, "\\\\\\\"\\\\\\\"", 9));
    bson_free (str);
 }
 
@@ -72,9 +70,9 @@ test_bson_utf8_invalid (void)
    /* no UTF-8 sequence can start with 0x80 */
    static const unsigned char bad[] = {0x80, 0};
 
-   assert (!bson_utf8_validate ((const char *) bad, 1, true));
-   assert (!bson_utf8_validate ((const char *) bad, 1, false));
-   assert (!bson_utf8_escape_for_json ((const char *) bad, 1));
+   BSON_ASSERT (!bson_utf8_validate ((const char *) bad, 1, true));
+   BSON_ASSERT (!bson_utf8_validate ((const char *) bad, 1, false));
+   BSON_ASSERT (!bson_utf8_escape_for_json ((const char *) bad, 1));
 }
 
 
@@ -84,8 +82,8 @@ test_bson_utf8_nil (void)
    static const unsigned char test[] = {'a', 0, 'b', 0};
    char *str;
 
-   assert (bson_utf8_validate ((const char *) test, 3, true));
-   assert (!bson_utf8_validate ((const char *) test, 3, false));
+   BSON_ASSERT (bson_utf8_validate ((const char *) test, 3, true));
+   BSON_ASSERT (!bson_utf8_validate ((const char *) test, 3, false));
 
    /* no length provided, stop at first nil */
    str = bson_utf8_escape_for_json ((const char *) test, -1);
@@ -107,29 +105,29 @@ test_bson_utf8_get_char (void)
    const char *c;
 
    c = test1;
-   assert (bson_utf8_get_char (c) == 'a');
+   BSON_ASSERT (bson_utf8_get_char (c) == 'a');
    c = bson_utf8_next_char (c);
-   assert (bson_utf8_get_char (c) == 's');
+   BSON_ASSERT (bson_utf8_get_char (c) == 's');
    c = bson_utf8_next_char (c);
-   assert (bson_utf8_get_char (c) == 'd');
+   BSON_ASSERT (bson_utf8_get_char (c) == 'd');
    c = bson_utf8_next_char (c);
-   assert (bson_utf8_get_char (c) == 'f');
+   BSON_ASSERT (bson_utf8_get_char (c) == 'f');
    c = bson_utf8_next_char (c);
-   assert (!*c);
+   BSON_ASSERT (!*c);
 
    c = (const char *) test2;
-   assert (bson_utf8_get_char (c) == 0x20AC);
+   BSON_ASSERT (bson_utf8_get_char (c) == 0x20AC);
    c = bson_utf8_next_char (c);
-   assert (c == (const char *) test2 + 3);
-   assert (bson_utf8_get_char (c) == ' ');
+   BSON_ASSERT (c == (const char *) test2 + 3);
+   BSON_ASSERT (bson_utf8_get_char (c) == ' ');
    c = bson_utf8_next_char (c);
-   assert (bson_utf8_get_char (c) == 0x20AC);
+   BSON_ASSERT (bson_utf8_get_char (c) == 0x20AC);
    c = bson_utf8_next_char (c);
-   assert (bson_utf8_get_char (c) == ' ');
+   BSON_ASSERT (bson_utf8_get_char (c) == ' ');
    c = bson_utf8_next_char (c);
-   assert (bson_utf8_get_char (c) == 0x20AC);
+   BSON_ASSERT (bson_utf8_get_char (c) == 0x20AC);
    c = bson_utf8_next_char (c);
-   assert (!*c);
+   BSON_ASSERT (!*c);
 }
 
 
@@ -146,59 +144,59 @@ test_bson_utf8_from_unichar (void)
     * First possible sequence of a certain length.
     */
    bson_utf8_from_unichar (0, str, &len);
-   assert (len == 1);
+   BSON_ASSERT (len == 1);
    bson_utf8_from_unichar (0x00000080, str, &len);
-   assert (len == 2);
+   BSON_ASSERT (len == 2);
    bson_utf8_from_unichar (0x00000800, str, &len);
-   assert (len == 3);
+   BSON_ASSERT (len == 3);
    bson_utf8_from_unichar (0x00010000, str, &len);
-   assert (len == 4);
+   BSON_ASSERT (len == 4);
    bson_utf8_from_unichar (0x00200000, str, &len);
-   assert (len == 5);
+   BSON_ASSERT (len == 5);
    bson_utf8_from_unichar (0x04000000, str, &len);
-   assert (len == 6);
+   BSON_ASSERT (len == 6);
 
    /*
     * Last possible sequence of a certain length.
     */
    bson_utf8_from_unichar (0x0000007F, str, &len);
-   assert (len == 1);
+   BSON_ASSERT (len == 1);
    bson_utf8_from_unichar (0x000007FF, str, &len);
-   assert (len == 2);
+   BSON_ASSERT (len == 2);
    bson_utf8_from_unichar (0x0000FFFF, str, &len);
-   assert (len == 3);
+   BSON_ASSERT (len == 3);
    bson_utf8_from_unichar (0x001FFFFF, str, &len);
-   assert (len == 4);
+   BSON_ASSERT (len == 4);
    bson_utf8_from_unichar (0x03FFFFFF, str, &len);
-   assert (len == 5);
+   BSON_ASSERT (len == 5);
    bson_utf8_from_unichar (0x7FFFFFFF, str, &len);
-   assert (len == 6);
+   BSON_ASSERT (len == 6);
 
    /*
     * Other interesting values.
     */
    bson_utf8_from_unichar (0x0000D7FF, str, &len);
-   assert (len == 3);
+   BSON_ASSERT (len == 3);
    bson_utf8_from_unichar (0x0000E000, str, &len);
-   assert (len == 3);
+   BSON_ASSERT (len == 3);
    bson_utf8_from_unichar (0x0000FFFD, str, &len);
-   assert (len == 3);
+   BSON_ASSERT (len == 3);
    bson_utf8_from_unichar (0x0010FFFF, str, &len);
-   assert (len == 4);
+   BSON_ASSERT (len == 4);
    bson_utf8_from_unichar (0x00110000, str, &len);
-   assert (len == 4);
+   BSON_ASSERT (len == 4);
 
    bson_utf8_from_unichar ('a', str, &len);
-   assert (len == 1);
-   assert (!memcmp (test1, str, 1));
+   BSON_ASSERT (len == 1);
+   BSON_ASSERT (!memcmp (test1, str, 1));
 
    bson_utf8_from_unichar (0xFF, str, &len);
-   assert (len == 2);
-   assert (!memcmp ((const char *) test2, str, 2));
+   BSON_ASSERT (len == 2);
+   BSON_ASSERT (!memcmp ((const char *) test2, str, 2));
 
    bson_utf8_from_unichar (0x20AC, str, &len);
-   assert (len == 3);
-   assert (!memcmp ((const char *) test3, str, 3));
+   BSON_ASSERT (len == 3);
+   BSON_ASSERT (!memcmp ((const char *) test3, str, 3));
 }
 
 
@@ -226,7 +224,7 @@ test_bson_utf8_non_shortest (void)
    for (i = 0; tests[i]; i++) {
       if (bson_utf8_validate (tests[i], strlen (tests[i]), false)) {
          fprintf (stderr, "non-shortest form failure, test %d\n", i);
-         assert (false);
+         BSON_ASSERT (false);
       }
    }
 
@@ -234,7 +232,7 @@ test_bson_utf8_non_shortest (void)
       if (!bson_utf8_validate (
              valid_tests[i], strlen (valid_tests[i]), false)) {
          fprintf (stderr, "non-shortest form failure, valid_tests %d\n", i);
-         assert (false);
+         BSON_ASSERT (false);
       }
    }
 }

@@ -24,7 +24,6 @@
 #endif
 
 
-#include <assert.h>
 #include <stdio.h>
 
 #ifdef __cplusplus

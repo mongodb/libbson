@@ -27,7 +27,7 @@
 BSON_BEGIN_DECLS
 
 
-#define assert_cmpstr(a, b)                                               \
+#define BSON_ASSERT_CMPSTR(a, b)                                               \
    do {                                                                   \
       if (((a) != (b)) && !!strcmp ((a), (b))) {                          \
          fprintf (stderr,                                                 \
@@ -40,7 +40,7 @@ BSON_BEGIN_DECLS
    } while (0)
 
 
-#define assert_cmpint(a, eq, b)                                               \
+#define BSON_ASSERT_CMPINT(a, eq, b)                                               \
    do {                                                                       \
       if (!((a) eq (b))) {                                                    \
          fprintf (stderr,                                                     \
@@ -112,15 +112,15 @@ bson_open (const char *filename, int flags, ...)
             int fd1 = bson_open ("failure.bad.bson", O_RDWR | O_CREAT, 0640); \
             int fd2 =                                                         \
                bson_open ("failure.expected.bson", O_RDWR | O_CREAT, 0640);   \
-            assert (fd1 != -1);                                               \
-            assert (fd2 != -1);                                               \
-            assert ((bson)->len == bson_write (fd1, bson_data, (bson)->len)); \
-            assert ((expected)->len ==                                        \
+            BSON_ASSERT (fd1 != -1);                                               \
+            BSON_ASSERT (fd2 != -1);                                               \
+            BSON_ASSERT ((bson)->len == bson_write (fd1, bson_data, (bson)->len)); \
+            BSON_ASSERT ((expected)->len ==                                        \
                     bson_write (fd2, expected_data, (expected)->len));        \
             bson_close (fd1);                                                 \
             bson_close (fd2);                                                 \
          }                                                                    \
-         assert (0);                                                          \
+         BSON_ASSERT (0);                                                          \
       }                                                                       \
    } while (0)
 

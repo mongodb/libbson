@@ -15,7 +15,6 @@
  */
 
 
-#include <assert.h>
 #include <bson.h>
 #define BSON_INSIDE
 #include "bson-thread-private.h"
@@ -68,8 +67,8 @@ oid_worker (void *data)
    bson_oid_init (&oid2, context);
    for (i = 0; i < 500000; i++) {
       bson_oid_init (&oid, context);
-      assert (false == bson_oid_equal (&oid, &oid2));
-      assert (0 < bson_oid_compare (&oid, &oid2));
+      BSON_ASSERT (false == bson_oid_equal (&oid, &oid2));
+      BSON_ASSERT (0 < bson_oid_compare (&oid, &oid2));
       bson_oid_copy (&oid, &oid2);
    }
 
@@ -93,7 +92,7 @@ test_bson_oid_init_from_string (void)
    for (i = 0; gTestOids[i]; i++) {
       bson_oid_init_from_string (&oid, gTestOids[i]);
       bson_oid_to_string (&oid, str);
-      assert (!strcmp (str, gTestOids[i]));
+      BSON_ASSERT (!strcmp (str, gTestOids[i]));
    }
 
    /*
@@ -105,23 +104,23 @@ test_bson_oid_init_from_string (void)
 
       bson_oid_init_from_string (&oid, gTestOidsCase[i]);
       bson_oid_to_string (&oid, str);
-      assert (!bson_strcasecmp (str, gTestOidsCase[i]));
+      BSON_ASSERT (!bson_strcasecmp (str, gTestOidsCase[i]));
 
       for (j = 0; gTestOidsCase[i][j]; j++) {
          oid_lower[j] = tolower (gTestOidsCase[i][j]);
       }
 
       oid_lower[24] = '\0';
-      assert (!strcmp (str, oid_lower));
+      BSON_ASSERT (!strcmp (str, oid_lower));
    }
 
    /*
     * Test that sizeof(str) works (len of 25 with \0 instead of 24).
     */
-   assert (bson_oid_is_valid ("ffffffffffffffffffffffff", 24));
+   BSON_ASSERT (bson_oid_is_valid ("ffffffffffffffffffffffff", 24));
    bson_oid_init_from_string (&oid, "ffffffffffffffffffffffff");
    bson_oid_to_string (&oid, str);
-   assert (bson_oid_is_valid (str, sizeof str));
+   BSON_ASSERT (bson_oid_is_valid (str, sizeof str));
 
    /*
     * Test the failures.
@@ -130,7 +129,7 @@ test_bson_oid_init_from_string (void)
    for (i = 0; gTestOidsFail[i]; i++) {
       bson_oid_init_from_string (&oid, gTestOidsFail[i]);
       bson_oid_to_string (&oid, str);
-      assert (strcmp (str, gTestOidsFail[i]));
+      BSON_ASSERT (strcmp (str, gTestOidsFail[i]));
    }
 
    bson_context_destroy (context);
@@ -143,7 +142,7 @@ test_bson_oid_hash (void)
    bson_oid_t oid;
 
    bson_oid_init_from_string (&oid, "000000000000000000000000");
-   assert (bson_oid_hash (&oid) == 1487062149);
+   BSON_ASSERT (bson_oid_hash (&oid) == 1487062149);
 }
 
 
@@ -155,14 +154,14 @@ test_bson_oid_compare (void)
 
    bson_oid_init_from_string (&oid, "000000000000000000001234");
    bson_oid_init_from_string (&oid2, "000000000000000000001234");
-   assert (0 == bson_oid_compare (&oid, &oid2));
-   assert (true == bson_oid_equal (&oid, &oid2));
+   BSON_ASSERT (0 == bson_oid_compare (&oid, &oid2));
+   BSON_ASSERT (true == bson_oid_equal (&oid, &oid2));
 
    bson_oid_init_from_string (&oid, "000000000000000000001234");
    bson_oid_init_from_string (&oid2, "000000000000000000004321");
-   assert (bson_oid_compare (&oid, &oid2) < 0);
-   assert (bson_oid_compare (&oid2, &oid) > 0);
-   assert (false == bson_oid_equal (&oid, &oid2));
+   BSON_ASSERT (bson_oid_compare (&oid, &oid2) < 0);
+   BSON_ASSERT (bson_oid_compare (&oid2, &oid) > 0);
+   BSON_ASSERT (false == bson_oid_equal (&oid, &oid2));
 }
 
 
@@ -175,7 +174,7 @@ test_bson_oid_copy (void)
    bson_oid_init_from_string (&oid, "000000000000000000001234");
    bson_oid_init_from_string (&oid2, "000000000000000000004321");
    bson_oid_copy (&oid, &oid2);
-   assert (true == bson_oid_equal (&oid, &oid2));
+   BSON_ASSERT (true == bson_oid_equal (&oid, &oid2));
 }
 
 
@@ -191,8 +190,8 @@ test_bson_oid_init (void)
    bson_oid_init (&oid, context);
    for (i = 0; i < 10000; i++) {
       bson_oid_init (&oid2, context);
-      assert (false == bson_oid_equal (&oid, &oid2));
-      assert (0 > bson_oid_compare (&oid, &oid2));
+      BSON_ASSERT (false == bson_oid_equal (&oid, &oid2));
+      BSON_ASSERT (0 > bson_oid_compare (&oid, &oid2));
       bson_oid_copy (&oid2, &oid);
    }
    bson_context_destroy (context);
@@ -217,8 +216,8 @@ test_bson_oid_init_sequence (void)
    bson_oid_init_sequence (&oid, context);
    for (i = 0; i < 10000; i++) {
       bson_oid_init_sequence (&oid2, context);
-      assert (false == bson_oid_equal (&oid, &oid2));
-      assert (0 > bson_oid_compare (&oid, &oid2));
+      BSON_ASSERT (false == bson_oid_equal (&oid, &oid2));
+      BSON_ASSERT (0 > bson_oid_compare (&oid, &oid2));
       bson_oid_copy (&oid2, &oid);
    }
    bson_context_destroy (context);
@@ -237,8 +236,8 @@ test_bson_oid_init_sequence_thread_safe (void)
    bson_oid_init_sequence (&oid, context);
    for (i = 0; i < 10000; i++) {
       bson_oid_init_sequence (&oid2, context);
-      assert (false == bson_oid_equal (&oid, &oid2));
-      assert (0 > bson_oid_compare (&oid, &oid2));
+      BSON_ASSERT (false == bson_oid_equal (&oid, &oid2));
+      BSON_ASSERT (0 > bson_oid_compare (&oid, &oid2));
       bson_oid_copy (&oid2, &oid);
    }
    bson_context_destroy (context);
@@ -258,8 +257,8 @@ test_bson_oid_init_sequence_with_tid (void)
    bson_oid_init_sequence (&oid, context);
    for (i = 0; i < 10000; i++) {
       bson_oid_init_sequence (&oid2, context);
-      assert (false == bson_oid_equal (&oid, &oid2));
-      assert (0 > bson_oid_compare (&oid, &oid2));
+      BSON_ASSERT (false == bson_oid_equal (&oid, &oid2));
+      BSON_ASSERT (0 > bson_oid_compare (&oid, &oid2));
       bson_oid_copy (&oid2, &oid);
    }
    bson_context_destroy (context);
@@ -281,8 +280,8 @@ test_bson_oid_get_time_t (void)
    context = bson_context_new (BSON_CONTEXT_NONE);
    bson_oid_init (&oid, context);
    bson_oid_init (&oid2, context);
-   assert (bson_oid_get_time_t (&oid) == bson_oid_get_time_t (&oid2));
-   assert (time (NULL) == bson_oid_get_time_t (&oid2));
+   BSON_ASSERT (bson_oid_get_time_t (&oid) == bson_oid_get_time_t (&oid2));
+   BSON_ASSERT (time (NULL) == bson_oid_get_time_t (&oid2));
    bson_context_destroy (context);
 }
 

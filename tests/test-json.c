@@ -3,7 +3,6 @@
 
 #include <bson.h>
 #include <bcon.h>
-#include <assert.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <bson-string.h>
@@ -50,8 +49,8 @@ test_bson_json_allow_multiple (void)
       multiple_json, &test_bson_json_read_cb_helper, NULL, !allow_multiple, 0);
    reader_multiple = bson_json_reader_new (
       multiple_json, &test_bson_json_read_cb_helper, NULL, allow_multiple, 0);
-   assert (reader);
-   assert (reader_multiple);
+   BSON_ASSERT (reader);
+   BSON_ASSERT (reader_multiple);
 
    /* reader with allow_multiple false */
    /* read first json */
@@ -115,33 +114,33 @@ test_bson_as_json (void)
    bson_oid_init_from_string (&oid, "123412341234abcdabcdabcd");
 
    b = bson_new ();
-   assert (bson_append_utf8 (b, "utf8", -1, "bar", -1));
-   assert (bson_append_int32 (b, "int32", -1, 1234));
-   assert (bson_append_int64 (b, "int64", -1, 4321));
-   assert (bson_append_double (b, "double", -1, 123.4));
-   assert (bson_append_undefined (b, "undefined", -1));
-   assert (bson_append_null (b, "null", -1));
-   assert (bson_append_oid (b, "oid", -1, &oid));
-   assert (bson_append_bool (b, "true", -1, true));
-   assert (bson_append_bool (b, "false", -1, false));
-   assert (bson_append_time_t (b, "date", -1, time (NULL)));
-   assert (
+   BSON_ASSERT (bson_append_utf8 (b, "utf8", -1, "bar", -1));
+   BSON_ASSERT (bson_append_int32 (b, "int32", -1, 1234));
+   BSON_ASSERT (bson_append_int64 (b, "int64", -1, 4321));
+   BSON_ASSERT (bson_append_double (b, "double", -1, 123.4));
+   BSON_ASSERT (bson_append_undefined (b, "undefined", -1));
+   BSON_ASSERT (bson_append_null (b, "null", -1));
+   BSON_ASSERT (bson_append_oid (b, "oid", -1, &oid));
+   BSON_ASSERT (bson_append_bool (b, "true", -1, true));
+   BSON_ASSERT (bson_append_bool (b, "false", -1, false));
+   BSON_ASSERT (bson_append_time_t (b, "date", -1, time (NULL)));
+   BSON_ASSERT (
       bson_append_timestamp (b, "timestamp", -1, (uint32_t) time (NULL), 1234));
-   assert (bson_append_regex (b, "regex", -1, "^abcd", "xi"));
-   assert (bson_append_dbpointer (b, "dbpointer", -1, "mycollection", &oid));
-   assert (bson_append_minkey (b, "minkey", -1));
-   assert (bson_append_maxkey (b, "maxkey", -1));
-   assert (bson_append_symbol (b, "symbol", -1, "var a = {};", -1));
-   assert (bson_append_decimal128 (b, "decimal128", -1, &decimal128));
+   BSON_ASSERT (bson_append_regex (b, "regex", -1, "^abcd", "xi"));
+   BSON_ASSERT (bson_append_dbpointer (b, "dbpointer", -1, "mycollection", &oid));
+   BSON_ASSERT (bson_append_minkey (b, "minkey", -1));
+   BSON_ASSERT (bson_append_maxkey (b, "maxkey", -1));
+   BSON_ASSERT (bson_append_symbol (b, "symbol", -1, "var a = {};", -1));
+   BSON_ASSERT (bson_append_decimal128 (b, "decimal128", -1, &decimal128));
 
    b2 = bson_new ();
-   assert (bson_append_int32 (b2, "0", -1, 60));
-   assert (bson_append_document (b, "document", -1, b2));
-   assert (bson_append_array (b, "array", -1, b2));
+   BSON_ASSERT (bson_append_int32 (b2, "0", -1, 60));
+   BSON_ASSERT (bson_append_document (b, "document", -1, b2));
+   BSON_ASSERT (bson_append_array (b, "array", -1, b2));
 
    {
       const uint8_t binary[] = {0, 1, 2, 3, 4};
-      assert (bson_append_binary (
+      BSON_ASSERT (bson_append_binary (
          b, "binary", -1, BSON_SUBTYPE_BINARY, binary, sizeof binary));
    }
 
@@ -163,10 +162,10 @@ test_bson_as_json_string (void)
    char *str;
 
    b = bson_new ();
-   assert (bson_append_utf8 (b, "foo", -1, "bar", -1));
+   BSON_ASSERT (bson_append_utf8 (b, "foo", -1, "bar", -1));
    str = bson_as_json (b, &len);
-   assert (len == 17);
-   assert (!strcmp ("{ \"foo\" : \"bar\" }", str));
+   BSON_ASSERT (len == 17);
+   BSON_ASSERT (!strcmp ("{ \"foo\" : \"bar\" }", str));
    bson_free (str);
    bson_destroy (b);
 }
@@ -180,10 +179,10 @@ test_bson_as_json_int32 (void)
    char *str;
 
    b = bson_new ();
-   assert (bson_append_int32 (b, "foo", -1, 1234));
+   BSON_ASSERT (bson_append_int32 (b, "foo", -1, 1234));
    str = bson_as_json (b, &len);
-   assert (len == 16);
-   assert (!strcmp ("{ \"foo\" : 1234 }", str));
+   BSON_ASSERT (len == 16);
+   BSON_ASSERT (!strcmp ("{ \"foo\" : 1234 }", str));
    bson_free (str);
    bson_destroy (b);
 }
@@ -197,10 +196,10 @@ test_bson_as_json_int64 (void)
    char *str;
 
    b = bson_new ();
-   assert (bson_append_int64 (b, "foo", -1, 341234123412341234ULL));
+   BSON_ASSERT (bson_append_int64 (b, "foo", -1, 341234123412341234ULL));
    str = bson_as_json (b, &len);
-   assert (len == 30);
-   assert (!strcmp ("{ \"foo\" : 341234123412341234 }", str));
+   BSON_ASSERT (len == 30);
+   BSON_ASSERT (!strcmp ("{ \"foo\" : 341234123412341234 }", str));
    bson_free (str);
    bson_destroy (b);
 }
@@ -215,11 +214,11 @@ test_bson_as_json_double (void)
    char *expected;
 
    b = bson_new ();
-   assert (bson_append_double (b, "foo", -1, 123.5));
-   assert (bson_append_double (b, "bar", -1, 3));
-   assert (bson_append_double (b, "baz", -1, -1));
-   assert (bson_append_double (b, "quux", -1, 0.03125));
-   assert (bson_append_double (b, "huge", -1, 1e99));
+   BSON_ASSERT (bson_append_double (b, "foo", -1, 123.5));
+   BSON_ASSERT (bson_append_double (b, "bar", -1, 3));
+   BSON_ASSERT (bson_append_double (b, "baz", -1, -1));
+   BSON_ASSERT (bson_append_double (b, "quux", -1, 0.03125));
+   BSON_ASSERT (bson_append_double (b, "huge", -1, 1e99));
    str = bson_as_json (b, &len);
 
    expected = bson_strdup_printf ("{"
@@ -249,7 +248,7 @@ test_bson_as_json_decimal128 (void)
    decimal128.low = 0x000000000000000B;
 
    b = bson_new ();
-   assert (bson_append_decimal128 (b, "decimal128", -1, &decimal128));
+   BSON_ASSERT (bson_append_decimal128 (b, "decimal128", -1, &decimal128));
    str = bson_as_json (b, &len);
    ASSERT_CMPSTR (str,
                   "{ "
@@ -268,7 +267,7 @@ test_bson_as_json_code (void)
    bson_t scope = BSON_INITIALIZER;
    char *str;
 
-   assert (bson_append_code (&code, "c", -1, "function () {}"));
+   BSON_ASSERT (bson_append_code (&code, "c", -1, "function () {}"));
    str = bson_as_json (&code, NULL);
    ASSERT_CMPSTR (str, "{ \"c\" : { \"$code\" : \"function () {}\" } }");
 
@@ -276,7 +275,7 @@ test_bson_as_json_code (void)
    bson_reinit (&code);
 
    /* empty scope */
-   assert (BSON_APPEND_CODE_WITH_SCOPE (&code, "c", "function () {}", &scope));
+   BSON_ASSERT (BSON_APPEND_CODE_WITH_SCOPE (&code, "c", "function () {}", &scope));
    str = bson_as_json (&code, NULL);
    ASSERT_CMPSTR (
       str, "{ \"c\" : { \"$code\" : \"function () {}\", \"$scope\" : { } } }");
@@ -285,7 +284,7 @@ test_bson_as_json_code (void)
    bson_reinit (&code);
 
    BSON_APPEND_INT32 (&scope, "x", 1);
-   assert (BSON_APPEND_CODE_WITH_SCOPE (&code, "c", "function () {}", &scope));
+   BSON_ASSERT (BSON_APPEND_CODE_WITH_SCOPE (&code, "c", "function () {}", &scope));
    str = bson_as_json (&code, NULL);
    ASSERT_CMPSTR (str,
                   "{ \"c\" : { \"$code\" : \"function () {}\", \"$scope\" "
@@ -295,7 +294,7 @@ test_bson_as_json_code (void)
    bson_reinit (&code);
 
    /* test that embedded quotes are backslash-escaped */
-   assert (BSON_APPEND_CODE (&code, "c", "return \"a\""));
+   BSON_ASSERT (BSON_APPEND_CODE (&code, "c", "return \"a\""));
    str = bson_as_json (&code, NULL);
 
    /* hard to read, this is { "c" : { "$code" : "return \"a\"" } } */
@@ -318,9 +317,9 @@ test_bson_as_json_utf8 (void)
    char *str;
 
    b = bson_new ();
-   assert (bson_append_utf8 (b, FIVE_EUROS, -1, FIVE_EUROS, -1));
+   BSON_ASSERT (bson_append_utf8 (b, FIVE_EUROS, -1, FIVE_EUROS, -1));
    str = bson_as_json (b, &len);
-   assert (!strcmp (str, "{ \"" FIVE_EUROS "\" : \"" FIVE_EUROS "\" }"));
+   BSON_ASSERT (!strcmp (str, "{ \"" FIVE_EUROS "\" : \"" FIVE_EUROS "\" }"));
    bson_free (str);
    bson_destroy (b);
 }
@@ -510,7 +509,7 @@ test_bson_json_read_buffering (void)
 
             /* append the BSON document's JSON representation to "json" */
             json_tmp = bson_as_json (bsons[docs_idx], NULL);
-            assert (json_tmp);
+            BSON_ASSERT (json_tmp);
             bson_string_append (json, json_tmp);
             bson_free (json_tmp);
          }
@@ -530,12 +529,12 @@ test_bson_json_read_buffering (void)
                abort ();
             }
 
-            assert (r);
+            BSON_ASSERT (r);
             bson_eq_bson (&bson_out, bsons[docs_idx]);
          }
 
          /* finished parsing */
-         assert_cmpint (
+         BSON_ASSERT_CMPINT (
             0, ==, bson_json_reader_read (reader, &bson_out, &error));
 
          bson_json_reader_destroy (reader);
@@ -576,7 +575,7 @@ _test_bson_json_read_compare (const char *json, int size, ...)
 
       compare = va_arg (ap, bson_t *);
 
-      assert (compare);
+      BSON_ASSERT (compare);
 
       bson_eq_bson (&bson, compare);
 
@@ -719,13 +718,13 @@ test_bson_json_read_corrupt_utf8 (void)
    const char *bad_value = "{ \"a\" : \"\x80\"}";
    bson_error_t error = {0};
 
-   assert (!bson_new_from_json ((uint8_t *) bad_key, -1, &error));
+   BSON_ASSERT (!bson_new_from_json ((uint8_t *) bad_key, -1, &error));
    ASSERT_ERROR_CONTAINS (error,
                           BSON_ERROR_JSON,
                           BSON_JSON_ERROR_READ_CORRUPT_JS,
                           "invalid bytes in UTF8 string");
 
-   assert (!bson_new_from_json ((uint8_t *) bad_value, -1, &error));
+   BSON_ASSERT (!bson_new_from_json ((uint8_t *) bad_value, -1, &error));
    ASSERT_ERROR_CONTAINS (error,
                           BSON_ERROR_JSON,
                           BSON_JSON_ERROR_READ_CORRUPT_JS,
@@ -759,7 +758,7 @@ test_json_reader_new_from_file (void)
    bson_error_t error;
 
    reader = bson_json_reader_new_from_file (path, &error);
-   assert (reader);
+   BSON_ASSERT (reader);
 
    /* read two documents */
    ASSERT_CMPINT (1, ==, bson_json_reader_read (reader, &bson, &error));
@@ -773,7 +772,7 @@ test_json_reader_new_from_file (void)
 
    BCON_EXTRACT (&bson, "_id", BCONE_OID (oid));
    bson_oid_init_from_string (&oid_expected, "aabbccddeeff001122334455");
-   assert (bson_oid_equal (&oid_expected, oid));
+   BSON_ASSERT (bson_oid_equal (&oid_expected, oid));
 
    bson_destroy (&bson);
    bson_json_reader_destroy (reader);
@@ -787,7 +786,7 @@ test_json_reader_new_from_bad_path (void)
    bson_error_t error;
 
    reader = bson_json_reader_new_from_file (bad_path, &error);
-   assert (!reader);
+   BSON_ASSERT (!reader);
    ASSERT_CMPINT (BSON_ERROR_READER, ==, error.domain);
    ASSERT_CMPINT (BSON_ERROR_READER_BADFD, ==, error.code);
 }
@@ -800,9 +799,9 @@ test_bson_json_error (const char *json, int domain, bson_json_error_code_t code)
 
    bson = bson_new_from_json ((const uint8_t *) json, strlen (json), &error);
 
-   assert (!bson);
-   assert (error.domain == domain);
-   assert (error.code == code);
+   BSON_ASSERT (!bson);
+   BSON_ASSERT (error.domain == domain);
+   BSON_ASSERT (error.code == code);
 }
 
 static void
@@ -813,7 +812,7 @@ test_bson_json_read_empty (void)
    bson_t bson;
 
    bson_ptr = bson_new_from_json ((uint8_t *) "", 0, &error);
-   assert (!bson_ptr);
+   BSON_ASSERT (!bson_ptr);
    ASSERT_ERROR_CONTAINS (error,
                           BSON_ERROR_JSON,
                           BSON_JSON_ERROR_READ_INVALID_PARAM,
@@ -851,7 +850,7 @@ test_bson_json_read_invalid_binary (void)
    bool r;
 
    r = bson_init_from_json (&b, json, -1, &error);
-   assert (!r);
+   BSON_ASSERT (!r);
 
    bson_destroy (&b);
 }
@@ -868,19 +867,19 @@ test_bson_json_read_invalid_json (void)
       json, BSON_ERROR_JSON, BSON_JSON_ERROR_READ_CORRUPT_JS);
 
    b = bson_new_from_json ((uint8_t *) "1", 1, NULL);
-   assert (!b);
+   BSON_ASSERT (!b);
 
    b = bson_new_from_json ((uint8_t *) "*", 1, NULL);
-   assert (!b);
+   BSON_ASSERT (!b);
 
    b = bson_new_from_json ((uint8_t *) "", 0, NULL);
-   assert (!b);
+   BSON_ASSERT (!b);
 
    b = bson_new_from_json ((uint8_t *) "asdfasdf", -1, NULL);
-   assert (!b);
+   BSON_ASSERT (!b);
 
    b = bson_new_from_json ((uint8_t *) "{\"a\":*}", -1, NULL);
-   assert (!b);
+   BSON_ASSERT (!b);
 }
 
 static ssize_t
@@ -902,9 +901,9 @@ test_bson_json_read_bad_cb (void)
 
    r = bson_json_reader_read (reader, &bson, &error);
 
-   assert (r == -1);
-   assert (error.domain == BSON_ERROR_JSON);
-   assert (error.code == BSON_JSON_ERROR_READ_CB_FAILURE);
+   BSON_ASSERT (r == -1);
+   BSON_ASSERT (error.domain == BSON_ERROR_JSON);
+   BSON_ASSERT (error.code == BSON_JSON_ERROR_READ_CB_FAILURE);
 
    bson_json_reader_destroy (reader);
    bson_destroy (&bson);
@@ -913,7 +912,7 @@ test_bson_json_read_bad_cb (void)
 static ssize_t
 test_bson_json_read_invalid_helper (void *ctx, uint8_t *buf, size_t len)
 {
-   assert (len);
+   BSON_ASSERT (len);
    *buf = 0x80; /* no UTF-8 sequence can start with 0x80 */
    return 1;
 }
@@ -931,9 +930,9 @@ test_bson_json_read_invalid (void)
 
    r = bson_json_reader_read (reader, &bson, &error);
 
-   assert (r == -1);
-   assert (error.domain == BSON_ERROR_JSON);
-   assert (error.code == BSON_JSON_ERROR_READ_CORRUPT_JS);
+   BSON_ASSERT (r == -1);
+   BSON_ASSERT (error.domain == BSON_ERROR_JSON);
+   BSON_ASSERT (error.code == BSON_JSON_ERROR_READ_CORRUPT_JS);
 
    bson_json_reader_destroy (reader);
    bson_destroy (&bson);
@@ -953,7 +952,7 @@ test_bson_json_binary_order (void)
    r = bson_init_from_json (&b, json, -1, &error);
    if (!r)
       fprintf (stderr, "%s\n", error.message);
-   assert (r);
+   BSON_ASSERT (r);
 
    str = bson_as_json (&b, NULL);
    ASSERT_CMPSTR (str, json);
@@ -976,14 +975,14 @@ test_bson_json_number_long (void)
    r = bson_init_from_json (&b, json, -1, &error);
    if (!r)
       fprintf (stderr, "%s\n", error.message);
-   assert (r);
-   assert (bson_iter_init (&iter, &b));
-   assert (bson_iter_find (&iter, "key"));
-   assert (BSON_ITER_HOLDS_INT64 (&iter));
-   assert (bson_iter_int64 (&iter) == 4611686018427387904LL);
+   BSON_ASSERT (r);
+   BSON_ASSERT (bson_iter_init (&iter, &b));
+   BSON_ASSERT (bson_iter_find (&iter, "key"));
+   BSON_ASSERT (BSON_ITER_HOLDS_INT64 (&iter));
+   BSON_ASSERT (bson_iter_int64 (&iter) == 4611686018427387904LL);
    bson_destroy (&b);
 
-   assert (!bson_init_from_json (&b, json2, -1, &error));
+   BSON_ASSERT (!bson_init_from_json (&b, json2, -1, &error));
 }
 
 static void
@@ -998,11 +997,11 @@ test_bson_json_number_long_zero (void)
    r = bson_init_from_json (&b, json, -1, &error);
    if (!r)
       fprintf (stderr, "%s\n", error.message);
-   assert (r);
-   assert (bson_iter_init (&iter, &b));
-   assert (bson_iter_find (&iter, "key"));
-   assert (BSON_ITER_HOLDS_INT64 (&iter));
-   assert (bson_iter_int64 (&iter) == 0);
+   BSON_ASSERT (r);
+   BSON_ASSERT (bson_iter_init (&iter, &b));
+   BSON_ASSERT (bson_iter_find (&iter, "key"));
+   BSON_ASSERT (BSON_ITER_HOLDS_INT64 (&iter));
+   BSON_ASSERT (bson_iter_int64 (&iter) == 0);
    bson_destroy (&b);
 }
 
@@ -1140,7 +1139,7 @@ test_bson_json_code (void)
          fprintf (stderr, "%s\n", error.message);
       }
 
-      assert (r);
+      BSON_ASSERT (r);
       bson_eq_bson (&b, tests[i].expected_bson);
       bson_destroy (&b);
    }
@@ -1186,7 +1185,7 @@ test_bson_json_code_errors (void)
 
    for (i = 0; i < sizeof (tests) / (sizeof (code_error_test_t)); i++) {
       r = bson_init_from_json (&b, tests[i].json, -1, &error);
-      assert (!r);
+      BSON_ASSERT (!r);
       ASSERT_ERROR_CONTAINS (error,
                              BSON_ERROR_JSON,
                              BSON_JSON_ERROR_READ_INVALID_PARAM,
@@ -1287,7 +1286,7 @@ test_bson_json_dbref (void)
          fprintf (stderr, "%s\n", error.message);
       }
 
-      assert (r);
+      BSON_ASSERT (r);
       bson_eq_bson (&b, tests[i].expected_bson);
       bson_destroy (&b);
    }
@@ -1352,7 +1351,7 @@ test_bson_json_uescape (void)
          fprintf (stderr, "%s\n", error.message);
       }
 
-      assert (r);
+      BSON_ASSERT (r);
       bson_eq_bson (&b, tests[i].expected_bson);
       bson_destroy (&b);
    }
@@ -1372,7 +1371,7 @@ test_bson_json_uescape_key (void)
    bson_t *bson_euro = BCON_NEW ("\xE2\x82\xAC", BCON_UTF8 ("euro"));
 
    r = bson_init_from_json (&b, "{ \"\\u20AC\": \"euro\"}", -1, &error);
-   assert (r);
+   BSON_ASSERT (r);
    bson_eq_bson (&b, bson_euro);
 
    bson_destroy (&b);
@@ -1387,7 +1386,7 @@ test_bson_json_uescape_bad (void)
    bool r;
 
    r = bson_init_from_json (&b, "{ \"bad\": \"\\u1\"}", -1, &error);
-   assert (!r);
+   BSON_ASSERT (!r);
    ASSERT_ERROR_CONTAINS (error,
                           BSON_ERROR_JSON,
                           BSON_JSON_ERROR_READ_CORRUPT_JS,
@@ -1465,7 +1464,7 @@ test_bson_json_empty_final_object (void)
       fprintf (stderr, "%s\n", error.message);
    }
 
-   assert (r);
+   BSON_ASSERT (r);
    bson_eq_bson (&b, bson);
 
    bson_destroy (&b);
@@ -1485,13 +1484,13 @@ test_bson_json_number_decimal (void)
    r = bson_init_from_json (&b, json, -1, &error);
    if (!r)
       fprintf (stderr, "%s\n", error.message);
-   assert (r);
-   assert (bson_iter_init (&iter, &b));
-   assert (bson_iter_find (&iter, "key"));
-   assert (BSON_ITER_HOLDS_DECIMAL128 (&iter));
+   BSON_ASSERT (r);
+   BSON_ASSERT (bson_iter_init (&iter, &b));
+   BSON_ASSERT (bson_iter_find (&iter, "key"));
+   BSON_ASSERT (BSON_ITER_HOLDS_DECIMAL128 (&iter));
    bson_iter_decimal128 (&iter, &decimal128);
-   assert (decimal128.low == 11);
-   assert (decimal128.high == 0x3040000000000000ULL);
+   BSON_ASSERT (decimal128.low == 11);
+   BSON_ASSERT (decimal128.high == 0x3040000000000000ULL);
    bson_destroy (&b);
 }
 
@@ -1511,7 +1510,7 @@ test_bson_json_inc (void)
    r = bson_init_from_json (&b, json, -1, &error);
    if (!r)
       fprintf (stderr, "%s\n", error.message);
-   assert (r);
+   BSON_ASSERT (r);
    bson_destroy (&b);
 }
 
@@ -1532,7 +1531,7 @@ test_bson_json_array (void)
    r = bson_init_from_json (&b, json, -1, &error);
    if (!r)
       fprintf (stderr, "%s\n", error.message);
-   assert (r);
+   BSON_ASSERT (r);
 
    bson_eq_bson (&b, &compare);
    bson_destroy (&compare);
@@ -1553,7 +1552,7 @@ test_bson_json_array_single (void)
    r = bson_init_from_json (&b, json, -1, &error);
    if (!r)
       fprintf (stderr, "%s\n", error.message);
-   assert (r);
+   BSON_ASSERT (r);
 
    bson_eq_bson (&b, &compare);
    bson_destroy (&compare);
@@ -1576,7 +1575,7 @@ test_bson_json_array_int64 (void)
    r = bson_init_from_json (&b, json, -1, &error);
    if (!r)
       fprintf (stderr, "%s\n", error.message);
-   assert (r);
+   BSON_ASSERT (r);
 
    bson_eq_bson (&b, &compare);
    bson_destroy (&compare);
@@ -1599,7 +1598,7 @@ test_bson_json_array_subdoc (void)
    r = bson_init_from_json (&b, json, -1, &error);
    if (!r)
       fprintf (stderr, "%s\n", error.message);
-   assert (r);
+   BSON_ASSERT (r);
 
    bson_eq_bson (&b, &compare);
    bson_destroy (&compare);
@@ -1623,7 +1622,7 @@ test_bson_json_date_check (const char *json, int64_t value)
       fprintf (stderr, "%s\n", error.message);
    }
 
-   assert (r);
+   BSON_ASSERT (r);
 
    bson_eq_bson (&b, &compare);
    bson_destroy (&compare);
@@ -1641,7 +1640,7 @@ test_bson_json_date_error (const char *json, const char *msg)
    if (r) {
       fprintf (stderr, "parsing %s should fail\n", json);
    }
-   assert (!r);
+   BSON_ASSERT (!r);
    ASSERT_ERROR_CONTAINS (
       error, BSON_ERROR_JSON, BSON_JSON_ERROR_READ_INVALID_PARAM, msg);
 }
@@ -1749,7 +1748,7 @@ test_bson_json_special_keys_at_top (void)
    int i;
 
    for (i = 0; i < sizeof (invalid) / sizeof (const char *); i++) {
-      assert (!bson_init_from_json (&b, invalid[i], -1, &error));
+      BSON_ASSERT (!bson_init_from_json (&b, invalid[i], -1, &error));
       ASSERT_CMPINT (error.domain, ==, BSON_ERROR_JSON);
       ASSERT_CMPINT (error.code, ==, BSON_JSON_ERROR_READ_CORRUPT_JS);
       ASSERT_CMPSTR (error.message, "Invalid MongoDB extended JSON");
@@ -1764,14 +1763,14 @@ test_bson_array_as_json (void)
    char *str;
 
    str = bson_array_as_json (&d, &len);
-   assert (0 == strcmp (str, "[ ]"));
-   assert (len == 3);
+   BSON_ASSERT (0 == strcmp (str, "[ ]"));
+   BSON_ASSERT (len == 3);
    bson_free (str);
 
    BSON_APPEND_INT32 (&d, "0", 1);
    str = bson_array_as_json (&d, &len);
-   assert (0 == strcmp (str, "[ 1 ]"));
-   assert (len == 5);
+   BSON_ASSERT (0 == strcmp (str, "[ 1 ]"));
+   BSON_ASSERT (len == 5);
    bson_free (str);
 
    bson_destroy (&d);
@@ -1786,14 +1785,14 @@ test_bson_as_json_spacing (void)
    char *str;
 
    str = bson_as_json (&d, &len);
-   assert (0 == strcmp (str, "{ }"));
-   assert (len == 3);
+   BSON_ASSERT (0 == strcmp (str, "{ }"));
+   BSON_ASSERT (len == 3);
    bson_free (str);
 
    BSON_APPEND_INT32 (&d, "a", 1);
    str = bson_as_json (&d, &len);
-   assert (0 == strcmp (str, "{ \"a\" : 1 }"));
-   assert (len == 11);
+   BSON_ASSERT (0 == strcmp (str, "{ \"a\" : 1 }"));
+   BSON_ASSERT (len == 11);
    bson_free (str);
 
    bson_destroy (&d);

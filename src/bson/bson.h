@@ -80,7 +80,7 @@ BSON_BEGIN_DECLS
  *
  * bson_t *doc = bson_new();
  * bson_clear (&doc);
- * assert (doc == NULL);
+ * BSON_ASSERT (doc == NULL);
  */
 #define bson_clear(bptr)         \
    do {                          \

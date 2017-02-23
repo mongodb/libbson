@@ -44,7 +44,7 @@ assemble_path (const char *parent_path,
    int path_len = (int) strlen (parent_path);
    int name_len = (int) strlen (child_name);
 
-   assert (path_len + name_len + 1 < MAX_TEST_NAME_LENGTH);
+   BSON_ASSERT (path_len + name_len + 1 < MAX_TEST_NAME_LENGTH);
 
    memset (dst, '\0', MAX_TEST_NAME_LENGTH * sizeof (char));
    strncat (dst, parent_path, path_len);
@@ -88,7 +88,7 @@ collect_tests_from_dir (char (*paths)[MAX_TEST_NAME_LENGTH] /* OUT */,
    }
 
    while (1) {
-      assert (paths_index < max_paths);
+      BSON_ASSERT (paths_index < max_paths);
 
       if (_findnext (handle, &info) == -1) {
          break;
@@ -117,9 +117,9 @@ collect_tests_from_dir (char (*paths)[MAX_TEST_NAME_LENGTH] /* OUT */,
    DIR *dir;
 
    dir = opendir (dir_path);
-   assert (dir);
+   BSON_ASSERT (dir);
    while ((entry = readdir (dir))) {
-      assert (paths_index < max_paths);
+      BSON_ASSERT (paths_index < max_paths);
       if (strcmp (entry->d_name, "..") == 0 ||
           strcmp (entry->d_name, ".") == 0) {
          continue;
@@ -210,7 +210,7 @@ get_bson_from_json_file (char *filename)
  *      test into a BSON blob and call the provided callback for
  *      evaluation.
  *
- *      It is expected that the callback will assert on failure, so if
+ *      It is expected that the callback will BSON_ASSERT on failure, so if
  *      callback returns quietly the test is considered to have passed.
  *
  *-----------------------------------------------------------------------
@@ -233,9 +233,9 @@ install_json_test_suite (TestSuite *suite,
    for (i = 0; i < num_tests; i++) {
       test = get_bson_from_json_file (test_paths[i]);
       skip_json = strstr (test_paths[i], "/json") + strlen ("/json");
-      assert (skip_json);
+      BSON_ASSERT (skip_json);
       ext = strstr (skip_json, ".json");
-      assert (ext);
+      BSON_ASSERT (ext);
       ext[0] = '\0';
 
       TestSuite_AddWC (suite,

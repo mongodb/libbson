@@ -35,7 +35,7 @@ extern "C" {
 #ifdef ASSERT
 #undef ASSERT
 #endif
-#define ASSERT assert
+#define ASSERT BSON_ASSERT
 
 
 #ifdef ASSERT_OR_PRINT

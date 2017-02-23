@@ -67,7 +67,7 @@ col_view_create (const char *stub, ...)
          keep_going = 0;
          break;
       default:
-         assert (0);
+         BSON_ASSERT (0);
          break;
       }
    }

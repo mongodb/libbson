@@ -4,7 +4,6 @@
  */
 
 #include "jsonsl.h"
-#include <assert.h>
 #include <limits.h>
 #include <ctype.h>
 #include <bson-memory.h>

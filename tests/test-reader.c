@@ -15,7 +15,6 @@
  */
 
 
-#include <assert.h>
 #include <fcntl.h>
 
 #include "bson-tests.h"
@@ -47,17 +46,17 @@ test_reader_from_data (void)
       const uint8_t *buf = bson_get_data (b);
 
       /* do nothing */
-      assert (b->len == 5);
-      assert (buf[0] == 5);
-      assert (buf[1] == 0);
-      assert (buf[2] == 0);
-      assert (buf[3] == 0);
-      assert (buf[4] == 0);
+      BSON_ASSERT (b->len == 5);
+      BSON_ASSERT (buf[0] == 5);
+      BSON_ASSERT (buf[1] == 0);
+      BSON_ASSERT (buf[2] == 0);
+      BSON_ASSERT (buf[3] == 0);
+      BSON_ASSERT (buf[4] == 0);
    }
 
-   assert (i == (4095 / 5));
+   BSON_ASSERT (i == (4095 / 5));
 
-   assert_cmpint (eof, ==, true);
+   BSON_ASSERT_CMPINT (eof, ==, true);
 
    bson_free (buffer);
 
@@ -85,18 +84,18 @@ test_reader_from_data_overflow (void)
 
    for (i = 0; (b = bson_reader_read (reader, &eof)); i++) {
       const uint8_t *buf = bson_get_data (b);
-      assert (b->len == 5);
-      assert (buf[0] == 5);
-      assert (buf[1] == 0);
-      assert (buf[2] == 0);
-      assert (buf[3] == 0);
-      assert (buf[4] == 0);
+      BSON_ASSERT (b->len == 5);
+      BSON_ASSERT (buf[0] == 5);
+      BSON_ASSERT (buf[1] == 0);
+      BSON_ASSERT (buf[2] == 0);
+      BSON_ASSERT (buf[3] == 0);
+      BSON_ASSERT (buf[4] == 0);
       eof = false;
    }
 
-   assert (i == (4095 / 5));
+   BSON_ASSERT (i == (4095 / 5));
 
-   assert_cmpint (eof, ==, false);
+   BSON_ASSERT_CMPINT (eof, ==, false);
 
    bson_free (buffer);
 
@@ -114,8 +113,8 @@ test_reader_from_data_document_length_too_large (void)
    buffer[0] = 6;
 
    reader = bson_reader_new_from_data (buffer, 5);
-   assert (!bson_reader_read (reader, &eof));
-   assert_cmpint (eof, ==, false);
+   BSON_ASSERT (!bson_reader_read (reader, &eof));
+   BSON_ASSERT_CMPINT (eof, ==, false);
 
    bson_free (buffer);
 
@@ -133,8 +132,8 @@ test_reader_from_data_document_length_too_small (void)
    buffer[0] = 4;
 
    reader = bson_reader_new_from_data (buffer, 5);
-   assert (!bson_reader_read (reader, &eof));
-   assert_cmpint (eof, ==, false);
+   BSON_ASSERT (!bson_reader_read (reader, &eof));
+   BSON_ASSERT_CMPINT (eof, ==, false);
 
    bson_free (buffer);
 
@@ -164,7 +163,7 @@ test_reader_from_handle (void)
    int fd;
 
    fd = bson_open (BINARY_DIR "/stream.bson", O_RDONLY);
-   assert (-1 != fd);
+   BSON_ASSERT (-1 != fd);
 
    reader = bson_reader_new_from_handle ((void *) &fd,
                                          &test_reader_from_handle_read,
@@ -173,15 +172,15 @@ test_reader_from_handle (void)
    for (i = 0; i < 1000; i++) {
       eof = false;
       b = bson_reader_read (reader, &eof);
-      assert (b);
-      assert (bson_iter_init (&iter, b));
-      assert (!bson_iter_next (&iter));
+      BSON_ASSERT (b);
+      BSON_ASSERT (bson_iter_init (&iter, b));
+      BSON_ASSERT (!bson_iter_next (&iter));
    }
 
-   assert_cmpint (eof, ==, false);
+   BSON_ASSERT_CMPINT (eof, ==, false);
    b = bson_reader_read (reader, &eof);
-   assert (!b);
-   assert_cmpint (eof, ==, true);
+   BSON_ASSERT (!b);
+   BSON_ASSERT_CMPINT (eof, ==, true);
    bson_reader_destroy (reader);
 }
 
@@ -197,7 +196,7 @@ test_reader_tell (void)
    int fd;
 
    fd = bson_open (BINARY_DIR "/stream.bson", O_RDONLY);
-   assert (-1 != fd);
+   BSON_ASSERT (-1 != fd);
 
    reader = bson_reader_new_from_handle ((void *) &fd,
                                          &test_reader_from_handle_read,
@@ -205,22 +204,22 @@ test_reader_tell (void)
 
    for (i = 0; i < 1000; i++) {
       if (i) {
-         assert_cmpint (5 * i, ==, bson_reader_tell (reader));
+         BSON_ASSERT_CMPINT (5 * i, ==, bson_reader_tell (reader));
       } else {
-         assert_cmpint (0, ==, bson_reader_tell (reader));
+         BSON_ASSERT_CMPINT (0, ==, bson_reader_tell (reader));
       }
       eof = false;
       b = bson_reader_read (reader, &eof);
-      assert (b);
-      assert (bson_iter_init (&iter, b));
-      assert (!bson_iter_next (&iter));
+      BSON_ASSERT (b);
+      BSON_ASSERT (bson_iter_init (&iter, b));
+      BSON_ASSERT (!bson_iter_next (&iter));
    }
 
-   assert_cmpint (5000, ==, bson_reader_tell (reader));
-   assert_cmpint (eof, ==, false);
+   BSON_ASSERT_CMPINT (5000, ==, bson_reader_tell (reader));
+   BSON_ASSERT_CMPINT (eof, ==, false);
    b = bson_reader_read (reader, &eof);
-   assert (!b);
-   assert_cmpint (eof, ==, true);
+   BSON_ASSERT (!b);
+   BSON_ASSERT_CMPINT (eof, ==, true);
    bson_reader_destroy (reader);
 }
 
@@ -236,7 +235,7 @@ test_reader_from_handle_corrupt (void)
    int fd;
 
    fd = bson_open (BINARY_DIR "/stream_corrupt.bson", O_RDONLY);
-   assert (-1 != fd);
+   BSON_ASSERT (-1 != fd);
 
    reader = bson_reader_new_from_handle ((void *) &fd,
                                          &test_reader_from_handle_read,
@@ -244,13 +243,13 @@ test_reader_from_handle_corrupt (void)
 
    for (i = 0; i < 1000; i++) {
       b = bson_reader_read (reader, &eof);
-      assert (b);
-      assert (bson_iter_init (&iter, b));
-      assert (!bson_iter_next (&iter));
+      BSON_ASSERT (b);
+      BSON_ASSERT (bson_iter_init (&iter, b));
+      BSON_ASSERT (!bson_iter_next (&iter));
    }
 
    b = bson_reader_read (reader, &eof);
-   assert (!b);
+   BSON_ASSERT (!b);
    bson_reader_destroy (reader);
 }
 
@@ -264,19 +263,19 @@ test_reader_grow_buffer (void)
    int fd;
 
    fd = bson_open (BINARY_DIR "/readergrow.bson", O_RDONLY);
-   assert (-1 != fd);
+   BSON_ASSERT (-1 != fd);
 
    reader = bson_reader_new_from_handle ((void *) &fd,
                                          &test_reader_from_handle_read,
                                          &test_reader_from_handle_destroy);
 
    b = bson_reader_read (reader, &eof);
-   assert (b);
-   assert (!eof);
+   BSON_ASSERT (b);
+   BSON_ASSERT (!eof);
 
    b = bson_reader_read (reader, &eof);
-   assert (!b);
-   assert (eof);
+   BSON_ASSERT (!b);
+   BSON_ASSERT (eof);
 
    bson_reader_destroy (reader);
 }
@@ -296,18 +295,18 @@ test_reader_reset (void)
 
    reader = bson_reader_new_from_data (buffer, sizeof buffer);
 
-   assert (bson_reader_read (reader, &eof)->len == 5 && !eof);
-   assert (bson_reader_read (reader, &eof)->len == 5 && !eof);
-   assert (!bson_reader_read (reader, &eof) && eof);
-   assert (bson_reader_tell (reader) == 10);
+   BSON_ASSERT (bson_reader_read (reader, &eof)->len == 5 && !eof);
+   BSON_ASSERT (bson_reader_read (reader, &eof)->len == 5 && !eof);
+   BSON_ASSERT (!bson_reader_read (reader, &eof) && eof);
+   BSON_ASSERT (bson_reader_tell (reader) == 10);
 
    bson_reader_reset (reader);
 
-   assert (bson_reader_tell (reader) == 0);
-   assert (bson_reader_read (reader, &eof)->len == 5 && !eof);
-   assert (bson_reader_read (reader, &eof)->len == 5 && !eof);
-   assert (!bson_reader_read (reader, &eof) && eof);
-   assert (bson_reader_tell (reader) == 10);
+   BSON_ASSERT (bson_reader_tell (reader) == 0);
+   BSON_ASSERT (bson_reader_read (reader, &eof)->len == 5 && !eof);
+   BSON_ASSERT (bson_reader_read (reader, &eof)->len == 5 && !eof);
+   BSON_ASSERT (!bson_reader_read (reader, &eof) && eof);
+   BSON_ASSERT (bson_reader_tell (reader) == 10);
 
    bson_reader_destroy (reader);
 }
