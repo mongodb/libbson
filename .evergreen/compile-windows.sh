@@ -7,6 +7,19 @@ set -o errexit  # Exit the script with error if any of the commands fail
 #       CC       Which compiler to use
 
 
+CONFIGURE_FLAGS="-DCMAKE_INSTALL_PREFIX=C:/libbson"
+BUILD_FLAGS="/m"  # Number of concurrent processes. No value=# of cpus
+
+if [ "$RELEASE" ]; then
+   CONFIGURE_FLAGS="$CONFIGURE_FLAGS -DCMAKE_BUILD_TYPE=Release"
+   BUILD_FLAGS="$BUILD_FLAGS /p:Configuration=Release"
+   TEST_PATH="./Release/test-libbson.exe"
+else
+   CONFIGURE_FLAGS="$CONFIGURE_FLAGS -DCMAKE_BUILD_TYPE=Debug"
+   BUILD_FLAGS="$BUILD_FLAGS /p:Configuration=Debug"
+   TEST_PATH="./Debug/test-libbson.exe"
+fi
+
 case "$CC" in
    mingw*)
       cmd.exe /c .evergreen\\compile.bat
@@ -32,8 +45,8 @@ mkdir cbuild
 cd cbuild
 
 CMAKE="/cygdrive/c/cmake/bin/cmake"
-"$CMAKE" -G "$CC" "-DCMAKE_INSTALL_PREFIX=C:/libbson" ..
-"$BUILD" /m ALL_BUILD.vcxproj
-"$BUILD" /m INSTALL.vcxproj
+"$CMAKE" -G "$CC" $CONFIGURE_FLAGS ..
+"$BUILD" $BUILD_FLAGS ALL_BUILD.vcxproj
+"$BUILD" $BUILD_FLAGS INSTALL.vcxproj
 
-./Debug/test-libbson.exe --no-fork -d
+"$TEST_PATH" --no-fork -d
