@@ -57,10 +57,6 @@ fi
 AC_SUBST(BSON_HAVE_SNPRINTF, 0)
 AC_CHECK_FUNC(snprintf, [AC_SUBST(BSON_HAVE_SNPRINTF, 1)])
 
-# Check for _set_output_format (unlikely, only Visual Studio 2013 and older)
-AC_SUBST(BSON_NEEDS_SET_OUTPUT_FORMAT, 0)
-AC_CHECK_FUNCS(_set_output_format, [AC_SUBST(BSON_NEEDS_SET_OUTPUT_FORMAT, 1)])
-
 # Check for struct timespec
 AC_SUBST(BSON_HAVE_TIMESPEC, 0)
 AC_CHECK_TYPE([struct timespec], [AC_SUBST(BSON_HAVE_TIMESPEC, 1)], [], [#include <time.h>])

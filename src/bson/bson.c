@@ -2544,10 +2544,6 @@ _bson_as_json_visit_double_common (const bson_iter_t *iter,
    bson_string_t *str = state->str;
    uint32_t start_len;
 
-#ifdef BSON_NEEDS_SET_OUTPUT_FORMAT
-   unsigned int current_format = _set_output_format (_TWO_DIGIT_EXPONENT);
-#endif
-
    if (!legacy) {
       bson_string_append (state->str, "{ \"$numberDouble\" : \"");
    }
@@ -2575,10 +2571,6 @@ _bson_as_json_visit_double_common (const bson_iter_t *iter,
    if (!legacy) {
       bson_string_append (state->str, "\" }");
    }
-
-#ifdef BSON_NEEDS_SET_OUTPUT_FORMAT
-   _set_output_format (current_format);
-#endif
 
    return false;
 }

@@ -214,10 +214,6 @@ test_bson_as_json_double (void)
    char *str;
    char *expected;
 
-#ifdef BSON_NEEDS_SET_OUTPUT_FORMAT
-   unsigned int current_format = _set_output_format (_TWO_DIGIT_EXPONENT);
-#endif
-
    b = bson_new ();
    assert (bson_append_double (b, "foo", -1, 123.5));
    assert (bson_append_double (b, "bar", -1, 3));
@@ -235,10 +231,6 @@ test_bson_as_json_double (void)
                                   1e99);
 
    ASSERT_CMPSTR (str, expected);
-
-#ifdef BSON_NEEDS_SET_OUTPUT_FORMAT
-   _set_output_format (current_format);
-#endif
 
    bson_free (expected);
    bson_free (str);
