@@ -75,7 +75,8 @@ typedef enum {
    BSON_JSON_LF_INT64,
    BSON_JSON_LF_DOUBLE,
    BSON_JSON_LF_DECIMAL128,
-   BSON_JSON_LF_DBPOINTER
+   BSON_JSON_LF_DBPOINTER,
+   BSON_JSON_LF_SYMBOL
 } bson_json_read_bson_state_t;
 
 
@@ -534,6 +535,7 @@ _bson_json_read_integer (bson_json_reader_t *reader, /* IN */
       case BSON_JSON_LF_DOUBLE:
       case BSON_JSON_LF_DECIMAL128:
       case BSON_JSON_LF_DBPOINTER:
+      case BSON_JSON_LF_SYMBOL:
       default:
          _bson_json_read_set_error (
             reader, "Invalid special type for integer read %d", bs);
@@ -633,8 +635,8 @@ _bson_json_read_string (bson_json_reader_t *reader, /* IN */
 
    if (rs == BSON_JSON_REGULAR) {
       BASIC_CB_BAIL_IF_NOT_NORMAL ("string");
-      bson_append_utf8 (STACK_BSON_CHILD, key, (int) len, (const char *) val,
-                        (int) vlen);
+      bson_append_utf8 (
+         STACK_BSON_CHILD, key, (int) len, (const char *) val, (int) vlen);
    } else if (rs == BSON_JSON_IN_BSON_TYPE_TIMESTAMP_STARTMAP) {
       /* new-style "key" : {"$timestamp": "180388626433" } */
       int64_t v64;
@@ -769,6 +771,10 @@ _bson_json_read_string (bson_json_reader_t *reader, /* IN */
       case BSON_JSON_LF_CODE:
          _bson_json_buf_set (&bson->code_data.code_buf, val, vlen);
          break;
+      case BSON_JSON_LF_SYMBOL:
+         bson_append_symbol (
+            STACK_BSON_CHILD, key, (int) len, (const char *) val, (int) vlen);
+         break;
       case BSON_JSON_LF_SCOPE:
       case BSON_JSON_LF_TIMESTAMP_T:
       case BSON_JSON_LF_TIMESTAMP_I:
@@ -830,7 +836,7 @@ _is_known_key (const char *key, size_t len)
           IS_KEY ("$numberDouble") || IS_KEY ("$numberDecimal") ||
           IS_KEY ("$numberInt") || IS_KEY ("$numberLong") ||
           IS_KEY ("$numberDouble") || IS_KEY ("$numberDecimal") ||
-          IS_KEY ("$dbPointer"));
+          IS_KEY ("$dbPointer") || IS_KEY ("$symbol"));
 
 #undef IS_KEY
 
@@ -950,6 +956,8 @@ _bson_json_read_map_key (bson_json_reader_t *reader, /* IN */
          HANDLE_OPTION ("$numberLong", BSON_TYPE_INT64, BSON_JSON_LF_INT64)
       else if
          HANDLE_OPTION ("$numberDouble", BSON_TYPE_DOUBLE, BSON_JSON_LF_DOUBLE)
+      else if
+         HANDLE_OPTION ("$symbol", BSON_TYPE_SYMBOL, BSON_JSON_LF_SYMBOL)
       else if
          HANDLE_OPTION (
             "$numberDecimal", BSON_TYPE_DECIMAL128, BSON_JSON_LF_DECIMAL128)
@@ -1302,13 +1310,14 @@ _bson_json_read_end_map (bson_json_reader_t *reader) /* IN */
             reader,
             "Internal error: shouldn't be in state BSON_TYPE_DBPOINTER");
          break;
+      case BSON_TYPE_SYMBOL:
+         break;
       case BSON_TYPE_EOD:
       case BSON_TYPE_UTF8:
       case BSON_TYPE_DOCUMENT:
       case BSON_TYPE_ARRAY:
       case BSON_TYPE_BOOL:
       case BSON_TYPE_NULL:
-      case BSON_TYPE_SYMBOL:
       case BSON_TYPE_TIMESTAMP:
       default:
          _bson_json_read_set_error (reader, "Unknown type %d", bson->bson_type);

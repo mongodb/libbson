@@ -2917,6 +2917,23 @@ _bson_as_json_visit_code (const bson_iter_t *iter,
 
 
 static bool
+_bson_as_extended_json_visit_symbol (const bson_iter_t *iter,
+                                     const char *key,
+                                     size_t v_symbol_len,
+                                     const char *v_symbol,
+                                     void *data)
+{
+   bson_json_state_t *state = data;
+
+   bson_string_append (state->str, "{ \"$symbol\" : \"");
+   bson_string_append (state->str, v_symbol);
+   bson_string_append (state->str, "\" }");
+
+   return false;
+}
+
+
+static bool
 _bson_as_json_visit_symbol (const bson_iter_t *iter,
                             const char *key,
                             size_t v_symbol_len,
@@ -3021,7 +3038,7 @@ static const bson_visitor_t bson_as_extended_json_visitors = {
    _bson_as_json_visit_regex,
    _bson_as_extended_json_visit_dbpointer,
    _bson_as_json_visit_code,
-   _bson_as_json_visit_symbol,
+   _bson_as_extended_json_visit_symbol,
    _bson_as_extended_json_visit_codewscope,
    _bson_as_extended_json_visit_int32,
    _bson_as_extended_json_visit_timestamp,
