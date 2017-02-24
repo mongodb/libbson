@@ -1406,7 +1406,7 @@ test_bson_json_double_overflow (void)
 
    for (p = nums; *p; p++) {
       j = bson_strdup_printf ("{ \"d\" : %s }", *p);
-      assert (!bson_init_from_json (&b, j, -1, &error));
+      BSON_ASSERT (!bson_init_from_json (&b, j, -1, &error));
       ASSERT_ERROR_CONTAINS (error,
                              BSON_ERROR_JSON,
                              BSON_JSON_ERROR_READ_INVALID_PARAM,
@@ -1416,7 +1416,7 @@ test_bson_json_double_overflow (void)
 
       /* same test with canonical Extended JSON */
       j = bson_strdup_printf ("{ \"d\" : { \"$numberDouble\" : \"%s\" } }", *p);
-      assert (!bson_init_from_json (&b, j, -1, &error));
+      BSON_ASSERT (!bson_init_from_json (&b, j, -1, &error));
       ASSERT_ERROR_CONTAINS (error,
                              BSON_ERROR_JSON,
                              BSON_JSON_ERROR_READ_INVALID_PARAM,
@@ -1438,14 +1438,14 @@ test_bson_json_nan (void)
    const char *extj = "{ \"d\": {\"$numberDouble\": \"NaN\" } }";
    const char *extj2 = "{ \"d\": {\"$numberDouble\": \"nAn\" } }";
 
-   assert (bson_init_from_json (&b, extj, -1, &error));
-   assert (BCON_EXTRACT (&b, "d", BCONE_DOUBLE (d)));
-   assert (d != d); /* not a number */
+   BSON_ASSERT (bson_init_from_json (&b, extj, -1, &error));
+   BSON_ASSERT (BCON_EXTRACT (&b, "d", BCONE_DOUBLE (d)));
+   BSON_ASSERT (d != d); /* not a number */
    bson_destroy (&b);
 
-   assert (bson_init_from_json (&b, extj2, -1, &error));
-   assert (BCON_EXTRACT (&b, "d", BCONE_DOUBLE (d)));
-   assert (d != d);
+   BSON_ASSERT (bson_init_from_json (&b, extj2, -1, &error));
+   BSON_ASSERT (BCON_EXTRACT (&b, "d", BCONE_DOUBLE (d)));
+   BSON_ASSERT (d != d);
    bson_destroy (&b);
 }
 
