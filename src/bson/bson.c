@@ -2562,7 +2562,7 @@ _bson_as_json_visit_double_common (const bson_iter_t *iter,
       bson_string_append_printf (str, "%.20g", v_double);
 
       /* ensure trailing ".0" to distinguish "3" from "3.0" */
-      if (legacy && strspn (&str->str[start_len], "0123456789-") ==
+      if (strspn (&str->str[start_len], "0123456789-") ==
           str->len - start_len) {
          bson_string_append (str, ".0");
       }
