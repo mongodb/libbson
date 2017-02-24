@@ -24,7 +24,6 @@ cd $BUILD_DIR
 $TAR xf ../../libbson.tar.gz -C . --strip-components=1
 $CMAKE -Wno-dev -Werror -Wdeprecated --warn-uninitialized --warn-unused-vars -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR .
 make
-make test
 make install
 
 # Test our CMake package config file
