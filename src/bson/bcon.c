@@ -46,37 +46,37 @@
 #define STACK_I STACK_ELE (0, i)
 #define STACK_IS_ARRAY STACK_ELE (0, is_array)
 
-#define STACK_PUSH_ARRAY(statement)           \
-   do {                                       \
+#define STACK_PUSH_ARRAY(statement)                \
+   do {                                            \
       BSON_ASSERT (ctx->n < (BCON_STACK_MAX - 1)); \
-      ctx->n++;                               \
-      STACK_I = 0;                            \
-      STACK_IS_ARRAY = 1;                     \
-      statement;                              \
+      ctx->n++;                                    \
+      STACK_I = 0;                                 \
+      STACK_IS_ARRAY = 1;                          \
+      statement;                                   \
    } while (0)
 
-#define STACK_PUSH_DOC(statement)             \
-   do {                                       \
+#define STACK_PUSH_DOC(statement)                  \
+   do {                                            \
       BSON_ASSERT (ctx->n < (BCON_STACK_MAX - 1)); \
-      ctx->n++;                               \
-      STACK_IS_ARRAY = 0;                     \
-      statement;                              \
+      ctx->n++;                                    \
+      STACK_IS_ARRAY = 0;                          \
+      statement;                                   \
    } while (0)
 
-#define STACK_POP_ARRAY(statement) \
-   do {                            \
-      BSON_ASSERT (STACK_IS_ARRAY);     \
-      BSON_ASSERT (ctx->n != 0);        \
-      statement;                   \
-      ctx->n--;                    \
+#define STACK_POP_ARRAY(statement)  \
+   do {                             \
+      BSON_ASSERT (STACK_IS_ARRAY); \
+      BSON_ASSERT (ctx->n != 0);    \
+      statement;                    \
+      ctx->n--;                     \
    } while (0)
 
-#define STACK_POP_DOC(statement) \
-   do {                          \
-      BSON_ASSERT (!STACK_IS_ARRAY);  \
-      BSON_ASSERT (ctx->n != 0);      \
-      statement;                 \
-      ctx->n--;                  \
+#define STACK_POP_DOC(statement)     \
+   do {                              \
+      BSON_ASSERT (!STACK_IS_ARRAY); \
+      BSON_ASSERT (ctx->n != 0);     \
+      statement;                     \
+      ctx->n--;                      \
    } while (0)
 
 /* This is a landing pad union for all of the types we can process with bcon.
