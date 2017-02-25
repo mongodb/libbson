@@ -21,7 +21,6 @@
 #include "json-test.h"
 #include "test-type.h"
 #include "bson-private.h"
-#include "jsonsl/jsonsl.h"
 
 #include <limits.h>
 
