@@ -27,7 +27,7 @@
 
 
 #ifndef BSON_MAX_RECURSION
-#define BSON_MAX_RECURSION 100
+#define BSON_MAX_RECURSION 200
 #endif
 
 
