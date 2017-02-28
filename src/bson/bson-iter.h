@@ -193,6 +193,9 @@ bson_iter_double_unsafe (const bson_iter_t *iter)
 BSON_EXPORT (bool)
 bson_iter_init (bson_iter_t *iter, const bson_t *bson);
 
+BSON_EXPORT (bool)
+bson_iter_init_from_data (bson_iter_t *iter, const uint8_t *data, size_t length);
+
 
 BSON_EXPORT (bool)
 bson_iter_init_find (bson_iter_t *iter, const bson_t *bson, const char *key);
