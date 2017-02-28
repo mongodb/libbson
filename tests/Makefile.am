@@ -3,6 +3,8 @@ TEST_PROGS = test-libbson
 
 
 test_libbson_SOURCES = \
+	tests/corpus-test.c \
+	tests/corpus-test.h \
 	tests/TestSuite.c \
 	tests/TestSuite.h \
 	tests/test-libbson.c \

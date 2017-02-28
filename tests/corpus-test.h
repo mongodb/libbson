@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef TEST_TYPE_H
-#define TEST_TYPE_H
+#ifndef CORPUS_TEST_H
+#define CORPUS_TEST_H
 
 #include "TestSuite.h"
 
@@ -45,11 +45,10 @@ typedef struct _test_bson_type_t {
 typedef void (*test_bson_type_valid_cb) (test_bson_type_t *test);
 
 void
-test_bson_type_print_description (const char *description);
+corpus_test_print_description (const char *description);
 uint8_t *
-test_bson_type_unhexlify (bson_iter_t *iter, uint32_t *bson_str_len);
+corpus_test_unhexlify (bson_iter_t *iter, uint32_t *bson_str_len);
 void
-test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid);
-
+corpus_test (bson_t *scenario, test_bson_type_valid_cb valid);
 
 #endif

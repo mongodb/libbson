@@ -222,6 +222,8 @@ if (ENABLE_TESTS)
     add_definitions("-DJSON_DIR=\"${SOURCE_DIR}/tests/json\"")
 
     set (BSON_TEST_SOURCES
+         ${SOURCE_DIR}/tests/corpus-test.c
+         ${SOURCE_DIR}/tests/corpus-test.h
          ${SOURCE_DIR}/tests/TestSuite.c
          ${SOURCE_DIR}/tests/TestSuite.h
          ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-1.json

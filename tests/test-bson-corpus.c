@@ -1,7 +1,7 @@
 #include <bson.h>
 #include "TestSuite.h"
 #include "json-test.h"
-#include "test-type.h"
+#include "corpus-test.h"
 
 #ifndef JSON_DIR
 #define JSON_DIR "tests/json"
@@ -151,7 +151,7 @@ test_bson_corpus_cb (bson_t *scenario)
    bson_t invalid_bson;
 
    /* test valid BSON and Extended JSON */
-   test_bson_type (scenario, test_bson_corpus);
+   corpus_test (scenario, test_bson_corpus);
 
    /* test invalid BSON */
    if (bson_iter_init_find (&iter, scenario, "decodeErrors")) {
@@ -166,11 +166,11 @@ test_bson_corpus_cb (bson_t *scenario)
          while (bson_iter_next (&test)) {
             if (!strcmp (bson_iter_key (&test), "description")) {
                description = bson_iter_utf8 (&test, NULL);
-               test_bson_type_print_description (description);
+               corpus_test_print_description (description);
             }
 
             if (!strcmp (bson_iter_key (&test), "bson")) {
-               bson_str = test_bson_type_unhexlify (&test, &bson_str_len);
+               bson_str = corpus_test_unhexlify (&test, &bson_str_len);
             }
          }
 
