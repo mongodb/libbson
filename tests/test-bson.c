@@ -1705,7 +1705,7 @@ test_bson_reserve_buffer (void)
    /* inline, stack-allocated */
    bson_init (&stack_alloced);
    BSON_APPEND_UTF8 (&src, "key", "value");
-   ASSERT (buf = bson_reserve_buffer (&stack_alloced, src.len));
+   ASSERT ((buf = bson_reserve_buffer (&stack_alloced, src.len)));
    ASSERT_CMPUINT32 (src.len, ==, stack_alloced.len);
    ASSERT (stack_alloced.flags & BSON_FLAG_INLINE);
    memcpy (buf, ((bson_impl_inline_t *) &src)->data, src.len);
@@ -1716,7 +1716,7 @@ test_bson_reserve_buffer (void)
    /* spilled over, stack-allocated */
    bloat (&src);
    bson_init (&stack_alloced);
-   ASSERT (buf = bson_reserve_buffer (&stack_alloced, src.len));
+   ASSERT ((buf = bson_reserve_buffer (&stack_alloced, src.len)));
    ASSERT_CMPUINT32 (src.len, ==, stack_alloced.len);
    ASSERT (!(stack_alloced.flags & BSON_FLAG_INLINE));
    memcpy (buf, ((bson_impl_alloc_t *) &src)->alloc, src.len);
@@ -1729,7 +1729,7 @@ test_bson_reserve_buffer (void)
    heap_alloced = bson_new ();
    bson_init (&src);
    BSON_APPEND_UTF8 (&src, "key", "value");
-   ASSERT (buf = bson_reserve_buffer (heap_alloced, src.len));
+   ASSERT ((buf = bson_reserve_buffer (heap_alloced, src.len)));
    ASSERT_CMPUINT32 (src.len, ==, heap_alloced->len);
    ASSERT (heap_alloced->flags & BSON_FLAG_INLINE);
    memcpy (buf, ((bson_impl_inline_t *) &src)->data, src.len);
@@ -1739,7 +1739,7 @@ test_bson_reserve_buffer (void)
    /* spilled over, heap-allocated */
    heap_alloced = bson_new ();
    bloat (&src);
-   ASSERT (buf = bson_reserve_buffer (heap_alloced, src.len));
+   ASSERT ((buf = bson_reserve_buffer (heap_alloced, src.len)));
    ASSERT_CMPUINT32 (src.len, ==, heap_alloced->len);
    ASSERT (!(heap_alloced->flags & BSON_FLAG_INLINE));
    memcpy (buf, ((bson_impl_alloc_t *) &src)->alloc, src.len);
