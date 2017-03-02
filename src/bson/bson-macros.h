@@ -61,19 +61,49 @@
    (defined (__GNUC__) && (__GNUC__ == (major)) && (__GNUC_MINOR__ == (minor)))
 
 
+/* Decorate public functions:
+ * - if BSON_STATIC, we're compiling a program that uses libbson / libmongoc as
+ *   a static library, don't decorate functions
+ * - else if BSON_COMPILATION, we're compiling a static or shared libbson, mark
+ *   public functions for export from the shared lib (which has no effect on
+ *   the static lib)
+ * - else, we're compiling a program that uses libbson / libmongoc as a shared
+ *   library, mark public functions as DLL imports for Microsoft Visual C.
+ */
+
 #ifdef _MSC_VER
-#ifdef BSON_COMPILATION
+/*
+ * Microsoft Visual C
+ */
+#ifdef BSON_STATIC
+#define BSON_API
+#elif defined(BSON_COMPILATION)
 #define BSON_API __declspec(dllexport)
 #else
 #define BSON_API __declspec(dllimport)
 #endif
 #define BSON_CALL __cdecl
+
 #elif defined(__GNUC__)
+/*
+ * GCC
+ */
+#ifdef BSON_STATIC
+#define BSON_API
+#elif defined(BSON_COMPILATION)
 #define BSON_API __attribute__ ((visibility ("default")))
-#define BSON_CALL
 #else
 #define BSON_API
+#endif
 #define BSON_CALL
+
+#else
+/*
+ * Other compilers
+ */
+#define BSON_API
+#define BSON_CALL
+
 #endif
 
 #define BSON_EXPORT(type) BSON_API type BSON_CALL
