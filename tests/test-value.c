@@ -117,7 +117,7 @@ test_value_decimal128 (void)
    assert (bson_decimal128_from_string ("123.5", &dec));
    doc = BCON_NEW ("decimal128", BCON_DECIMAL128 (&dec));
    assert (bson_iter_init (&iter, doc) && bson_iter_next (&iter));
-   assert (value = bson_iter_value (&iter));
+   assert ((value = bson_iter_value (&iter)));
    bson_value_copy (value, &copy);
    assert (bson_append_value (&other, bson_iter_key (&iter), -1, &copy));
 

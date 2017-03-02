@@ -131,8 +131,6 @@ test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
    BSON_ASSERT (scenario);
 
    if (bson_iter_init_find (&iter, scenario, "valid")) {
-      const char *expected = NULL;
-
       bson_iter_recurse (&iter, &inner_iter);
       while (bson_iter_next (&inner_iter)) {
          bson_iter_t test;
