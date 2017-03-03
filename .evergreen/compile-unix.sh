@@ -118,7 +118,7 @@ fi
 
 
 CFLAGS="$CFLAGS" CC="$CC" $SCAN_BUILD $CONFIGURE_SCRIPT $CONFIGURE_FLAGS
-$SCAN_BUILD make $TARGET TEST_ARGS="--no-fork -F test-results.json"
+$SCAN_BUILD make $TARGET TEST_ARGS="--no-fork -d -F test-results.json"
 
 if [ "$COVERAGE" ]; then
    case "$CC" in

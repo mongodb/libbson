@@ -430,14 +430,14 @@ TestSuite_RunTest (TestSuite *suite, /* IN */
       srand (test->seed);
 
       if (suite->flags & TEST_DEBUGOUTPUT) {
-         _Print_StdOut ("Begin %s\n", name);
+         _Print_StdOut ("Begin %s, seed %u\n", name, test->seed);
       }
 
       test->func (test->ctx);
       status = 0;
 #else
       if (suite->flags & TEST_DEBUGOUTPUT) {
-         _Print_StdOut ("Begin %s\n", name);
+         _Print_StdOut ("Begin %s, seed %u\n", name, test->seed);
       }
 
       if ((suite->flags & TEST_NOFORK)) {
