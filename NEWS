@@ -1,3 +1,10 @@
+libbson-1.5.5
+=============
+
+No change since 1.5.4; released to keep pace with libmongoc's version.
+
+-- A. Jesse Jiryu Davis
+
 Libbson-1.5.4
 =============
 
