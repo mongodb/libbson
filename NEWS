@@ -33,17 +33,14 @@ Peace,
 
     A. Jesse Jiryu Davis
 
-Libbson-1.5.2
+
+libbson-1.5.5
 =============
 
-This is a patch release that fixes a build error with MinGW on Windows.
-
-Libbson-1.5.1
-=============
-
-No change since 1.5.0; released to keep pace with libmongoc's version.
+No change since 1.5.4; released to keep pace with libmongoc's version.
 
 -- A. Jesse Jiryu Davis
+
 
 Libbson-1.5.4
 =============
@@ -57,6 +54,20 @@ Libbson-1.5.3
 =============
 
 No change since 1.5.2; released to keep pace with libmongoc's version.
+
+-- A. Jesse Jiryu Davis
+
+
+Libbson-1.5.2
+=============
+
+This is a patch release that fixes a build error with MinGW on Windows.
+
+
+Libbson-1.5.1
+=============
+
+No change since 1.5.0; released to keep pace with libmongoc's version.
 
 -- A. Jesse Jiryu Davis
 
