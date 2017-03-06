@@ -10,9 +10,7 @@ The following guide will step you through the process of downloading, building, 
 Supported Platforms
 -------------------
 
-The library is continuously tested on GNU/Linux, Windows 7, Mac OS X 10.10, and Solaris 11 (Intel and Sparc), with GCC, Clang, and Visual Studio 2010, 2013, and 2015.
-
-The library supports the following operating systems and CPU architectures:
+The MongoDB C Driver is `continuously tested <https://evergreen.mongodb.com/waterfall/libbson>`_ on variety of platforms including:
 
 =======================  =================  ======================================
 Operating Systems        CPU Architectures  Compiler Toolchain
@@ -50,10 +48,13 @@ The package can be installed with:
 
   $ yum install libbson
 
-Installing from Source
-----------------------
+Building on Unix
+----------------
 
-The following instructions are for UNIX-like systems such as GNU/Linux, FreeBSD, and Solaris. To build on Windows, see the instructions for :ref:`Building on Windows <installing_building_on_windows>`.
+Building from a release tarball
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Unless you intend on contributing to libbson, you will want to build from a release tarball.
 
 The most recent release of libbson is |release| and can be `downloaded here <https://github.com/mongodb/libbson/releases/download/|release|/libbson-|release|.tar.gz>`_. The following snippet will download and extract the current release of the driver.
 
@@ -62,16 +63,7 @@ The most recent release of libbson is |release| and can be `downloaded here <htt
   $ wget |release_download|
   $ tar -xzf libbson-|release|.tar.gz
   $ cd libbson-|release|/
-
-Minimal dependencies are needed to build libbson. On UNIX-like systems, pthreads (the POSIX threading library) is required.
-
-Make sure you have access to a :ref:`supported toolchain <installing_supported_platforms>` such as GCC, Clang, SolarisStudio, or MinGW. Optionally, ``pkg-config`` can be used if your system supports it to simplify locating proper compiler and linker arguments when compiling your program.
-
-The following will configure for a typical 64-bit Linux system such as RedHat Enterprise Linux 6 or CentOS 6. Note that not all systems place 64-bit libraries in ``/usr/lib64``. Check your system to see what the convention is if you are building 64-bit versions of the library.
-
-.. code-block:: none
-
-  $ ./configure --prefix=/usr --libdir=/usr/lib64
+  $ ./configure
 
 For a list of all configure options, run ``./configure --help``.
 
@@ -100,26 +92,80 @@ We can now build libbson with the venerable ``make`` program.
 .. code-block:: none
 
   $ make
+  $ sudo make install
 
-.. note:
+Building from git
+^^^^^^^^^^^^^^^^^
 
-  You can optionally build code objects in parallel using the ``-j`` option to GNU make. Some implementations of ``make`` do not support this option, such as Sun's make on Solaris 10. To build in parallel on an 8 core machine, you might use:
+To build an unreleased version of libbson from git requires additional dependencies.
 
-  .. code-block:: none
-
-    $ gmake -j8
-
-To install the driver, we use ``make`` with the ``install`` target.
+RedHat / Fedora:
 
 .. code-block:: none
 
+  $ sudo yum install git gcc automake autoconf libtool
+
+Debian / Ubuntu:
+
+.. code-block:: none
+
+  $ sudo apt-get install git gcc automake autoconf libtool
+
+FreeBSD:
+
+.. code-block:: none
+
+  $ su -c 'pkg install git gcc automake autoconf libtool'
+
+Once you have the dependencies installed, clone the repository and build the current master or a particular release tag:
+
+.. code-block:: none
+
+  $ git clone https://github.com/mongodb/libbson.git
+  $ cd libbson
+  $ git checkout x.y.z  # To build a particular release
+  $ ./autogen.sh
+  $ make
   $ sudo make install
 
-.. note:
+Generating the documentation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  On systems that do not support the ``sudo`` command, we can use ``su -c 'make install'``.
+Install `Sphinx <http://www.sphinx-doc.org/>`_, then:
+
+.. code-block:: none
+
+  $ ./configure --enable-html-docs --enable-man-pages
+  $ make man html
 
 .. _installing_building_on_windows:
+
+Building on Mac OS X
+--------------------
+
+Install the XCode Command Line Tools::
+
+  $ xcode-select --install
+
+The ``pkg-config`` utility is also required. First `install Homebrew according to its instructions <http://brew.sh/>`_, then::
+
+  $ brew install pkgconfig
+
+Download the latest release tarball
+
+.. parsed-literal::
+
+  $ curl -LO |release_download|
+  $ tar xzf libbson-|release|.tar.gz
+  $ cd libbson-|release|
+
+Build and install libbson:
+
+.. code-block:: none
+
+  $ ./configure
+  $ make
+  $ sudo make install
 
 Building on Windows
 -------------------
@@ -145,4 +191,3 @@ You can disable building the tests with:
   > cmake -G "Visual Studio 14 2015 Win64" \
     "-DCMAKE_INSTALL_PREFIX=C:\libbson" \
     "-DENABLE_TESTS:BOOL=OFF"
-
