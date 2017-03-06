@@ -1,8 +1,9 @@
 BSON_CURRENT_FILE=${srcdir}/VERSION_CURRENT
 BSON_VERSION=$(cat $BSON_CURRENT_FILE)
-BSON_MAJOR_VERSION=$(cut -d- -f1 $BSON_CURRENT_FILE | cut -d. -f1)
-BSON_MINOR_VERSION=$(cut -d- -f1 $BSON_CURRENT_FILE | cut -d. -f2)
-BSON_MICRO_VERSION=$(cut -d- -f1 $BSON_CURRENT_FILE | cut -d. -f3)
+# Ensure newline for "cut" implementations that need it, e.g. HP-UX.
+BSON_MAJOR_VERSION=$((cat $BSON_CURRENT_FILE; echo) | cut -d- -f1 | cut -d. -f1)
+BSON_MINOR_VERSION=$((cat $BSON_CURRENT_FILE; echo) | cut -d- -f1 | cut -d. -f2)
+BSON_MICRO_VERSION=$((cat $BSON_CURRENT_FILE; echo) | cut -d- -f1 | cut -d. -f3)
 BSON_PRERELEASE_VERSION=$(cut -s -d- -f2 $BSON_CURRENT_FILE)
 AC_SUBST(BSON_VERSION)
 AC_SUBST(BSON_MAJOR_VERSION)
