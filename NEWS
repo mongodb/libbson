@@ -1,3 +1,14 @@
+Libbson-1.6.1
+=============
+
+It is my pleasure to announce libbson-1.6.1. This is a bugfix release that
+resolves GCC 7 compiler warnings, improves HP-UX compatibility, and avoids
+a test failure from launching too many threads on 32-bit MIPS.
+
+Peace,
+
+    A. Jesse Jiryu Davis
+
 Libbson-1.6.0
 =============
 
