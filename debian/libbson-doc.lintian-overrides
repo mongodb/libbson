@@ -1,2 +1,2 @@
-# yelp-build embeds jQuery and jQuery.Syntax, so we can't use libjs-jquery
+# Sphinx embeds jQuery
 libbson-doc: embedded-javascript-library
