@@ -51,7 +51,7 @@ libbson_la_CPPFLAGS = \
 	-DBSON_COMPILATION \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/bson \
-	-I$(top_srcdir)/src/yajl \
+	-I$(top_srcdir)/src/jsonsl \
 	-I$(top_builddir)/src/bson
 
 libbson_la_CFLAGS = \

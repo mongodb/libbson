@@ -58,11 +58,11 @@
  */
 
 void
-bson_set_error (bson_error_t *error,  /* OUT */
-                uint32_t      domain, /* IN */
-                uint32_t      code,   /* IN */
-                const char   *format, /* IN */
-                ...)                  /* IN */
+bson_set_error (bson_error_t *error, /* OUT */
+                uint32_t domain,     /* IN */
+                uint32_t code,       /* IN */
+                const char *format,  /* IN */
+                ...)                 /* IN */
 {
    va_list args;
 
@@ -98,9 +98,9 @@ bson_set_error (bson_error_t *error,  /* OUT */
  */
 
 char *
-bson_strerror_r (int     err_code,  /* IN */
-                 char   *buf,       /* IN */
-                 size_t  buflen)    /* IN */
+bson_strerror_r (int err_code,  /* IN */
+                 char *buf,     /* IN */
+                 size_t buflen) /* IN */
 {
    static const char *unknown_msg = "Unknown error";
    char *ret = NULL;
@@ -124,4 +124,3 @@ bson_strerror_r (int     err_code,  /* IN */
 
    return ret;
 }
-

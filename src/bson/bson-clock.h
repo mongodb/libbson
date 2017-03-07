@@ -19,8 +19,8 @@
 #define BSON_CLOCK_H
 
 
-#if !defined (BSON_INSIDE) && !defined (BSON_COMPILATION)
-# error "Only <bson.h> can be included directly."
+#if !defined(BSON_INSIDE) && !defined(BSON_COMPILATION)
+#error "Only <bson.h> can be included directly."
 #endif
 
 
@@ -32,10 +32,10 @@
 BSON_BEGIN_DECLS
 
 
-BSON_API
-int64_t bson_get_monotonic_time (void);
-BSON_API
-int     bson_gettimeofday       (struct timeval *tv);
+BSON_EXPORT (int64_t)
+bson_get_monotonic_time (void);
+BSON_EXPORT (int)
+bson_gettimeofday (struct timeval *tv);
 
 
 BSON_END_DECLS

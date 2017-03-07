@@ -71,8 +71,13 @@ else ()
   set(BSON_HAVE_TIMESPEC 1)
 endif ()
 
-if (MSVC)
+if (WIN32)
    set (BSON_OS 2)
+else ()
+   set (BSON_OS 1)
+endif ()
+
+if (MSVC)
    set (BSON_HAVE_CLOCK_GETTIME 0)
    set (BSON_HAVE_STDBOOL_H 0)
    set (BSON_HAVE_STRNLEN 0)
@@ -80,8 +85,6 @@ if (MSVC)
    set (BSON_HAVE_SYSCALL_TID 0)
 else ()
    find_package (Threads)
-
-   set (BSON_OS 1)
    CHECK_FUNCTION_EXISTS(clock_gettime BSON_HAVE_CLOCK_GETTIME)
    if (NOT BSON_HAVE_CLOCK_GETTIME)
       set(BSON_HAVE_CLOCK_GETTIME 0)
@@ -96,6 +99,9 @@ else ()
    endif ()
    set (BSON_EXTRA_ALIGN 1)
    CHECK_FUNCTION_EXISTS(syscall BSON_HAVE_SYSCALL_TID)
+   if (NOT BSON_HAVE_SYSCALL_TID)
+      set (BSON_HAVE_SYSCALL_TID 0)
+   endif ()
    CHECK_INCLUDE_FILE(strings.h HAVE_STRINGS_H)
 endif ()
 
@@ -153,15 +159,7 @@ set (SOURCES
    ${SOURCE_DIR}/src/bson/bson-value.c
    ${SOURCE_DIR}/src/bson/bson-version-functions.c
    ${SOURCE_DIR}/src/bson/bson-writer.c
-   ${SOURCE_DIR}/src/yajl/yajl_alloc.c
-   ${SOURCE_DIR}/src/yajl/yajl_buf.c
-   ${SOURCE_DIR}/src/yajl/yajl.c
-   ${SOURCE_DIR}/src/yajl/yajl_encode.c
-   ${SOURCE_DIR}/src/yajl/yajl_gen.c
-   ${SOURCE_DIR}/src/yajl/yajl_lex.c
-   ${SOURCE_DIR}/src/yajl/yajl_parser.c
-   ${SOURCE_DIR}/src/yajl/yajl_tree.c
-   ${SOURCE_DIR}/src/yajl/yajl_version.c
+   ${SOURCE_DIR}/src/jsonsl/jsonsl.c
 )
 
 set (HEADERS

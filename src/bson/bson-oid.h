@@ -19,8 +19,8 @@
 #define BSON_OID_H
 
 
-#if !defined (BSON_INSIDE) && !defined (BSON_COMPILATION)
-# error "Only <bson.h> can be included directly."
+#if !defined(BSON_INSIDE) && !defined(BSON_COMPILATION)
+#error "Only <bson.h> can be included directly."
 #endif
 
 
@@ -35,37 +35,28 @@
 BSON_BEGIN_DECLS
 
 
-BSON_API
-int      bson_oid_compare          (const bson_oid_t *oid1,
-                                    const bson_oid_t *oid2);
-BSON_API
-void     bson_oid_copy             (const bson_oid_t *src,
-                                    bson_oid_t       *dst);
-BSON_API
-bool     bson_oid_equal            (const bson_oid_t *oid1,
-                                    const bson_oid_t *oid2);
-BSON_API
-bool     bson_oid_is_valid         (const char       *str,
-                                    size_t            length);
-BSON_API
-time_t   bson_oid_get_time_t       (const bson_oid_t *oid);
-BSON_API
-uint32_t bson_oid_hash             (const bson_oid_t *oid);
-BSON_API
-void     bson_oid_init             (bson_oid_t       *oid,
-                                    bson_context_t   *context);
-BSON_API
-void     bson_oid_init_from_data   (bson_oid_t       *oid,
-                                    const uint8_t    *data);
-BSON_API
-void     bson_oid_init_from_string (bson_oid_t       *oid,
-                                    const char       *str);
-BSON_API
-void     bson_oid_init_sequence    (bson_oid_t       *oid,
-                                    bson_context_t   *context);
-BSON_API
-void     bson_oid_to_string        (const bson_oid_t *oid,
-                                    char              str[25]);
+BSON_EXPORT (int)
+bson_oid_compare (const bson_oid_t *oid1, const bson_oid_t *oid2);
+BSON_EXPORT (void)
+bson_oid_copy (const bson_oid_t *src, bson_oid_t *dst);
+BSON_EXPORT (bool)
+bson_oid_equal (const bson_oid_t *oid1, const bson_oid_t *oid2);
+BSON_EXPORT (bool)
+bson_oid_is_valid (const char *str, size_t length);
+BSON_EXPORT (time_t)
+bson_oid_get_time_t (const bson_oid_t *oid);
+BSON_EXPORT (uint32_t)
+bson_oid_hash (const bson_oid_t *oid);
+BSON_EXPORT (void)
+bson_oid_init (bson_oid_t *oid, bson_context_t *context);
+BSON_EXPORT (void)
+bson_oid_init_from_data (bson_oid_t *oid, const uint8_t *data);
+BSON_EXPORT (void)
+bson_oid_init_from_string (bson_oid_t *oid, const char *str);
+BSON_EXPORT (void)
+bson_oid_init_sequence (bson_oid_t *oid, bson_context_t *context);
+BSON_EXPORT (void)
+bson_oid_to_string (const bson_oid_t *oid, char str[25]);
 
 
 /**
@@ -82,8 +73,7 @@ void     bson_oid_to_string        (const bson_oid_t *oid,
  *          An integer > 0 if @oid1 is greater than @oid2.
  */
 static BSON_INLINE int
-bson_oid_compare_unsafe (const bson_oid_t *oid1,
-                         const bson_oid_t *oid2)
+bson_oid_compare_unsafe (const bson_oid_t *oid1, const bson_oid_t *oid2)
 {
    return memcmp (oid1, oid2, sizeof *oid1);
 }
@@ -102,8 +92,7 @@ bson_oid_compare_unsafe (const bson_oid_t *oid1,
  * Returns: true if @oid1 and @oid2 are equal; otherwise false.
  */
 static BSON_INLINE bool
-bson_oid_equal_unsafe (const bson_oid_t *oid1,
-                       const bson_oid_t *oid2)
+bson_oid_equal_unsafe (const bson_oid_t *oid1, const bson_oid_t *oid2)
 {
    return !memcmp (oid1, oid2, sizeof *oid1);
 }
@@ -146,8 +135,7 @@ bson_oid_hash_unsafe (const bson_oid_t *oid)
  * function.
  */
 static BSON_INLINE void
-bson_oid_copy_unsafe (const bson_oid_t *src,
-                      bson_oid_t       *dst)
+bson_oid_copy_unsafe (const bson_oid_t *src, bson_oid_t *dst)
 {
    memcpy (dst, src, sizeof *src);
 }
@@ -223,8 +211,7 @@ bson_oid_parse_hex_char (char hex)
  * valid input to the function.
  */
 static BSON_INLINE void
-bson_oid_init_from_string_unsafe (bson_oid_t *oid,
-                                  const char *str)
+bson_oid_init_from_string_unsafe (bson_oid_t *oid, const char *str)
 {
    int i;
 

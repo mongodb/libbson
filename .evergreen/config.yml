@@ -17,17 +17,57 @@ functions:
            export AWS_ACCESS_KEY_ID=${aws_key}
            export AWS_SECRET_ACCESS_KEY=${aws_secret}
            sudo apt-get install -y awscli
+           # awscli seems to have a bug uploading the empty ".nojekyll" file:
+           # "seek() takes 2 positional arguments but 3 were given"
+           rm -f doc/html/.nojekyll
            aws s3 cp doc/html s3://mciuploads/${project}/docs/${CURRENT_VERSION} --recursive --acl public-read --region us-east-1
     - command: s3.put
       params:
         aws_key: ${aws_key}
         aws_secret: ${aws_secret}
-        local_file:  ${project}/doc/html/index.html
+        local_file:  ${workdir}/libbson/doc/html/index.html
         remote_file: ${project}/docs/${CURRENT_VERSION}/index.html
         bucket: mciuploads
         permissions: public-read
         content_type: text/html
         display_name: "Rendered docs"
+
+  "upload man pages" :
+    - command: shell.exec
+      params:
+        silent: true
+        working_dir: "libbson"
+        script: |
+           . venv/bin/activate
+
+           # "man" with redirection writes plain ASCII, use lower-level groff to
+           # force formatted output. -t lays out tables, -T utf8 sets the output
+           # type, -man loads the manpage TROFF macros.
+           for doc in doc/man/*.3; do
+             echo $doc
+             fullpath=`pwd`/$doc
+             groff -man -t -T utf8 $fullpath | term2image -o $fullpath.png
+           done
+
+           mkdir -p man-page-images
+           mv doc/man/*.png man-page-images
+
+           export AWS_ACCESS_KEY_ID=${aws_key}
+           export AWS_SECRET_ACCESS_KEY=${aws_secret}
+           sudo apt-get install -y awscli
+           aws s3 cp man-page-images s3://mciuploads/${project}/man-page-images/${CURRENT_VERSION} --recursive --acl public-read --region us-east-1
+
+           sh .evergreen/man-page-image-list.sh man-page-images > man-page-images/index.html
+    - command: s3.put
+      params:
+        aws_key: ${aws_key}
+        aws_secret: ${aws_secret}
+        local_file:  ${workdir}/libbson/man-page-images/index.html
+        remote_file: ${project}/man-page-images/${CURRENT_VERSION}/index.html
+        bucket: mciuploads
+        permissions: public-read
+        content_type: text/html
+        display_name: "Rendered man pages"
 
   "upload coverage" :
     - command: shell.exec
@@ -43,7 +83,7 @@ functions:
       params:
         aws_key: ${aws_key}
         aws_secret: ${aws_secret}
-        local_file:  ${project}/coverage/index.html
+        local_file:  ${workdir}/libbson/coverage/index.html
         remote_file: ${project}/${build_variant}/${revision}/${version_id}/${build_id}/coverage/index.html
         bucket: mciuploads
         permissions: public-read
@@ -66,7 +106,7 @@ functions:
            # containing the exact folder name we'd like to upload the docs to,
            # depending on if its a patch build or regular evergreen build
            if [ "${is_patch}" = "true" ]; then
-              VERSION=$(git describe)-patch-${version_id}
+              VERSION=$(git describe --abbrev=7)-patch-${version_id}
            else
               VERSION=latest
            fi
@@ -110,9 +150,6 @@ functions:
         content_type: ${content_type|application/x-gzip}
 
   "upload artifacts":
-    - command: shell.exec
-      params:
-        script: tar czf artifacts.tar.gz libbson
     - command: archive.targz_pack
       params:
         target: "artifacts.tar.gz"
@@ -123,7 +160,7 @@ functions:
       params:
         aws_key: ${aws_key}
         aws_secret: ${aws_secret}
-        local_file: libbson.tar.gz
+        local_file: artifacts.tar.gz
         remote_file: libbson/${build_variant}/${revision}/${version_id}/${build_id}/artifacts/artifacts.tar.gz
         bucket: mciuploads
         permissions: public-read
@@ -138,7 +175,7 @@ functions:
   "windows fix":
     - command: shell.exec
       params:
-        working_dir: "mongoc"
+        working_dir: "libbson"
         script: |
           for i in $(find .evergreen -name \*.sh); do
             cat $i | tr -d '\r' > $i.new
@@ -233,15 +270,35 @@ tasks:
           params:
             working_dir: "libbson"
             script: |
+               # Need modern Sphinx so it includes :doc: targets in objects.inv.
+               # Install term2image for man page rendering.
+               python -m virtualenv venv
+               cd venv
+               . bin/activate
+               ./bin/pip install sphinx git+https://github.com/ajdavis/term2image.git
+               cd ..
+
+        - command: shell.exec
+          type: test
+          params:
+            working_dir: "libbson"
+            script: |
                echo '{ "results": [ { "status": "pass", "test_file": "Create Release Archive",' > test-results.json
                start=$(date +%s)
                echo '"start": ' $start ', ' >> test-results.json
+
+               # Use modern sphinx-build from venv.
+               . venv/bin/activate
+               which sphinx-build
+               sphinx-build --version
+
                ./autogen.sh --enable-html-docs --enable-man-pages && make distcheck
                end=$(date +%s)
                echo '"end": ' $end ', ' >> test-results.json
                sum=$(expr $end - $start)
                echo '"elapsed": ' $sum ' } ] }' >> test-results.json
         - func: "upload docs"
+        - func: "upload man pages"
         - func: "upload release"
 
     - name: release-compile
@@ -559,3 +616,11 @@ buildvariants:
   tasks:
     - name: "release-compile"
 
+- name: windows-64-mingw
+  display_name: "MinGW-W64 Windows"
+  expansions:
+    CC: "mingw"
+  run_on:
+  - windows-64-vs2013-compile
+  tasks:
+    - name: "debug-compile"

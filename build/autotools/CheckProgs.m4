@@ -14,6 +14,6 @@ if test -z "$GREP"; then
 fi
 
 # Optional for documentation
-AC_PATH_PROG(YELP_BUILD, yelp-build)
+AC_PATH_PROG(SPHINX_BUILD, sphinx-build)
 
 AC_PROG_INSTALL

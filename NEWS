@@ -1,3 +1,56 @@
+Libbson-1.6.1
+=============
+
+It is my pleasure to announce libbson-1.6.1. This is a bugfix release that
+resolves GCC 7 compiler warnings, improves HP-UX compatibility, and avoids
+a test failure from launching too many threads on 32-bit MIPS.
+
+Peace,
+
+    A. Jesse Jiryu Davis
+
+Libbson-1.6.0
+=============
+
+It is my pleasure to announce libbson-1.6.0.
+
+New features and bug fixes:
+
+  * Use jsonsl instead of libyajl as our JSON parsing library, parse JSON more
+    strictly, fix minor parsing bugs.
+  * Extended JSON documents like '{"$code": "...", "$scope": {}}' are now parsed
+    into BSON "code" elements.
+  * ISO8601 dates now allow years from 0000 to 9999 inclusive. Before, years
+    before 1970 were prohibited.
+  * BSON floats and ints are now distinguished in JSON output.
+  * The library is now built and continuously tested with MinGW-W64 on Windows.
+  * The documentation is ported from Mallard XML to ReStructured Text, the
+    HTML documentation is restyled, and numerous man page syntax errors fixed.
+  * All public functions now have the __cdecl calling convention on Windows.
+
+Thanks to everyone who contributed to the development of this release.
+
+  * A. Jesse Jiryu Davis
+  * Hannes Magnusson
+  * Aleksander Melnikov
+  * Remi Collet
+
+Peace,
+
+    A. Jesse Jiryu Davis
+
+Libbson-1.5.2
+=============
+
+This is a patch release that fixes a build error with MinGW on Windows.
+
+Libbson-1.5.1
+=============
+
+No change since 1.5.0; released to keep pace with libmongoc's version.
+
+-- A. Jesse Jiryu Davis
+
 Libbson-1.5.4
 =============
 
@@ -62,8 +115,8 @@ New features and bug fixes:
     0 or 1. Before, any non-zero value was considered true.
   * bson_append_code_with_scope now preserves the "code with scope" type
     if scope is an empty, non-NULL BSON document.
-  * BSON "code" and "code with scope" types are properly translated to JSON of
-    the form '{"$code": "...", "$scope": {...}}'.
+  * BSON "code" and "code with scope" types are properly translated to and from
+    JSON of the form '{"$code": "...", "$scope": {...}}'.
   * bson_json_reader functions now always validate UTF-8.
   * JSON parsing now preserves integer width.
   * bson_strtoll now matches stroll: it detects range errors, and when
@@ -73,6 +126,7 @@ New features and bug fixes:
     contains zero-length field names.
   * The configure option "--enable-hardening" had had no effect. It is removed
     in favor of system-wide compiler configuration.
+  * Additional validation of
 
 Thanks to everyone who contributed to the development of this release.
 

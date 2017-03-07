@@ -28,7 +28,7 @@
 #include "TestSuite.h"
 
 #ifndef BINARY_DIR
-# define BINARY_DIR "tests/binary"
+#define BINARY_DIR "tests/binary"
 #endif
 
 
@@ -41,17 +41,18 @@ get_bson (const char *filename)
    char real_filename[256];
    int fd;
 
-   bson_snprintf(real_filename, sizeof real_filename, BINARY_DIR"/%s", filename);
+   bson_snprintf (
+      real_filename, sizeof real_filename, BINARY_DIR "/%s", filename);
    real_filename[sizeof real_filename - 1] = '\0';
 
-   if (-1 == (fd = bson_open(real_filename, O_RDONLY))) {
-      fprintf(stderr, "Failed to bson_open: %s\n", real_filename);
-      abort();
+   if (-1 == (fd = bson_open (real_filename, O_RDONLY))) {
+      fprintf (stderr, "Failed to bson_open: %s\n", real_filename);
+      abort ();
    }
-   len = bson_read(fd, buf, sizeof buf);
-   assert(len > 0);
-   b = bson_new_from_data(buf, (uint32_t)len);
-   bson_close(fd);
+   len = bson_read (fd, buf, sizeof buf);
+   assert (len > 0);
+   b = bson_new_from_data (buf, (uint32_t) len);
+   bson_close (fd);
 
    return b;
 }
@@ -62,83 +63,87 @@ test_bson_new (void)
 {
    bson_t *b;
 
-   b = bson_new();
-   assert_cmpint(b->len, ==, 5);
-   bson_destroy(b);
+   b = bson_new ();
+   assert_cmpint (b->len, ==, 5);
+   bson_destroy (b);
 
-   b = bson_sized_new(32);
-   assert_cmpint(b->len, ==, 5);
-   bson_destroy(b);
+   b = bson_sized_new (32);
+   assert_cmpint (b->len, ==, 5);
+   bson_destroy (b);
 }
 
 
 static void
 test_bson_alloc (void)
 {
-   static const uint8_t empty_bson[] = { 5, 0, 0, 0, 0 };
+   static const uint8_t empty_bson[] = {5, 0, 0, 0, 0};
    bson_t *b;
 
-   b = bson_new();
-   assert_cmpint(b->len, ==, 5);
-   assert((b->flags & BSON_FLAG_INLINE));
-   assert(!(b->flags & BSON_FLAG_CHILD));
-   assert(!(b->flags & BSON_FLAG_STATIC));
-   assert(!(b->flags & BSON_FLAG_NO_FREE));
-   bson_destroy(b);
+   b = bson_new ();
+   assert_cmpint (b->len, ==, 5);
+   assert ((b->flags & BSON_FLAG_INLINE));
+   assert (!(b->flags & BSON_FLAG_CHILD));
+   assert (!(b->flags & BSON_FLAG_STATIC));
+   assert (!(b->flags & BSON_FLAG_NO_FREE));
+   bson_destroy (b);
 
    /*
     * This checks that we fit in the inline buffer size.
     */
-   b = bson_sized_new(44);
-   assert_cmpint(b->len, ==, 5);
-   assert((b->flags & BSON_FLAG_INLINE));
-   bson_destroy(b);
+   b = bson_sized_new (44);
+   assert_cmpint (b->len, ==, 5);
+   assert ((b->flags & BSON_FLAG_INLINE));
+   bson_destroy (b);
 
    /*
     * Make sure we grow to next power of 2.
     */
-   b = bson_sized_new(121);
-   assert_cmpint(b->len, ==, 5);
-   assert(!(b->flags & BSON_FLAG_INLINE));
-   bson_destroy(b);
+   b = bson_sized_new (121);
+   assert_cmpint (b->len, ==, 5);
+   assert (!(b->flags & BSON_FLAG_INLINE));
+   bson_destroy (b);
 
    /*
     * Make sure we grow to next power of 2.
     */
-   b = bson_sized_new(129);
-   assert_cmpint(b->len, ==, 5);
-   assert(!(b->flags & BSON_FLAG_INLINE));
-   bson_destroy(b);
+   b = bson_sized_new (129);
+   assert_cmpint (b->len, ==, 5);
+   assert (!(b->flags & BSON_FLAG_INLINE));
+   bson_destroy (b);
 
-   b = bson_new_from_data(empty_bson, sizeof empty_bson);
-   assert_cmpint(b->len, ==, sizeof empty_bson);
-   assert((b->flags & BSON_FLAG_INLINE));
-   assert(!memcmp(bson_get_data(b), empty_bson, sizeof empty_bson));
-   bson_destroy(b);
+   b = bson_new_from_data (empty_bson, sizeof empty_bson);
+   assert_cmpint (b->len, ==, sizeof empty_bson);
+   assert ((b->flags & BSON_FLAG_INLINE));
+   assert (!memcmp (bson_get_data (b), empty_bson, sizeof empty_bson));
+   bson_destroy (b);
 }
 
 
 static void
-assert_bson_equal (const bson_t *a,
-                   const bson_t *b)
+assert_bson_equal (const bson_t *a, const bson_t *b)
 {
-   const uint8_t *data1 = bson_get_data(a);
-   const uint8_t *data2 = bson_get_data(b);
+   const uint8_t *data1 = bson_get_data (a);
+   const uint8_t *data2 = bson_get_data (b);
    uint32_t i;
 
-   if (!bson_equal(a, b)) {
-      for (i = 0; i < BSON_MAX(a->len, b->len); i++) {
+   if (!bson_equal (a, b)) {
+      for (i = 0; i < BSON_MAX (a->len, b->len); i++) {
          if (i >= a->len) {
-            printf("a is too short len=%u\n", a->len);
-            abort();
+            printf ("a is too short len=%u\n", a->len);
+            abort ();
          } else if (i >= b->len) {
-            printf("b is too short len=%u\n", b->len);
-            abort();
+            printf ("b is too short len=%u\n", b->len);
+            abort ();
          }
          if (data1[i] != data2[i]) {
-            printf("a[%u](0x%02x,%u) != b[%u](0x%02x,%u)\n",
-                   i, data1[i], data1[i], i, data2[i], data2[i]);
-            abort();
+            printf ("a[%u](0x%02x,%u) != b[%u](0x%02x,%u)\n",
+                    i,
+                    data1[i],
+                    data1[i],
+                    i,
+                    data2[i],
+                    data2[i]);
+            abort ();
          }
       }
    }
@@ -146,12 +151,11 @@ assert_bson_equal (const bson_t *a,
 
 
 static void
-assert_bson_equal_file (const bson_t *b,
-                        const char   *filename)
+assert_bson_equal_file (const bson_t *b, const char *filename)
 {
-   bson_t *b2 = get_bson(filename);
-   assert_bson_equal(b, b2);
-   bson_destroy(b2);
+   bson_t *b2 = get_bson (filename);
+   assert_bson_equal (b, b2);
+   bson_destroy (b2);
 }
 
 
@@ -161,12 +165,12 @@ test_bson_append_utf8 (void)
    bson_t *b;
    bson_t *b2;
 
-   b = bson_new();
-   b2 = get_bson("test11.bson");
-   assert(bson_append_utf8(b, "hello", -1, "world", -1));
-   assert_bson_equal(b, b2);
-   bson_destroy(b);
-   bson_destroy(b2);
+   b = bson_new ();
+   b2 = get_bson ("test11.bson");
+   assert (bson_append_utf8 (b, "hello", -1, "world", -1));
+   assert_bson_equal (b, b2);
+   bson_destroy (b);
+   bson_destroy (b2);
 }
 
 
@@ -176,12 +180,12 @@ test_bson_append_symbol (void)
    bson_t *b;
    bson_t *b2;
 
-   b = bson_new();
-   b2 = get_bson("test32.bson");
-   assert(bson_append_symbol(b, "hello", -1, "world", -1));
-   assert_bson_equal(b, b2);
-   bson_destroy(b);
-   bson_destroy(b2);
+   b = bson_new ();
+   b2 = get_bson ("test32.bson");
+   assert (bson_append_symbol (b, "hello", -1, "world", -1));
+   assert_bson_equal (b, b2);
+   bson_destroy (b);
+   bson_destroy (b2);
 }
 
 
@@ -191,12 +195,12 @@ test_bson_append_null (void)
    bson_t *b;
    bson_t *b2;
 
-   b = bson_new();
-   assert(bson_append_null(b, "hello", -1));
-   b2 = get_bson("test18.bson");
-   assert_bson_equal(b, b2);
-   bson_destroy(b);
-   bson_destroy(b2);
+   b = bson_new ();
+   assert (bson_append_null (b, "hello", -1));
+   b2 = get_bson ("test18.bson");
+   assert_bson_equal (b, b2);
+   bson_destroy (b);
+   bson_destroy (b2);
 }
 
 
@@ -206,12 +210,12 @@ test_bson_append_bool (void)
    bson_t *b;
    bson_t *b2;
 
-   b = bson_new();
-   assert(bson_append_bool(b, "bool", -1, true));
-   b2 = get_bson("test19.bson");
-   assert_bson_equal(b, b2);
-   bson_destroy(b);
-   bson_destroy(b2);
+   b = bson_new ();
+   assert (bson_append_bool (b, "bool", -1, true));
+   b2 = get_bson ("test19.bson");
+   assert_bson_equal (b, b2);
+   bson_destroy (b);
+   bson_destroy (b2);
 }
 
 
@@ -221,12 +225,12 @@ test_bson_append_double (void)
    bson_t *b;
    bson_t *b2;
 
-   b = bson_new();
-   assert(bson_append_double(b, "double", -1, 123.4567));
-   b2 = get_bson("test20.bson");
-   assert_bson_equal(b, b2);
-   bson_destroy(b);
-   bson_destroy(b2);
+   b = bson_new ();
+   assert (bson_append_double (b, "double", -1, 123.4567));
+   b2 = get_bson ("test20.bson");
+   assert_bson_equal (b, b2);
+   bson_destroy (b);
+   bson_destroy (b2);
 }
 
 
@@ -236,14 +240,14 @@ test_bson_append_document (void)
    bson_t *b;
    bson_t *b2;
 
-   b = bson_new();
-   b2 = bson_new();
-   assert(bson_append_document(b, "document", -1, b2));
-   bson_destroy(b2);
-   b2 = get_bson("test21.bson");
-   assert_bson_equal(b, b2);
-   bson_destroy(b);
-   bson_destroy(b2);
+   b = bson_new ();
+   b2 = bson_new ();
+   assert (bson_append_document (b, "document", -1, b2));
+   bson_destroy (b2);
+   b2 = get_bson ("test21.bson");
+   assert_bson_equal (b, b2);
+   bson_destroy (b);
+   bson_destroy (b2);
 }
 
 
@@ -254,14 +258,14 @@ test_bson_append_oid (void)
    bson_t *b;
    bson_t *b2;
 
-   bson_oid_init_from_string(&oid, "1234567890abcdef1234abcd");
+   bson_oid_init_from_string (&oid, "1234567890abcdef1234abcd");
 
-   b = bson_new();
-   assert(bson_append_oid(b, "oid", -1, &oid));
-   b2 = get_bson("test22.bson");
-   assert_bson_equal(b, b2);
-   bson_destroy(b);
-   bson_destroy(b2);
+   b = bson_new ();
+   assert (bson_append_oid (b, "oid", -1, &oid));
+   b2 = get_bson ("test22.bson");
+   assert_bson_equal (b, b2);
+   bson_destroy (b);
+   bson_destroy (b2);
 }
 
 
@@ -271,48 +275,49 @@ test_bson_append_array (void)
    bson_t *b;
    bson_t *b2;
 
-   b = bson_new();
-   b2 = bson_new();
-   assert(bson_append_utf8(b2, "0", -1, "hello", -1));
-   assert(bson_append_utf8(b2, "1", -1, "world", -1));
-   assert(bson_append_array(b, "array", -1, b2));
-   bson_destroy(b2);
-   b2 = get_bson("test23.bson");
-   assert_bson_equal(b, b2);
-   bson_destroy(b);
-   bson_destroy(b2);
+   b = bson_new ();
+   b2 = bson_new ();
+   assert (bson_append_utf8 (b2, "0", -1, "hello", -1));
+   assert (bson_append_utf8 (b2, "1", -1, "world", -1));
+   assert (bson_append_array (b, "array", -1, b2));
+   bson_destroy (b2);
+   b2 = get_bson ("test23.bson");
+   assert_bson_equal (b, b2);
+   bson_destroy (b);
+   bson_destroy (b2);
 }
 
 
 static void
 test_bson_append_binary (void)
 {
-   const static uint8_t binary[] = { '1', '2', '3', '4' };
+   const static uint8_t binary[] = {'1', '2', '3', '4'};
    bson_t *b;
    bson_t *b2;
 
-   b = bson_new();
-   assert(bson_append_binary(b, "binary", -1, BSON_SUBTYPE_USER, binary, 4));
-   b2 = get_bson("test24.bson");
-   assert_bson_equal(b, b2);
-   bson_destroy(b);
-   bson_destroy(b2);
+   b = bson_new ();
+   assert (bson_append_binary (b, "binary", -1, BSON_SUBTYPE_USER, binary, 4));
+   b2 = get_bson ("test24.bson");
+   assert_bson_equal (b, b2);
+   bson_destroy (b);
+   bson_destroy (b2);
 }
 
 
 static void
 test_bson_append_binary_deprecated (void)
 {
-   const static uint8_t binary[] = { '1', '2', '3', '4' };
+   const static uint8_t binary[] = {'1', '2', '3', '4'};
    bson_t *b;
    bson_t *b2;
 
-   b = bson_new();
-   assert(bson_append_binary(b, "binary", -1, BSON_SUBTYPE_BINARY_DEPRECATED, binary, 4));
-   b2 = get_bson("binary_deprecated.bson");
-   assert_bson_equal(b, b2);
-   bson_destroy(b);
-   bson_destroy(b2);
+   b = bson_new ();
+   assert (bson_append_binary (
+      b, "binary", -1, BSON_SUBTYPE_BINARY_DEPRECATED, binary, 4));
+   b2 = get_bson ("binary_deprecated.bson");
+   assert_bson_equal (b, b2);
+   bson_destroy (b);
+   bson_destroy (b2);
 }
 
 
@@ -325,31 +330,31 @@ test_bson_append_time_t (void)
 
    t = 1234567890;
 
-   b = bson_new();
-   assert(bson_append_time_t(b, "time_t", -1, t));
-   b2 = get_bson("test26.bson");
-   assert_bson_equal(b, b2);
-   bson_destroy(b);
-   bson_destroy(b2);
+   b = bson_new ();
+   assert (bson_append_time_t (b, "time_t", -1, t));
+   b2 = get_bson ("test26.bson");
+   assert_bson_equal (b, b2);
+   bson_destroy (b);
+   bson_destroy (b2);
 }
 
 
 static void
 test_bson_append_timeval (void)
 {
-   struct timeval tv = { 0 };
+   struct timeval tv = {0};
    bson_t *b;
    bson_t *b2;
 
    tv.tv_sec = 1234567890;
    tv.tv_usec = 0;
 
-   b = bson_new();
-   assert(bson_append_timeval(b, "time_t", -1, &tv));
-   b2 = get_bson("test26.bson");
-   assert_bson_equal(b, b2);
-   bson_destroy(b);
-   bson_destroy(b2);
+   b = bson_new ();
+   assert (bson_append_timeval (b, "time_t", -1, &tv));
+   b2 = get_bson ("test26.bson");
+   assert_bson_equal (b, b2);
+   bson_destroy (b);
+   bson_destroy (b2);
 }
 
 
@@ -359,12 +364,12 @@ test_bson_append_undefined (void)
    bson_t *b;
    bson_t *b2;
 
-   b = bson_new();
-   assert(bson_append_undefined(b, "undefined", -1));
-   b2 = get_bson("test25.bson");
-   assert_bson_equal(b, b2);
-   bson_destroy(b);
-   bson_destroy(b2);
+   b = bson_new ();
+   assert (bson_append_undefined (b, "undefined", -1));
+   b2 = get_bson ("test25.bson");
+   assert_bson_equal (b, b2);
+   bson_destroy (b);
+   bson_destroy (b2);
 }
 
 
@@ -374,12 +379,12 @@ test_bson_append_regex (void)
    bson_t *b;
    bson_t *b2;
 
-   b = bson_new();
-   assert(bson_append_regex(b, "regex", -1, "^abcd", "ilx"));
-   b2 = get_bson("test27.bson");
-   assert_bson_equal(b, b2);
-   bson_destroy(b);
-   bson_destroy(b2);
+   b = bson_new ();
+   assert (bson_append_regex (b, "regex", -1, "^abcd", "ilx"));
+   b2 = get_bson ("test27.bson");
+   assert_bson_equal (b, b2);
+   bson_destroy (b);
+   bson_destroy (b2);
 }
 
 
@@ -389,12 +394,12 @@ test_bson_append_code (void)
    bson_t *b;
    bson_t *b2;
 
-   b = bson_new();
-   assert(bson_append_code(b, "code", -1, "var a = {};"));
-   b2 = get_bson("test29.bson");
-   assert_bson_equal(b, b2);
-   bson_destroy(b);
-   bson_destroy(b2);
+   b = bson_new ();
+   assert (bson_append_code (b, "code", -1, "var a = {};"));
+   b2 = get_bson ("test29.bson");
+   assert_bson_equal (b, b2);
+   bson_destroy (b);
+   bson_destroy (b2);
 }
 
 
@@ -412,46 +417,46 @@ test_bson_append_code_with_scope (void)
    bson_t *scope;
 
    /* Test with NULL bson, which converts to just CODE type. */
-   b = bson_new();
-   assert(bson_append_code_with_scope(b, "code", -1, "var a = {};", NULL));
-   b2 = get_bson("test30.bson");
-   assert_bson_equal(b, b2);
-   r = bson_iter_init_find(&iter, b, "code");
-   assert(r);
-   assert(BSON_ITER_HOLDS_CODE(&iter)); /* Not codewscope */
-   bson_destroy(b);
-   bson_destroy(b2);
+   b = bson_new ();
+   assert (bson_append_code_with_scope (b, "code", -1, "var a = {};", NULL));
+   b2 = get_bson ("test30.bson");
+   assert_bson_equal (b, b2);
+   r = bson_iter_init_find (&iter, b, "code");
+   assert (r);
+   assert (BSON_ITER_HOLDS_CODE (&iter)); /* Not codewscope */
+   bson_destroy (b);
+   bson_destroy (b2);
 
    /* Empty scope is still CODEWSCOPE. */
-   b = bson_new();
+   b = bson_new ();
    scope = bson_new ();
-   assert(bson_append_code_with_scope(b, "code", -1, "var a = {};", scope));
-   b2 = get_bson("code_w_empty_scope.bson");
-   assert_bson_equal(b, b2);
-   r = bson_iter_init_find(&iter, b, "code");
-   assert(r);
-   assert(BSON_ITER_HOLDS_CODEWSCOPE(&iter));
-   bson_destroy(b);
-   bson_destroy(b2);
-   bson_destroy(scope);
+   assert (bson_append_code_with_scope (b, "code", -1, "var a = {};", scope));
+   b2 = get_bson ("code_w_empty_scope.bson");
+   assert_bson_equal (b, b2);
+   r = bson_iter_init_find (&iter, b, "code");
+   assert (r);
+   assert (BSON_ITER_HOLDS_CODEWSCOPE (&iter));
+   bson_destroy (b);
+   bson_destroy (b2);
+   bson_destroy (scope);
 
    /* Test with non-empty scope */
-   b = bson_new();
-   scope = bson_new();
-   assert(bson_append_utf8(scope, "foo", -1, "bar", -1));
-   assert(bson_append_code_with_scope(b, "code", -1, "var a = {};", scope));
-   b2 = get_bson("test31.bson");
-   assert_bson_equal(b, b2);
-   r = bson_iter_init_find(&iter, b, "code");
-   assert(r);
-   assert(BSON_ITER_HOLDS_CODEWSCOPE(&iter));
-   code = bson_iter_codewscope(&iter, &len, &scopelen, &scope_buf);
-   assert(len == 11);
-   assert(scopelen == scope->len);
-   assert(!strcmp(code, "var a = {};"));
-   bson_destroy(b);
-   bson_destroy(b2);
-   bson_destroy(scope);
+   b = bson_new ();
+   scope = bson_new ();
+   assert (bson_append_utf8 (scope, "foo", -1, "bar", -1));
+   assert (bson_append_code_with_scope (b, "code", -1, "var a = {};", scope));
+   b2 = get_bson ("test31.bson");
+   assert_bson_equal (b, b2);
+   r = bson_iter_init_find (&iter, b, "code");
+   assert (r);
+   assert (BSON_ITER_HOLDS_CODEWSCOPE (&iter));
+   code = bson_iter_codewscope (&iter, &len, &scopelen, &scope_buf);
+   assert (len == 11);
+   assert (scopelen == scope->len);
+   assert (!strcmp (code, "var a = {};"));
+   bson_destroy (b);
+   bson_destroy (b2);
+   bson_destroy (scope);
 }
 
 
@@ -462,13 +467,13 @@ test_bson_append_dbpointer (void)
    bson_t *b;
    bson_t *b2;
 
-   b = bson_new();
-   bson_oid_init_from_string(&oid, "0123abcd0123abcd0123abcd");
-   assert(bson_append_dbpointer(b, "dbpointer", -1, "foo", &oid));
-   b2 = get_bson("test28.bson");
-   assert_bson_equal(b, b2);
-   bson_destroy(b);
-   bson_destroy(b2);
+   b = bson_new ();
+   bson_oid_init_from_string (&oid, "0123abcd0123abcd0123abcd");
+   assert (bson_append_dbpointer (b, "dbpointer", -1, "foo", &oid));
+   b2 = get_bson ("test28.bson");
+   assert_bson_equal (b, b2);
+   bson_destroy (b);
+   bson_destroy (b2);
 }
 
 
@@ -478,14 +483,14 @@ test_bson_append_int32 (void)
    bson_t *b;
    bson_t *b2;
 
-   b = bson_new();
-   assert(bson_append_int32(b, "a", -1, -123));
-   assert(bson_append_int32(b, "c", -1, 0));
-   assert(bson_append_int32(b, "b", -1, 123));
-   b2 = get_bson("test33.bson");
-   assert_bson_equal(b, b2);
-   bson_destroy(b);
-   bson_destroy(b2);
+   b = bson_new ();
+   assert (bson_append_int32 (b, "a", -1, -123));
+   assert (bson_append_int32 (b, "c", -1, 0));
+   assert (bson_append_int32 (b, "b", -1, 123));
+   b2 = get_bson ("test33.bson");
+   assert_bson_equal (b, b2);
+   bson_destroy (b);
+   bson_destroy (b2);
 }
 
 
@@ -495,12 +500,12 @@ test_bson_append_int64 (void)
    bson_t *b;
    bson_t *b2;
 
-   b = bson_new();
-   assert(bson_append_int64(b, "a", -1, 100000000000000ULL));
-   b2 = get_bson("test34.bson");
-   assert_bson_equal(b, b2);
-   bson_destroy(b);
-   bson_destroy(b2);
+   b = bson_new ();
+   assert (bson_append_int64 (b, "a", -1, 100000000000000ULL));
+   b2 = get_bson ("test34.bson");
+   assert_bson_equal (b, b2);
+   bson_destroy (b);
+   bson_destroy (b2);
 }
 
 
@@ -513,12 +518,12 @@ test_bson_append_decimal128 (void)
    value.high = 0;
    value.low = 1;
 
-   b = bson_new();
-   assert(bson_append_decimal128(b, "a", -1, &value));
-   b2 = get_bson("test58.bson");
-   assert_bson_equal(b, b2);
-   bson_destroy(b);
-   bson_destroy(b2);
+   b = bson_new ();
+   assert (bson_append_decimal128 (b, "a", -1, &value));
+   b2 = get_bson ("test58.bson");
+   assert_bson_equal (b, b2);
+   bson_destroy (b);
+   bson_destroy (b2);
 }
 
 
@@ -530,48 +535,48 @@ test_bson_append_iter (void)
    bson_t b;
    bson_t c;
 
-   bson_init(&b);
-   bson_append_int32(&b, "a", 1, 1);
-   bson_append_int32(&b, "b", 1, 2);
-   bson_append_int32(&b, "c", 1, 3);
-   bson_append_utf8(&b, "d", 1, "hello", 5);
+   bson_init (&b);
+   bson_append_int32 (&b, "a", 1, 1);
+   bson_append_int32 (&b, "b", 1, 2);
+   bson_append_int32 (&b, "c", 1, 3);
+   bson_append_utf8 (&b, "d", 1, "hello", 5);
 
-   bson_init(&c);
+   bson_init (&c);
 
-   r = bson_iter_init_find(&iter, &b, "a");
-   assert(r);
-   r = bson_append_iter(&c, NULL, 0, &iter);
-   assert(r);
+   r = bson_iter_init_find (&iter, &b, "a");
+   assert (r);
+   r = bson_append_iter (&c, NULL, 0, &iter);
+   assert (r);
 
-   r = bson_iter_init_find(&iter, &b, "c");
-   assert(r);
-   r = bson_append_iter(&c, NULL, 0, &iter);
-   assert(r);
+   r = bson_iter_init_find (&iter, &b, "c");
+   assert (r);
+   r = bson_append_iter (&c, NULL, 0, &iter);
+   assert (r);
 
-   r = bson_iter_init_find(&iter, &b, "d");
-   assert(r);
-   r = bson_append_iter(&c, "world", -1, &iter);
-   assert(r);
+   r = bson_iter_init_find (&iter, &b, "d");
+   assert (r);
+   r = bson_append_iter (&c, "world", -1, &iter);
+   assert (r);
 
-   bson_iter_init(&iter, &c);
-   r = bson_iter_next(&iter);
-   assert(r);
-   assert_cmpstr("a", bson_iter_key(&iter));
-   assert_cmpint(BSON_TYPE_INT32, ==, bson_iter_type(&iter));
-   assert_cmpint(1, ==, bson_iter_int32(&iter));
-   r = bson_iter_next(&iter);
-   assert(r);
-   assert_cmpstr("c", bson_iter_key(&iter));
-   assert_cmpint(BSON_TYPE_INT32, ==, bson_iter_type(&iter));
-   assert_cmpint(3, ==, bson_iter_int32(&iter));
-   r = bson_iter_next(&iter);
-   assert(r);
-   assert_cmpint(BSON_TYPE_UTF8, ==, bson_iter_type(&iter));
-   assert_cmpstr("world", bson_iter_key(&iter));
-   assert_cmpstr("hello", bson_iter_utf8(&iter, NULL));
+   bson_iter_init (&iter, &c);
+   r = bson_iter_next (&iter);
+   assert (r);
+   assert_cmpstr ("a", bson_iter_key (&iter));
+   assert_cmpint (BSON_TYPE_INT32, ==, bson_iter_type (&iter));
+   assert_cmpint (1, ==, bson_iter_int32 (&iter));
+   r = bson_iter_next (&iter);
+   assert (r);
+   assert_cmpstr ("c", bson_iter_key (&iter));
+   assert_cmpint (BSON_TYPE_INT32, ==, bson_iter_type (&iter));
+   assert_cmpint (3, ==, bson_iter_int32 (&iter));
+   r = bson_iter_next (&iter);
+   assert (r);
+   assert_cmpint (BSON_TYPE_UTF8, ==, bson_iter_type (&iter));
+   assert_cmpstr ("world", bson_iter_key (&iter));
+   assert_cmpstr ("hello", bson_iter_utf8 (&iter, NULL));
 
-   bson_destroy(&b);
-   bson_destroy(&c);
+   bson_destroy (&b);
+   bson_destroy (&c);
 }
 
 
@@ -581,12 +586,12 @@ test_bson_append_timestamp (void)
    bson_t *b;
    bson_t *b2;
 
-   b = bson_new();
-   assert(bson_append_timestamp(b, "timestamp", -1, 1234, 9876));
-   b2 = get_bson("test35.bson");
-   assert_bson_equal(b, b2);
-   bson_destroy(b);
-   bson_destroy(b2);
+   b = bson_new ();
+   assert (bson_append_timestamp (b, "timestamp", -1, 1234, 9876));
+   b2 = get_bson ("test35.bson");
+   assert_bson_equal (b, b2);
+   bson_destroy (b);
+   bson_destroy (b2);
 }
 
 
@@ -596,12 +601,12 @@ test_bson_append_maxkey (void)
    bson_t *b;
    bson_t *b2;
 
-   b = bson_new();
-   assert(bson_append_maxkey(b, "maxkey", -1));
-   b2 = get_bson("test37.bson");
-   assert_bson_equal(b, b2);
-   bson_destroy(b);
-   bson_destroy(b2);
+   b = bson_new ();
+   assert (bson_append_maxkey (b, "maxkey", -1));
+   b2 = get_bson ("test37.bson");
+   assert_bson_equal (b, b2);
+   bson_destroy (b);
+   bson_destroy (b2);
 }
 
 
@@ -611,128 +616,128 @@ test_bson_append_minkey (void)
    bson_t *b;
    bson_t *b2;
 
-   b = bson_new();
-   assert(bson_append_minkey(b, "minkey", -1));
-   b2 = get_bson("test36.bson");
-   assert_bson_equal(b, b2);
-   bson_destroy(b);
-   bson_destroy(b2);
+   b = bson_new ();
+   assert (bson_append_minkey (b, "minkey", -1));
+   b2 = get_bson ("test36.bson");
+   assert_bson_equal (b, b2);
+   bson_destroy (b);
+   bson_destroy (b2);
 }
 
 
 static void
 test_bson_append_general (void)
 {
-   uint8_t bytes[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x01, 0x23, 0x45 };
+   uint8_t bytes[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0x01, 0x23, 0x45};
    bson_oid_t oid;
    bson_t *bson;
    bson_t *array;
    bson_t *subdoc;
 
-   bson = bson_new();
-   assert(bson_append_int32(bson, "int", -1, 1));
-   assert_bson_equal_file(bson, "test1.bson");
-   bson_destroy(bson);
+   bson = bson_new ();
+   assert (bson_append_int32 (bson, "int", -1, 1));
+   assert_bson_equal_file (bson, "test1.bson");
+   bson_destroy (bson);
 
-   bson = bson_new();
-   assert(bson_append_int64(bson, "int64", -1, 1));
-   assert_bson_equal_file(bson, "test2.bson");
-   bson_destroy(bson);
+   bson = bson_new ();
+   assert (bson_append_int64 (bson, "int64", -1, 1));
+   assert_bson_equal_file (bson, "test2.bson");
+   bson_destroy (bson);
 
-   bson = bson_new();
-   assert(bson_append_double(bson, "double", -1, 1.123));
-   assert_bson_equal_file(bson, "test3.bson");
-   bson_destroy(bson);
+   bson = bson_new ();
+   assert (bson_append_double (bson, "double", -1, 1.123));
+   assert_bson_equal_file (bson, "test3.bson");
+   bson_destroy (bson);
 
-   bson = bson_new();
-   assert(bson_append_utf8(bson, "string", -1, "some string", -1));
-   assert_bson_equal_file(bson, "test5.bson");
-   bson_destroy(bson);
+   bson = bson_new ();
+   assert (bson_append_utf8 (bson, "string", -1, "some string", -1));
+   assert_bson_equal_file (bson, "test5.bson");
+   bson_destroy (bson);
 
-   bson = bson_new();
-   array = bson_new();
-   assert(bson_append_int32(array, "0", -1, 1));
-   assert(bson_append_int32(array, "1", -1, 2));
-   assert(bson_append_int32(array, "2", -1, 3));
-   assert(bson_append_int32(array, "3", -1, 4));
-   assert(bson_append_int32(array, "4", -1, 5));
-   assert(bson_append_int32(array, "5", -1, 6));
-   assert(bson_append_array(bson, "array[int]", -1, array));
-   assert_bson_equal_file(bson, "test6.bson");
-   bson_destroy(array);
-   bson_destroy(bson);
+   bson = bson_new ();
+   array = bson_new ();
+   assert (bson_append_int32 (array, "0", -1, 1));
+   assert (bson_append_int32 (array, "1", -1, 2));
+   assert (bson_append_int32 (array, "2", -1, 3));
+   assert (bson_append_int32 (array, "3", -1, 4));
+   assert (bson_append_int32 (array, "4", -1, 5));
+   assert (bson_append_int32 (array, "5", -1, 6));
+   assert (bson_append_array (bson, "array[int]", -1, array));
+   assert_bson_equal_file (bson, "test6.bson");
+   bson_destroy (array);
+   bson_destroy (bson);
 
-   bson = bson_new();
-   array = bson_new();
-   assert(bson_append_double(array, "0", -1, 1.123));
-   assert(bson_append_double(array, "1", -1, 2.123));
-   assert(bson_append_array(bson, "array[double]", -1, array));
-   assert_bson_equal_file(bson, "test7.bson");
-   bson_destroy(array);
-   bson_destroy(bson);
+   bson = bson_new ();
+   array = bson_new ();
+   assert (bson_append_double (array, "0", -1, 1.123));
+   assert (bson_append_double (array, "1", -1, 2.123));
+   assert (bson_append_array (bson, "array[double]", -1, array));
+   assert_bson_equal_file (bson, "test7.bson");
+   bson_destroy (array);
+   bson_destroy (bson);
 
-   bson = bson_new();
-   subdoc = bson_new();
-   assert(bson_append_int32(subdoc, "int", -1, 1));
-   assert(bson_append_document(bson, "document", -1, subdoc));
-   assert_bson_equal_file(bson, "test8.bson");
-   bson_destroy(subdoc);
-   bson_destroy(bson);
+   bson = bson_new ();
+   subdoc = bson_new ();
+   assert (bson_append_int32 (subdoc, "int", -1, 1));
+   assert (bson_append_document (bson, "document", -1, subdoc));
+   assert_bson_equal_file (bson, "test8.bson");
+   bson_destroy (subdoc);
+   bson_destroy (bson);
 
-   bson = bson_new();
-   assert(bson_append_null(bson, "null", -1));
-   assert_bson_equal_file(bson, "test9.bson");
-   bson_destroy(bson);
+   bson = bson_new ();
+   assert (bson_append_null (bson, "null", -1));
+   assert_bson_equal_file (bson, "test9.bson");
+   bson_destroy (bson);
 
-   bson = bson_new();
-   assert(bson_append_regex(bson, "regex", -1, "1234", "i"));
-   assert_bson_equal_file(bson, "test10.bson");
-   bson_destroy(bson);
+   bson = bson_new ();
+   assert (bson_append_regex (bson, "regex", -1, "1234", "i"));
+   assert_bson_equal_file (bson, "test10.bson");
+   bson_destroy (bson);
 
-   bson = bson_new();
-   assert(bson_append_utf8(bson, "hello", -1, "world", -1));
-   assert_bson_equal_file(bson, "test11.bson");
-   bson_destroy(bson);
+   bson = bson_new ();
+   assert (bson_append_utf8 (bson, "hello", -1, "world", -1));
+   assert_bson_equal_file (bson, "test11.bson");
+   bson_destroy (bson);
 
-   bson = bson_new();
-   array = bson_new();
-   assert(bson_append_utf8(array, "0", -1, "awesome", -1));
-   assert(bson_append_double(array, "1", -1, 5.05));
-   assert(bson_append_int32(array, "2", -1, 1986));
-   assert(bson_append_array(bson, "BSON", -1, array));
-   assert_bson_equal_file(bson, "test12.bson");
-   bson_destroy(bson);
-   bson_destroy(array);
+   bson = bson_new ();
+   array = bson_new ();
+   assert (bson_append_utf8 (array, "0", -1, "awesome", -1));
+   assert (bson_append_double (array, "1", -1, 5.05));
+   assert (bson_append_int32 (array, "2", -1, 1986));
+   assert (bson_append_array (bson, "BSON", -1, array));
+   assert_bson_equal_file (bson, "test12.bson");
+   bson_destroy (bson);
+   bson_destroy (array);
 
-   bson = bson_new();
-   memcpy(&oid, bytes, sizeof oid);
-   assert(bson_append_oid(bson, "_id", -1, &oid));
-   subdoc = bson_new();
-   assert(bson_append_oid(subdoc, "_id", -1, &oid));
-   array = bson_new();
-   assert(bson_append_utf8(array, "0", -1, "1", -1));
-   assert(bson_append_utf8(array, "1", -1, "2", -1));
-   assert(bson_append_utf8(array, "2", -1, "3", -1));
-   assert(bson_append_utf8(array, "3", -1, "4", -1));
-   assert(bson_append_array(subdoc, "tags", -1, array));
-   bson_destroy(array);
-   assert(bson_append_utf8(subdoc, "text", -1, "asdfanother", -1));
-   array = bson_new();
-   assert(bson_append_utf8(array, "name", -1, "blah", -1));
-   assert(bson_append_document(subdoc, "source", -1, array));
-   bson_destroy(array);
-   assert(bson_append_document(bson, "document", -1, subdoc));
-   bson_destroy(subdoc);
-   array = bson_new();
-   assert(bson_append_utf8(array, "0", -1, "source", -1));
-   assert(bson_append_array(bson, "type", -1, array));
-   bson_destroy(array);
-   array = bson_new();
-   assert(bson_append_utf8(array, "0", -1, "server_created_at", -1));
-   assert(bson_append_array(bson, "missing", -1, array));
-   bson_destroy(array);
-   assert_bson_equal_file(bson, "test17.bson");
-   bson_destroy(bson);
+   bson = bson_new ();
+   memcpy (&oid, bytes, sizeof oid);
+   assert (bson_append_oid (bson, "_id", -1, &oid));
+   subdoc = bson_new ();
+   assert (bson_append_oid (subdoc, "_id", -1, &oid));
+   array = bson_new ();
+   assert (bson_append_utf8 (array, "0", -1, "1", -1));
+   assert (bson_append_utf8 (array, "1", -1, "2", -1));
+   assert (bson_append_utf8 (array, "2", -1, "3", -1));
+   assert (bson_append_utf8 (array, "3", -1, "4", -1));
+   assert (bson_append_array (subdoc, "tags", -1, array));
+   bson_destroy (array);
+   assert (bson_append_utf8 (subdoc, "text", -1, "asdfanother", -1));
+   array = bson_new ();
+   assert (bson_append_utf8 (array, "name", -1, "blah", -1));
+   assert (bson_append_document (subdoc, "source", -1, array));
+   bson_destroy (array);
+   assert (bson_append_document (bson, "document", -1, subdoc));
+   bson_destroy (subdoc);
+   array = bson_new ();
+   assert (bson_append_utf8 (array, "0", -1, "source", -1));
+   assert (bson_append_array (bson, "type", -1, array));
+   bson_destroy (array);
+   array = bson_new ();
+   assert (bson_append_utf8 (array, "0", -1, "server_created_at", -1));
+   assert (bson_append_array (bson, "missing", -1, array));
+   bson_destroy (array);
+   assert_bson_equal_file (bson, "test17.bson");
+   bson_destroy (bson);
 }
 
 
@@ -743,18 +748,18 @@ test_bson_append_deep (void)
    bson_t *tmp;
    int i;
 
-   a = bson_new();
+   a = bson_new ();
 
    for (i = 0; i < 100; i++) {
       tmp = a;
-      a = bson_new();
-      assert(bson_append_document(a, "a", -1, tmp));
-      bson_destroy(tmp);
+      a = bson_new ();
+      assert (bson_append_document (a, "a", -1, tmp));
+      bson_destroy (tmp);
    }
 
-   assert_bson_equal_file(a, "test38.bson");
+   assert_bson_equal_file (a, "test38.bson");
 
-   bson_destroy(a);
+   bson_destroy (a);
 }
 
 
@@ -977,7 +982,7 @@ test_bson_validate_bool (void)
 
    /* replace boolean value 1 with 255 */
    ASSERT (data[7] == '\x01');
-   data[7] = '\xff';
+   data[7] = (uint8_t) '\xff';
 
    ASSERT (bson_init_static (&bson, data, 9));
    ASSERT (!bson_validate (&bson, BSON_VALIDATE_NONE, &err_offset));
@@ -993,9 +998,8 @@ static void
 test_bson_validate_dbpointer (void)
 {
    /* { "a": DBPointer(ObjectId(...), Collection="b") }, implicit NULL at end */
-   uint8_t data[] =
-      "\x1A\x00\x00\x00\x0C\x61\x00\x02\x00\x00\x00\x62\x00"
-      "\x56\xE1\xFC\x72\xE0\xC9\x17\xE9\xC4\x71\x41\x61";
+   uint8_t data[] = "\x1A\x00\x00\x00\x0C\x61\x00\x02\x00\x00\x00\x62\x00"
+                    "\x56\xE1\xFC\x72\xE0\xC9\x17\xE9\xC4\x71\x41\x61";
 
    bson_t bson;
    bson_iter_t iter;
@@ -1015,7 +1019,7 @@ test_bson_validate_dbpointer (void)
 
    /* replace the NULL terminator of "b" with 255 */
    ASSERT (data[12] == '\0');
-   data[12] = '\xff';
+   data[12] = (uint8_t) '\xff';
 
    ASSERT (bson_init_static (&bson, data, sizeof data));
    ASSERT (!bson_validate (&bson, BSON_VALIDATE_NONE, &err_offset));
@@ -1035,71 +1039,71 @@ test_bson_validate (void)
    int i;
 
    for (i = 1; i <= 38; i++) {
-      bson_snprintf(filename, sizeof filename, "test%u.bson", i);
-      b = get_bson(filename);
-      assert(bson_validate(b, BSON_VALIDATE_NONE, &offset));
-      bson_destroy(b);
+      bson_snprintf (filename, sizeof filename, "test%u.bson", i);
+      b = get_bson (filename);
+      assert (bson_validate (b, BSON_VALIDATE_NONE, &offset));
+      bson_destroy (b);
    }
 
-   b = get_bson("overflow2.bson");
-   assert(!bson_validate(b, BSON_VALIDATE_NONE, &offset));
-   assert(offset == 9);
-   bson_destroy(b);
+   b = get_bson ("overflow2.bson");
+   assert (!bson_validate (b, BSON_VALIDATE_NONE, &offset));
+   assert (offset == 9);
+   bson_destroy (b);
 
-   b = get_bson("trailingnull.bson");
-   assert(!bson_validate(b, BSON_VALIDATE_NONE, &offset));
-   assert(offset == 14);
-   bson_destroy(b);
+   b = get_bson ("trailingnull.bson");
+   assert (!bson_validate (b, BSON_VALIDATE_NONE, &offset));
+   assert (offset == 14);
+   bson_destroy (b);
 
-   b = get_bson("dollarquery.bson");
-   assert(!bson_validate(b, BSON_VALIDATE_DOLLAR_KEYS, &offset));
-   bson_destroy(b);
+   b = get_bson ("dollarquery.bson");
+   assert (!bson_validate (b, BSON_VALIDATE_DOLLAR_KEYS, &offset));
+   bson_destroy (b);
 
-   b = get_bson("dotquery.bson");
-   assert(!bson_validate(b, BSON_VALIDATE_DOT_KEYS, &offset));
-   bson_destroy(b);
+   b = get_bson ("dotquery.bson");
+   assert (!bson_validate (b, BSON_VALIDATE_DOT_KEYS, &offset));
+   bson_destroy (b);
 
-   b = get_bson("overflow3.bson");
-   assert(!bson_validate(b, BSON_VALIDATE_NONE, &offset));
-   assert(offset == 9);
-   bson_destroy(b);
+   b = get_bson ("overflow3.bson");
+   assert (!bson_validate (b, BSON_VALIDATE_NONE, &offset));
+   assert (offset == 9);
+   bson_destroy (b);
 
-   b = get_bson("overflow4.bson");
-   assert(!bson_validate(b, BSON_VALIDATE_NONE, &offset));
-   bson_destroy(b);
+   b = get_bson ("overflow4.bson");
+   assert (!bson_validate (b, BSON_VALIDATE_NONE, &offset));
+   bson_destroy (b);
 
-   b = get_bson("codewscope.bson");
-   assert(bson_validate (b, BSON_VALIDATE_NONE, &offset));
-   bson_destroy(b);
+   b = get_bson ("codewscope.bson");
+   assert (bson_validate (b, BSON_VALIDATE_NONE, &offset));
+   bson_destroy (b);
 
-   b = get_bson("empty_key.bson");
-   assert(bson_validate (b, BSON_VALIDATE_NONE |
-                            BSON_VALIDATE_UTF8 |
-                            BSON_VALIDATE_DOLLAR_KEYS |
-                            BSON_VALIDATE_DOT_KEYS, &offset));
-   assert(!bson_validate (b, BSON_VALIDATE_EMPTY_KEYS, &offset));
-   bson_destroy(b);
+   b = get_bson ("empty_key.bson");
+   assert (bson_validate (b,
+                          BSON_VALIDATE_NONE | BSON_VALIDATE_UTF8 |
+                             BSON_VALIDATE_DOLLAR_KEYS | BSON_VALIDATE_DOT_KEYS,
+                          &offset));
+   assert (!bson_validate (b, BSON_VALIDATE_EMPTY_KEYS, &offset));
+   bson_destroy (b);
 
-#define ENSURE_FAILURE(file) \
-   b = get_bson(file); \
-   assert(!bson_validate(b, BSON_VALIDATE_NONE, &offset)); \
-   bson_destroy(b);
+#define ENSURE_FAILURE(file)                                 \
+   b = get_bson (file);                                      \
+   assert (!bson_validate (b, BSON_VALIDATE_NONE, &offset)); \
+   bson_destroy (b);
 
-   ENSURE_FAILURE("test40.bson");
-   ENSURE_FAILURE("test41.bson");
-   ENSURE_FAILURE("test42.bson");
-   ENSURE_FAILURE("test43.bson");
-   ENSURE_FAILURE("test44.bson");
-   ENSURE_FAILURE("test45.bson");
-   ENSURE_FAILURE("test46.bson");
-   ENSURE_FAILURE("test47.bson");
-   ENSURE_FAILURE("test48.bson");
-   ENSURE_FAILURE("test49.bson");
-   ENSURE_FAILURE("test50.bson");
-   ENSURE_FAILURE("test51.bson");
-   ENSURE_FAILURE("test52.bson");
-   ENSURE_FAILURE("test53.bson");
-   ENSURE_FAILURE("test54.bson");
+   ENSURE_FAILURE ("test40.bson");
+   ENSURE_FAILURE ("test41.bson");
+   ENSURE_FAILURE ("test42.bson");
+   ENSURE_FAILURE ("test43.bson");
+   ENSURE_FAILURE ("test44.bson");
+   ENSURE_FAILURE ("test45.bson");
+   ENSURE_FAILURE ("test46.bson");
+   ENSURE_FAILURE ("test47.bson");
+   ENSURE_FAILURE ("test48.bson");
+   ENSURE_FAILURE ("test49.bson");
+   ENSURE_FAILURE ("test50.bson");
+   ENSURE_FAILURE ("test51.bson");
+   ENSURE_FAILURE ("test52.bson");
+   ENSURE_FAILURE ("test53.bson");
+   ENSURE_FAILURE ("test54.bson");
 
 #undef ENSURE_FAILURE
 }
@@ -1112,74 +1116,74 @@ test_bson_init (void)
    char key[12];
    int i;
 
-   bson_init(&b);
-   assert((b.flags & BSON_FLAG_INLINE));
-   assert((b.flags & BSON_FLAG_STATIC));
-   assert(!(b.flags & BSON_FLAG_RDONLY));
+   bson_init (&b);
+   assert ((b.flags & BSON_FLAG_INLINE));
+   assert ((b.flags & BSON_FLAG_STATIC));
+   assert (!(b.flags & BSON_FLAG_RDONLY));
    for (i = 0; i < 100; i++) {
-      bson_snprintf(key, sizeof key, "%d", i);
-      assert(bson_append_utf8(&b, key, -1, "bar", -1));
+      bson_snprintf (key, sizeof key, "%d", i);
+      assert (bson_append_utf8 (&b, key, -1, "bar", -1));
    }
-   assert(!(b.flags & BSON_FLAG_INLINE));
-   bson_destroy(&b);
+   assert (!(b.flags & BSON_FLAG_INLINE));
+   bson_destroy (&b);
 }
 
 
 static void
 test_bson_init_static (void)
 {
-   static const uint8_t data[5] = { 5 };
+   static const uint8_t data[5] = {5};
    bson_t b;
 
-   bson_init_static(&b, data, sizeof data);
-   assert((b.flags & BSON_FLAG_RDONLY));
-   bson_destroy(&b);
+   bson_init_static (&b, data, sizeof data);
+   assert ((b.flags & BSON_FLAG_RDONLY));
+   bson_destroy (&b);
 }
 
 
 static void
 test_bson_new_from_buffer (void)
 {
-   bson_t * b;
-   uint8_t * buf = bson_malloc0(5);
+   bson_t *b;
+   uint8_t *buf = bson_malloc0 (5);
    size_t len = 5;
-   uint32_t len_le = BSON_UINT32_TO_LE(5);
+   uint32_t len_le = BSON_UINT32_TO_LE (5);
 
-   memcpy(buf, &len_le, sizeof (len_le));
+   memcpy (buf, &len_le, sizeof (len_le));
 
-   b = bson_new_from_buffer(&buf, &len, bson_realloc_ctx, NULL);
+   b = bson_new_from_buffer (&buf, &len, bson_realloc_ctx, NULL);
 
-   assert(b->flags & BSON_FLAG_NO_FREE);
-   assert(len == 5);
-   assert(b->len == 5);
+   assert (b->flags & BSON_FLAG_NO_FREE);
+   assert (len == 5);
+   assert (b->len == 5);
 
-   bson_append_utf8(b, "hello", -1, "world", -1);
+   bson_append_utf8 (b, "hello", -1, "world", -1);
 
-   assert(len == 32);
-   assert(b->len == 22);
+   assert (len == 32);
+   assert (b->len == 22);
 
-   bson_destroy(b);
+   bson_destroy (b);
 
-   bson_free(buf);
+   bson_free (buf);
 
    buf = NULL;
    len = 0;
 
-   b = bson_new_from_buffer(&buf, &len, bson_realloc_ctx, NULL);
+   b = bson_new_from_buffer (&buf, &len, bson_realloc_ctx, NULL);
 
-   assert(b->flags & BSON_FLAG_NO_FREE);
-   assert(len == 5);
-   assert(b->len == 5);
+   assert (b->flags & BSON_FLAG_NO_FREE);
+   assert (len == 5);
+   assert (b->len == 5);
 
-   bson_destroy(b);
-   bson_free(buf);
+   bson_destroy (b);
+   bson_free (buf);
 }
 
 
 static void
 test_bson_utf8_key (void)
 {
-   /* euro currency symbol */
+/* euro currency symbol */
 #define EU "\xe2\x82\xac"
 #define FIVE_EUROS EU EU EU EU EU
    uint32_t length;
@@ -1188,15 +1192,15 @@ test_bson_utf8_key (void)
    bson_t *b;
    size_t offset;
 
-   b = get_bson("eurokey.bson");
-   assert(bson_validate(b, BSON_VALIDATE_NONE, &offset));
-   assert(bson_iter_init(&iter, b));
-   assert(bson_iter_next(&iter));
-   assert(!strcmp(bson_iter_key(&iter), FIVE_EUROS));
-   assert((str = bson_iter_utf8(&iter, &length)));
-   assert(length == 15); /* 5 3-byte sequences. */
-   assert(!strcmp(str, FIVE_EUROS));
-   bson_destroy(b);
+   b = get_bson ("eurokey.bson");
+   assert (bson_validate (b, BSON_VALIDATE_NONE, &offset));
+   assert (bson_iter_init (&iter, b));
+   assert (bson_iter_next (&iter));
+   assert (!strcmp (bson_iter_key (&iter), FIVE_EUROS));
+   assert ((str = bson_iter_utf8 (&iter, &length)));
+   assert (length == 15); /* 5 3-byte sequences. */
+   assert (!strcmp (str, FIVE_EUROS));
+   bson_destroy (b);
 }
 
 
@@ -1207,8 +1211,8 @@ test_bson_new_1mm (void)
    int i;
 
    for (i = 0; i < 1000000; i++) {
-      b = bson_new();
-      bson_destroy(b);
+      b = bson_new ();
+      bson_destroy (b);
    }
 }
 
@@ -1220,8 +1224,8 @@ test_bson_init_1mm (void)
    int i;
 
    for (i = 0; i < 1000000; i++) {
-      bson_init(&b);
-      bson_destroy(&b);
+      bson_init (&b);
+      bson_destroy (&b);
    }
 }
 
@@ -1234,22 +1238,22 @@ test_bson_build_child (void)
    bson_t *b2;
    bson_t *child2;
 
-   bson_init(&b);
-   assert(bson_append_document_begin(&b, "foo", -1, &child));
-   assert(bson_append_utf8(&child, "bar", -1, "baz", -1));
-   assert(bson_append_document_end(&b, &child));
+   bson_init (&b);
+   assert (bson_append_document_begin (&b, "foo", -1, &child));
+   assert (bson_append_utf8 (&child, "bar", -1, "baz", -1));
+   assert (bson_append_document_end (&b, &child));
 
-   b2 = bson_new();
-   child2 = bson_new();
-   assert(bson_append_utf8(child2, "bar", -1, "baz", -1));
-   assert(bson_append_document(b2, "foo", -1, child2));
-   bson_destroy(child2);
+   b2 = bson_new ();
+   child2 = bson_new ();
+   assert (bson_append_utf8 (child2, "bar", -1, "baz", -1));
+   assert (bson_append_document (b2, "foo", -1, child2));
+   bson_destroy (child2);
 
-   assert(b.len == b2->len);
-   assert_bson_equal(&b, b2);
+   assert (b.len == b2->len);
+   assert_bson_equal (&b, b2);
 
-   bson_destroy(&b);
-   bson_destroy(b2);
+   bson_destroy (&b);
+   bson_destroy (b2);
 }
 
 
@@ -1261,48 +1265,47 @@ test_bson_build_child_array (void)
    bson_t *b2;
    bson_t *child2;
 
-   bson_init(&b);
-   assert(bson_append_array_begin(&b, "foo", -1, &child));
-   assert(bson_append_utf8(&child, "0", -1, "baz", -1));
-   assert(bson_append_array_end(&b, &child));
+   bson_init (&b);
+   assert (bson_append_array_begin (&b, "foo", -1, &child));
+   assert (bson_append_utf8 (&child, "0", -1, "baz", -1));
+   assert (bson_append_array_end (&b, &child));
 
-   b2 = bson_new();
-   child2 = bson_new();
-   assert(bson_append_utf8(child2, "0", -1, "baz", -1));
-   assert(bson_append_array(b2, "foo", -1, child2));
-   bson_destroy(child2);
+   b2 = bson_new ();
+   child2 = bson_new ();
+   assert (bson_append_utf8 (child2, "0", -1, "baz", -1));
+   assert (bson_append_array (b2, "foo", -1, child2));
+   bson_destroy (child2);
 
-   assert(b.len == b2->len);
-   assert_bson_equal(&b, b2);
+   assert (b.len == b2->len);
+   assert_bson_equal (&b, b2);
 
-   bson_destroy(&b);
-   bson_destroy(b2);
+   bson_destroy (&b);
+   bson_destroy (b2);
 }
 
 
 static void
-test_bson_build_child_deep_1 (bson_t *b,
-                              int    *count)
+test_bson_build_child_deep_1 (bson_t *b, int *count)
 {
    bson_t child;
 
    (*count)++;
 
-   assert(bson_append_document_begin(b, "b", -1, &child));
-   assert(!(b->flags & BSON_FLAG_INLINE));
-   assert((b->flags & BSON_FLAG_IN_CHILD));
-   assert(!(child.flags & BSON_FLAG_INLINE));
-   assert((child.flags & BSON_FLAG_STATIC));
-   assert((child.flags & BSON_FLAG_CHILD));
+   assert (bson_append_document_begin (b, "b", -1, &child));
+   assert (!(b->flags & BSON_FLAG_INLINE));
+   assert ((b->flags & BSON_FLAG_IN_CHILD));
+   assert (!(child.flags & BSON_FLAG_INLINE));
+   assert ((child.flags & BSON_FLAG_STATIC));
+   assert ((child.flags & BSON_FLAG_CHILD));
 
    if (*count < 100) {
-      test_bson_build_child_deep_1(&child, count);
+      test_bson_build_child_deep_1 (&child, count);
    } else {
-      assert(bson_append_int32(&child, "b", -1, 1234));
+      assert (bson_append_int32 (&child, "b", -1, 1234));
    }
 
-   assert(bson_append_document_end(b, &child));
-   assert(!(b->flags & BSON_FLAG_IN_CHILD));
+   assert (bson_append_document_end (b, &child));
+   assert (!(b->flags & BSON_FLAG_IN_CHILD));
 }
 
 
@@ -1315,36 +1318,35 @@ test_bson_build_child_deep (void)
    } u;
    int count = 0;
 
-   bson_init(&u.b);
-   assert((u.b.flags & BSON_FLAG_INLINE));
-   test_bson_build_child_deep_1(&u.b, &count);
-   assert(!(u.b.flags & BSON_FLAG_INLINE));
-   assert((u.b.flags & BSON_FLAG_STATIC));
-   assert(!(u.b.flags & BSON_FLAG_NO_FREE));
-   assert(!(u.b.flags & BSON_FLAG_RDONLY));
-   assert(bson_validate(&u.b, BSON_VALIDATE_NONE, NULL));
-   assert(((bson_impl_alloc_t *)&u.b)->alloclen == 1024);
-   assert_bson_equal_file(&u.b, "test39.bson");
-   bson_destroy(&u.b);
+   bson_init (&u.b);
+   assert ((u.b.flags & BSON_FLAG_INLINE));
+   test_bson_build_child_deep_1 (&u.b, &count);
+   assert (!(u.b.flags & BSON_FLAG_INLINE));
+   assert ((u.b.flags & BSON_FLAG_STATIC));
+   assert (!(u.b.flags & BSON_FLAG_NO_FREE));
+   assert (!(u.b.flags & BSON_FLAG_RDONLY));
+   assert (bson_validate (&u.b, BSON_VALIDATE_NONE, NULL));
+   assert (((bson_impl_alloc_t *) &u.b)->alloclen == 1024);
+   assert_bson_equal_file (&u.b, "test39.bson");
+   bson_destroy (&u.b);
 }
 
 
 static void
-test_bson_build_child_deep_no_begin_end_1 (bson_t *b,
-                                           int    *count)
+test_bson_build_child_deep_no_begin_end_1 (bson_t *b, int *count)
 {
    bson_t child;
 
    (*count)++;
 
-   bson_init(&child);
+   bson_init (&child);
    if (*count < 100) {
-      test_bson_build_child_deep_1(&child, count);
+      test_bson_build_child_deep_1 (&child, count);
    } else {
-      assert(bson_append_int32(&child, "b", -1, 1234));
+      assert (bson_append_int32 (&child, "b", -1, 1234));
    }
-   assert(bson_append_document(b, "b", -1, &child));
-   bson_destroy(&child);
+   assert (bson_append_document (b, "b", -1, &child));
+   bson_destroy (&child);
 }
 
 
@@ -1358,12 +1360,12 @@ test_bson_build_child_deep_no_begin_end (void)
 
    int count = 0;
 
-   bson_init(&u.b);
-   test_bson_build_child_deep_no_begin_end_1(&u.b, &count);
-   assert(bson_validate(&u.b, BSON_VALIDATE_NONE, NULL));
-   assert(u.a.alloclen == 1024);
-   assert_bson_equal_file(&u.b, "test39.bson");
-   bson_destroy(&u.b);
+   bson_init (&u.b);
+   test_bson_build_child_deep_no_begin_end_1 (&u.b, &count);
+   assert (bson_validate (&u.b, BSON_VALIDATE_NONE, NULL));
+   assert (u.a.alloclen == 1024);
+   assert_bson_equal_file (&u.b, "test39.bson");
+   bson_destroy (&u.b);
 }
 
 
@@ -1372,12 +1374,12 @@ test_bson_count_keys (void)
 {
    bson_t b;
 
-   bson_init(&b);
-   assert(bson_append_int32(&b, "0", -1, 0));
-   assert(bson_append_int32(&b, "1", -1, 1));
-   assert(bson_append_int32(&b, "2", -1, 2));
-   assert_cmpint(bson_count_keys(&b), ==, 3);
-   bson_destroy(&b);
+   bson_init (&b);
+   assert (bson_append_int32 (&b, "0", -1, 0));
+   assert (bson_append_int32 (&b, "1", -1, 1));
+   assert (bson_append_int32 (&b, "2", -1, 2));
+   assert_cmpint (bson_count_keys (&b), ==, 3);
+   bson_destroy (&b);
 }
 
 
@@ -1387,12 +1389,12 @@ test_bson_copy (void)
    bson_t b;
    bson_t *c;
 
-   bson_init(&b);
-   assert(bson_append_int32(&b, "foobar", -1, 1234));
-   c = bson_copy(&b);
-   assert_bson_equal(&b, c);
-   bson_destroy(c);
-   bson_destroy(&b);
+   bson_init (&b);
+   assert (bson_append_int32 (&b, "foobar", -1, 1234));
+   c = bson_copy (&b);
+   assert_bson_equal (&b, c);
+   bson_destroy (c);
+   bson_destroy (&b);
 }
 
 
@@ -1406,24 +1408,24 @@ test_bson_copy_to (void)
    /*
     * Test inline structure copy.
     */
-   bson_init(&b);
-   assert(bson_append_int32(&b, "foobar", -1, 1234));
-   bson_copy_to(&b, &c);
-   assert_bson_equal(&b, &c);
-   bson_destroy(&c);
-   bson_destroy(&b);
+   bson_init (&b);
+   assert (bson_append_int32 (&b, "foobar", -1, 1234));
+   bson_copy_to (&b, &c);
+   assert_bson_equal (&b, &c);
+   bson_destroy (&c);
+   bson_destroy (&b);
 
    /*
     * Test malloced copy.
     */
-   bson_init(&b);
+   bson_init (&b);
    for (i = 0; i < 1000; i++) {
-      assert(bson_append_int32(&b, "foobar", -1, 1234));
+      assert (bson_append_int32 (&b, "foobar", -1, 1234));
    }
-   bson_copy_to(&b, &c);
-   assert_bson_equal(&b, &c);
-   bson_destroy(&c);
-   bson_destroy(&b);
+   bson_copy_to (&b, &c);
+   assert_bson_equal (&b, &c);
+   bson_destroy (&c);
+   bson_destroy (&b);
 }
 
 
@@ -1436,25 +1438,25 @@ test_bson_copy_to_excluding_noinit (void)
    bson_t c;
    int i;
 
-   bson_init(&b);
-   bson_append_int32(&b, "a", 1, 1);
-   bson_append_int32(&b, "b", 1, 2);
+   bson_init (&b);
+   bson_append_int32 (&b, "a", 1, 1);
+   bson_append_int32 (&b, "b", 1, 2);
 
-   bson_init(&c);
-   bson_copy_to_excluding_noinit(&b, &c, "b", NULL);
-   r = bson_iter_init_find(&iter, &c, "a");
-   assert(r);
-   r = bson_iter_init_find(&iter, &c, "b");
-   assert(!r);
+   bson_init (&c);
+   bson_copy_to_excluding_noinit (&b, &c, "b", NULL);
+   r = bson_iter_init_find (&iter, &c, "a");
+   assert (r);
+   r = bson_iter_init_find (&iter, &c, "b");
+   assert (!r);
 
-   i = bson_count_keys(&b);
-   assert_cmpint(i, ==, 2);
+   i = bson_count_keys (&b);
+   assert_cmpint (i, ==, 2);
 
-   i = bson_count_keys(&c);
-   assert_cmpint(i, ==, 1);
+   i = bson_count_keys (&c);
+   assert_cmpint (i, ==, 1);
 
-   bson_destroy(&b);
-   bson_destroy(&c);
+   bson_destroy (&b);
+   bson_destroy (&c);
 }
 
 
@@ -1471,9 +1473,9 @@ test_bson_append_overflow (void)
    len -= 1; /* value */
    len -= 1; /* end byte */
 
-   bson_init(&b);
-   assert(!bson_append_bool(&b, key, len, true));
-   bson_destroy(&b);
+   bson_init (&b);
+   assert (!bson_append_bool (&b, key, len, true));
+   bson_destroy (&b);
 }
 
 
@@ -1482,10 +1484,10 @@ test_bson_initializer (void)
 {
    bson_t b = BSON_INITIALIZER;
 
-   assert(bson_empty(&b));
-   bson_append_bool(&b, "foo", -1, true);
-   assert(!bson_empty(&b));
-   bson_destroy(&b);
+   assert (bson_empty (&b));
+   bson_append_bool (&b, "foo", -1, true);
+   assert (!bson_empty (&b));
+   bson_destroy (&b);
 }
 
 
@@ -1534,7 +1536,7 @@ test_bson_reinit (void)
 static void
 test_bson_macros (void)
 {
-   const uint8_t data [] = { 1, 2, 3, 4 };
+   const uint8_t data[] = {1, 2, 3, 4};
    bson_t b = BSON_INITIALIZER;
    bson_t ar = BSON_INITIALIZER;
    bson_decimal128_t dec;
@@ -1547,7 +1549,7 @@ test_bson_macros (void)
 
    t = time (NULL);
 #ifdef BSON_OS_WIN32
-   tv.tv_sec = (long)t;
+   tv.tv_sec = (long) t;
 #else
    tv.tv_sec = t;
 #endif
@@ -1599,7 +1601,8 @@ test_bson_clear (void)
 
 
 static void
-bloat (bson_t *b) {
+bloat (bson_t *b)
+{
    uint32_t i;
    char buf[16];
    const char *key;
@@ -1670,7 +1673,7 @@ test_bson_steal (void)
    buf = bson_malloc0 (5);
    len = 5;
    len_le = BSON_UINT32_TO_LE (5);
-   memcpy(buf, &len_le, sizeof (len_le));
+   memcpy (buf, &len_le, sizeof (len_le));
    heap_alloced = bson_new_from_buffer (&buf, &len, bson_realloc_ctx, NULL);
    ASSERT (bson_steal (&dst, heap_alloced));
    ASSERT (dst.flags & BSON_FLAG_NO_FREE);
@@ -1703,7 +1706,7 @@ test_bson_reserve_buffer (void)
    /* inline, stack-allocated */
    bson_init (&stack_alloced);
    BSON_APPEND_UTF8 (&src, "key", "value");
-   ASSERT (buf = bson_reserve_buffer (&stack_alloced, src.len));
+   ASSERT ((buf = bson_reserve_buffer (&stack_alloced, src.len)));
    ASSERT_CMPUINT32 (src.len, ==, stack_alloced.len);
    ASSERT (stack_alloced.flags & BSON_FLAG_INLINE);
    memcpy (buf, ((bson_impl_inline_t *) &src)->data, src.len);
@@ -1714,7 +1717,7 @@ test_bson_reserve_buffer (void)
    /* spilled over, stack-allocated */
    bloat (&src);
    bson_init (&stack_alloced);
-   ASSERT (buf = bson_reserve_buffer (&stack_alloced, src.len));
+   ASSERT ((buf = bson_reserve_buffer (&stack_alloced, src.len)));
    ASSERT_CMPUINT32 (src.len, ==, stack_alloced.len);
    ASSERT (!(stack_alloced.flags & BSON_FLAG_INLINE));
    memcpy (buf, ((bson_impl_alloc_t *) &src)->alloc, src.len);
@@ -1727,7 +1730,7 @@ test_bson_reserve_buffer (void)
    heap_alloced = bson_new ();
    bson_init (&src);
    BSON_APPEND_UTF8 (&src, "key", "value");
-   ASSERT (buf = bson_reserve_buffer (heap_alloced, src.len));
+   ASSERT ((buf = bson_reserve_buffer (heap_alloced, src.len)));
    ASSERT_CMPUINT32 (src.len, ==, heap_alloced->len);
    ASSERT (heap_alloced->flags & BSON_FLAG_INLINE);
    memcpy (buf, ((bson_impl_inline_t *) &src)->data, src.len);
@@ -1737,7 +1740,7 @@ test_bson_reserve_buffer (void)
    /* spilled over, heap-allocated */
    heap_alloced = bson_new ();
    bloat (&src);
-   ASSERT (buf = bson_reserve_buffer (heap_alloced, src.len));
+   ASSERT ((buf = bson_reserve_buffer (heap_alloced, src.len)));
    ASSERT_CMPUINT32 (src.len, ==, heap_alloced->len);
    ASSERT (!(heap_alloced->flags & BSON_FLAG_INLINE));
    memcpy (buf, ((bson_impl_alloc_t *) &src)->alloc, src.len);
@@ -1754,7 +1757,7 @@ test_bson_reserve_buffer_errors (void)
 {
    bson_t bson = BSON_INITIALIZER;
    bson_t child;
-   uint8_t data[5] = { 0 };
+   uint8_t data[5] = {0};
    uint32_t len_le;
 
    /* too big */
@@ -1902,10 +1905,8 @@ test_next_power_of_two (void)
 }
 
 
-
 void
-visit_corrupt (const bson_iter_t *iter,
-               void              *data)
+visit_corrupt (const bson_iter_t *iter, void *data)
 {
    *((bool *) data) = true;
 }
@@ -1915,11 +1916,10 @@ static void
 test_bson_visit_invalid_field (void)
 {
    /* key is invalid utf-8 char: {"\x80": 1} */
-   const char data[] =
-      "\x0c\x00\x00\x00\x10\x80\x00\x01\x00\x00\x00\x00";
+   const char data[] = "\x0c\x00\x00\x00\x10\x80\x00\x01\x00\x00\x00\x00";
    bson_t b;
    bson_iter_t iter;
-   bson_visitor_t visitor = { 0 };
+   bson_visitor_t visitor = {0};
    bool visited = false;
 
    visitor.visit_corrupt = visit_corrupt;
@@ -1939,9 +1939,9 @@ typedef struct {
 
 void
 visit_unsupported_type (const bson_iter_t *iter,
-                        const char        *key,
-                        uint32_t           type_code,
-                        void              *data)
+                        const char *key,
+                        uint32_t type_code,
+                        void *data)
 {
    unsupported_type_test_data_t *context;
 
@@ -1956,12 +1956,11 @@ static void
 test_bson_visit_unsupported_type (void)
 {
    /* {k: 1}, but instead of BSON type 0x10 (int32), use unknown type 0x33 */
-   const char data[] =
-      "\x0c\x00\x00\x00\x33k\x00\x01\x00\x00\x00\x00";
+   const char data[] = "\x0c\x00\x00\x00\x33k\x00\x01\x00\x00\x00\x00";
    bson_t b;
    bson_iter_t iter;
-   unsupported_type_test_data_t context = { 0 };
-   bson_visitor_t visitor = { 0 };
+   unsupported_type_test_data_t context = {0};
+   bson_visitor_t visitor = {0};
 
    visitor.visit_unsupported_type = visit_unsupported_type;
 
@@ -1979,12 +1978,11 @@ static void
 test_bson_visit_unsupported_type_bad_key (void)
 {
    /* key is invalid utf-8 char, '\x80' */
-   const char data[] =
-      "\x0c\x00\x00\x00\x33\x80\x00\x01\x00\x00\x00\x00";
+   const char data[] = "\x0c\x00\x00\x00\x33\x80\x00\x01\x00\x00\x00\x00";
    bson_t b;
    bson_iter_t iter;
-   unsupported_type_test_data_t context = { 0 };
-   bson_visitor_t visitor = { 0 };
+   unsupported_type_test_data_t context = {0};
+   bson_visitor_t visitor = {0};
 
    visitor.visit_unsupported_type = visit_unsupported_type;
 
@@ -2002,12 +2000,11 @@ static void
 test_bson_visit_unsupported_type_empty_key (void)
 {
    /* {"": 1}, but instead of BSON type 0x10 (int32), use unknown type 0x33 */
-   const char data[] =
-      "\x0b\x00\x00\x00\x33\x00\x01\x00\x00\x00\x00";
+   const char data[] = "\x0b\x00\x00\x00\x33\x00\x01\x00\x00\x00\x00";
    bson_t b;
    bson_iter_t iter;
-   unsupported_type_test_data_t context = { 0 };
-   bson_visitor_t visitor = { 0 };
+   unsupported_type_test_data_t context = {0};
+   bson_visitor_t visitor = {0};
 
    visitor.visit_unsupported_type = visit_unsupported_type;
 
@@ -2018,6 +2015,46 @@ test_bson_visit_unsupported_type_empty_key (void)
    assert (context.visited);
    assert (!strcmp (context.key, ""));
    assert (context.type_code == '\x33');
+}
+
+
+static void
+test_bson_subtype_2 (void)
+{
+   bson_t b;
+   /* taken from BSON Corpus Tests */
+   const char ok[] = "\x13\x00\x00\x00\x05\x78\x00\x06\x00\x00\x00\x02\x02\x00"
+                     "\x00\x00\xff\xff\x00";
+
+   /* Deprecated subtype 0x02 includes a redundant length inside the binary
+    * payload. Check that we validate this length.
+    */
+   const char len_too_long[] = "\x13\x00\x00\x00\x05\x78\x00\x06\x00\x00\x00"
+                               "\x02\x03\x00\x00\x00\xFF\xFF\x00";
+   const char len_too_short[] = "\x13\x00\x00\x00\x05\x78\x00\x06\x00\x00\x00"
+                                "\x02\x01\x00\x00\x00\xFF\xFF\x00";
+   const char len_negative[] = "\x13\x00\x00\x00\x05\x78\x00\x06\x00\x00\x00"
+                               "\x02\xFF\xFF\xFF\xFF\xFF\xFF\x00";
+
+   bson_t *bson_ok = BCON_NEW ("x", BCON_BIN (2, (uint8_t *) "\xff\xff", 2));
+
+   assert (bson_init_static (&b, (uint8_t *) ok, sizeof (ok) - 1));
+   assert (bson_validate (&b, BSON_VALIDATE_NONE, 0));
+   assert (0 == bson_compare (&b, bson_ok));
+
+   assert (bson_init_static (
+      &b, (uint8_t *) len_too_long, sizeof (len_too_long) - 1));
+   assert (!bson_validate (&b, BSON_VALIDATE_NONE, 0));
+
+   assert (bson_init_static (
+      &b, (uint8_t *) len_too_short, sizeof (len_too_short) - 1));
+   assert (!bson_validate (&b, BSON_VALIDATE_NONE, 0));
+
+   assert (bson_init_static (
+      &b, (uint8_t *) len_negative, sizeof (len_negative) - 1));
+   assert (!bson_validate (&b, BSON_VALIDATE_NONE, 0));
+
+   bson_destroy (bson_ok);
 }
 
 
@@ -2032,16 +2069,20 @@ test_bson_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/append_overflow", test_bson_append_overflow);
    TestSuite_Add (suite, "/bson/append_array", test_bson_append_array);
    TestSuite_Add (suite, "/bson/append_binary", test_bson_append_binary);
-   TestSuite_Add (suite, "/bson/append_binary_deprecated", test_bson_append_binary_deprecated);
+   TestSuite_Add (suite,
+                  "/bson/append_binary_deprecated",
+                  test_bson_append_binary_deprecated);
    TestSuite_Add (suite, "/bson/append_bool", test_bson_append_bool);
    TestSuite_Add (suite, "/bson/append_code", test_bson_append_code);
-   TestSuite_Add (suite, "/bson/append_code_with_scope", test_bson_append_code_with_scope);
+   TestSuite_Add (
+      suite, "/bson/append_code_with_scope", test_bson_append_code_with_scope);
    TestSuite_Add (suite, "/bson/append_dbpointer", test_bson_append_dbpointer);
    TestSuite_Add (suite, "/bson/append_document", test_bson_append_document);
    TestSuite_Add (suite, "/bson/append_double", test_bson_append_double);
    TestSuite_Add (suite, "/bson/append_int32", test_bson_append_int32);
    TestSuite_Add (suite, "/bson/append_int64", test_bson_append_int64);
-   TestSuite_Add (suite, "/bson/append_decimal128", test_bson_append_decimal128);
+   TestSuite_Add (
+      suite, "/bson/append_decimal128", test_bson_append_decimal128);
    TestSuite_Add (suite, "/bson/append_iter", test_bson_append_iter);
    TestSuite_Add (suite, "/bson/append_maxkey", test_bson_append_maxkey);
    TestSuite_Add (suite, "/bson/append_minkey", test_bson_append_minkey);
@@ -2060,17 +2101,23 @@ test_bson_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/validate", test_bson_validate);
    TestSuite_Add (suite, "/bson/validate/dbref", test_bson_validate_dbref);
    TestSuite_Add (suite, "/bson/validate/bool", test_bson_validate_bool);
-   TestSuite_Add (suite, "/bson/validate/dbpointer", test_bson_validate_dbpointer);
+   TestSuite_Add (
+      suite, "/bson/validate/dbpointer", test_bson_validate_dbpointer);
    TestSuite_Add (suite, "/bson/new_1mm", test_bson_new_1mm);
    TestSuite_Add (suite, "/bson/init_1mm", test_bson_init_1mm);
    TestSuite_Add (suite, "/bson/build_child", test_bson_build_child);
    TestSuite_Add (suite, "/bson/build_child_deep", test_bson_build_child_deep);
-   TestSuite_Add (suite, "/bson/build_child_deep_no_begin_end", test_bson_build_child_deep_no_begin_end);
-   TestSuite_Add (suite, "/bson/build_child_array", test_bson_build_child_array);
+   TestSuite_Add (suite,
+                  "/bson/build_child_deep_no_begin_end",
+                  test_bson_build_child_deep_no_begin_end);
+   TestSuite_Add (
+      suite, "/bson/build_child_array", test_bson_build_child_array);
    TestSuite_Add (suite, "/bson/count", test_bson_count_keys);
    TestSuite_Add (suite, "/bson/copy", test_bson_copy);
    TestSuite_Add (suite, "/bson/copy_to", test_bson_copy_to);
-   TestSuite_Add (suite, "/bson/copy_to_excluding_noinit", test_bson_copy_to_excluding_noinit);
+   TestSuite_Add (suite,
+                  "/bson/copy_to_excluding_noinit",
+                  test_bson_copy_to_excluding_noinit);
    TestSuite_Add (suite, "/bson/initializer", test_bson_initializer);
    TestSuite_Add (suite, "/bson/concat", test_bson_concat);
    TestSuite_Add (suite, "/bson/reinit", test_bson_reinit);
@@ -2078,16 +2125,21 @@ test_bson_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/clear", test_bson_clear);
    TestSuite_Add (suite, "/bson/steal", test_bson_steal);
    TestSuite_Add (suite, "/bson/reserve_buffer", test_bson_reserve_buffer);
-   TestSuite_Add (suite, "/bson/reserve_buffer/errors", test_bson_reserve_buffer_errors);
-   TestSuite_Add (suite, "/bson/destroy_with_steal", test_bson_destroy_with_steal);
+   TestSuite_Add (
+      suite, "/bson/reserve_buffer/errors", test_bson_reserve_buffer_errors);
+   TestSuite_Add (
+      suite, "/bson/destroy_with_steal", test_bson_destroy_with_steal);
    TestSuite_Add (suite, "/bson/has_field", test_bson_has_field);
-   TestSuite_Add (suite, "/bson/visit_invalid_field", test_bson_visit_invalid_field);
-   TestSuite_Add (suite, "/bson/unsupported_type",
-                  test_bson_visit_unsupported_type);
-   TestSuite_Add (suite, "/bson/unsupported_type/bad_key",
+   TestSuite_Add (
+      suite, "/bson/visit_invalid_field", test_bson_visit_invalid_field);
+   TestSuite_Add (
+      suite, "/bson/unsupported_type", test_bson_visit_unsupported_type);
+   TestSuite_Add (suite,
+                  "/bson/unsupported_type/bad_key",
                   test_bson_visit_unsupported_type_bad_key);
-   TestSuite_Add (suite, "/bson/unsupported_type/empty_key",
+   TestSuite_Add (suite,
+                  "/bson/unsupported_type/empty_key",
                   test_bson_visit_unsupported_type_empty_key);
-
+   TestSuite_Add (suite, "/bson/binary_subtype_2", test_bson_subtype_2);
    TestSuite_Add (suite, "/util/next_power_of_two", test_next_power_of_two);
 }

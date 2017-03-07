@@ -38,7 +38,7 @@ test_decimal128 (void)
    bson_decimal128_t dec;
    bson_t *bcon;
 
-   bson_decimal128_from_string("12", &dec);
+   bson_decimal128_from_string ("12", &dec);
    bcon = BCON_NEW ("foo", BCON_DECIMAL128 (&dec));
 
    assert (BCON_EXTRACT (bcon, "foo", BCONE_DECIMAL128 (val)));
@@ -57,12 +57,7 @@ test_binary (void)
    const uint8_t *binary;
 
    bson_t *bcon = BCON_NEW (
-      "foo", BCON_BIN (
-         BSON_SUBTYPE_BINARY,
-         (uint8_t *)"deadbeef",
-         8
-         )
-      );
+      "foo", BCON_BIN (BSON_SUBTYPE_BINARY, (uint8_t *) "deadbeef", 8));
 
    assert (BCON_EXTRACT (bcon, "foo", BCONE_BIN (subtype, binary, len)));
 
@@ -339,17 +334,10 @@ test_inline_array (void)
 {
    int32_t a, b;
 
-   bson_t *bcon = BCON_NEW (
-      "foo", "[",
-         BCON_INT32 (1), BCON_INT32 (2),
-      "]"
-   );
+   bson_t *bcon = BCON_NEW ("foo", "[", BCON_INT32 (1), BCON_INT32 (2), "]");
 
-   assert (BCON_EXTRACT (bcon,
-      "foo", "[",
-         BCONE_INT32 (a), BCONE_INT32 (b),
-      "]"
-   ));
+   assert (
+      BCON_EXTRACT (bcon, "foo", "[", BCONE_INT32 (a), BCONE_INT32 (b), "]"));
 
    assert (a == 1);
    assert (b == 2);
@@ -362,19 +350,11 @@ test_inline_doc (void)
 {
    int32_t a, b;
 
-   bson_t *bcon = BCON_NEW (
-      "foo", "{",
-         "b", BCON_INT32 (2),
-         "a", BCON_INT32 (1),
-      "}"
-   );
+   bson_t *bcon =
+      BCON_NEW ("foo", "{", "b", BCON_INT32 (2), "a", BCON_INT32 (1), "}");
 
-   assert (BCON_EXTRACT (bcon,
-      "foo", "{",
-         "a", BCONE_INT32 (a),
-         "b", BCONE_INT32 (b),
-      "}"
-   ));
+   assert (BCON_EXTRACT (
+      bcon, "foo", "{", "a", BCONE_INT32 (a), "b", BCONE_INT32 (b), "}"));
 
    assert (a == 1);
    assert (b == 2);
@@ -384,8 +364,7 @@ test_inline_doc (void)
 
 
 static void
-test_extract_ctx_helper (bson_t *bson,
-                         ...)
+test_extract_ctx_helper (bson_t *bson, ...)
 {
    va_list ap;
    bcon_extract_ctx_t ctx;
@@ -410,17 +389,20 @@ test_extract_ctx (void)
 {
    int32_t a, b, c;
 
-   bson_t *bson = BCON_NEW (
-      "a", BCON_INT32 (1),
-      "b", BCON_INT32 (2),
-      "c", BCON_INT32 (3)
-      );
+   bson_t *bson =
+      BCON_NEW ("a", BCON_INT32 (1), "b", BCON_INT32 (2), "c", BCON_INT32 (3));
 
-   test_extract_ctx_helper (bson, 3,
-                            "a", BCONE_INT32 (a), NULL,
-                            "b", BCONE_INT32 (b), NULL,
-                            "c", BCONE_INT32 (c), NULL
-                            );
+   test_extract_ctx_helper (bson,
+                            3,
+                            "a",
+                            BCONE_INT32 (a),
+                            NULL,
+                            "b",
+                            BCONE_INT32 (b),
+                            NULL,
+                            "c",
+                            BCONE_INT32 (c),
+                            NULL);
 
    assert (a == 1);
    assert (b == 2);
@@ -436,19 +418,17 @@ test_nested (void)
    const char *utf8;
    int i32;
 
-   bson_t *bcon = BCON_NEW (
-      "hello", "world",
-      "foo", "{",
-      "bar", BCON_INT32 (10),
-      "}"
-      );
+   bson_t *bcon =
+      BCON_NEW ("hello", "world", "foo", "{", "bar", BCON_INT32 (10), "}");
 
    assert (BCON_EXTRACT (bcon,
-                         "hello", BCONE_UTF8 (utf8),
-                         "foo", "{",
-                         "bar", BCONE_INT32 (i32),
-                         "}"
-                         ));
+                         "hello",
+                         BCONE_UTF8 (utf8),
+                         "foo",
+                         "{",
+                         "bar",
+                         BCONE_INT32 (i32),
+                         "}"));
 
    assert (strcmp ("world", utf8) == 0);
    assert (i32 == 10);
@@ -460,26 +440,26 @@ test_nested (void)
 static void
 test_skip (void)
 {
-   bson_t *bcon = BCON_NEW (
-      "hello", "world",
-      "foo", "{",
-      "bar", BCON_INT32 (10),
-      "}"
-      );
+   bson_t *bcon =
+      BCON_NEW ("hello", "world", "foo", "{", "bar", BCON_INT32 (10), "}");
 
    assert (BCON_EXTRACT (bcon,
-                         "hello", BCONE_SKIP (BSON_TYPE_UTF8),
-                         "foo", "{",
-                         "bar", BCONE_SKIP (BSON_TYPE_INT32),
-                         "}"
-                         ));
+                         "hello",
+                         BCONE_SKIP (BSON_TYPE_UTF8),
+                         "foo",
+                         "{",
+                         "bar",
+                         BCONE_SKIP (BSON_TYPE_INT32),
+                         "}"));
 
    assert (!BCON_EXTRACT (bcon,
-                          "hello", BCONE_SKIP (BSON_TYPE_UTF8),
-                          "foo", "{",
-                          "bar", BCONE_SKIP (BSON_TYPE_INT64),
-                          "}"
-                          ));
+                          "hello",
+                          BCONE_SKIP (BSON_TYPE_UTF8),
+                          "foo",
+                          "{",
+                          "bar",
+                          BCONE_SKIP (BSON_TYPE_INT64),
+                          "}"));
 
    bson_destroy (bcon);
 }
@@ -529,11 +509,14 @@ test_bcon_extract_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/bcon/extract/test_int64", test_int64);
    TestSuite_Add (suite, "/bson/bcon/extract/test_maxkey", test_maxkey);
    TestSuite_Add (suite, "/bson/bcon/extract/test_minkey", test_minkey);
-   TestSuite_Add (suite, "/bson/bcon/extract/test_bson_document", test_bson_document);
+   TestSuite_Add (
+      suite, "/bson/bcon/extract/test_bson_document", test_bson_document);
    TestSuite_Add (suite, "/bson/bcon/extract/test_bson_array", test_bson_array);
-   TestSuite_Add (suite, "/bson/bcon/extract/test_inline_array", test_inline_array);
+   TestSuite_Add (
+      suite, "/bson/bcon/extract/test_inline_array", test_inline_array);
    TestSuite_Add (suite, "/bson/bcon/extract/test_inline_doc", test_inline_doc);
-   TestSuite_Add (suite, "/bson/bcon/extract/test_extract_ctx", test_extract_ctx);
+   TestSuite_Add (
+      suite, "/bson/bcon/extract/test_extract_ctx", test_extract_ctx);
    TestSuite_Add (suite, "/bson/bcon/extract/test_nested", test_nested);
    TestSuite_Add (suite, "/bson/bcon/extract/test_skip", test_skip);
    TestSuite_Add (suite, "/bson/bcon/extract/test_iter", test_iter);

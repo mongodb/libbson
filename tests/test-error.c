@@ -26,10 +26,10 @@ test_bson_error_basic (void)
 {
    bson_error_t error;
 
-   bson_set_error(&error, 123, 456, "%s %u", "localhost", 27017);
-   assert(!strcmp(error.message, "localhost 27017"));
-   assert_cmpint(error.domain, ==, 123);
-   assert_cmpint(error.code, ==, 456);
+   bson_set_error (&error, 123, 456, "%s %u", "localhost", 27017);
+   assert (!strcmp (error.message, "localhost 27017"));
+   assert_cmpint (error.domain, ==, 123);
+   assert_cmpint (error.code, ==, 456);
 }
 
 

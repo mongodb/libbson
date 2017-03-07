@@ -134,8 +134,8 @@ bson_malloc0 (size_t num_bytes) /* IN */
  */
 
 void *
-bson_realloc (void   *mem,        /* IN */
-              size_t  num_bytes)  /* IN */
+bson_realloc (void *mem,        /* IN */
+              size_t num_bytes) /* IN */
 {
    /*
     * Not all platforms are guaranteed to free() the memory if a call to
@@ -182,9 +182,9 @@ bson_realloc (void   *mem,        /* IN */
 
 
 void *
-bson_realloc_ctx (void   *mem,        /* IN */
-                  size_t  num_bytes,  /* IN */
-                  void   *ctx)        /* IN */
+bson_realloc_ctx (void *mem,        /* IN */
+                  size_t num_bytes, /* IN */
+                  void *ctx)        /* IN */
 {
    return bson_realloc (mem, num_bytes);
 }
@@ -242,7 +242,7 @@ bson_free (void *mem) /* IN */
  */
 
 void
-bson_zero_free (void  *mem,  /* IN */
+bson_zero_free (void *mem,   /* IN */
                 size_t size) /* IN */
 {
    if (BSON_LIKELY (mem)) {
@@ -277,12 +277,11 @@ bson_mem_set_vtable (const bson_mem_vtable_t *vtable)
 {
    BSON_ASSERT (vtable);
 
-   if (!vtable->malloc ||
-       !vtable->calloc ||
-       !vtable->realloc ||
+   if (!vtable->malloc || !vtable->calloc || !vtable->realloc ||
        !vtable->free) {
-      fprintf (stderr, "Failure to install BSON vtable, "
-                       "missing functions.\n");
+      fprintf (stderr,
+               "Failure to install BSON vtable, "
+               "missing functions.\n");
       return;
    }
 
@@ -303,6 +302,5 @@ bson_mem_restore_vtable (void)
       free,
    };
 
-   bson_mem_set_vtable(&vtable);
+   bson_mem_set_vtable (&vtable);
 }
-

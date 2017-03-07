@@ -7,10 +7,12 @@ set -o errexit  # Exit the script with error if any of the commands fail
 #       CC       Which compiler to use
 
 
-
-
-# Resolve the compiler name to correct MSBuild location
 case "$CC" in
+   mingw*)
+      cmd.exe /c .evergreen\\compile.bat
+      exit 0
+   ;;
+   # Resolve the compiler name to correct MSBuild location
    "Visual Studio 10 2010")
       BUILD="/cygdrive/c/Windows/Microsoft.NET/Framework/v4.0.30319/MSBuild.exe"
    ;;

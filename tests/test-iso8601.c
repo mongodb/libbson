@@ -8,25 +8,29 @@
 #include "TestSuite.h"
 
 #ifndef BINARY_DIR
-# define BINARY_DIR "tests/binary"
+#define BINARY_DIR "tests/binary"
 #endif
 
 #define IS_TIME_T_SMALL (sizeof (time_t) == sizeof (int32_t))
 
 static void
-test_date (const char *str,
-           int64_t     millis)
+test_date (const char *str, int64_t millis)
 {
    int64_t v;
+   bson_error_t error;
 
-   if (!_bson_iso8601_date_parse (str, strlen (str), &v)) {
+   if (!_bson_iso8601_date_parse (str, strlen (str), &v, &error)) {
       fprintf (stderr, "could not parse (%s)\n", str);
       abort ();
    }
 
    if (v != millis) {
-      fprintf (stderr, "parsed value not correct: %" PRId64 " != %" PRId64 "\n",
-               millis, v);
+      fprintf (stderr,
+               "parsed value not correct: %" PRId64 " != %" PRId64 "\n",
+               millis,
+               v);
+
+      fprintf (stderr, "parsing: [%s]\n", str);
       abort ();
    }
 }
@@ -35,8 +39,9 @@ static void
 test_date_should_fail (const char *str)
 {
    int64_t v;
+   bson_error_t error;
 
-   if (_bson_iso8601_date_parse (str, strlen (str), &v)) {
+   if (_bson_iso8601_date_parse (str, strlen (str), &v, &error)) {
       fprintf (stderr, "should not be able to parse (%s)\n", str);
       abort ();
    }
@@ -47,7 +52,8 @@ test_bson_iso8601_utc (void)
 {
    /* Allowed date format:
     * YYYY-MM-DDTHH:MM[:SS[.m[m[m]]]]Z
-    * Year, month, day, hour, and minute are required, while the seconds component and one to
+    * Year, month, day, hour, and minute are required, while the seconds
+    * component and one to
     * three milliseconds are optional.
     */
 
@@ -58,6 +64,7 @@ test_bson_iso8601_utc (void)
    test_date ("1971-02-03T04:05Z", 34401900000ULL);
    test_date ("1970-01-01T00:00:00.000Z", 0ULL);
    test_date ("1970-06-30T01:06:40.981Z", 15556000981ULL);
+   test_date ("1970-01-01T00:00:00.000+0100", -3600LL * 1000);
 
    if (!IS_TIME_T_SMALL) {
       test_date ("2058-02-20T18:29:11.100Z", 2781455351100ULL);
@@ -65,6 +72,11 @@ test_bson_iso8601_utc (void)
    }
 
    test_date ("2013-02-20T18:29:11.100Z", 1361384951100ULL);
+
+   /* from the BSON Corpus Tests */
+   test_date ("1970-01-01T00:00:00.000Z", 0);
+   test_date ("2012-12-24T12:15:30.500Z", 1356351330500);
+   test_date ("1960-12-24T12:15:30.500Z", -284643869500LL);
 }
 
 static void
@@ -72,8 +84,10 @@ test_bson_iso8601_local (void)
 {
    /* Allowed date format:
     * YYYY-MM-DDTHH:MM[:SS[.m[m[m]]]]+HHMM
-    * Year, month, day, hour, and minute are required, while the seconds component and one to
-    * three milliseconds are optional.  The time zone offset must be four digits.
+    * Year, month, day, hour, and minute are required, while the seconds
+    * component and one to
+    * three milliseconds are optional.  The time zone offset must be four
+    * digits.
     */
 
    test_date ("1971-02-03T09:16:06.789+0511", 34401906789ULL);
@@ -95,6 +109,9 @@ test_bson_iso8601_local (void)
 
    test_date ("2013-02-20T13:29:11.100-0500", 1361384951100ULL);
    test_date ("2013-02-20T13:29:11.100-0501", 1361385011100ULL);
+   test_date ("0000-01-01T00:00:00.000Z", -62167219200000LL);
+   test_date ("0000-01-01T00:00:00.000+2300", -62167302000000LL);
+   test_date ("9999-01-01T00:00:00.000Z", 253370764800000ULL);
 }
 
 static void
@@ -133,8 +150,8 @@ test_bson_iso8601_invalid (void)
    test_date_should_fail ("1970-01-00T00:00:00.000Z");
    test_date_should_fail ("1970-13-01T00:00:00.000Z");
    test_date_should_fail ("1970-00-01T00:00:00.000Z");
-   test_date_should_fail ("1969-01-01T00:00:00.000Z");
-   test_date_should_fail ("1970-01-01T00:00:00.000+0100");
+   test_date_should_fail ("10000-01-01T00:00:00.000Z");
+   test_date_should_fail ("-10000-01-01T00:00:00.000Z");
 
    /* Invalid lengths */
    test_date_should_fail ("01970-01-01T00:00:00.000Z");
@@ -332,6 +349,6 @@ test_iso8601_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/iso8601/utc", test_bson_iso8601_utc);
    TestSuite_Add (suite, "/bson/iso8601/local", test_bson_iso8601_local);
    TestSuite_Add (suite, "/bson/iso8601/invalid", test_bson_iso8601_invalid);
-   TestSuite_Add (suite, "/bson/iso8601/leap_year",
-                  test_bson_iso8601_leap_year);
+   TestSuite_Add (
+      suite, "/bson/iso8601/leap_year", test_bson_iso8601_leap_year);
 }

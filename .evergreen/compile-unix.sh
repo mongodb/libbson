@@ -102,9 +102,9 @@ case "$CC" in
    ;;
 
    gcc)
-      CFLAGS="$CFLAGS -Werror"
    ;;
 esac
+CFLAGS="$CFLAGS -Werror"
 
 [ "$DEBUG" ] && CONFIGURE_FLAGS=$DEBUG_FLAGS || CONFIGURE_FLAGS=$RELEASE_FLAGS
 [ "$VALGRIND" ] && TARGET="valgrind" || TARGET="test"

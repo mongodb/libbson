@@ -29,7 +29,7 @@ test_double (void)
    bson_init (&expected);
 
    bson_append_double (&expected, "foo", -1, 1.1);
-   BCON_APPEND(&bcon, "foo", BCON_DOUBLE(1.1));
+   BCON_APPEND (&bcon, "foo", BCON_DOUBLE (1.1));
 
    bson_eq_bson (&bcon, &expected);
 
@@ -42,13 +42,13 @@ test_decimal128 (void)
 {
    bson_t bcon, expected;
    bson_decimal128_t dec;
-   bson_decimal128_from_string("120E20", &dec);
+   bson_decimal128_from_string ("120E20", &dec);
 
    bson_init (&bcon);
    bson_init (&expected);
 
    bson_append_decimal128 (&expected, "foo", -1, &dec);
-   BCON_APPEND(&bcon, "foo", BCON_DECIMAL128(&dec));
+   BCON_APPEND (&bcon, "foo", BCON_DECIMAL128 (&dec));
 
    bson_eq_bson (&bcon, &expected);
 
@@ -65,15 +65,12 @@ test_binary (void)
    bson_init (&expected);
 
    bson_append_binary (
-      &expected, "foo", -1, BSON_SUBTYPE_BINARY, (uint8_t *)"deadbeef", 8);
+      &expected, "foo", -1, BSON_SUBTYPE_BINARY, (uint8_t *) "deadbeef", 8);
 
    BCON_APPEND (&bcon,
-      "foo", BCON_BIN (
-         BSON_SUBTYPE_BINARY,
-         (const uint8_t *)"deadbeef",
-         8
-      ),
-   NULL);
+                "foo",
+                BCON_BIN (BSON_SUBTYPE_BINARY, (const uint8_t *) "deadbeef", 8),
+                NULL);
 
    bson_eq_bson (&bcon, &expected);
 
@@ -276,7 +273,7 @@ test_codewscope (void)
    bson_init (&expected);
    bson_init (&scope);
 
-   bson_append_int32(&scope, "b", -1, 10);
+   bson_append_int32 (&scope, "b", -1, 10);
 
    bson_append_code_with_scope (&expected, "foo", -1, "var a = b;", &scope);
 
@@ -489,15 +486,19 @@ test_inline_nested (void)
    bson_append_array (&foo, "bar", -1, &bar);
    bson_append_document (&expected, "foo", -1, &foo);
 
-   BCON_APPEND(&bcon,
-        "foo", "{",
-            "bar", "[",
-                BCON_INT32(1), BCON_INT32(2), "{",
-                    "hello", "world",
+   BCON_APPEND (&bcon,
+                "foo",
+                "{",
+                "bar",
+                "[",
+                BCON_INT32 (1),
+                BCON_INT32 (2),
+                "{",
+                "hello",
+                "world",
                 "}",
-            "]",
-        "}"
-    );
+                "]",
+                "}");
 
    bson_eq_bson (&bcon, &expected);
 
@@ -522,7 +523,7 @@ test_concat (void)
    bson_append_utf8 (&child, "hello", -1, "world", -1);
    bson_append_document (&expected, "foo", -1, &child);
 
-   BCON_APPEND (&bcon, "foo", "{", BCON(&child), "}");
+   BCON_APPEND (&bcon, "foo", "{", BCON (&child), "}");
 
    bson_eq_bson (&bcon, &expected);
 
@@ -535,7 +536,7 @@ test_concat (void)
    bson_append_array (&expected, "foo", -1, &child);
 
    bson_append_utf8 (&child2, "0", -1, "baz", -1);
-   BCON_APPEND (&bcon, "foo", "[", "bar", BCON(&child2), "]");
+   BCON_APPEND (&bcon, "foo", "[", "bar", BCON (&child2), "]");
 
    bson_eq_bson (&bcon, &expected);
 
@@ -558,7 +559,7 @@ test_iter (void)
    bson_append_int32 (&expected, "foo", -1, 100);
    bson_iter_init_find (&iter, &expected, "foo");
 
-   BCON_APPEND (&bcon, "foo", BCON_ITER(&iter));
+   BCON_APPEND (&bcon, "foo", BCON_ITER (&iter));
 
    bson_eq_bson (&bcon, &expected);
 
@@ -571,12 +572,12 @@ static void
 test_bcon_new (void)
 {
    bson_t expected;
-   bson_t * bcon;
+   bson_t *bcon;
 
    bson_init (&expected);
 
    bson_append_utf8 (&expected, "hello", -1, "world", -1);
-   bcon = BCON_NEW("hello", "world");
+   bcon = BCON_NEW ("hello", "world");
 
    bson_eq_bson (bcon, &expected);
 
@@ -585,26 +586,28 @@ test_bcon_new (void)
 }
 
 
-static void test_append_ctx_helper (bson_t * bson, ...)
+static void
+test_append_ctx_helper (bson_t *bson, ...)
 {
    va_list ap;
    bcon_append_ctx_t ctx;
-   bcon_append_ctx_init(&ctx);
+   bcon_append_ctx_init (&ctx);
 
-   va_start(ap, bson);
+   va_start (ap, bson);
 
-   bcon_append_ctx_va(bson, &ctx, &ap);
+   bcon_append_ctx_va (bson, &ctx, &ap);
 
-   va_arg(ap, char *);
+   va_arg (ap, char *);
 
    BCON_APPEND_CTX (bson, &ctx, "c", "d");
 
-   bcon_append_ctx_va(bson, &ctx, &ap);
+   bcon_append_ctx_va (bson, &ctx, &ap);
 
-   va_end(ap);
+   va_end (ap);
 }
 
-static void test_append_ctx (void)
+static void
+test_append_ctx (void)
 {
    bson_t bcon, expected, child;
 
@@ -617,7 +620,8 @@ static void test_append_ctx (void)
 
    bson_append_document (&expected, "a", -1, &child);
 
-   test_append_ctx_helper(&bcon, "a", "{", NULL, "add magic", "e", "f", "}", NULL);
+   test_append_ctx_helper (
+      &bcon, "a", "{", NULL, "add magic", "e", "f", "}", NULL);
 
    bson_eq_bson (&bcon, &expected);
 

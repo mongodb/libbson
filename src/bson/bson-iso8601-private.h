@@ -26,9 +26,10 @@
 BSON_BEGIN_DECLS
 
 bool
-_bson_iso8601_date_parse (const char   *str,
-                          int32_t       len,
-                          int64_t      *out);
+_bson_iso8601_date_parse (const char *str,
+                          int32_t len,
+                          int64_t *out,
+                          bson_error_t *error);
 
 BSON_END_DECLS
 

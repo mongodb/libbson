@@ -24,7 +24,7 @@
 static void
 test_value_basic (void)
 {
-   static const uint8_t raw[16] = { 0 };
+   static const uint8_t raw[16] = {0};
    const bson_value_t *value;
    bson_value_t copy;
    bson_iter_t iter;
@@ -37,26 +37,46 @@ test_value_basic (void)
 
    bson_oid_init (&oid, NULL);
 
-   doc = BCON_NEW ("double", BCON_DOUBLE (123.4),
-                   "utf8", "this is my string",
-                   "document", BCON_DOCUMENT (&sub),
-                   "array", BCON_DOCUMENT (&sub),
-                   "binary", BCON_BIN (BSON_SUBTYPE_BINARY, raw, sizeof raw),
-                   "undefined", BCON_UNDEFINED,
-                   "oid", BCON_OID (&oid),
-                   "bool", BCON_BOOL (true),
-                   "datetime", BCON_DATE_TIME (12345678),
-                   "null", BCON_NULL,
-                   "regex", BCON_REGEX ("^hello", "i"),
-                   "dbpointer", BCON_DBPOINTER ("test.test", &oid),
-                   "code", BCON_CODE ("var a = function() {}"),
-                   "symbol", BCON_SYMBOL ("my_symbol"),
-                   "codewscope", BCON_CODEWSCOPE ("var a = 1;", &sub),
-                   "int32", BCON_INT32 (1234),
-                   "timestamp", BCON_TIMESTAMP (1234, 4567),
-                   "int64", BCON_INT32 (4321),
-                   "maxkey", BCON_MAXKEY,
-                   "minkey", BCON_MINKEY);
+   doc = BCON_NEW ("double",
+                   BCON_DOUBLE (123.4),
+                   "utf8",
+                   "this is my string",
+                   "document",
+                   BCON_DOCUMENT (&sub),
+                   "array",
+                   BCON_DOCUMENT (&sub),
+                   "binary",
+                   BCON_BIN (BSON_SUBTYPE_BINARY, raw, sizeof raw),
+                   "undefined",
+                   BCON_UNDEFINED,
+                   "oid",
+                   BCON_OID (&oid),
+                   "bool",
+                   BCON_BOOL (true),
+                   "datetime",
+                   BCON_DATE_TIME (12345678),
+                   "null",
+                   BCON_NULL,
+                   "regex",
+                   BCON_REGEX ("^hello", "i"),
+                   "dbpointer",
+                   BCON_DBPOINTER ("test.test", &oid),
+                   "code",
+                   BCON_CODE ("var a = function() {}"),
+                   "symbol",
+                   BCON_SYMBOL ("my_symbol"),
+                   "codewscope",
+                   BCON_CODEWSCOPE ("var a = 1;", &sub),
+                   "int32",
+                   BCON_INT32 (1234),
+                   "timestamp",
+                   BCON_TIMESTAMP (1234, 4567),
+                   "int64",
+                   BCON_INT32 (4321),
+                   "maxkey",
+                   BCON_MAXKEY,
+                   "minkey",
+                   BCON_MINKEY);
 
    r = bson_iter_init (&iter, doc);
    assert (r);
@@ -97,7 +117,7 @@ test_value_decimal128 (void)
    assert (bson_decimal128_from_string ("123.5", &dec));
    doc = BCON_NEW ("decimal128", BCON_DECIMAL128 (&dec));
    assert (bson_iter_init (&iter, doc) && bson_iter_next (&iter));
-   assert (value = bson_iter_value (&iter));
+   assert ((value = bson_iter_value (&iter)));
    bson_value_copy (value, &copy);
    assert (bson_append_value (&other, bson_iter_key (&iter), -1, &copy));
 

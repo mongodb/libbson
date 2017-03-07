@@ -19,15 +19,14 @@
 #include "bson-writer.h"
 
 
-struct _bson_writer_t
-{
-   bool                ready;
-   uint8_t           **buf;
-   size_t             *buflen;
-   size_t              offset;
-   bson_realloc_func   realloc_func;
-   void               *realloc_func_ctx;
-   bson_t              b;
+struct _bson_writer_t {
+   bool ready;
+   uint8_t **buf;
+   size_t *buflen;
+   size_t offset;
+   bson_realloc_func realloc_func;
+   void *realloc_func_ctx;
+   bson_t b;
 };
 
 
@@ -59,11 +58,11 @@ struct _bson_writer_t
  */
 
 bson_writer_t *
-bson_writer_new (uint8_t           **buf,              /* IN */
-                 size_t             *buflen,           /* IN */
-                 size_t              offset,           /* IN */
-                 bson_realloc_func   realloc_func,     /* IN */
-                 void               *realloc_func_ctx) /* IN */
+bson_writer_new (uint8_t **buf,                  /* IN */
+                 size_t *buflen,                 /* IN */
+                 size_t offset,                  /* IN */
+                 bson_realloc_func realloc_func, /* IN */
+                 void *realloc_func_ctx)         /* IN */
 {
    bson_writer_t *writer;
 
@@ -157,8 +156,8 @@ bson_writer_get_length (bson_writer_t *writer) /* IN */
  */
 
 bool
-bson_writer_begin (bson_writer_t  *writer, /* IN */
-                   bson_t        **bson)   /* OUT */
+bson_writer_begin (bson_writer_t *writer, /* IN */
+                   bson_t **bson)         /* OUT */
 {
    bson_impl_alloc_t *b;
    bool grown = false;
@@ -171,7 +170,7 @@ bson_writer_begin (bson_writer_t  *writer, /* IN */
 
    memset (&writer->b, 0, sizeof (bson_t));
 
-   b = (bson_impl_alloc_t *)&writer->b;
+   b = (bson_impl_alloc_t *) &writer->b;
    b->flags = BSON_FLAG_STATIC | BSON_FLAG_NO_FREE;
    b->len = 5;
    b->parent = NULL;
@@ -199,7 +198,8 @@ bson_writer_begin (bson_writer_t  *writer, /* IN */
    }
 
    if (grown) {
-      *writer->buf = writer->realloc_func (*writer->buf, *writer->buflen, writer->realloc_func_ctx);
+      *writer->buf = writer->realloc_func (
+         *writer->buf, *writer->buflen, writer->realloc_func_ctx);
    }
 
    memset ((*writer->buf) + writer->offset + 1, 0, 5);
