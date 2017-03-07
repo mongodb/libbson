@@ -40,25 +40,3 @@ Index: libbson/build/autotools/CheckAtomics.m4
        [AC_SUBST(BSON_HAVE_ATOMIC_64_ADD_AND_FETCH, 1)],
        [AC_SUBST(BSON_HAVE_ATOMIC_64_ADD_AND_FETCH, 0)])
  AC_LANG_POP([C])
-Index: libbson/src/bson/bson-atomic.h
-===================================================================
---- libbson.orig/src/bson/bson-atomic.h
-+++ libbson/src/bson/bson-atomic.h
-@@ -38,7 +38,7 @@ BSON_BEGIN_DECLS
- #  define bson_atomic_int64_add(p, v) (InterlockedExchangeAdd64((volatile LONGLONG *)(p), (LONGLONG)(v)) + (LONGLONG)(v))
- #else
- #  ifdef BSON_HAVE_ATOMIC_32_ADD_AND_FETCH
--#    define bson_atomic_int_add(p,v) __sync_add_and_fetch((p), (v))
-+#    define bson_atomic_int_add(p,v) __atomic_add_fetch((p), (v), __ATOMIC_SEQ_CST)
- #  else
- #    define __BSON_NEED_ATOMIC_32
- #  endif
-@@ -52,7 +52,7 @@ BSON_BEGIN_DECLS
-         */
- #      define __BSON_NEED_ATOMIC_64
- #    else
--#      define bson_atomic_int64_add(p, v) __sync_add_and_fetch((volatile int64_t*)(p), (int64_t)(v))
-+#      define bson_atomic_int64_add(p, v) __atomic_add_fetch((volatile int64_t*)(p), (int64_t)(v), __ATOMIC_SEQ_CST)
- #    endif
- #  else
- #    define __BSON_NEED_ATOMIC_64
