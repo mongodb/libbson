@@ -118,7 +118,10 @@ functions:
       params:
         continue_on_err: true
         # Must be http as RHEL55 has https issues
-        script: "set -o xtrace; rm -f *.tar.gz; curl http://s3.amazonaws.com/mciuploads/libbson/libbson-${CURRENT_VERSION}.tar.gz --output libbson.tar.gz --silent --max-time 120 --fail"
+        script: |
+          set -o xtrace
+          rm -f *.tar.gz
+          curl http://s3.amazonaws.com/mciuploads/libbson/${branch_name}/libbson-${CURRENT_VERSION}.tar.gz --output libbson.tar.gz --silent --max-time 120 --fail
 
   "upload release":
     - command: shell.exec
@@ -129,7 +132,7 @@ functions:
         aws_key: ${aws_key}
         aws_secret: ${aws_secret}
         local_file: libbson.tar.gz
-        remote_file: libbson/libbson-${CURRENT_VERSION}.tar.gz
+        remote_file: libbson/${branch_name}/libbson-${CURRENT_VERSION}.tar.gz
         bucket: mciuploads
         permissions: public-read
         content_type: ${content_type|application/x-gzip}
