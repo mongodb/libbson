@@ -58,7 +58,9 @@ dist-hook:
 	fi
 
 clean-local:
-	rm -rf $(CLEANFILES)
+	-rm -rf $(CLEANFILES)
+	-rm -rf doc/html/.buildinfo doc/html/.doctrees
+	-rm -rf doc/man/.buildinfo doc/man/.doctrees
 
 uninstall-local:
 	-rmdir $(bsondocdir)/doc $(bsondocdir)/html
