@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Demonstrates how to use the CMake 'find_package' mechanism to locate
+# Demonstrates how to use the CMake 'FindPkgConfig' mechanism to locate
 # and build against libbson.
 
 cmake_minimum_required(VERSION 2.8)
@@ -23,13 +23,14 @@ endif()
 
 project(hello_bson LANGUAGES C)
 
-# NOTE: For this to work, the CMAKE_PREFIX_PATH variable must be set to point to
+find_package(PkgConfig REQUIRED)
+
+# NOTE: For this to work, the PKG_CONFIG_PATH variable must be set to point to
 # the directory that was used as the argument to CMAKE_INSTALL_PREFIX when
 # building libbson.
-# -- sphinx-include-start --
-find_package(libbson-1.0 REQUIRED)
+pkg_search_module(BSON REQUIRED libbson-static-1.0)
 
 link_directories(${BSON_LIBRARY_DIRS})
 add_executable(hello_bson ../hello_bson.c)
 target_include_directories(hello_bson PRIVATE ${BSON_INCLUDE_DIRS})
-target_link_libraries(hello_bson PRIVATE ${BSON_LIBRARIES})
+target_link_libraries(hello_bson PRIVATE ${BSON_LIBRARIES} pthread)

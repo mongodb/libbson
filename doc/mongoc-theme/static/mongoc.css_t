@@ -339,7 +339,16 @@ div.danger, div.error, div.warning {
     background-color: #ffe4e4;
     border: 1px solid #f66;
 }
- 
+
+div.literal-block-wrapper {
+  padding: 0;
+}
+
+span.caption-text {
+  font-family: monospace;
+  font-size: 0.75em;
+}
+
 p.admonition-title {
     display: inline;
 }

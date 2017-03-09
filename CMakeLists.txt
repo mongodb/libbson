@@ -288,9 +288,17 @@ configure_file(
     ${CMAKE_CURRENT_BINARY_DIR}/libbson-1.0.pc
 @ONLY)
 
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/libbson-static-1.0.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/libbson-static-1.0.pc
+@ONLY)
+
 install(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/libbson-1.0.pc
-    DESTINATION lib/pkgconfig
+    FILES
+      ${CMAKE_CURRENT_BINARY_DIR}/libbson-1.0.pc
+      ${CMAKE_CURRENT_BINARY_DIR}/libbson-static-1.0.pc
+    DESTINATION
+      lib/pkgconfig
 )
 
 include (build/cmake/BSONPackage.cmake)

@@ -14,7 +14,10 @@ include src/bson/Makefile.am
 include src/jsonsl/Makefile.am
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = $(top_builddir)/src/libbson-1.0.pc
+pkgconfig_DATA = \
+   $(top_builddir)/src/libbson-1.0.pc \
+   $(top_builddir)/src/libbson-static-1.0.pc
 
 EXTRA_DIST += \
-	src/libbson-1.0.pc.in
+	src/libbson-1.0.pc.in \
+	src/libbson-static-1.0.pc.in

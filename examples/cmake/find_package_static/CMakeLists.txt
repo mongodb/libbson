@@ -27,9 +27,9 @@ project(hello_bson LANGUAGES C)
 # the directory that was used as the argument to CMAKE_INSTALL_PREFIX when
 # building libbson.
 # -- sphinx-include-start --
-find_package(libbson-1.0 REQUIRED)
+find_package(libbson-static-1.0 REQUIRED)
 
 link_directories(${BSON_LIBRARY_DIRS})
 add_executable(hello_bson ../hello_bson.c)
 target_include_directories(hello_bson PRIVATE ${BSON_INCLUDE_DIRS})
-target_link_libraries(hello_bson PRIVATE ${BSON_LIBRARIES})
+target_link_libraries(hello_bson PRIVATE ${BSON_LIBRARIES} pthread)

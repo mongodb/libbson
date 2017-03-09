@@ -38,6 +38,7 @@ m4_include([build/autotools/SetupAutomake.m4])
 AC_CONFIG_FILES([
     Makefile
     src/libbson-1.0.pc
+    src/libbson-static-1.0.pc
     src/bson/bson-config.h
     src/bson/bson-version.h
 ])

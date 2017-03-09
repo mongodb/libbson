@@ -32,7 +32,17 @@ $CMAKE -DCMAKE_PREFIX_PATH=$INSTALL_DIR/lib/cmake .
 make
 LD_LIBRARY_PATH=$INSTALL_DIR/lib ./hello_bson
 
+cd $SRCROOT/examples/cmake/find_package_static
+$CMAKE -DCMAKE_PREFIX_PATH=$INSTALL_DIR/lib/cmake .
+make
+LD_LIBRARY_PATH=$INSTALL_DIR/lib ./hello_bson
+
 cd $SRCROOT/examples/cmake/FindPkgConfig
-PKG_CONFIG_PATH=$INSTALL_DIR/lib/pkgconfig /opt/cmake/bin/cmake .
+PKG_CONFIG_PATH=$INSTALL_DIR/lib/pkgconfig $CMAKE .
+make
+LD_LIBRARY_PATH=$INSTALL_DIR/lib ./hello_bson
+
+cd $SRCROOT/examples/cmake/FindPkgConfig_static
+PKG_CONFIG_PATH=$INSTALL_DIR/lib/pkgconfig $CMAKE .
 make
 LD_LIBRARY_PATH=$INSTALL_DIR/lib ./hello_bson

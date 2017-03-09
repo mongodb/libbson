@@ -31,6 +31,6 @@ find_package(PkgConfig REQUIRED)
 pkg_search_module(BSON REQUIRED libbson-1.0)
 
 link_directories(${BSON_LIBRARY_DIRS})
-add_executable(hello_bson hello_bson.c)
+add_executable(hello_bson ../hello_bson.c)
 target_include_directories(hello_bson PRIVATE ${BSON_INCLUDE_DIRS})
 target_link_libraries(hello_bson PRIVATE ${BSON_LIBRARIES})
