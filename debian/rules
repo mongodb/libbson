@@ -29,7 +29,6 @@ override_dh_auto_configure:
 override_dh_auto_build:
 	dh_auto_build
 	make doc/man doc/html
-	rm -rf doc/html/.buildinfo doc/html/.doctrees
 
 override_dh_auto_clean:
 	dh_auto_clean

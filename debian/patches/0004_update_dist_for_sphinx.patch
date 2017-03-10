@@ -4,7 +4,7 @@ Index: libbson/Makefile.am
 ===================================================================
 --- libbson.orig/Makefile.am
 +++ libbson/Makefile.am
-@@ -44,16 +44,22 @@ EXTRA_DIST += CMakeLists.txt \
+@@ -44,16 +44,19 @@ EXTRA_DIST += CMakeLists.txt \
      VERSION_RELEASED
  
  dist-hook:
@@ -16,9 +16,6 @@ Index: libbson/Makefile.am
 -               echo Failed to generate ChangeLog >&2);                  \
 -	else                                                            \
 -	  echo A git checkout is required to generate a ChangeLog >&2;  \
-+	-rm -rf $(distdir)/doc/html/.buildinfo $(distdir)/doc/html/.doctrees
-+	-rm -rf $(distdir)/doc/man/.buildinfo $(distdir)/doc/man/.doctrees
-+
 +	@if test -d "$(srcdir)/.git"; then                                   \
 +	       (cd "$(srcdir)" &&                                            \
 +	        $(top_srcdir)/build/autotools/missing --run git log --stat ) > ChangeLog.tmp \
@@ -53,10 +50,9 @@ Index: libbson/doc/man/Makefile.am
 ===================================================================
 --- libbson.orig/doc/man/Makefile.am
 +++ libbson/doc/man/Makefile.am
-@@ -1,19 +1,14 @@
+@@ -1,20 +1,16 @@
 -BUILT_MAN_FILES = $(wildcard doc/man/*.3)
--CLEANFILES += $(wildcard doc/man/*.3)
-+CLEANFILES += $(wildcard doc/man/*.3) doc/man/.doctrees doc/man/.buildinfo
+ CLEANFILES += $(wildcard doc/man/*.3)
  
 -dist_man_MANS = $(BUILT_MAN_FILES)
 -# Automake (at least up to 1.10) mishandles dist_man_MANS inside conditionals.
@@ -79,4 +75,18 @@ Index: libbson/doc/man/Makefile.am
 +doc/man:
  	-mkdir -p doc/man
  	$(SPHINX_BUILD) -qEW -b man $(top_srcdir)/doc doc/man
++	rm -rf doc/man/.buildinfo doc/man/.doctrees
  
+ EXTRA_DIST += doc/man
+Index: libbson/doc/html/Makefile.am
+===================================================================
+--- libbson.orig/doc/html/Makefile.am
++++ libbson/doc/html/Makefile.am
+@@ -10,6 +10,7 @@ CLEANFILES += doc/html/.nojekyll doc/htm
+ doc/html:
+ 	-mkdir -p doc/html
+ 	$(SPHINX_BUILD) -qEW $(top_srcdir)/doc doc/html
++	rm -rf doc/html/.buildinfo doc/html/.doctrees
+ 
+ SPHINX_HTML_FILES = \
+    doc/html/.nojekyll \
