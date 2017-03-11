@@ -57,6 +57,26 @@ dist-hook:
 	  echo A git checkout is required to generate a ChangeLog >&2;       \
 	fi
 
+# Make libbson-static-1.0.a symlink to libbson-1.0.a. If libbson is built with
+# CMake instead of the Autotools, the static archive is named
+# libbson-static-1.0.a by default. For the sake of projects that want to
+# statically link to libbson, ensure the static archive is present with the
+# name no matter how it was built.
+
+# Also, copy CMake config-file packages to lib/cmake/ for use with CMake's
+# "find_package" command.
+
+install-exec-hook:
+	$(MKDIR_P) $(DESTDIR)$(libdir)/cmake/libbson-1.0
+	cp -f build/cmake/libbson-1.0-config.cmake $(DESTDIR)$(libdir)/cmake/libbson-1.0
+
+	if test -f $(DESTDIR)$(libdir)/libbson-1.0.a; then                                                  \
+	  rm -f $(DESTDIR)$(libdir)/libbson-static-1.0.a;                                                   \
+	  $(LN_S) libbson-1.0.a $(DESTDIR)$(libdir)/libbson-static-1.0.a;                                   \
+	  $(MKDIR_P) $(DESTDIR)$(libdir)/cmake/libbson-static-1.0;                                          \
+	  cp -f build/cmake/libbson-static-1.0-config.cmake $(DESTDIR)$(libdir)/cmake/libbson-static-1.0;   \
+	fi
+
 clean-local:
 	-rm -rf $(CLEANFILES)
 	-rm -rf doc/html/.buildinfo doc/html/.doctrees
@@ -65,3 +85,5 @@ clean-local:
 uninstall-local:
 	-rmdir $(bsondocdir)/doc $(bsondocdir)/html
 	-rm -r $(bsondocdir)
+	-rm -rf $(DESTDIR)$(libdir)/cmake/libbson-1.0
+	-rm -rf $(DESTDIR)$(libdir)/cmake/libbson-1.0-static

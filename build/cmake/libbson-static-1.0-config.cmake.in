@@ -16,10 +16,25 @@ set (BSON_MAJOR_VERSION @BSON_MAJOR_VERSION@)
 set (BSON_MINOR_VERSION @BSON_MINOR_VERSION@)
 set (BSON_MICRO_VERSION @BSON_MICRO_VERSION@)
 set (BSON_VERSION @BSON_VERSION@)
-set (BSON_LIBRARIES bson-static-1.0)
 
-@PACKAGE_INIT@
+if (MSVC)
+   set (BSON_LIBRARIES bson-static-1.0)
+else ()
+   set (BSON_LIBRARIES bson-static-1.0 pthread m)
+endif ()
 
-set_and_check (BSON_INCLUDE_DIRS "${PACKAGE_PREFIX_DIR}/@PACKAGE_INCLUDE_INSTALL_DIRS@")
-set_and_check (BSON_LIBRARY_DIRS "${PACKAGE_PREFIX_DIR}/@PACKAGE_LIBRARY_INSTALL_DIRS@")
+# In a pure-CMake project this is inserted by configure_package_config_file(),
+# but we want to be able to build this file the same from the Autotools, so
+# let's manually insert this code.
+get_filename_component(PACKAGE_PREFIX_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../" ABSOLUTE)
+
+macro(set_and_check _var _file)
+  set(${_var} "${_file}")
+  if(NOT EXISTS "${_file}")
+    message(FATAL_ERROR "File or directory ${_file} referenced by variable ${_var} does not exist !")
+  endif()
+endmacro()
+
+set_and_check (BSON_INCLUDE_DIRS "${PACKAGE_PREFIX_DIR}/include/libbson-1.0")
+set_and_check (BSON_LIBRARY_DIRS "${PACKAGE_PREFIX_DIR}/lib")
 add_definitions (-DBSON_STATIC)

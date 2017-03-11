@@ -350,7 +350,7 @@ tasks:
             working_dir: "libbson"
             script: "CC='${CC}' MARCH='${MARCH}' RELEASE=1 sh .evergreen/compile.sh"
 
-    - name: release-compile-cmake
+    - name: link-with-cmake
       depends_on:
         - name: "make-release-archive"
           variant: releng
@@ -359,7 +359,32 @@ tasks:
           type: test
           params:
             working_dir: "libbson"
-            script: "CC='${CC}' sh .evergreen/compile-unix-cmake.sh"
+            script: |
+              # Build libbson with the Autotools or CMake and compile a program
+              # that links dynamically or statically to libbson, using
+              # variables from CMake's find_package command.
+              USE_PKG_CONFIG=  BUILD_LIBBSON_WITH_CMAKE=  LINK_STATIC=  sh .evergreen/link-sample-program.sh
+              USE_PKG_CONFIG=  BUILD_LIBBSON_WITH_CMAKE=1 LINK_STATIC=  sh .evergreen/link-sample-program.sh
+              USE_PKG_CONFIG=  BUILD_LIBBSON_WITH_CMAKE=  LINK_STATIC=1 sh .evergreen/link-sample-program.sh
+              USE_PKG_CONFIG=  BUILD_LIBBSON_WITH_CMAKE=1 LINK_STATIC=1 sh .evergreen/link-sample-program.sh
+
+    - name: link-with-pkg-config
+      depends_on:
+        - name: "make-release-archive"
+          variant: releng
+      commands:
+        - command: shell.exec
+          type: test
+          params:
+            working_dir: "libbson"
+            script: |
+              # Build libbson with the Autotools or CMake and compile a program
+              # that links dynamically or statically to libbson, using
+              # variables from "pkg-config".
+              USE_PKG_CONFIG=1 BUILD_LIBBSON_WITH_CMAKE=  LINK_STATIC=  sh .evergreen/link-sample-program.sh
+              USE_PKG_CONFIG=1 BUILD_LIBBSON_WITH_CMAKE=1 LINK_STATIC=  sh .evergreen/link-sample-program.sh
+              USE_PKG_CONFIG=1 BUILD_LIBBSON_WITH_CMAKE=  LINK_STATIC=1 sh .evergreen/link-sample-program.sh
+              USE_PKG_CONFIG=1 BUILD_LIBBSON_WITH_CMAKE=1 LINK_STATIC=1 sh .evergreen/link-sample-program.sh
 
     - name: release-compile-c11
       depends_on:
@@ -413,7 +438,18 @@ buildvariants:
       - ubuntu1404-build
       - ubuntu1404-test
     - name: "release-compile"
-    - name: "release-compile-cmake"
+    - name: "link-with-cmake"
+      distros: # Run on any of these variants, whichever will schedule us first
+      - ubuntu1604-build
+      - ubuntu1604-test
+      - ubuntu1404-build
+      - ubuntu1404-test
+    - name: "link-with-pkg-config"
+      distros:
+      - ubuntu1604-build
+      - ubuntu1604-test
+      - ubuntu1404-build
+      - ubuntu1404-test
     - name: "debug-compile-valgrind"
       distros:
       - ubuntu1604-build

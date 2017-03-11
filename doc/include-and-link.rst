@@ -8,7 +8,7 @@ Include bson.h
 
 All libbson's functions and types are available in one header file. Simply include ``bson.h``:
 
-.. literalinclude:: ../examples/cmake/hello_bson.c
+.. literalinclude:: ../examples/hello_bson.c
   :caption: hello_bson.c
   :start-after: -- sphinx-include-start --
 
@@ -35,14 +35,12 @@ pkg-config
 
 If you're not using CMake, use `pkg-config`_ on the command line to set header and library paths:
 
-.. code-block:: none
-
-  gcc hello_bson.c $(pkg-config --cflags --libs libbson-1.0)
+.. literalinclude:: ../examples/compile-with-pkg-config.sh
+  :start-after: -- sphinx-include-start --
 
 Or to statically link to libbson:
 
-.. code-block:: none
-
-  gcc hello_bson.c $(pkg-config --cflags --libs libbson-static-1.0) -lpthread
+.. literalinclude:: ../examples/compile-with-pkg-config-static.sh
+  :start-after: -- sphinx-include-start --
 
 .. _pkg-config: https://www.freedesktop.org/wiki/Software/pkg-config/

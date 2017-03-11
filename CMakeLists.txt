@@ -196,7 +196,10 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set_target_properties(bson_shared PROPERTIES COMPILE_DEFINITIONS "BSON_COMPILATION")
 set_target_properties(bson_static PROPERTIES COMPILE_DEFINITIONS "BSON_COMPILATION")
 
-set_target_properties(bson_shared PROPERTIES VERSION ${BSON_VERSION} SOVERSION ${BSON_MAJOR_VERSION})
+# CMake wants to make different symlinks than the Autotools, see
+# https://cmake.org/pipermail/cmake/2007-September/016501.html
+# This hack sets up standard symlink, libbson-1.0.so -> libbson-1.0.0.so
+set_target_properties(bson_shared PROPERTIES VERSION 0)
 set_target_properties(bson_static PROPERTIES VERSION ${BSON_VERSION} SOVERSION ${BSON_MAJOR_VERSION})
 
 set_target_properties(bson_shared PROPERTIES OUTPUT_NAME "bson-${BSON_API_VERSION}" PREFIX "lib")

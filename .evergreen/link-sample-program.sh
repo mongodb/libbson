@@ -1,0 +1,173 @@
+#!/bin/sh
+set -o xtrace   # Write all commands first to stderr
+set -o errexit  # Exit the script with error if any of the commands fail
+
+# Supported/used environment variables:
+#     BUILD_LIBBSON_WITH_CMAKE    Build libbson with CMake (default: Autotools)
+#     LINK_STATIC                 Whether to statically link to libbson
+#     USE_PKG_CONFIG              Build program with pkg-config (default: CMake)
+
+
+echo "BUILD_LIBBSON_WITH_CMAKE=$BUILD_LIBBSON_WITH_CMAKE LINK_STATIC=$LINK_STATIC USE_PKG_CONFIG=$USE_PKG_CONFIG"
+
+CMAKE=/opt/cmake/bin/cmake
+
+if command -v gtar 2>/dev/null; then
+  TAR=gtar
+else
+  TAR=tar
+fi
+
+if [ $(uname) = "Darwin" ]; then
+  SO=dylib
+  LIB_SO=libbson-1.0.0.dylib
+  LDD="otool -L"
+else
+  SO=so
+  LIB_SO=libbson-1.0.so.0
+  LDD=ldd
+fi
+
+SRCROOT=`pwd`
+
+BUILD_DIR=$(pwd)/build-dir
+rm -rf $BUILD_DIR
+mkdir $BUILD_DIR
+
+INSTALL_DIR=$(pwd)/install-dir
+rm -rf $INSTALL_DIR
+mkdir -p $INSTALL_DIR
+
+cd $BUILD_DIR
+$TAR xf ../../libbson.tar.gz -C . --strip-components=1
+
+if [ "$BUILD_LIBBSON_WITH_CMAKE" ]; then
+  # Our CMake build system always installs both dynamic and static libbson.
+  $CMAKE -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR .
+  make
+  make install
+  EXPECT_STATIC=1
+elif [ "$LINK_STATIC" ]; then
+  ./configure --prefix=$INSTALL_DIR --enable-static
+  make
+  make install
+  EXPECT_STATIC=1
+else
+  ./configure --prefix=$INSTALL_DIR
+  make
+  make install
+  if test -f $INSTALL_DIR/lib/libbson-static-1.0.a; then
+    echo "libbson-static-1.0.a shouldn't have been installed"
+    exit 1
+  fi
+  if test -f $INSTALL_DIR/lib/libbson-1.0.a; then
+    echo "libbson-1.0.a shouldn't have been installed"
+    exit 1
+  fi
+  if test -f $INSTALL_DIR/lib/pkgconfig/libbson-static-1.0.pc; then
+    echo "libbson-static-1.0.pc shouldn't have been installed"
+    exit 1
+  fi
+  if test -f $INSTALL_DIR/lib/cmake/libbson-static-1.0/libbson-static-1.0-config.cmake; then
+    echo "libbson-static-1.0-config.cmake shouldn't have been installed"
+    exit 1
+  fi
+fi
+
+LIB=$INSTALL_DIR/lib/libbson-1.0.$SO
+if test ! -L $LIB; then
+   echo "$LIB should be a symlink"
+   exit 1
+fi
+
+TARGET=$(readlink $LIB)
+if test ! -f $INSTALL_DIR/lib/$TARGET; then
+  echo "$LIB target $INSTALL_DIR/lib/$TARGET is missing!"
+  exit 1
+else
+  echo "$LIB target $INSTALL_DIR/lib/$TARGET check ok"
+fi
+
+
+if test ! -f $INSTALL_DIR/lib/$LIB_SO; then
+  echo "$LIB_SO missing!"
+  exit 1
+else
+  echo "$LIB_SO check ok"
+fi
+
+if test ! -f $INSTALL_DIR/lib/pkgconfig/libbson-1.0.pc; then
+  echo "libbson-1.0.pc missing!"
+  exit 1
+else
+  echo "libbson-1.0.pc check ok"
+fi
+if test ! -f $INSTALL_DIR/lib/cmake/libbson-1.0/libbson-1.0-config.cmake; then
+  echo "libbson-1.0-config.cmake missing!"
+  exit 1
+else
+  echo "libbson-1.0-config.cmake check ok"
+fi
+
+if [ "$EXPECT_STATIC" ]; then
+  if test ! -f $INSTALL_DIR/lib/libbson-static-1.0.a; then
+    echo "libbson-static-1.0.a missing!"
+    exit 1
+  else
+    echo "libbson-static-1.0.a check ok"
+  fi
+  if test ! -f $INSTALL_DIR/lib/pkgconfig/libbson-static-1.0.pc; then
+    echo "libbson-static-1.0.pc missing!"
+    exit 1
+  else
+    echo "libbson-static-1.0.pc check ok"
+  fi
+  if test ! -f $INSTALL_DIR/lib/cmake/libbson-static-1.0/libbson-static-1.0-config.cmake; then
+    echo "libbson-static-1.0-config.cmake missing!"
+    exit 1
+  else
+    echo "libbson-static-1.0-config.cmake check ok"
+  fi
+fi
+
+cd $SRCROOT
+
+if [ "$USE_PKG_CONFIG" ]; then
+  # Test our pkg-config file.
+  export PKG_CONFIG_PATH=$INSTALL_DIR/lib/pkgconfig
+  cd $SRCROOT/examples
+
+  if [ "$LINK_STATIC" ]; then
+    echo "pkg-config output:"
+    echo $(pkg-config --libs --cflags libbson-static-1.0)
+    sh compile-with-pkg-config-static.sh
+  else
+    echo "pkg-config output:"
+    echo $(pkg-config --libs --cflags libbson-1.0)
+    sh compile-with-pkg-config.sh
+  fi
+else
+  # Test our CMake package config file with CMake's find_package command.
+  EXAMPLE_DIR=$SRCROOT/examples/cmake/find_package
+
+  if [ "$LINK_STATIC" ]; then
+    EXAMPLE_DIR="${EXAMPLE_DIR}_static"
+  fi
+
+  cd $EXAMPLE_DIR
+  $CMAKE -DCMAKE_PREFIX_PATH=$INSTALL_DIR/lib/cmake .
+  make
+fi
+
+if [ ! "$LINK_STATIC" ]; then
+  if [ $(uname) = "Darwin" ]; then
+    export DYLD_LIBRARY_PATH=$INSTALL_DIR/lib
+  else
+    export LD_LIBRARY_PATH=$INSTALL_DIR/lib
+  fi
+fi
+
+echo "ldd hello_bson:"
+$LDD hello_bson
+
+./hello_bson

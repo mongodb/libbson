@@ -39,6 +39,8 @@ AC_CONFIG_FILES([
     Makefile
     src/libbson-1.0.pc
     src/libbson-static-1.0.pc
+    build/cmake/libbson-1.0-config.cmake
+    build/cmake/libbson-static-1.0-config.cmake
     src/bson/bson-config.h
     src/bson/bson-version.h
 ])
