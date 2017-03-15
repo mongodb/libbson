@@ -182,7 +182,17 @@ Let's start by generating Visual Studio project files for libbson. The following
   > msbuild.exe ALL_BUILD.vcxproj
   > msbuild.exe INSTALL.vcxproj
 
-You should now see libbson installed in ``C:\libbson``
+You should now see libbson installed in ``C:\libbson``.
+By default, this will create a debug build of libbson. To enable release build additional argument needs to be provided to both cmake and msbuild.exe:
+
+.. parsed-literal::
+
+  > cd libbson-|release|
+  > cmake -G "Visual Studio 14 2015 Win64" \\
+    "-DCMAKE_INSTALL_PREFIX=C:\\libbson" \\
+    "-DCMAKE_BUILD_TYPE=Release"
+  > msbuild.exe /p:Configuration=Release ALL_BUILD.vcxproj
+  > msbuild.exe /p:Configuration=Release INSTALL.vcxproj
 
 You can disable building the tests with:
 
