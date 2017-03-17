@@ -558,7 +558,7 @@ time2sub (struct bson_tm *const tmp,
       return WRONG;
    if (normalize_overflow (&yourtm.tm_mday, &yourtm.tm_hour, HOURSPERDAY))
       return WRONG;
-   y = yourtm.tm_year;
+   y = (int_fast32_t) yourtm.tm_year;
    if (normalize_overflow32 (&y, &yourtm.tm_mon, MONSPERYEAR))
       return WRONG;
    /*
