@@ -1,0 +1,21 @@
+// This is the module map for the clang compiler. It's used with CocoaPods
+// for all Swift builds and framework-based Objective-C builds.
+//
+// By default CocoaPods generates an umbrella header which imports all
+// public headers. That results in "Only <bson.h> can be included
+// directly." errors during preprocessing. Using the library's built-in
+// umbrella header avoids that.
+//
+// http://blog.cocoapods.org/Pod-Authors-Guide-to-CocoaPods-Frameworks/
+// https://clang.llvm.org/docs/Modules.html
+
+framework module bson {
+  umbrella header "bson/bson.h"
+
+  // Prevent warnings on headers which are not in the umbrella.
+  exclude header "bson/b64_ntop.h"
+  exclude header "bson/b64_pton.h"
+
+  export *
+  module * { export * }
+}
