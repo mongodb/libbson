@@ -3,14 +3,14 @@ set -o xtrace   # Write all commands first to stderr
 set -o errexit  # Exit the script with error if any of the commands fail
 
 # Supported/used environment variables:
-#     BUILD_LIBBSON_WITH_CMAKE    Build libbson with CMake (default: Autotools)
-#     LINK_STATIC                 Whether to statically link to libbson
-#     USE_PKG_CONFIG              Build program with pkg-config (default: CMake)
+#   BUILD_LIBBSON_WITH_CMAKE Build libbson with CMake. Default: use Autotools.
+#   LINK_STATIC              Whether to statically link to libbson
+#   BUILD_SAMPLE_WITH_CMAKE  Link program w/ CMake. Default: use pkg-config.
 
 
-echo "BUILD_LIBBSON_WITH_CMAKE=$BUILD_LIBBSON_WITH_CMAKE LINK_STATIC=$LINK_STATIC USE_PKG_CONFIG=$USE_PKG_CONFIG"
+echo "BUILD_LIBBSON_WITH_CMAKE=$BUILD_LIBBSON_WITH_CMAKE LINK_STATIC=$LINK_STATIC BUILD_SAMPLE_WITH_CMAKE=$BUILD_SAMPLE_WITH_CMAKE"
 
-CMAKE=/opt/cmake/bin/cmake
+CMAKE=$CMAKE || /opt/cmake/bin/cmake
 
 if command -v gtar 2>/dev/null; then
   TAR=gtar
@@ -72,6 +72,10 @@ else
     echo "libbson-static-1.0-config.cmake shouldn't have been installed"
     exit 1
   fi
+  if test -f $INSTALL_DIR/lib/cmake/libbson-static-1.0/libbson-static-1.0-config-version.cmake; then
+    echo "libbson-static-1.0-config-version.cmake shouldn't have been installed"
+    exit 1
+  fi
 fi
 
 LIB=$INSTALL_DIR/lib/libbson-1.0.$SO
@@ -108,6 +112,12 @@ if test ! -f $INSTALL_DIR/lib/cmake/libbson-1.0/libbson-1.0-config.cmake; then
 else
   echo "libbson-1.0-config.cmake check ok"
 fi
+if test ! -f $INSTALL_DIR/lib/cmake/libbson-1.0/libbson-1.0-config-version.cmake; then
+  echo "libbson-1.0-config-version.cmake missing!"
+  exit 1
+else
+  echo "libbson-1.0-config-version.cmake check ok"
+fi
 
 if [ "$EXPECT_STATIC" ]; then
   if test ! -f $INSTALL_DIR/lib/libbson-static-1.0.a; then
@@ -128,11 +138,28 @@ if [ "$EXPECT_STATIC" ]; then
   else
     echo "libbson-static-1.0-config.cmake check ok"
   fi
+  if test ! -f $INSTALL_DIR/lib/cmake/libbson-static-1.0/libbson-static-1.0-config-version.cmake; then
+    echo "libbson-static-1.0-config-version.cmake missing!"
+    exit 1
+  else
+    echo "libbson-static-1.0-config-version.cmake check ok"
+  fi
 fi
 
 cd $SRCROOT
 
-if [ "$USE_PKG_CONFIG" ]; then
+if [ "$BUILD_SAMPLE_WITH_CMAKE" ]; then
+  # Test our CMake package config file with CMake's find_package command.
+  EXAMPLE_DIR=$SRCROOT/examples/cmake/find_package
+
+  if [ "$LINK_STATIC" ]; then
+    EXAMPLE_DIR="${EXAMPLE_DIR}_static"
+  fi
+
+  cd $EXAMPLE_DIR
+  $CMAKE -DCMAKE_PREFIX_PATH=$INSTALL_DIR/lib/cmake .
+  make
+else
   # Test our pkg-config file.
   export PKG_CONFIG_PATH=$INSTALL_DIR/lib/pkgconfig
   cd $SRCROOT/examples
@@ -146,17 +173,6 @@ if [ "$USE_PKG_CONFIG" ]; then
     echo $(pkg-config --libs --cflags libbson-1.0)
     sh compile-with-pkg-config.sh
   fi
-else
-  # Test our CMake package config file with CMake's find_package command.
-  EXAMPLE_DIR=$SRCROOT/examples/cmake/find_package
-
-  if [ "$LINK_STATIC" ]; then
-    EXAMPLE_DIR="${EXAMPLE_DIR}_static"
-  fi
-
-  cd $EXAMPLE_DIR
-  $CMAKE -DCMAKE_PREFIX_PATH=$INSTALL_DIR/lib/cmake .
-  make
 fi
 
 if [ ! "$LINK_STATIC" ]; then

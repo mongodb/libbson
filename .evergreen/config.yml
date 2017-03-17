@@ -363,10 +363,10 @@ tasks:
               # Build libbson with the Autotools or CMake and compile a program
               # that links dynamically or statically to libbson, using
               # variables from CMake's find_package command.
-              USE_PKG_CONFIG=  BUILD_LIBBSON_WITH_CMAKE=  LINK_STATIC=  sh .evergreen/link-sample-program.sh
-              USE_PKG_CONFIG=  BUILD_LIBBSON_WITH_CMAKE=1 LINK_STATIC=  sh .evergreen/link-sample-program.sh
-              USE_PKG_CONFIG=  BUILD_LIBBSON_WITH_CMAKE=  LINK_STATIC=1 sh .evergreen/link-sample-program.sh
-              USE_PKG_CONFIG=  BUILD_LIBBSON_WITH_CMAKE=1 LINK_STATIC=1 sh .evergreen/link-sample-program.sh
+              BUILD_LIBBSON_WITH_CMAKE=  LINK_STATIC=  BUILD_SAMPLE_WITH_CMAKE=1  sh .evergreen/link-sample-program.sh
+              BUILD_LIBBSON_WITH_CMAKE=1 LINK_STATIC=  BUILD_SAMPLE_WITH_CMAKE=1  sh .evergreen/link-sample-program.sh
+              BUILD_LIBBSON_WITH_CMAKE=  LINK_STATIC=1 BUILD_SAMPLE_WITH_CMAKE=1  sh .evergreen/link-sample-program.sh
+              BUILD_LIBBSON_WITH_CMAKE=1 LINK_STATIC=1 BUILD_SAMPLE_WITH_CMAKE=1  sh .evergreen/link-sample-program.sh
 
     - name: link-with-pkg-config
       depends_on:
@@ -381,10 +381,10 @@ tasks:
               # Build libbson with the Autotools or CMake and compile a program
               # that links dynamically or statically to libbson, using
               # variables from "pkg-config".
-              USE_PKG_CONFIG=1 BUILD_LIBBSON_WITH_CMAKE=  LINK_STATIC=  sh .evergreen/link-sample-program.sh
-              USE_PKG_CONFIG=1 BUILD_LIBBSON_WITH_CMAKE=1 LINK_STATIC=  sh .evergreen/link-sample-program.sh
-              USE_PKG_CONFIG=1 BUILD_LIBBSON_WITH_CMAKE=  LINK_STATIC=1 sh .evergreen/link-sample-program.sh
-              USE_PKG_CONFIG=1 BUILD_LIBBSON_WITH_CMAKE=1 LINK_STATIC=1 sh .evergreen/link-sample-program.sh
+              BUILD_LIBBSON_WITH_CMAKE=  LINK_STATIC=  BUILD_SAMPLE_WITH_CMAKE= sh .evergreen/link-sample-program.sh
+              BUILD_LIBBSON_WITH_CMAKE=1 LINK_STATIC=  BUILD_SAMPLE_WITH_CMAKE= sh .evergreen/link-sample-program.sh
+              BUILD_LIBBSON_WITH_CMAKE=  LINK_STATIC=1 BUILD_SAMPLE_WITH_CMAKE= sh .evergreen/link-sample-program.sh
+              BUILD_LIBBSON_WITH_CMAKE=1 LINK_STATIC=1 BUILD_SAMPLE_WITH_CMAKE= sh .evergreen/link-sample-program.sh
 
     - name: release-compile-c11
       depends_on:

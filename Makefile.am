@@ -66,15 +66,23 @@ dist-hook:
 # Also, copy CMake config-file packages to lib/cmake/ for use with CMake's
 # "find_package" command.
 
+if ENABLE_STATIC
+enable_static=1
+endif
+
 install-exec-hook:
 	$(MKDIR_P) $(DESTDIR)$(libdir)/cmake/libbson-1.0
 	cp -f build/cmake/libbson-1.0-config.cmake $(DESTDIR)$(libdir)/cmake/libbson-1.0
+	cp -f build/cmake/libbson-1.0-config-version.cmake $(DESTDIR)$(libdir)/cmake/libbson-1.0
 
-	if test -f $(DESTDIR)$(libdir)/libbson-1.0.a; then                                                  \
-	  rm -f $(DESTDIR)$(libdir)/libbson-static-1.0.a;                                                   \
-	  $(LN_S) libbson-1.0.a $(DESTDIR)$(libdir)/libbson-static-1.0.a;                                   \
-	  $(MKDIR_P) $(DESTDIR)$(libdir)/cmake/libbson-static-1.0;                                          \
-	  cp -f build/cmake/libbson-static-1.0-config.cmake $(DESTDIR)$(libdir)/cmake/libbson-static-1.0;   \
+	if [ ! -z "$(enable_static)" ]; then                                                                  \
+	  rm -rf $(DESTDIR)$(libdir)/cmake/libbson-static-1.0                                                 \
+	  $(MKDIR_P) $(DESTDIR)$(libdir)/cmake/libbson-static-1.0;                                            \
+	  cd $(DESTDIR)$(libdir);                                                                             \
+	  rm -f libbson-static-1.0.a;                                                                         \
+	  $(LN_S) libbson-1.0.a libbson-static-1.0.a;                                                         \
+	  cp -f $(abs_builddir)/build/cmake/libbson-static-1.0-config.cmake cmake/libbson-static-1.0;         \
+	  cp -f $(abs_builddir)/build/cmake/libbson-static-1.0-config-version.cmake cmake/libbson-static-1.0; \
 	fi
 
 clean-local:
