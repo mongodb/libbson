@@ -372,18 +372,17 @@ _bson_context_init (bson_context_t *context,    /* IN */
    if ((flags & BSON_CONTEXT_DISABLE_PID_CACHE)) {
       context->oid_get_pid = _bson_context_get_oid_pid;
    } else {
-      pid = BSON_UINT16_TO_BE (_bson_getpid ());
 #ifdef BSON_HAVE_SYSCALL_TID
-
       if ((flags & BSON_CONTEXT_USE_TASK_ID)) {
          int32_t tid;
 
-         if ((tid = gettid ())) {
-            pid = BSON_UINT16_TO_BE (tid);
-         }
-      }
-
+         /* This call is always successful */
+         tid = gettid ();
+         pid = BSON_UINT16_TO_BE (tid);
+      } else
 #endif
+      pid = BSON_UINT16_TO_BE (_bson_getpid ());
+
       memcpy (&context->pidbe[0], &pid, 2);
    }
 }
