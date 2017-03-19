@@ -10,7 +10,7 @@ set -o errexit  # Exit the script with error if any of the commands fail
 
 echo "BUILD_LIBBSON_WITH_CMAKE=$BUILD_LIBBSON_WITH_CMAKE LINK_STATIC=$LINK_STATIC BUILD_SAMPLE_WITH_CMAKE=$BUILD_SAMPLE_WITH_CMAKE"
 
-CMAKE=$CMAKE || /opt/cmake/bin/cmake
+CMAKE=${CMAKE:-/opt/cmake/bin/cmake}
 
 if command -v gtar 2>/dev/null; then
   TAR=gtar
