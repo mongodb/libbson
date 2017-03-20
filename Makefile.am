@@ -76,7 +76,7 @@ install-exec-hook:
 	cp -f build/cmake/libbson-1.0-config-version.cmake $(DESTDIR)$(libdir)/cmake/libbson-1.0
 
 	if [ ! -z "$(enable_static)" ]; then                                                                  \
-	  rm -rf $(DESTDIR)$(libdir)/cmake/libbson-static-1.0                                                 \
+	  rm -rf $(DESTDIR)$(libdir)/cmake/libbson-static-1.0;                                                \
 	  $(MKDIR_P) $(DESTDIR)$(libdir)/cmake/libbson-static-1.0;                                            \
 	  cd $(DESTDIR)$(libdir);                                                                             \
 	  rm -f libbson-static-1.0.a;                                                                         \
