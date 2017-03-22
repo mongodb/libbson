@@ -16,15 +16,10 @@
 
 #include "errno.h"
 #include "string.h"
-#include "limits.h" /* for CHAR_BIT et al. */
 #include <stdint.h> /* for INT64_MAX and INT64_MIN */
 
 /* Unlike <ctype.h>'s isdigit, this also works if c < 0 | c > UCHAR_MAX. */
 #define is_digit(c) ((unsigned) (c) - '0' <= 9)
-
-#ifndef CHAR_BIT
-#define CHAR_BIT 8
-#endif
 
 #if 2 < __GNUC__ + (96 <= __GNUC_MINOR__)
 #define ATTRIBUTE_CONST __attribute__ ((const))
@@ -49,10 +44,6 @@
    !defined restrict
 #define restrict /* empty */
 #endif
-
-#ifndef TYPE_BIT
-#define TYPE_BIT(type) (sizeof (type) * CHAR_BIT)
-#endif /* !defined TYPE_BIT */
 
 #ifdef __clang__
 #pragma clang diagnostic push
