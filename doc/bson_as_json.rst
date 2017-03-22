@@ -9,8 +9,7 @@ Synopsis
 .. code-block:: c
 
   char *
-  bson_as_json (const bson_t *bson, size_t *length)
-    BSON_GNUC_DEPRECATED_FOR (bson_as_extended_json);
+  bson_as_json (const bson_t *bson, size_t *length);
 
 Parameters
 ----------
@@ -21,7 +20,7 @@ Parameters
 Description
 -----------
 
-The :symbol:`bson_as_json()` function shall encode ``bson`` as a UTF-8 string using libbson's legacy JSON format. This function is deprecated in favor of :symbol:`bson_as_extended_json()`, which uses the same `MongoDB Extended JSON format`_ as all other MongoDB drivers.
+The :symbol:`bson_as_json()` function shall encode ``bson`` as a UTF-8 string using libbson's legacy JSON format. This function is superseded by :symbol:`bson_as_extended_json()`, which uses the same `MongoDB Extended JSON format`_ as all other MongoDB drivers.
 
 The caller is responsible for freeing the resulting UTF-8 encoded string by calling :symbol:`bson_free()` with the result.
 

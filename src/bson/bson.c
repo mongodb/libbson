@@ -2977,9 +2977,7 @@ _bson_as_json_visit_codewscope_common (const bson_iter_t *iter,
    }
 
    if (legacy) {
-      BEGIN_IGNORE_DEPRECATIONS
       scope = bson_as_json (v_scope, NULL);
-      END_IGNORE_DEPRECATIONS
    } else {
       scope = bson_as_extended_json (v_scope, NULL);
    }

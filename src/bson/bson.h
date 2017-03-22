@@ -498,15 +498,14 @@ bson_as_extended_json (const bson_t *bson, size_t *length);
  * @length: A location for the string length, or NULL.
  *
  * Creates a new string containing @bson in libbson's legacy JSON format.
- * Deprecated for bson_as_extended_json. The caller is responsible for freeing
+ * Superseded by bson_as_extended_json. The caller is responsible for freeing
  * the resulting string. If @length is non-NULL, then the length of the
  * resulting string will be placed in @length.
  *
  * Returns: A newly allocated string that should be freed with bson_free().
  */
 BSON_EXPORT (char *)
-bson_as_json (const bson_t *bson, size_t *length)
-   BSON_GNUC_DEPRECATED_FOR (bson_as_extended_json);
+bson_as_json (const bson_t *bson, size_t *length);
 
 
 /* like bson_as_json() but for outermost arrays. */

@@ -20,8 +20,6 @@
 #define JSON_DIR "tests/json"
 #endif
 
-BEGIN_IGNORE_DEPRECATIONS
-
 static ssize_t
 test_bson_json_read_cb_helper (void *string, uint8_t *buf, size_t len)
 {
@@ -1967,5 +1965,3 @@ test_json_install (TestSuite *suite)
       suite, "/bson/json/read/$numberDecimal", test_bson_json_number_decimal);
    TestSuite_Add (suite, "/bson/integer/width", test_bson_integer_width);
 }
-
-END_IGNORE_DEPRECATIONS
