@@ -44,9 +44,6 @@ EXTRA_DIST += CMakeLists.txt \
     VERSION_RELEASED
 
 dist-hook:
-	-rm -rf $(distdir)/doc/html/.buildinfo $(distdir)/doc/html/.doctrees
-	-rm -rf $(distdir)/doc/man/.buildinfo $(distdir)/doc/man/.doctrees
-
 	@if test -d "$(srcdir)/.git"; then                                   \
 	       (cd "$(srcdir)" &&                                            \
 	        $(top_srcdir)/build/autotools/missing --run git log --stat ) > ChangeLog.tmp \
@@ -87,8 +84,6 @@ install-exec-hook:
 
 clean-local:
 	-rm -rf $(CLEANFILES)
-	-rm -rf doc/html/.buildinfo doc/html/.doctrees
-	-rm -rf doc/man/.buildinfo doc/man/.doctrees
 
 uninstall-local:
 	-rmdir $(bsondocdir)/doc $(bsondocdir)/html
