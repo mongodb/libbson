@@ -62,13 +62,13 @@
 
 
 /* Decorate public functions:
- * - if BSON_STATIC, we're compiling a program that uses libbson / libmongoc as
- *   a static library, don't decorate functions
+ * - if BSON_STATIC, we're compiling a program that uses libbson as a static
+ *   library, don't decorate functions
  * - else if BSON_COMPILATION, we're compiling a static or shared libbson, mark
  *   public functions for export from the shared lib (which has no effect on
  *   the static lib)
- * - else, we're compiling a program that uses libbson / libmongoc as a shared
- *   library, mark public functions as DLL imports for Microsoft Visual C.
+ * - else, we're compiling a program that uses libbson as a shared library,
+ *   mark public functions as DLL imports for Microsoft Visual C
  */
 
 #ifdef _MSC_VER
