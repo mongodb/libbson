@@ -111,8 +111,10 @@ CFLAGS="$CFLAGS -Werror"
 [ "$COVERAGE" ] && CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-coverage"
 
 if [ "$RELEASE" ]; then
-   # Overwrite the git checkout with the packaged archive
-   $TAR xf ../libbson.tar.gz -C . --strip-components=1
+   # Build from the release tarball.
+   mkdir build-dir
+   $TAR xf ../libbson.tar.gz -C build-dir --strip-components=1
+   cd build-dir
    CONFIGURE_SCRIPT="./configure"
 fi
 

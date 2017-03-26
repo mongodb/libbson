@@ -5,8 +5,15 @@ set -o errexit  # Exit the script with error if any of the commands fail
 
 # Supported/used environment variables:
 #       CC       Which compiler to use
+#       RELEASE  Enable release-build MSVC flags and build from release
+#                tarball (default: debug flags, build from git)
 
+CC=${CC:-"Visual Studio 14 2015 Win64"}
 
+echo "CC: $CC"
+echo "RELEASE: $RELEASE"
+
+SRC_ROOT=`pwd`
 CONFIGURE_FLAGS="-DCMAKE_INSTALL_PREFIX=C:/libbson"
 BUILD_FLAGS="/m"  # Number of concurrent processes. No value=# of cpus
 
@@ -14,6 +21,10 @@ if [ "$RELEASE" ]; then
    CONFIGURE_FLAGS="$CONFIGURE_FLAGS -DCMAKE_BUILD_TYPE=Release"
    BUILD_FLAGS="$BUILD_FLAGS /p:Configuration=Release"
    TEST_PATH="./Release/test-libbson.exe"
+   # Build from the release tarball.
+   mkdir build-dir
+   tar xf ../libbson.tar.gz -C build-dir --strip-components=1
+   cd build-dir
 else
    CONFIGURE_FLAGS="$CONFIGURE_FLAGS -DCMAKE_BUILD_TYPE=Debug"
    BUILD_FLAGS="$BUILD_FLAGS /p:Configuration=Debug"
@@ -22,7 +33,11 @@ fi
 
 case "$CC" in
    mingw*)
-      cmd.exe /c .evergreen\\compile.bat
+      if [ "$RELEASE" ]; then
+         cmd.exe /c ..\\.evergreen\\compile.bat
+      else
+         cmd.exe /c .evergreen\\compile.bat
+      fi
       exit 0
    ;;
    # Resolve the compiler name to correct MSBuild location

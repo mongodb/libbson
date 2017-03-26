@@ -695,3 +695,4 @@ buildvariants:
   - windows-64-vs2013-compile
   tasks:
     - name: "debug-compile"
+    - name: "release-compile"
