@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 project (libbson)
 
 option(ENABLE_TESTS "Build libbson tests." ON)
+option(ENABLE_EXAMPLES "Build libbson examples." OFF)
 
 include(CheckFunctionExists)
 include(CheckIncludeFile)
@@ -271,9 +272,30 @@ if (ENABLE_TESTS)
          DESTINATION ${PROJECT_BINARY_DIR}/tests)
 endif ()  # ENABLE_TESTS
 
+function (add_example bin src)
+    set (BSON_EXAMPLE_SOURCES ${SOURCE_DIR}/${src})
+    add_executable (${bin} ${BSON_EXAMPLE_SOURCES})
+
+    # Link against the shared lib like normal apps
+    target_link_libraries(${bin} bson_shared)
+
+    set (EXAMPLES ${EXAMPLES} ${bin})
+endfunction ()
+
+if (ENABLE_EXAMPLES)
+    add_example (bcon-col-view examples/bcon-col-view.c)
+    add_example (bcon-speed examples/bcon-speed.c)
+    add_example (bson-metrics examples/bson-metrics.c)
+    # Uses getopt ()
+    #add_example (bson-streaming-reader examples/bson-streaming-reader.c)
+    add_example (bson-to-json examples/bson-to-json.c)
+    add_example (bson-validate examples/bson-validate.c)
+    add_example (json-to-bson examples/json-to-bson.c)
+endif () # ENABLE_EXAMPLES
+
 set (BSON_HEADER_INSTALL_DIR "include/libbson-${BSON_API_VERSION}")
 install(
-  TARGETS bson_shared bson_static
+  TARGETS bson_shared bson_static ${EXAMPLES}
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
   RUNTIME DESTINATION bin
