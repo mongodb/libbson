@@ -557,7 +557,7 @@ _bson_json_parse_double (bson_json_reader_t *reader,
 
 #ifdef _MSC_VER
    /* Microsoft's strtod parses "NaN" as 0 */
-   if (*d == 0.0 && !bson_strcasecmp (val, "nan")) {
+   if (*d == 0.0 && !_strnicmp (val, "nan", vlen)) {
 #ifndef NAN
       /* Visual Studio 2010 doesn't define NaN at all,
        * https://msdn.microsoft.com/en-us/library/w22adx1s(v=vs.100).aspx */

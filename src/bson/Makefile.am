@@ -49,6 +49,7 @@ NOINST_H_FILES = \
 
 libbson_la_CPPFLAGS = \
 	-DBSON_COMPILATION \
+	-DJSONSL_PARSE_NAN \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/bson \
 	-I$(top_srcdir)/src/jsonsl \

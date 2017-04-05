@@ -194,8 +194,8 @@ add_library(bson_static STATIC ${SOURCES} ${HEADERS})
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 
-set_target_properties(bson_shared PROPERTIES COMPILE_DEFINITIONS "BSON_COMPILATION")
-set_target_properties(bson_static PROPERTIES COMPILE_DEFINITIONS "BSON_COMPILATION")
+set_target_properties(bson_shared PROPERTIES COMPILE_DEFINITIONS "BSON_COMPILATION;JSONSL_PARSE_NAN")
+set_target_properties(bson_static PROPERTIES COMPILE_DEFINITIONS "BSON_COMPILATION;JSONSL_PARSE_NAN")
 
 # CMake wants to make different symlinks than the Autotools, see
 # https://cmake.org/pipermail/cmake/2007-September/016501.html

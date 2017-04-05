@@ -1,6 +1,7 @@
 lib_LTLIBRARIES += libbson-1.0.la
 
 libbson_1_0_la_SOURCES =
+libbson_1_0_la_CPPFLAGS = "-DJSONSL_PARSE_NAN"
 libbson_1_0_la_LIBADD = \
 	libbson.la \
 	-lm

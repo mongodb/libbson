@@ -125,7 +125,8 @@ test_bson_as_json (void)
    BSON_ASSERT (
       bson_append_timestamp (b, "timestamp", -1, (uint32_t) time (NULL), 1234));
    BSON_ASSERT (bson_append_regex (b, "regex", -1, "^abcd", "xi"));
-   BSON_ASSERT (bson_append_dbpointer (b, "dbpointer", -1, "mycollection", &oid));
+   BSON_ASSERT (
+      bson_append_dbpointer (b, "dbpointer", -1, "mycollection", &oid));
    BSON_ASSERT (bson_append_minkey (b, "minkey", -1));
    BSON_ASSERT (bson_append_maxkey (b, "maxkey", -1));
    BSON_ASSERT (bson_append_symbol (b, "symbol", -1, "var a = {};", -1));
@@ -273,7 +274,8 @@ test_bson_as_json_code (void)
    bson_reinit (&code);
 
    /* empty scope */
-   BSON_ASSERT (BSON_APPEND_CODE_WITH_SCOPE (&code, "c", "function () {}", &scope));
+   BSON_ASSERT (
+      BSON_APPEND_CODE_WITH_SCOPE (&code, "c", "function () {}", &scope));
    str = bson_as_json (&code, NULL);
    ASSERT_CMPSTR (
       str, "{ \"c\" : { \"$code\" : \"function () {}\", \"$scope\" : { } } }");
@@ -282,7 +284,8 @@ test_bson_as_json_code (void)
    bson_reinit (&code);
 
    BSON_APPEND_INT32 (&scope, "x", 1);
-   BSON_ASSERT (BSON_APPEND_CODE_WITH_SCOPE (&code, "c", "function () {}", &scope));
+   BSON_ASSERT (
+      BSON_APPEND_CODE_WITH_SCOPE (&code, "c", "function () {}", &scope));
    str = bson_as_json (&code, NULL);
    ASSERT_CMPSTR (str,
                   "{ \"c\" : { \"$code\" : \"function () {}\", \"$scope\" "
@@ -1492,17 +1495,59 @@ test_bson_json_nan (void)
    double d;
 
    /* should parse any capitalization of NaN */
-   const char *extj = "{ \"d\": {\"$numberDouble\": \"NaN\" } }";
-   const char *extj2 = "{ \"d\": {\"$numberDouble\": \"nAn\" } }";
+   const char *jsons[] = {"{ \"d\": NaN }",
+                          "{ \"d\": nAn }",
+                          "{ \"d\": {\"$numberDouble\": \"NaN\" } }",
+                          "{ \"d\": {\"$numberDouble\": \"nAn\" } }",
+                          NULL};
 
-   BSON_ASSERT (bson_init_from_json (&b, extj, -1, &error));
-   BSON_ASSERT (BCON_EXTRACT (&b, "d", BCONE_DOUBLE (d)));
-   BSON_ASSERT (d != d); /* not a number */
-   bson_destroy (&b);
+   /* test our patch to JSONSL that updates its state while parsing "n..." */
+   const char *bad[] = {"{ \"d\": NaNn }",
+                        "{ \"d\": nul }",
+                        "{ \"d\": nulll }",
+                        "{ \"d\": nulll }",
+                        "{ \"d\": foo }",
+                        "{ \"d\": NULL }",
+                        "{ \"d\": nall }",
+                        NULL};
 
-   BSON_ASSERT (bson_init_from_json (&b, extj2, -1, &error));
-   BSON_ASSERT (BCON_EXTRACT (&b, "d", BCONE_DOUBLE (d)));
-   BSON_ASSERT (d != d);
+   const char *partial[] = {"{ \"d\": nu", "{ \"d\": na", "{ \"d\": n", NULL};
+   const char **j;
+
+   for (j = jsons; *j; j++) {
+      BSON_ASSERT (bson_init_from_json (&b, *j, -1, &error));
+      BSON_ASSERT (BCON_EXTRACT (&b, "d", BCONE_DOUBLE (d)));
+      BSON_ASSERT (d != d);
+      bson_destroy (&b);
+   }
+
+   for (j = bad; *j; j++) {
+      BSON_ASSERT (!bson_init_from_json (&b, *j, -1, &error));
+      ASSERT_ERROR_CONTAINS (error,
+                             BSON_ERROR_JSON,
+                             BSON_JSON_ERROR_READ_CORRUPT_JS,
+                             "Got parse error at");
+   }
+
+   for (j = partial; *j; j++) {
+      BSON_ASSERT (!bson_init_from_json (&b, *j, -1, &error));
+      ASSERT_ERROR_CONTAINS (error,
+                             BSON_ERROR_JSON,
+                             BSON_JSON_ERROR_READ_CORRUPT_JS,
+                             "Incomplete JSON");
+   }
+}
+
+
+static void
+test_bson_json_null (void)
+{
+   bson_error_t error;
+   bson_t b;
+
+   const char *json = "{ \"x\": null }";
+   BSON_ASSERT (bson_init_from_json (&b, json, -1, &error));
+   BSON_ASSERT (BCON_EXTRACT (&b, "x", BCONE_NULL));
    bson_destroy (&b);
 }
 
@@ -1957,6 +2002,7 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (
       suite, "/bson/json/read/double/overflow", test_bson_json_double_overflow);
    TestSuite_Add (suite, "/bson/json/read/double/nan", test_bson_json_nan);
+   TestSuite_Add (suite, "/bson/json/read/null", test_bson_json_null);
    TestSuite_Add (
       suite, "/bson/json/read/empty_final", test_bson_json_empty_final_object);
    TestSuite_Add (

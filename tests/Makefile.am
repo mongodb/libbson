@@ -38,6 +38,7 @@ test_libbson_CPPFLAGS = \
 	$(PTHREAD_CFLAGS) \
 	$(COVERAGE_CFLAGS) \
 	-DBSON_COMPILATION \
+	-DJSONSL_PARSE_NAN \
 	-DBINARY_DIR="\"$(top_srcdir)/tests/binary\"" \
 	-DJSON_DIR="\"$(top_srcdir)/tests/json\""
 
