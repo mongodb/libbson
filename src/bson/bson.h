@@ -373,11 +373,11 @@ bson_steal (bson_t *dst, bson_t *src);
 /**
  * bson_destroy_with_steal:
  * @bson: A #bson_t.
- * @steal: If ownership of the data buffer should be transfered to caller.
+ * @steal: If ownership of the data buffer should be transferred to caller.
  * @length: (out): location for the length of the buffer.
  *
  * Destroys @bson similar to calling bson_destroy() except that the underlying
- * buffer will be returned and ownership transfered to the caller if @steal
+ * buffer will be returned and ownership transferred to the caller if @steal
  * is non-zero.
  *
  * If length is non-NULL, the length of @bson will be stored in @length.
