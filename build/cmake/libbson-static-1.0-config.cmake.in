@@ -18,7 +18,7 @@ set (BSON_MICRO_VERSION @BSON_MICRO_VERSION@)
 set (BSON_VERSION @BSON_VERSION@)
 
 if (MSVC)
-   set (BSON_LIBRARIES bson-static-1.0)
+   set (BSON_LIBRARIES bson-static-1.0 ws2_32)
 else ()
    set (BSON_LIBRARIES bson-static-1.0 pthread m)
 endif ()
