@@ -1373,8 +1373,6 @@ size_t jsonsl_util_unescape_ex(const char *in,
         uescval = jsonsl__get_uescape_16((const char *)c + 2);
         if (uescval == -1) {
             UNESCAPE_BAIL(PERCENT_BADHEX, -1);
-        } else if (uescval == 0) {
-            UNESCAPE_BAIL(INVALID_CODEPOINT, 2);
         }
 
         if (last_codepoint) {
