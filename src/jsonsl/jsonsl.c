@@ -4,6 +4,8 @@
  */
 
 #include "jsonsl.h"
+#include "bson-memory.h"
+
 #include <assert.h>
 #include <limits.h>
 #include <ctype.h>
@@ -109,7 +111,7 @@ jsonsl_t jsonsl_new(int nlevels)
     }
 
     jsn = (struct jsonsl_st *)
-            calloc(1, sizeof (*jsn) +
+            bson_malloc0(sizeof (*jsn) +
                     ( (nlevels-1) * sizeof (struct jsonsl_state_st) )
             );
 
@@ -138,7 +140,7 @@ JSONSL_API
 void jsonsl_destroy(jsonsl_t jsn)
 {
     if (jsn) {
-        free(jsn);
+        bson_free(jsn);
     }
 }
 
