@@ -37,4 +37,4 @@ endmacro()
 
 set_and_check (BSON_INCLUDE_DIRS "${PACKAGE_PREFIX_DIR}/include/libbson-1.0")
 set_and_check (BSON_LIBRARY_DIRS "${PACKAGE_PREFIX_DIR}/lib")
-add_definitions (-DBSON_STATIC)
+set (BSON_DEFINITIONS BSON_STATIC)
