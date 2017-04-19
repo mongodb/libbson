@@ -1538,6 +1538,71 @@ test_bson_json_nan (void)
    }
 }
 
+static void
+test_bson_json_infinity (void)
+{
+   bson_error_t error;
+   bson_t b;
+   double d;
+
+   /* should parse any capitalization of Infinity */
+   const char *infs[] = {"{ \"d\": Infinity }",
+                         "{ \"d\": infinity }",
+                         "{ \"d\": inFINIty }",
+                          NULL};
+
+   const char *negs[] = {"{ \"d\": -Infinity }",
+                         "{ \"d\": -infinity }",
+                         "{ \"d\": -inFINIty }",
+                          NULL};
+
+   const char *bad[] = {"{ \"d\": Infinityy }",
+                        "{ \"d\": Infinit }",
+                        "{ \"d\": -Infinityy }",
+                        "{ \"d\": -Infinit }",
+                        "{ \"d\": infinityy }",
+                        "{ \"d\": infinit }",
+                        "{ \"d\": -infinityy }",
+                        "{ \"d\": -infinit }",
+                        NULL};
+
+   const char *partial[] = {"{ \"d\": In", "{ \"d\": I", "{ \"d\": i", NULL};
+   const char **j;
+
+   for (j = infs; *j; j++) {
+      BSON_ASSERT (bson_init_from_json (&b, *j, -1, &error));
+      BSON_ASSERT (BCON_EXTRACT (&b, "d", BCONE_DOUBLE (d)));
+      /* Infinite */
+      BSON_ASSERT (d == d && ((d - d) != (d - d)));
+      bson_destroy (&b);
+   }
+
+   for (j = negs; *j; j++) {
+      BSON_ASSERT (bson_init_from_json (&b, *j, -1, &error));
+      BSON_ASSERT (BCON_EXTRACT (&b, "d", BCONE_DOUBLE (d)));
+      /* Infinite */
+      BSON_ASSERT (d == d && ((d - d) != (d - d)));
+      BSON_ASSERT (d < 0);
+      bson_destroy (&b);
+   }
+
+   for (j = bad; *j; j++) {
+      BSON_ASSERT (!bson_init_from_json (&b, *j, -1, &error));
+      ASSERT_ERROR_CONTAINS (error,
+                             BSON_ERROR_JSON,
+                             BSON_JSON_ERROR_READ_CORRUPT_JS,
+                             "Got parse error at");
+   }
+
+   for (j = partial; *j; j++) {
+      BSON_ASSERT (!bson_init_from_json (&b, *j, -1, &error));
+      ASSERT_ERROR_CONTAINS (error,
+                             BSON_ERROR_JSON,
+                             BSON_JSON_ERROR_READ_CORRUPT_JS,
+                             "Incomplete JSON");
+   }
+}
+
 
 static void
 test_bson_json_null (void)
@@ -2002,6 +2067,8 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (
       suite, "/bson/json/read/double/overflow", test_bson_json_double_overflow);
    TestSuite_Add (suite, "/bson/json/read/double/nan", test_bson_json_nan);
+   TestSuite_Add (
+      suite, "/bson/json/read/double/infinity", test_bson_json_infinity);
    TestSuite_Add (suite, "/bson/json/read/null", test_bson_json_null);
    TestSuite_Add (
       suite, "/bson/json/read/empty_final", test_bson_json_empty_final_object);

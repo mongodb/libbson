@@ -6,7 +6,6 @@
 #include "jsonsl.h"
 #include "bson-memory.h"
 
-#include <assert.h>
 #include <limits.h>
 #include <ctype.h>
 
@@ -104,9 +103,9 @@ JSONSL_API
 jsonsl_t jsonsl_new(int nlevels)
 {
     unsigned int ii;
-    struct jsonsl_st *jsn;
-
-    if (nlevels < 0) {
+    struct jsonsl_st * jsn;
+    
+    if (nlevels < 2) {
         return NULL;
     }
 
@@ -290,6 +289,11 @@ jsonsl_feed(jsonsl_t jsn, const jsonsl_char_t *bytes, size_t nbytes)
             INVOKE_ERROR(SPECIAL_EXPECTED); \
         }
 
+#define VERIFY_SPECIAL_CI(lit) \
+        if (tolower(CUR_CHAR) != (lit)[jsn->pos - state->pos_begin]) { \
+            INVOKE_ERROR(SPECIAL_EXPECTED); \
+        }
+
 #define STATE_SPECIAL_LENGTH \
     (state)->nescapes
 
@@ -353,6 +357,14 @@ jsonsl_feed(jsonsl_t jsn, const jsonsl_char_t *bytes, size_t nbytes)
                     goto GT_SPECIAL_NUMERIC;
                 }
             } else if (state->special_flags == JSONSL_SPECIALf_DASH) {
+#ifdef JSONSL_PARSE_NAN
+                if (CUR_CHAR == 'I' || CUR_CHAR == 'i') {
+                    /* parsing -Infinity? */
+                    state->special_flags = JSONSL_SPECIALf_NEG_INF;
+                    CONTINUE_NEXT_CHAR();
+                }
+#endif
+
                 if (!isdigit(CUR_CHAR)) {
                     INVOKE_ERROR(INVALID_NUMBER);
                 }
@@ -381,7 +393,8 @@ jsonsl_feed(jsonsl_t jsn, const jsonsl_char_t *bytes, size_t nbytes)
                 goto GT_SPECIAL_NUMERIC;
             }
 
-            if (state->special_flags & JSONSL_SPECIALf_NUMERIC) {
+            if ((state->special_flags & JSONSL_SPECIALf_NUMERIC) &&
+                    !(state->special_flags & JSONSL_SPECIALf_INF)) {
                 GT_SPECIAL_NUMERIC:
                 switch (CUR_CHAR) {
                 CASE_DIGITS
@@ -433,11 +446,12 @@ jsonsl_feed(jsonsl_t jsn, const jsonsl_char_t *bytes, size_t nbytes)
                 } else if (state->special_flags == JSONSL_SPECIALf_NULL) {
                     VERIFY_SPECIAL("null");
 #ifdef JSONSL_PARSE_NAN
+                } else if (state->special_flags == JSONSL_SPECIALf_POS_INF) {
+                    VERIFY_SPECIAL_CI("infinity");
+                } else if (state->special_flags == JSONSL_SPECIALf_NEG_INF) {
+                    VERIFY_SPECIAL_CI("-infinity");
                 } else if (state->special_flags == JSONSL_SPECIALf_NAN) {
-                    /* like VERIFY_SPECIAL but case-insensitive */
-                    if (tolower(CUR_CHAR) != "nan"[jsn->pos - state->pos_begin]) {
-                        INVOKE_ERROR(SPECIAL_EXPECTED);
-                    }
+                    VERIFY_SPECIAL_CI("nan");
                 } else if (state->special_flags & JSONSL_SPECIALf_NULL ||
                            state->special_flags & JSONSL_SPECIALf_NAN) {
                    /* previous char was "n", are we parsing null or nan? */
@@ -465,6 +479,11 @@ jsonsl_feed(jsonsl_t jsn, const jsonsl_char_t *bytes, size_t nbytes)
             } else if (state->special_flags == JSONSL_SPECIALf_DASH) {
                 /* Still in dash! */
                 INVOKE_ERROR(INVALID_NUMBER);
+            } else if (state->special_flags & JSONSL_SPECIALf_INF) {
+                if (STATE_SPECIAL_LENGTH != 8) {
+                    INVOKE_ERROR(SPECIAL_INCOMPLETE);
+                }
+                state->nelem = 1;
             } else if (state->special_flags & JSONSL_SPECIALf_NUMERIC) {
                 /* Check that we're not at the end of a token */
                 if (STATE_NUM_LAST != '1') {
@@ -1447,11 +1466,15 @@ static unsigned short Special_Table[0x100] = {
         /* 0x37 */ JSONSL_SPECIALf_UNSIGNED /* <7> */, /* 0x37 */
         /* 0x38 */ JSONSL_SPECIALf_UNSIGNED /* <8> */, /* 0x38 */
         /* 0x39 */ JSONSL_SPECIALf_UNSIGNED /* <9> */, /* 0x39 */
-        /* 0x3a */ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 0x4d */
+        /* 0x3a */ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 0x48 */
+        /* 0x49 */ JSONSL__INF_PROXY /* <I> */, /* 0x49 */
+        /* 0x4a */ 0,0,0,0, /* 0x4d */
         /* 0x4e */ JSONSL__NAN_PROXY /* <N> */, /* 0x4e */
         /* 0x4f */ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 0x65 */
         /* 0x66 */ JSONSL_SPECIALf_FALSE /* <f> */, /* 0x66 */
-        /* 0x67 */ 0,0,0,0,0,0,0, /* 0x6d */
+        /* 0x67 */ 0,0, /* 0x68 */
+        /* 0x69 */ JSONSL__INF_PROXY /* <i> */, /* 0x69 */
+        /* 0x6a */ 0,0,0,0, /* 0x6d */
         /* 0x6e */ JSONSL_SPECIALf_NULL|JSONSL__NAN_PROXY /* <n> */, /* 0x6e */
         /* 0x6f */ 0,0,0,0,0, /* 0x73 */
         /* 0x74 */ JSONSL_SPECIALf_TRUE /* <t> */, /* 0x74 */

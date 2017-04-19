@@ -33,6 +33,9 @@
 #include <share.h>
 #endif
 
+#ifndef _MSC_VER
+#include <strings.h>
+#endif
 
 #define STACK_MAX 100
 #define BSON_JSON_DEFAULT_BUF_SIZE (1 << 14)
@@ -553,28 +556,60 @@ _bson_json_parse_double (bson_json_reader_t *reader,
                          size_t vlen,
                          double *d)
 {
+   errno = 0;
    *d = strtod (val, NULL);
 
 #ifdef _MSC_VER
-   /* Microsoft's strtod parses "NaN" as 0 */
-   if (*d == 0.0 && !_strnicmp (val, "nan", vlen)) {
-#ifndef NAN
-      /* Visual Studio 2010 doesn't define NaN at all,
-       * https://msdn.microsoft.com/en-us/library/w22adx1s(v=vs.100).aspx */
-      unsigned long nan[2] = {0xffffffff, 0x7fffffff};
-      *d = *(double *) nan;
-#else
+   /* Microsoft's strtod parses "NaN", "Infinity", "-Infinity" as 0 */
+   if (*d == 0.0) {
+      if (!_strnicmp (val, "nan", vlen)) {
+#ifdef NAN
       *d = NAN;
+#else
+         /* Visual Studio 2010 doesn't define NAN or INFINITY
+          * https://msdn.microsoft.com/en-us/library/w22adx1s(v=vs.100).aspx */
+         unsigned long nan[2] = {0xffffffff, 0x7fffffff};
+         *d = *(double *) nan;
 #endif
+         return true;
+      } else if (!_strnicmp (val, "infinity", vlen)) {
+#ifdef INFINITY
+      *d = INFINITY;
+#else
+         unsigned long inf[2] = {0x00000000, 0x7ff00000};
+         *d = *(double *) inf;
+#endif
+         return true;
+      } else if (!_strnicmp (val, "-infinity", vlen)) {
+#ifdef INFINITY
+      *d = -INFINITY;
+#else
+         unsigned long inf[2] = {0x00000000, 0xfff00000};
+         *d = *(double *) inf;
+#endif
+         return true;
+      }
    }
-#endif
+
    if ((*d == HUGE_VAL || *d == -HUGE_VAL) && errno == ERANGE) {
       _bson_json_read_set_error (
          reader, "Number \"%.*s\" is out of range", (int) vlen, val);
 
       return false;
    }
+#else
+   /* not MSVC -  set err on overflow, but avoid err for infinity */
+   if ((*d == HUGE_VAL || *d == -HUGE_VAL)
+         && errno == ERANGE
+         && strncasecmp (val, "infinity", vlen)
+         && strncasecmp (val, "-infinity", vlen)) {
+      _bson_json_read_set_error (
+         reader, "Number \"%.*s\" is out of range", (int) vlen, val);
 
+      return false;
+   }
+
+#endif /* _MSC_VER */
    return true;
 }
 

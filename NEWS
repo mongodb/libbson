@@ -2,6 +2,8 @@ Next release
 ============
 
   * New function bson_strcasecmp, a portable equivalent of strcasecmp.
+  * The non-numbers NaN, Infinity, and -Infinity are now recognized (regardless
+    of case) when parsing JSON.
 
 Libbson-1.6.0
 =============

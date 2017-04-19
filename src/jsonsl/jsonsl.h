@@ -33,8 +33,10 @@ typedef unsigned char jsonsl_uchar_t;
 
 #ifdef JSONSL_PARSE_NAN
 #define JSONSL__NAN_PROXY JSONSL_SPECIALf_NAN
+#define JSONSL__INF_PROXY JSONSL_SPECIALf_INF
 #else
 #define JSONSL__NAN_PROXY 0
+#define JSONSL__INF_PROXY 0
 #endif
 
 /* Stolen from http-parser.h, and possibly others */
@@ -150,7 +152,8 @@ typedef enum {
     X(FLOAT,        1<<5) \
     X(EXPONENT,     1<<6) \
     X(NONASCII,     1<<7) \
-    X(NAN,          1<<8)
+    X(NAN,          1<<8) \
+    X(INF,          1<<9)
 typedef enum {
 #define X(o,b) \
     JSONSL_SPECIALf_##o = b,
@@ -164,6 +167,9 @@ typedef enum {
     JSONSL_SPECIALf_ZERO    = 1 << 9 | JSONSL_SPECIALf_UNSIGNED,
     /** @private */
     JSONSL_SPECIALf_DASH    = 1 << 10,
+    /** @private */
+    JSONSL_SPECIALf_POS_INF = (JSONSL_SPECIALf_INF),
+    JSONSL_SPECIALf_NEG_INF = (JSONSL_SPECIALf_INF|JSONSL_SPECIALf_SIGNED),
 
     /** Type is numeric */
     JSONSL_SPECIALf_NUMERIC = (JSONSL_SPECIALf_SIGNED| JSONSL_SPECIALf_UNSIGNED),
@@ -173,7 +179,8 @@ typedef enum {
 
     /** Type is an "extended", not integral type (but numeric) */
    JSONSL_SPECIALf_NUMNOINT =
-       (JSONSL_SPECIALf_FLOAT|JSONSL_SPECIALf_EXPONENT|JSONSL_SPECIALf_NAN)
+       (JSONSL_SPECIALf_FLOAT|JSONSL_SPECIALf_EXPONENT|JSONSL_SPECIALf_NAN
+        |JSONSL_SPECIALf_INF)
 } jsonsl_special_t;
 
 
