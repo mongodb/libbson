@@ -17,12 +17,6 @@ set (BSON_MINOR_VERSION @BSON_MINOR_VERSION@)
 set (BSON_MICRO_VERSION @BSON_MICRO_VERSION@)
 set (BSON_VERSION @BSON_VERSION@)
 
-if (MSVC)
-   set (BSON_LIBRARIES bson-static-1.0 ws2_32)
-else ()
-   set (BSON_LIBRARIES bson-static-1.0 pthread m)
-endif ()
-
 # In a pure-CMake project this is inserted by configure_package_config_file(),
 # but we want to be able to build this file the same from the Autotools, so
 # let's manually insert this code.
@@ -36,5 +30,17 @@ macro(set_and_check _var _file)
 endmacro()
 
 set_and_check (BSON_INCLUDE_DIRS "${PACKAGE_PREFIX_DIR}/include/libbson-1.0")
-set_and_check (BSON_LIBRARY_DIRS "${PACKAGE_PREFIX_DIR}/lib")
+
+# We want to provide an absolute path to the library and we know the
+# directory and the base name, but not the suffix, so we use CMake's
+# find_library() to pick that up.
+find_library(BSON_LIBRARY_PATH bson-static-1.0 PATHS "${PACKAGE_PREFIX_DIR}/lib" NO_DEFAULT_PATH)
+set (BSON_LIBRARIES ${BSON_LIBRARY_PATH})
+
+if (MSVC)
+    set (BSON_LIBRARIES ${BSON_LIBRARIES} ws2_32)
+else ()
+    set (BSON_LIBRARIES ${BSON_LIBRARIES} pthread m)
+endif ()
+
 set (BSON_DEFINITIONS BSON_STATIC)
