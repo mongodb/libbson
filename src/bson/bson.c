@@ -2471,7 +2471,7 @@ _bson_as_extended_json_visit_int32 (const bson_iter_t *iter,
    bson_json_state_t *state = data;
 
    bson_string_append_printf (
-      state->str, "{ \"$numberInt\" : \"%" PRId32 "\" }", v_int32);
+      state->str, "{\"$numberInt\":\"%" PRId32 "\"}", v_int32);
 
    return false;
 }
@@ -2500,7 +2500,7 @@ _bson_as_extended_json_visit_int64 (const bson_iter_t *iter,
    bson_json_state_t *state = data;
 
    bson_string_append_printf (
-      state->str, "{ \"$numberLong\" : \"%" PRId64 "\"}", v_int64);
+      state->str, "{\"$numberLong\":\"%" PRId64 "\"}", v_int64);
 
    return false;
 }
@@ -2530,9 +2530,9 @@ _bson_as_json_visit_decimal128 (const bson_iter_t *iter,
    char decimal128_string[BSON_DECIMAL128_STRING];
    bson_decimal128_to_string (value, decimal128_string);
 
-   bson_string_append (state->str, "{ \"$numberDecimal\" : \"");
+   bson_string_append (state->str, "{\"$numberDecimal\":\"");
    bson_string_append (state->str, decimal128_string);
-   bson_string_append (state->str, "\" }");
+   bson_string_append (state->str, "\"}");
 
    return false;
 }
@@ -2550,7 +2550,7 @@ _bson_as_json_visit_double_common (const bson_iter_t *iter,
    uint32_t start_len;
 
    if (!legacy) {
-      bson_string_append (state->str, "{ \"$numberDouble\" : \"");
+      bson_string_append (state->str, "{\"$numberDouble\":\"");
    }
 
    /* portable: some old platforms have no isinf or isnan */
@@ -2574,7 +2574,7 @@ _bson_as_json_visit_double_common (const bson_iter_t *iter,
    }
 
    if (!legacy) {
-      bson_string_append (state->str, "\" }");
+      bson_string_append (state->str, "\"}");
    }
 
    return false;
@@ -2610,7 +2610,7 @@ _bson_as_json_visit_undefined (const bson_iter_t *iter,
 {
    bson_json_state_t *state = data;
 
-   bson_string_append (state->str, "{ \"$undefined\" : true }");
+   bson_string_append (state->str, "{\"$undefined\":true}");
 
    return false;
 }
@@ -2637,9 +2637,9 @@ _bson_as_json_visit_oid (const bson_iter_t *iter,
    char str[25];
 
    bson_oid_to_string (oid, str);
-   bson_string_append (state->str, "{ \"$oid\" : \"");
+   bson_string_append (state->str, "{\"$oid\":\"");
    bson_string_append (state->str, str);
-   bson_string_append (state->str, "\" }");
+   bson_string_append (state->str, "\"}");
 
    return false;
 }
@@ -2661,11 +2661,11 @@ _bson_as_json_visit_binary (const bson_iter_t *iter,
    b64 = bson_malloc0 (b64_len);
    b64_ntop (v_binary, v_binary_len, b64, b64_len);
 
-   bson_string_append (state->str, "{ \"$binary\" : \"");
+   bson_string_append (state->str, "{\"$binary\":\"");
    bson_string_append (state->str, b64);
-   bson_string_append (state->str, "\", \"$type\" : \"");
+   bson_string_append (state->str, "\", \"$type\":\"");
    bson_string_append_printf (state->str, "%02x", v_subtype);
-   bson_string_append (state->str, "\" }");
+   bson_string_append (state->str, "\"}");
    bson_free (b64);
 
    return false;
@@ -2680,7 +2680,7 @@ _bson_as_json_visit_bool (const bson_iter_t *iter,
 {
    bson_json_state_t *state = data;
 
-   bson_string_append (state->str, v_bool ? "true" : "false");
+   bson_string_append (state->str, v_bool ? "true":"false");
 
    return false;
 }
@@ -2694,9 +2694,9 @@ _bson_as_extended_json_visit_date_time (const bson_iter_t *iter,
 {
    bson_json_state_t *state = data;
 
-   bson_string_append (state->str, "{ \"$date\" : { \"$numberLong\" : \"");
+   bson_string_append (state->str, "{\"$date\":{\"$numberLong\":\"");
    bson_string_append_printf (state->str, "%" PRId64, msec_since_epoch);
-   bson_string_append (state->str, "\" } }");
+   bson_string_append (state->str, "\"}}");
 
    return false;
 }
@@ -2710,9 +2710,9 @@ _bson_as_json_visit_date_time (const bson_iter_t *iter,
 {
    bson_json_state_t *state = data;
 
-   bson_string_append (state->str, "{ \"$date\" : ");
+   bson_string_append (state->str, "{\"$date\":");
    bson_string_append_printf (state->str, "%" PRId64, msec_since_epoch);
-   bson_string_append (state->str, " }");
+   bson_string_append (state->str, "}");
 
    return false;
 }
@@ -2728,9 +2728,9 @@ _bson_as_json_visit_regex (const bson_iter_t *iter,
    bson_json_state_t *state = data;
    const char *c;
 
-   bson_string_append (state->str, "{ \"$regex\" : \"");
+   bson_string_append (state->str, "{\"$regex\":\"");
    bson_string_append (state->str, v_regex);
-   bson_string_append (state->str, "\", \"$options\" : \"");
+   bson_string_append (state->str, "\", \"$options\":\"");
 
    /* sort the options */
    for (c = "ilmsux"; *c; c++) {
@@ -2739,7 +2739,7 @@ _bson_as_json_visit_regex (const bson_iter_t *iter,
       }
    }
 
-   bson_string_append (state->str, "\" }");
+   bson_string_append (state->str, "\"}");
 
    return false;
 }
@@ -2755,7 +2755,7 @@ _bson_as_extended_json_visit_timestamp (const bson_iter_t *iter,
    bson_json_state_t *state = data;
 
    bson_string_append_printf (state->str,
-                              "{ \"$timestamp\" : \"%" PRIu64 "\" }",
+                              "{\"$timestamp\":\"%" PRIu64 "\"}",
                               _int64_timestamp (v_timestamp, v_increment));
 
    return false;
@@ -2771,11 +2771,11 @@ _bson_as_json_visit_timestamp (const bson_iter_t *iter,
 {
    bson_json_state_t *state = data;
 
-   bson_string_append (state->str, "{ \"$timestamp\" : { \"t\" : ");
+   bson_string_append (state->str, "{\"$timestamp\":{\"t\":");
    bson_string_append_printf (state->str, "%u", v_timestamp);
-   bson_string_append (state->str, ", \"i\" : ");
+   bson_string_append (state->str, ", \"i\":");
    bson_string_append_printf (state->str, "%u", v_increment);
-   bson_string_append (state->str, " } }");
+   bson_string_append (state->str, "}}");
 
    return false;
 }
@@ -2792,18 +2792,18 @@ _bson_as_extended_json_visit_dbpointer (const bson_iter_t *iter,
    bson_json_state_t *state = data;
    char str[25];
 
-   bson_string_append (state->str, "{ \"$dbPointer\" : { \"$ref\" : \"");
+   bson_string_append (state->str, "{\"$dbPointer\":{\"$ref\":\"");
    bson_string_append (state->str, v_collection);
    bson_string_append (state->str, "\"");
 
    if (v_oid) {
       bson_oid_to_string (v_oid, str);
-      bson_string_append (state->str, ", \"$id\" : { \"$oid\" : \"");
+      bson_string_append (state->str, ", \"$id\":{\"$oid\":\"");
       bson_string_append (state->str, str);
-      bson_string_append (state->str, "\" }");
+      bson_string_append (state->str, "\"}");
    }
 
-   bson_string_append (state->str, " } }");
+   bson_string_append (state->str, "}}");
 
    return false;
 }
@@ -2819,18 +2819,18 @@ _bson_as_json_visit_dbpointer (const bson_iter_t *iter,
    bson_json_state_t *state = data;
    char str[25];
 
-   bson_string_append (state->str, "{ \"$ref\" : \"");
+   bson_string_append (state->str, "{\"$ref\":\"");
    bson_string_append (state->str, v_collection);
    bson_string_append (state->str, "\"");
 
    if (v_oid) {
       bson_oid_to_string (v_oid, str);
-      bson_string_append (state->str, ", \"$id\" : \"");
+      bson_string_append (state->str, ", \"$id\":\"");
       bson_string_append (state->str, str);
       bson_string_append (state->str, "\"");
    }
 
-   bson_string_append (state->str, " }");
+   bson_string_append (state->str, "}");
 
    return false;
 }
@@ -2843,7 +2843,7 @@ _bson_as_json_visit_minkey (const bson_iter_t *iter,
 {
    bson_json_state_t *state = data;
 
-   bson_string_append (state->str, "{ \"$minKey\" : 1 }");
+   bson_string_append (state->str, "{\"$minKey\":1}");
 
    return false;
 }
@@ -2856,7 +2856,7 @@ _bson_as_json_visit_maxkey (const bson_iter_t *iter,
 {
    bson_json_state_t *state = data;
 
-   bson_string_append (state->str, "{ \"$maxKey\" : 1 }");
+   bson_string_append (state->str, "{\"$maxKey\":1}");
 
    return false;
 }
@@ -2879,7 +2879,7 @@ _bson_as_json_visit_before (const bson_iter_t *iter,
       if (escaped) {
          bson_string_append (state->str, "\"");
          bson_string_append (state->str, escaped);
-         bson_string_append (state->str, "\" : ");
+         bson_string_append (state->str, "\":");
          bson_free (escaped);
       } else {
          return true;
@@ -2912,9 +2912,9 @@ _bson_as_json_visit_code (const bson_iter_t *iter,
    escaped = bson_utf8_escape_for_json (v_code, v_code_len);
 
    if (escaped) {
-      bson_string_append (state->str, "{ \"$code\" : \"");
+      bson_string_append (state->str, "{\"$code\":\"");
       bson_string_append (state->str, escaped);
-      bson_string_append (state->str, "\" }");
+      bson_string_append (state->str, "\"}");
       bson_free (escaped);
       return false;
    }
@@ -2932,9 +2932,9 @@ _bson_as_extended_json_visit_symbol (const bson_iter_t *iter,
 {
    bson_json_state_t *state = data;
 
-   bson_string_append (state->str, "{ \"$symbol\" : \"");
+   bson_string_append (state->str, "{\"$symbol\":\"");
    bson_string_append (state->str, v_symbol);
-   bson_string_append (state->str, "\" }");
+   bson_string_append (state->str, "\"}");
 
    return false;
 }
@@ -2986,11 +2986,11 @@ _bson_as_json_visit_codewscope_common (const bson_iter_t *iter,
       return true;
    }
 
-   bson_string_append (state->str, "{ \"$code\" : \"");
+   bson_string_append (state->str, "{\"$code\":\"");
    bson_string_append (state->str, code_escaped);
-   bson_string_append (state->str, "\", \"$scope\" : ");
+   bson_string_append (state->str, "\", \"$scope\":");
    bson_string_append (state->str, scope);
-   bson_string_append (state->str, " }");
+   bson_string_append (state->str, "}");
 
    bson_free (code_escaped);
    bson_free (scope);
@@ -3096,18 +3096,18 @@ _bson_as_json_visit_document_with_visitors (const bson_iter_t *iter,
    bson_iter_t child;
 
    if (state->depth >= BSON_MAX_RECURSION) {
-      bson_string_append (state->str, "{ ... }");
+      bson_string_append (state->str, "{...}");
       return false;
    }
 
    if (bson_iter_init (&child, v_document)) {
-      child_state.str = bson_string_new ("{ ");
+      child_state.str = bson_string_new ("{");
       child_state.depth = state->depth + 1;
       if (bson_iter_visit_all (&child, visitor, &child_state)) {
          return true;
       }
 
-      bson_string_append (child_state.str, " }");
+      bson_string_append (child_state.str, "}");
       bson_string_append (state->str, child_state.str->str);
       bson_string_free (child_state.str, true);
    }
@@ -3150,18 +3150,18 @@ _bson_as_json_visit_array_with_visitors (const bson_iter_t *iter,
    bson_iter_t child;
 
    if (state->depth >= BSON_MAX_RECURSION) {
-      bson_string_append (state->str, "{ ... }");
+      bson_string_append (state->str, "{...}");
       return false;
    }
 
    if (bson_iter_init (&child, v_array)) {
-      child_state.str = bson_string_new ("[ ");
+      child_state.str = bson_string_new ("[");
       child_state.depth = state->depth + 1;
       if (bson_iter_visit_all (&child, visitor, &child_state)) {
          return true;
       }
 
-      bson_string_append (child_state.str, " ]");
+      bson_string_append (child_state.str, "]");
       bson_string_append (state->str, child_state.str->str);
       bson_string_free (child_state.str, true);
    }
@@ -3212,7 +3212,7 @@ _bson_as_json_visit_all (const bson_t *bson,
          *length = 3;
       }
 
-      return bson_strdup ("{ }");
+      return bson_strdup ("{}");
    }
 
    if (!bson_iter_init (&iter, bson)) {
@@ -3221,7 +3221,7 @@ _bson_as_json_visit_all (const bson_t *bson,
 
    state.count = 0;
    state.keys = true;
-   state.str = bson_string_new ("{ ");
+   state.str = bson_string_new ("{");
    state.depth = 0;
    state.err_offset = &err_offset;
 
@@ -3236,7 +3236,7 @@ _bson_as_json_visit_all (const bson_t *bson,
       return NULL;
    }
 
-   bson_string_append (state.str, " }");
+   bson_string_append (state.str, "}");
 
    if (length) {
       *length = state.str->len;
@@ -3279,7 +3279,7 @@ bson_array_as_json (const bson_t *bson, size_t *length)
          *length = 3;
       }
 
-      return bson_strdup ("[ ]");
+      return bson_strdup ("[]");
    }
 
    if (!bson_iter_init (&iter, bson)) {
@@ -3288,7 +3288,7 @@ bson_array_as_json (const bson_t *bson, size_t *length)
 
    state.count = 0;
    state.keys = false;
-   state.str = bson_string_new ("[ ");
+   state.str = bson_string_new ("[");
    state.depth = 0;
    state.err_offset = &err_offset;
    bson_iter_visit_all (&iter, &bson_as_json_visitors, &state);
@@ -3305,7 +3305,7 @@ bson_array_as_json (const bson_t *bson, size_t *length)
       return NULL;
    }
 
-   bson_string_append (state.str, " ]");
+   bson_string_append (state.str, "]");
 
    if (length) {
       *length = state.str->len;
