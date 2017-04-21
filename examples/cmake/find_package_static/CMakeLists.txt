@@ -30,8 +30,8 @@ project (hello_bson LANGUAGES C)
 # Specify the minimum version you require.
 find_package (libbson-static-1.0 1.7 REQUIRED)
 
-link_directories (${BSON_LIBRARY_DIRS})
 # The "hello_bson.c" sample program is shared among four tests.
 add_executable (hello_bson ../../hello_bson.c)
 target_include_directories (hello_bson PRIVATE ${BSON_INCLUDE_DIRS})
 target_link_libraries (hello_bson PRIVATE ${BSON_LIBRARIES})
+target_compile_definitions (hello_bson PRIVATE ${BSON_DEFINITIONS})
