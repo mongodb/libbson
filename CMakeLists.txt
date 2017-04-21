@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project (libbson)
+project (libbson C)
 
 option(ENABLE_TESTS "Build libbson tests." ON)
 option(ENABLE_EXAMPLES "Build libbson examples." OFF)
