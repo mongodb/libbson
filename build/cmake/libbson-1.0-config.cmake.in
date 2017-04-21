@@ -33,6 +33,8 @@ set_and_check (BSON_INCLUDE_DIRS "${PACKAGE_PREFIX_DIR}/include/libbson-1.0")
 
 # We want to provide an absolute path to the library and we know the
 # directory and the base name, but not the suffix, so we use CMake's
-# find_library() to pick that up.
-find_library(BSON_LIBRARY_PATH bson-1.0 PATHS "${PACKAGE_PREFIX_DIR}/lib" NO_DEFAULT_PATH)
-set (BSON_LIBRARIES ${BSON_LIBRARY_PATH})
+# find_library() to pick that up.  Users can override this by configuring
+# BSON_LIBRARY themselves.
+find_library(BSON_LIBRARY bson-1.0 PATHS "${PACKAGE_PREFIX_DIR}/lib" NO_DEFAULT_PATH)
+
+set (BSON_LIBRARIES ${BSON_LIBRARY})
