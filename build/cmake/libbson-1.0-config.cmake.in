@@ -38,3 +38,10 @@ set_and_check (BSON_INCLUDE_DIRS "${PACKAGE_PREFIX_DIR}/include/libbson-1.0")
 find_library(BSON_LIBRARY bson-1.0 PATHS "${PACKAGE_PREFIX_DIR}/lib" NO_DEFAULT_PATH)
 
 set (BSON_LIBRARIES ${BSON_LIBRARY})
+
+if (MSVC)
+    set (BSON_LIBRARIES ${BSON_LIBRARIES} ws2_32)
+else ()
+    find_package (Threads REQUIRED)
+    set (BSON_LIBRARIES ${BSON_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+endif ()
