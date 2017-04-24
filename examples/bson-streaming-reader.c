@@ -100,13 +100,13 @@ bson_streaming_remote_open (const char *hostname, const char *port)
       break;
    }
 
+   freeaddrinfo (server_list);
    if (ptr == NULL) {
       fprintf (stderr,
                "bson-streaming-remote-open: failed to connect to server\n");
       return -1;
    }
 
-   freeaddrinfo (server_list);
    return sock;
 }
 
