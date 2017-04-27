@@ -12,6 +12,10 @@ Synopsis
 
   #include <bson.h>
 
+  #define BSON_DECIMAL128_STRING 43
+  #define BSON_DECIMAL128_INF "Infinity"
+  #define BSON_DECIMAL128_NAN "NaN"
+
   typedef struct {
   #if BSON_BYTE_ORDER == BSON_LITTLE_ENDIAN
      uint64_t low;

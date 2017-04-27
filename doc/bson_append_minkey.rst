@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_MINKEY(b, key) \
+     bson_append_minkey (b, key, (int) strlen (key))
+
   bool
   bson_append_minkey (bson_t *bson, const char *key, int key_length);
 

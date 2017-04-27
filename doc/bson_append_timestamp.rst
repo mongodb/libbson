@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_TIMESTAMP(b, key, val, inc) \
+     bson_append_timestamp (b, key, (int) strlen (key), val, inc)
+
   bool
   bson_append_timestamp (bson_t *bson,
                          const char *key,

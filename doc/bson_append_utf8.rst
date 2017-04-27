@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_UTF8(b, key, val) \
+     bson_append_utf8 (b, key, (int) strlen (key), val, (int) strlen (val))
+
   bool
   bson_append_utf8 (bson_t *bson,
                     const char *key,

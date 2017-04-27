@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_ARRAY(b, key, val) \
+     bson_append_array (b, key, (int) strlen (key), val)
+
   bool
   bson_append_array (bson_t *bson,
                      const char *key,

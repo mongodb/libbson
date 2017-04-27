@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_CODE_WITH_SCOPE(b, key, val, scope) \
+     bson_append_code_with_scope (b, key, (int) strlen (key), val, scope)
+
   bool
   bson_append_code_with_scope (bson_t *bson,
                                const char *key,

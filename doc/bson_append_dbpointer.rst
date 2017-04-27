@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_DBPOINTER(b, key, coll, oid) \
+     bson_append_dbpointer (b, key, (int) strlen (key), coll, oid)
+
   bool
   bson_append_dbpointer (bson_t *bson,
                          const char *key,

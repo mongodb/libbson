@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_DECIMAL128(b, key, val) \
+     bson_append_decimal128 (b, key, (int) strlen (key), val)
+
   bool
   bson_append_decimal128 (bson_t *bson,
                           const char *key,

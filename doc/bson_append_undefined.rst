@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_UNDEFINED(b, key) \
+     bson_append_undefined (b, key, (int) strlen (key))
+
   bool
   bson_append_undefined (bson_t *bson, const char *key, int key_length);
 

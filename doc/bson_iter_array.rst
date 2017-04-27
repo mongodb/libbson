@@ -8,6 +8,8 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_ITER_HOLDS_ARRAY(iter) (bson_iter_type ((iter)) == BSON_TYPE_ARRAY)
+
   void
   bson_iter_array (const bson_iter_t *iter,
                    uint32_t *array_len,

@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_DOCUMENT_BEGIN(b, key, child) \
+     bson_append_document_begin (b, key, (int) strlen (key), child)
+
   bool
   bson_append_document_begin (bson_t *bson,
                               const char *key,

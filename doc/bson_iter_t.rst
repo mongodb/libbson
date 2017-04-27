@@ -12,6 +12,57 @@ Synopsis
 
   #include <bson.h>
 
+  #define BSON_ITER_HOLDS_DOUBLE(iter) /* ... */
+
+  #define BSON_ITER_HOLDS_UTF8(iter) /* ... */
+
+  #define BSON_ITER_HOLDS_DOCUMENT(iter) /* ... */
+
+  #define BSON_ITER_HOLDS_ARRAY(iter) /* ... */
+
+  #define BSON_ITER_HOLDS_BINARY(iter) /* ... */
+
+  #define BSON_ITER_HOLDS_UNDEFINED(iter) /* ... */
+
+  #define BSON_ITER_HOLDS_OID(iter) /* ... */
+
+  #define BSON_ITER_HOLDS_BOOL(iter) /* ... */
+
+  #define BSON_ITER_HOLDS_DATE_TIME(iter) /* ... */
+
+  #define BSON_ITER_HOLDS_NULL(iter) /* ... */
+
+  #define BSON_ITER_HOLDS_REGEX(iter) /* ... */
+
+  #define BSON_ITER_HOLDS_DBPOINTER(iter) /* ... */
+
+  #define BSON_ITER_HOLDS_CODE(iter) /* ... */
+
+  #define BSON_ITER_HOLDS_SYMBOL(iter) /* ... */
+
+  #define BSON_ITER_HOLDS_CODEWSCOPE(iter) /* ... */
+
+  #define BSON_ITER_HOLDS_INT32(iter) /* ... */
+
+  #define BSON_ITER_HOLDS_TIMESTAMP(iter) /* ... */
+
+  #define BSON_ITER_HOLDS_INT64(iter) /* ... */
+
+  #define BSON_ITER_HOLDS_DECIMAL128(iter) /* ... */
+
+  #define BSON_ITER_HOLDS_MAXKEY(iter) /* ... */
+
+  #define BSON_ITER_HOLDS_MINKEY(iter) /* ... */
+
+  #define BSON_ITER_HOLDS_INT(iter) \
+     (BSON_ITER_HOLDS_INT32 (iter) || BSON_ITER_HOLDS_INT64 (iter))
+
+  #define BSON_ITER_HOLDS_NUMBER(iter) \
+     (BSON_ITER_HOLDS_INT (iter) || BSON_ITER_HOLDS_DOUBLE (iter))
+
+  #define BSON_ITER_IS_KEY(iter, key) \
+     (0 == strcmp ((key), bson_iter_key ((iter))))
+
   typedef struct {
      /*< private >*/
   } bson_iter_t;

@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_DOCUMENT(b, key, val) \
+     bson_append_document (b, key, (int) strlen (key), val)
+
   bool
   bson_append_document (bson_t *bson,
                         const char *key,

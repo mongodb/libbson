@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_CODE(b, key, val) \
+     bson_append_code (b, key, (int) strlen (key), val)
+
   bool
   bson_append_code (bson_t *bson,
                     const char *key,

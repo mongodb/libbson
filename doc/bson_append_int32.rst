@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_INT32(b, key, val) \
+     bson_append_int32 (b, key, (int) strlen (key), val)
+
   bool
   bson_append_int32 (bson_t *bson,
                      const char *key,

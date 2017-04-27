@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_SYMBOL(b, key, val) \
+     bson_append_symbol (b, key, (int) strlen (key), val, (int) strlen (val))
+
   bool
   bson_append_symbol (bson_t *bson,
                       const char *key,

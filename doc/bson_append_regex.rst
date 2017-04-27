@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_REGEX(b, key, val, opt) \
+     bson_append_regex (b, key, (int) strlen (key), val, opt)
+
   bool
   bson_append_regex (bson_t *bson,
                      const char *key,

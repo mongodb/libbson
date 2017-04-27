@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_TIME_T(b, key, val) \
+     bson_append_time_t (b, key, (int) strlen (key), val)
+
   bool
   bson_append_time_t (bson_t *bson,
                       const char *key,

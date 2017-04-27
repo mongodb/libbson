@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_DOUBLE(b, key, val) \
+     bson_append_double (b, key, (int) strlen (key), val)
+
   bool
   bson_append_double (bson_t *bson,
                       const char *key,

@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_MAXKEY(b, key) \
+     bson_append_maxkey (b, key, (int) strlen (key))
+
   bool
   bson_append_maxkey (bson_t *bson, const char *key, int key_length);
 

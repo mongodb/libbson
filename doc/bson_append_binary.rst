@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_BINARY(b, key, subtype, val, len) \
+     bson_append_binary (b, key, (int) strlen (key), subtype, val, len)
+
   bool
   bson_append_binary (bson_t *bson,
                       const char *key,

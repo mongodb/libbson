@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_OID(b, key, val) \
+     bson_append_oid (b, key, (int) strlen (key), val)
+
   bool
   bson_append_oid (bson_t *bson,
                    const char *key,
