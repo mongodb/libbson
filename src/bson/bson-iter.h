@@ -87,6 +87,12 @@ BSON_BEGIN_DECLS
 #define BSON_ITER_HOLDS_MINKEY(iter) \
    (bson_iter_type ((iter)) == BSON_TYPE_MINKEY)
 
+#define BSON_ITER_HOLDS_INT(iter) \
+   (BSON_ITER_HOLDS_INT32 (iter) || BSON_ITER_HOLDS_INT64 (iter))
+
+#define BSON_ITER_HOLDS_NUMBER(iter) \
+   (BSON_ITER_HOLDS_INT (iter) || BSON_ITER_HOLDS_DOUBLE (iter))
+
 #define BSON_ITER_IS_KEY(iter, key) \
    (0 == strcmp ((key), bson_iter_key ((iter))))
 
@@ -196,7 +202,9 @@ BSON_EXPORT (bool)
 bson_iter_init (bson_iter_t *iter, const bson_t *bson);
 
 BSON_EXPORT (bool)
-bson_iter_init_from_data (bson_iter_t *iter, const uint8_t *data, size_t length);
+bson_iter_init_from_data (bson_iter_t *iter,
+                          const uint8_t *data,
+                          size_t length);
 
 
 BSON_EXPORT (bool)
