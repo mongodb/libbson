@@ -34,6 +34,7 @@ The :symbol:`bson_t` *MUST* be valid for the lifetime of the iter and it is an e
 
     bson_iter_array
     bson_iter_as_bool
+    bson_iter_as_double
     bson_iter_as_int64
     bson_iter_binary
     bson_iter_bool
