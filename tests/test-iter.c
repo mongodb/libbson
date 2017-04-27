@@ -365,24 +365,24 @@ test_bson_iter_as_double (void)
    bson_t b;
 
    bson_init (&b);
-   assert (bson_append_double (&b, "key", -1, 1234.1234));
-   assert (bson_iter_init_find (&iter, &b, "key"));
-   assert (BSON_ITER_HOLDS_DOUBLE (&iter));
-   assert_cmpint (bson_iter_as_double (&iter), ==, 1234.1234);
+   ASSERT (bson_append_double (&b, "key", -1, 1234.1234));
+   ASSERT (bson_iter_init_find (&iter, &b, "key"));
+   ASSERT (BSON_ITER_HOLDS_DOUBLE (&iter));
+   ASSERT (bson_iter_as_double (&iter) == 1234.1234);
    bson_destroy (&b);
 
    bson_init (&b);
-   assert (bson_append_int32 (&b, "key", -1, 1234));
-   assert (bson_iter_init_find (&iter, &b, "key"));
-   assert (BSON_ITER_HOLDS_INT32 (&iter));
-   assert_cmpint (bson_iter_as_double (&iter), ==, 1234.0);
+   ASSERT (bson_append_int32 (&b, "key", -1, 1234));
+   ASSERT (bson_iter_init_find (&iter, &b, "key"));
+   ASSERT (BSON_ITER_HOLDS_INT32 (&iter));
+   ASSERT (bson_iter_as_double (&iter) == 1234.0);
    bson_destroy (&b);
 
    bson_init (&b);
-   assert (bson_append_int64 (&b, "key", -1, 4321));
-   assert (bson_iter_init_find (&iter, &b, "key"));
-   assert (BSON_ITER_HOLDS_INT64 (&iter));
-   assert_cmpint (bson_iter_as_double (&iter), ==, 4321.0);
+   ASSERT (bson_append_int64 (&b, "key", -1, 4321));
+   ASSERT (bson_iter_init_find (&iter, &b, "key"));
+   ASSERT (BSON_ITER_HOLDS_INT64 (&iter));
+   ASSERT (bson_iter_as_double (&iter) == 4321.0);
    bson_destroy (&b);
 }
 
