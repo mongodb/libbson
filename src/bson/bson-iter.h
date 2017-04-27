@@ -79,7 +79,7 @@ BSON_BEGIN_DECLS
 #define BSON_ITER_HOLDS_INT64(iter) (bson_iter_type ((iter)) == BSON_TYPE_INT64)
 
 #define BSON_ITER_HOLDS_DECIMAL128(iter) \
-   (bson_iter_type (iter)) == BSON_TYPE_DECIMAL128
+   (bson_iter_type ((iter)) == BSON_TYPE_DECIMAL128)
 
 #define BSON_ITER_HOLDS_MAXKEY(iter) \
    (bson_iter_type ((iter)) == BSON_TYPE_MAXKEY)
