@@ -63,8 +63,10 @@ fi
 
 # Available on our Ubuntu 16.04 images
 [ "$ANALYZE" ] && SCAN_BUILD="scan-build-3.8 -o scan --status-bugs"
+# UndefinedBehaviorSanitizer configuration
+UBSAN_OPTIONS="print_stacktrace=1 abort_on_error=1"
 # AddressSanitizer configuration
-ASAN_OPTIONS="detect_leaks=1"
+ASAN_OPTIONS="detect_leaks=1 abort_on_error=1"
 # LeakSanitizer configuration
 LSAN_OPTIONS="log_pointers=true"
 
@@ -122,7 +124,7 @@ fi
 
 
 CFLAGS="$CFLAGS" CC="$CC" $SCAN_BUILD $CONFIGURE_SCRIPT $CONFIGURE_FLAGS
-$SCAN_BUILD make $TARGET TEST_ARGS="--no-fork -d -F test-results.json"
+$SCAN_BUILD make $TARGET TEST_ARGS="--no-fork -d -F test-results.json" 2>error.log
 
 if [ "$COVERAGE" ]; then
    case "$CC" in

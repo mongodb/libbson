@@ -243,6 +243,20 @@ tasks:
             working_dir: "libbson"
             script: "PATH=/usr/lib/llvm-3.8/bin:$PATH DEBUG=1 CC='clang-3.8' MARCH='${MARCH}' CFLAGS='-fsanitize=address' sh .evergreen/compile.sh"
 
+    - name: debug-compile-sanitizer-undefined
+      commands:
+        - command: shell.exec
+          type: test
+          params:
+            working_dir: "libbson"
+            script: |
+              PATH=/usr/lib/llvm-3.8/bin:$PATH DEBUG=1 CC='clang-3.8' MARCH='${MARCH}' CFLAGS='-fsanitize=undefined' sh .evergreen/compile.sh
+              grep -v "^ar: " error.log > log.log
+              if [ -s log.log ]; then
+                cat log.log
+                exit 2
+              fi
+
     - name: debug-compile-scan-build
       commands:
         - command: shell.exec
@@ -471,6 +485,9 @@ buildvariants:
       distros:
       - ubuntu1604-build
     - name: "debug-compile-sanitizer-address"
+      distros:
+      - ubuntu1604-build
+    - name: "debug-compile-sanitizer-undefined"
       distros:
       - ubuntu1604-build
     - name: "debug-compile-scan-build"
