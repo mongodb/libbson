@@ -39,7 +39,7 @@ find_library(BSON_STATIC_LIBRARY bson-static-1.0 PATHS "${PACKAGE_PREFIX_DIR}/li
 
 set (BSON_STATIC_LIBRARIES ${BSON_STATIC_LIBRARY})
 
-if (MSVC)
+if (WIN32)
     set (BSON_STATIC_LIBRARIES ${BSON_STATIC_LIBRARIES} ws2_32)
 else ()
     find_package (Threads REQUIRED)
