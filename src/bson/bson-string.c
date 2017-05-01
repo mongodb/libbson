@@ -674,7 +674,11 @@ bson_snprintf (char *str,          /* IN */
  *       A portable strtoll.
  *
  *       Convert a string to a 64-bit signed integer according to the given
- *       @base, which must be 16, 10, or 8. Leading whitespace will be ignord.
+ *       @base, which must be 16, 10, or 8. Leading whitespace will be ignored.
+ *
+ *       If base is 0 is passed in, the base is inferred from the string's
+ *       leading characters. Base-16 numbers start with "0x" or "0X", base-8
+ *       numbers start with "0", base-10 numbers start with a digit from 1 to 9.
  *
  *       If @e is not NULL, it will be assigned the address of the first invalid
  *       character of @s, or its null terminating byte if the entire string was

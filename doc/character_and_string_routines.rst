@@ -14,6 +14,7 @@ We provide a small number of character and string routines to substitute for tho
     :titlesonly:
     :maxdepth: 1
 
+    bson_ascii_strtoll
     bson_snprintf
     bson_strcasecmp
     bson_strdup
