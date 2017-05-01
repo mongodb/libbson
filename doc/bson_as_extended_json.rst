@@ -42,4 +42,10 @@ Example
   printf ("%s\n", str);
   bson_free (str);
 
+
+.. only:: html
+
+  .. taglist:: See Also:
+    :tags: bson-as-json
+
 .. _MongoDB Extended JSON format: https://github.com/mongodb/specifications/blob/master/source/extended-json.rst
