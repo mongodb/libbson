@@ -8,6 +8,7 @@ sys.path.append(os.path.dirname(__file__))
 extensions = [
     'mongoc',
     'taglist',
+    'sphinx.ext.extlinks',
 ]
 
 # General information about the project.
@@ -21,6 +22,7 @@ version = open(version_path).read().strip()
 release_path = os.path.join(os.path.dirname(__file__), '..', 'VERSION_RELEASED')
 release = open(release_path).read().strip()
 release_major, release_minor, release_patch = release.split('.')
+release_download = 'https://github.com/mongodb/libbson/releases/download/{0}/libbson-{0}.tar.gz'.format(release)
 rst_prolog = """
 .. |release_major| replace:: %(release_major)s
 
@@ -28,8 +30,11 @@ rst_prolog = """
 
 .. |release_patch| replace:: %(release_patch)s
 
-.. |release_download| replace:: https://github.com/mongodb/mongo-c-driver/releases/download/%(release)s/mongo-c-driver-%(release)s.tar.gz
+.. |release_download| replace:: https://github.com/mongodb/libbson/releases/download/%(release)s/libbson-%(release)s.tar.gz
 """ % locals()
+
+# The extension requires the "base" to contain '%s' exactly once, but we never intend to use it though
+extlinks = {'release': (release_download+'%s', '')}
 
 language = 'en'
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']

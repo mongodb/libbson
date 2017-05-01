@@ -56,7 +56,7 @@ Building from a release tarball
 
 Unless you intend on contributing to libbson, you will want to build from a release tarball.
 
-The most recent release of libbson is |release| and can be `downloaded here <https://github.com/mongodb/libbson/releases/download/|release|/libbson-|release|.tar.gz>`_. The following snippet will download and extract the current release of the driver.
+The most recent release of libbson is |release| and can be :release:`downloaded here <>`. The following snippet will download and extract the current release of the driver.
 
 .. parsed-literal::
 
