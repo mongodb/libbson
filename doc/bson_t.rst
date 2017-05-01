@@ -187,6 +187,7 @@ The :symbol:`bson_t` structure attempts to use an inline allocation within the s
     bson_copy
     bson_copy_to
     bson_copy_to_excluding
+    bson_copy_to_excluding_noinit
     bson_count_keys
     bson_destroy
     bson_destroy_with_steal
