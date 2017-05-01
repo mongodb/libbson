@@ -22,7 +22,7 @@ Windows Vista, 7, and 8  SPARC              `Oracle Solaris Studio 12`_
 FreeBSD                                     MinGW
 =======================  =================  ======================================
 
-.. _Oracle Solaris Studio 12: http://www.oracle.com/technetwork/server-storage/solarisstudio/downloads/index.html
+.. _Oracle Solaris Studio 12: http://www.oracle.com/technetwork/server-storage/developerstudio/downloads/index.html
 
 Install with a Package Manager
 ------------------------------
@@ -147,7 +147,7 @@ Install the XCode Command Line Tools::
 
   $ xcode-select --install
 
-The ``pkg-config`` utility is also required. First `install Homebrew according to its instructions <http://brew.sh/>`_, then::
+The ``pkg-config`` utility is also required. First `install Homebrew according to its instructions <https://brew.sh/>`_, then::
 
   $ brew install pkgconfig
 
