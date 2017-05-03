@@ -305,6 +305,36 @@ install(
   DESTINATION ${BSON_HEADER_INSTALL_DIR}
 )
 
+if (WIN32)
+    set (CONFIG_LIBS ws2_32)
+    set (CONFIG_STATIC_LIBS ${CONFIG_LIBS})
+else ()
+    find_package (Threads REQUIRED)
+    set (CONFIG_LIBS ${CMAKE_THREAD_LIBS_INIT})
+    if (NOT APPLE)
+        set (CONFIG_LIBS ${CONFIG_LIBS} rt)
+    endif ()
+    set (CONFIG_STATIC_LIBS ${CONFIG_LIBS} m)
+endif ()
+
+# pkg-config needs libs joined by spaces not semicolons and must
+# start with "-l" if it's not already a flag
+foreach(FLAG ${CONFIG_LIBS})
+    if ( ${FLAG} MATCHES "^-" )
+        set(pkg_config_libs "${pkg_config_libs} ${FLAG}")
+    else ()
+        set(pkg_config_libs "${pkg_config_libs} -l${FLAG}")
+    endif ()
+endforeach()
+
+foreach(FLAG ${CONFIG_STATIC_LIBS})
+    if ( ${FLAG} MATCHES "^-" )
+        set(pkg_config_static_libs "${pkg_config_static_libs} ${FLAG}")
+    else ()
+        set(pkg_config_static_libs "${pkg_config_static_libs} -l${FLAG}")
+    endif ()
+endforeach()
+
 set(VERSION "${BSON_VERSION}")
 set(prefix "${CMAKE_INSTALL_PREFIX}")
 set(libdir "\${prefix}/lib")

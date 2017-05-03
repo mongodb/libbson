@@ -39,9 +39,6 @@ find_library(BSON_LIBRARY bson-1.0 PATHS "${PACKAGE_PREFIX_DIR}/lib" NO_DEFAULT_
 
 set (BSON_LIBRARIES ${BSON_LIBRARY})
 
-if (WIN32)
-    set (BSON_LIBRARIES ${BSON_LIBRARIES} ws2_32)
-else ()
-    find_package (Threads REQUIRED)
-    set (BSON_LIBRARIES ${BSON_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
-endif ()
+foreach (LIB @CONFIG_LIBS@)
+    list (APPEND BSON_LIBRARIES ${LIB})
+endforeach ()
