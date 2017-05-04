@@ -324,6 +324,8 @@ tasks:
           params:
             working_dir: "libbson"
             script: |
+              set -o xtrace
+              set -o errexit
               # Build libbson with the Autotools or CMake and compile a program
               # that links dynamically or statically to libbson, using
               # variables from CMake's find_package command.
@@ -342,6 +344,8 @@ tasks:
           params:
             working_dir: "libbson"
             script: |
+              set -o xtrace
+              set -o errexit
               # Build libbson with CMake (not Autotools) and compile a program
               # that links dynamically or statically to libbson, using
               # variables from CMake's find_package command.
@@ -358,6 +362,8 @@ tasks:
           params:
             working_dir: "libbson"
             script: |
+              set -o xtrace
+              set -o errexit
               # Build libbson with the Autotools or CMake and compile a program
               # that links dynamically or statically to libbson, using
               # variables from "pkg-config".
