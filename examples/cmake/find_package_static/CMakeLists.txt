@@ -30,6 +30,10 @@ project (hello_bson LANGUAGES C)
 # Specify the minimum version you require.
 find_package (libbson-static-1.0 1.7 REQUIRED)
 
+message ("--   libbson-static found version \"${BSON_STATIC_VERSION}\"")
+message ("--   libbson-static include path \"${BSON_STATIC_INCLUDE_DIRS}\"")
+message ("--   libbson-static libraries \"${BSON_STATIC_LIBRARIES}\"")
+
 # The "hello_bson.c" sample program is shared among four tests.
 add_executable (hello_bson ../../hello_bson.c)
 target_include_directories (hello_bson PRIVATE ${BSON_STATIC_INCLUDE_DIRS})
