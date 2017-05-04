@@ -118,7 +118,7 @@ functions:
         script: |
           set -o xtrace
           rm -f *.tar.gz
-          curl http://s3.amazonaws.com/mciuploads/libbson/${branch_name}/libbson-${CURRENT_VERSION}.tar.gz --output libbson.tar.gz --silent --max-time 120 --fail
+          curl --retry 5 http://s3.amazonaws.com/mciuploads/libbson/${branch_name}/libbson-${CURRENT_VERSION}.tar.gz --output libbson.tar.gz --silent --max-time 120 --fail
 
   "upload release":
     - command: shell.exec
