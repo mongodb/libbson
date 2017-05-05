@@ -35,7 +35,7 @@ Deprecated
   This function is deprecated. Please use
   :symbol:`bson_copy_to_excluding_noinit` in new code.
 
-.. warning:
+.. warning::
 
   :symbol:`bson_init` is called on ``dst``.
 

@@ -55,7 +55,7 @@ Example
 
   bson_string_free (str, true);
 
-.. tip:
+.. tip::
 
   You can call :symbol:`bson_string_free()` with ``false`` if you would like to take ownership of ``str->str``. Some APIs that do this might call ``return bson_string_free (str, false);`` after building the string.
 

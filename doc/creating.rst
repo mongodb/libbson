@@ -8,7 +8,7 @@ The bson_t structure
 
 BSON documents are created using the :symbol:`bson_t` structure. This structure encapsulates the necessary logic for encoding using the `BSON Specification <http://bsonspec.org>`_. At the core, :symbol:`bson_t` is a buffer manager and set of encoding routines.
 
-.. tip:
+.. tip::
 
   BSON documents can live on the stack or the heap based on the performance needs or preference of the consumer.
 

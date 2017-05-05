@@ -8,7 +8,7 @@ Parsing
 
 BSON documents are lazily parsed as necessary. To begin parsing a BSON document, use one of the provided Libbson functions to create a new :symbol:`bson_t` from existing data such as :symbol:`bson_new_from_data()`. This will make a copy of the data so that additional mutations may occur to the BSON document.
 
-.. tip:
+.. tip::
 
   If you only want to parse a BSON document and have no need to mutate it, you may use :symbol:`bson_init_static()` to avoid making a copy of the data.
 

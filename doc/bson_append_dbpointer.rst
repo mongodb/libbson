@@ -30,7 +30,7 @@ Parameters
 Description
 -----------
 
-.. warning:
+.. warning::
 
   The dbpointer field type is *DEPRECATED* and should only be used when interacting with legacy systems.
 

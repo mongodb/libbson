@@ -22,7 +22,7 @@ Description
 
 Generates a new ObjectID using the 64-bit sequence.
 
-.. warning:
+.. warning::
 
   This form of ObjectID is generally used by MongoDB replica peers only.
 

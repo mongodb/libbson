@@ -25,7 +25,7 @@ In general, this function will return an allocation at least ``sizeof(void*)`` b
 
 If there was a failure to allocate ``num_bytes`` bytes, the process will be aborted.
 
-.. warning:
+.. warning::
 
   This function will abort on failure to allocate memory.
 

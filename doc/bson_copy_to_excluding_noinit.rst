@@ -31,7 +31,7 @@ Works the same way as :symbol:`bson_copy_to_excluding`, except does **not** call
 :symbol:`bson_init` on ``dst``.
 This function should be preferred in new code over :symbol:`bson_copy_to_excluding`.
 
-.. warning:
+.. warning::
 
   This is generally not needed except in very special situations.
 
