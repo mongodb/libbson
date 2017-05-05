@@ -33,5 +33,4 @@ The :symbol:`bson_append_date_time()` function shall append a new element to a `
 Returns
 -------
 
-true if the operation was applied successfully, otherwise false and ``bson`` should be discarded.
-
+Returns ``true`` if the operation was applied successfully. The function will fail if appending ``value`` grows ``bson`` larger than INT32_MAX.

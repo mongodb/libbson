@@ -33,5 +33,4 @@ The :symbol:`bson_append_code()` function shall append a new element to ``bson``
 Returns
 -------
 
-true if the operation was applied successfully, otherwise false and ``bson`` should be discarded.
-
+Returns ``true`` if the operation was applied successfully. The function will fail if appending ``javascript`` grows ``bson`` larger than INT32_MAX.

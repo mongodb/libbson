@@ -530,7 +530,7 @@ _bson_append_bson_begin (bson_t *bson,           /* IN */
  *       Complete a call to _bson_append_bson_begin.
  *
  * Returns:
- *       true if successful; otherwise false indicating INT_MAX overflow.
+ *       true if successful.
  *
  * Side effects:
  *       @child is destroyed and no longer valid after calling this
@@ -620,7 +620,7 @@ bson_append_array_begin (bson_t *bson,    /* IN */
  *       function.
  *
  * Returns:
- *       true if successful; otherwise false indicating INT_MAX overflow.
+ *       true if successful.
  *
  * Side effects:
  *       @child is invalid after calling this function.

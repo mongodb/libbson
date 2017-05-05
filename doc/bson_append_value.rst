@@ -33,5 +33,4 @@ Appends a new field to ``bson`` by determining the boxed type in ``value``. This
 Returns
 -------
 
-true if the operation was applied successfully, otherwise false and ``bson`` should be discarded.
-
+Returns ``true`` if the operation was applied successfully. The function will fail if appending the value grows ``bson`` larger than INT32_MAX.

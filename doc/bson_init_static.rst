@@ -28,7 +28,7 @@ The resulting `bson_t` has internal references and therefore must not be copied 
 Returns
 -------
 
-:symbol:`bson_init_static()` will return ``true`` if the :symbol:`bson_t` was successfully initialized.
+Returns ``true`` if :symbol:`bson_t` was successfully initialized, otherwise ``false``. The function can fail if ``data`` or ``length`` are invalid.
 
 .. only:: html
 

@@ -37,7 +37,7 @@ Errors are propagated via the ``error`` parameter.
 Returns
 -------
 
-true if successful, otherwise false and ``error`` is set.
+Returns ``true`` if valid JSON was parsed, otherwise ``false`` and ``error`` is set.
 
 .. only:: html
 

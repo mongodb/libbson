@@ -29,5 +29,4 @@ This should only be called when observing an element of type BSON_TYPE_ARRAY or 
 Returns
 -------
 
-true if ``child`` has been initialized. Otherwise, ``child`` should be considered invalid.
-
+If ``iter`` observes an element of type BSON_TYPE_ARRAY or BSON_TYPE_DOCUMENT, then ``child`` is initialized and the function returns ``true``. Otherwise, the function returns ``false`` and ``child`` is invalid.

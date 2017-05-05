@@ -75,5 +75,5 @@ See also :symbol:`bson_destroy_with_steal`, a lower-level function that returns 
 Returns
 -------
 
-Returns true if ``src`` is valid and successfully moved to ``dst``, false otherwise.
+Returns ``true`` if ``src`` was successfully moved to ``dst``, ``false`` if ``src`` is invalid, or was statically initialized, or another error occurred.
 

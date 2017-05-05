@@ -25,7 +25,7 @@ The :symbol:`bson_concat()` function shall append the contents of ``src`` to ``d
 Returns
 -------
 
-true if the operation was applied successfully, otherwise false and ``dst`` should be discarded.
+Returns ``true`` if successful; ``false`` if the operation would overflow the maximum document size or another invalid state is detected.
 
 .. only:: html
 

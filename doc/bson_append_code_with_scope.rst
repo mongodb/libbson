@@ -37,5 +37,4 @@ If ``scope`` is NULL, this function appends an element with BSON type "code", ot
 Returns
 -------
 
-true if the operation was applied successfully, otherwise false and ``bson`` should be discarded.
-
+Returns ``true`` if the operation was applied successfully. The function will fail if appending ``javascript`` and ``scope`` grows ``bson`` larger than INT32_MAX.

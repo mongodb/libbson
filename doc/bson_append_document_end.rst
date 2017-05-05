@@ -25,5 +25,4 @@ The :symbol:`bson_append_document_end()` function shall complete the appending o
 Returns
 -------
 
-true if the operation was applied successfully, otherwise false and ``bson`` should be discarded.
-
+Returns ``true`` if successful.

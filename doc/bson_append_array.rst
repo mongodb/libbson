@@ -33,5 +33,4 @@ The :symbol:`bson_append_array()` function shall append ``child`` to ``bson`` us
 Returns
 -------
 
-true if the operation was applied successfully, otherwise false and ``bson`` should be discarded.
-
+Returns ``true`` if the operation was applied successfully. The function fails if appending the array grows ``bson`` larger than INT32_MAX.

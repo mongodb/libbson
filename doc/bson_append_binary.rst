@@ -37,5 +37,4 @@ The :symbol:`bson_append_binary()` function shall append a new element to ``bson
 Returns
 -------
 
-true if the operation was applied successfully, otherwise false and ``bson`` should be discarded.
-
+Returns ``true`` if the operation was applied successfully. The function will fail if appending ``binary`` grows ``bson`` larger than INT32_MAX.

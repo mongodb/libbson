@@ -35,5 +35,4 @@ The :symbol:`bson_append_document_begin()` function shall begin appending a sub-
 Returns
 -------
 
-true if the operation was applied successfully, otherwise false and ``bson`` should be discarded.
-
+Returns ``true`` if the operation was applied successfully. The function will fail if ``bson`` must grow larger than INT32_MAX.

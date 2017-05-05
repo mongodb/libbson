@@ -30,5 +30,4 @@ Appends the value at the current position of ``iter`` to the document.
 Returns
 -------
 
-true if successful; false if append would overflow the maximum document size
-or another invalid state is detected.
+Returns ``true`` if successful; ``false`` if the operation would overflow the maximum document size or another invalid state is detected.
