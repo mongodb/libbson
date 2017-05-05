@@ -24,6 +24,7 @@ We provide a small number of character and string routines to substitute for tho
     bson_strncpy
     bson_strndup
     bson_strnlen
+    bson_uint32_to_string
     bson_utf8_escape_for_json
     bson_utf8_from_unichar
     bson_utf8_get_char

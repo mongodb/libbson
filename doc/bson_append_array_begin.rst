@@ -30,6 +30,8 @@ Description
 
 The :symbol:`bson_append_array_begin()` function shall begin appending an array field to ``bson``. This allows for incrementally building a sub-array. Doing so will generally yield better performance as you will serialize to a single buffer. When done building the sub-array, the caller *MUST* call :symbol:`bson_append_array_end()`.
 
+For generating array element keys, see :symbol:`bson_uint32_to_string`.
+
 Returns
 -------
 
