@@ -49,6 +49,7 @@ typedef struct {
    bson_validate_flags_t flags;
    ssize_t err_offset;
    bson_validate_phase_t phase;
+   bson_error_t error;
 } bson_validate_state_t;
 
 
@@ -3056,30 +3057,18 @@ static const bson_visitor_t bson_as_extended_json_visitors = {
 
 /* legacy JSON format */
 static const bson_visitor_t bson_as_json_visitors = {
-   _bson_as_json_visit_before,
-   NULL, /* visit_after */
-   _bson_as_json_visit_corrupt,
-   _bson_as_json_visit_double,
-   _bson_as_json_visit_utf8,
-   _bson_as_json_visit_document,
-   _bson_as_json_visit_array,
-   _bson_as_json_visit_binary,
-   _bson_as_json_visit_undefined,
-   _bson_as_json_visit_oid,
-   _bson_as_json_visit_bool,
-   _bson_as_json_visit_date_time,
-   _bson_as_json_visit_null,
-   _bson_as_json_visit_regex,
-   _bson_as_json_visit_dbpointer,
-   _bson_as_json_visit_code,
-   _bson_as_json_visit_symbol,
-   _bson_as_json_visit_codewscope,
-   _bson_as_json_visit_int32,
-   _bson_as_json_visit_timestamp,
-   _bson_as_json_visit_int64,
-   _bson_as_json_visit_maxkey,
-   _bson_as_json_visit_minkey,
-   NULL, /* visit_unsupported_type */
+   _bson_as_json_visit_before,     NULL, /* visit_after */
+   _bson_as_json_visit_corrupt,    _bson_as_json_visit_double,
+   _bson_as_json_visit_utf8,       _bson_as_json_visit_document,
+   _bson_as_json_visit_array,      _bson_as_json_visit_binary,
+   _bson_as_json_visit_undefined,  _bson_as_json_visit_oid,
+   _bson_as_json_visit_bool,       _bson_as_json_visit_date_time,
+   _bson_as_json_visit_null,       _bson_as_json_visit_regex,
+   _bson_as_json_visit_dbpointer,  _bson_as_json_visit_code,
+   _bson_as_json_visit_symbol,     _bson_as_json_visit_codewscope,
+   _bson_as_json_visit_int32,      _bson_as_json_visit_timestamp,
+   _bson_as_json_visit_int64,      _bson_as_json_visit_maxkey,
+   _bson_as_json_visit_minkey,     NULL, /* visit_unsupported_type */
    _bson_as_json_visit_decimal128,
 };
 
@@ -3315,6 +3304,13 @@ bson_array_as_json (const bson_t *bson, size_t *length)
 }
 
 
+#define VALIDATION_ERR(_msg, ...)         \
+   bson_set_error (&state->error,         \
+                   BSON_ERROR_INVALID,    \
+                   BSON_VALIDATE_INVALID, \
+                   _msg,                  \
+                   __VA_ARGS__)
+
 static bool
 _bson_iter_validate_utf8 (const bson_iter_t *iter,
                           const char *key,
@@ -3330,6 +3326,7 @@ _bson_iter_validate_utf8 (const bson_iter_t *iter,
 
       if (!bson_utf8_validate (v_utf8, v_utf8_len, allow_null)) {
          state->err_offset = iter->off;
+         VALIDATION_ERR ("invalid utf8 string for key \"%s\"", key);
          return true;
       }
    }
@@ -3352,6 +3349,7 @@ _bson_iter_validate_corrupt (const bson_iter_t *iter, void *data)
    bson_validate_state_t *state = data;
 
    state->err_offset = iter->err_off;
+   VALIDATION_ERR ("%s", "corrupt BSON");
 }
 
 
@@ -3365,6 +3363,7 @@ _bson_iter_validate_before (const bson_iter_t *iter,
    if ((state->flags & BSON_VALIDATE_EMPTY_KEYS)) {
       if (key[0] == '\0') {
          state->err_offset = iter->off;
+         VALIDATION_ERR ("%s", "empty key");
          return true;
       }
    }
@@ -3382,12 +3381,14 @@ _bson_iter_validate_before (const bson_iter_t *iter,
             state->phase = BSON_VALIDATE_PHASE_LF_DB_UTF8;
          } else {
             state->err_offset = iter->off;
+            VALIDATION_ERR ("keys cannot begin with \"$\": \"%s\"", key);
             return true;
          }
       } else if (state->phase == BSON_VALIDATE_PHASE_LF_ID_KEY ||
                  state->phase == BSON_VALIDATE_PHASE_LF_REF_UTF8 ||
                  state->phase == BSON_VALIDATE_PHASE_LF_DB_UTF8) {
          state->err_offset = iter->off;
+         VALIDATION_ERR ("%s", "TODO");
          return true;
       } else {
          state->phase = BSON_VALIDATE_PHASE_NOT_DBREF;
@@ -3397,6 +3398,7 @@ _bson_iter_validate_before (const bson_iter_t *iter,
    if ((state->flags & BSON_VALIDATE_DOT_KEYS)) {
       if (strstr (key, ".")) {
          state->err_offset = iter->off;
+         VALIDATION_ERR ("keys cannot contain \".\": \"%s\"", key);
          return true;
       }
    }
@@ -3414,10 +3416,11 @@ _bson_iter_validate_codewscope (const bson_iter_t *iter,
                                 void *data)
 {
    bson_validate_state_t *state = data;
-   size_t offset;
+   size_t offset = 0;
 
    if (!bson_validate (v_scope, state->flags, &offset)) {
       state->err_offset = iter->off + offset;
+      VALIDATION_ERR ("%s", "corrupt code-with-scope");
       return false;
    }
 
@@ -3490,23 +3493,52 @@ _bson_iter_validate_document (const bson_iter_t *iter,
 }
 
 
+static void
+_bson_validate_internal (const bson_t *bson, bson_validate_state_t *state)
+{
+   bson_iter_t iter;
+
+   state->err_offset = -1;
+   state->phase = BSON_VALIDATE_PHASE_START;
+   memset (&state->error, 0, sizeof state->error);
+
+   if (!bson_iter_init (&iter, bson)) {
+      state->err_offset = 0;
+      VALIDATION_ERR ("%s", "corrupt BSON");
+   } else {
+      _bson_iter_validate_document (&iter, NULL, bson, state);
+   }
+}
+
+
 bool
 bson_validate (const bson_t *bson, bson_validate_flags_t flags, size_t *offset)
 {
-   bson_validate_state_t state = {flags, -1, BSON_VALIDATE_PHASE_START};
-   bson_iter_t iter;
+   bson_validate_state_t state;
 
-   if (!bson_iter_init (&iter, bson)) {
-      state.err_offset = 0;
-      goto failure;
+   state.flags = flags;
+   _bson_validate_internal (bson, &state);
+
+   if (state.err_offset > 0 && offset) {
+      *offset = (size_t) state.err_offset;
    }
 
-   _bson_iter_validate_document (&iter, NULL, bson, &state);
+   return state.err_offset < 0;
+}
 
-failure:
 
-   if (offset) {
-      *offset = state.err_offset;
+bool
+bson_validate_with_error (const bson_t *bson,
+                          bson_validate_flags_t flags,
+                          bson_error_t *error)
+{
+   bson_validate_state_t state;
+
+   state.flags = flags;
+   _bson_validate_internal (bson, &state);
+
+   if (state.err_offset > 0 && error) {
+      memcpy (error, &state.error, sizeof *error);
    }
 
    return state.err_offset < 0;

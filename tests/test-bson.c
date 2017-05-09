@@ -295,7 +295,8 @@ test_bson_append_binary (void)
    bson_t *b2;
 
    b = bson_new ();
-   BSON_ASSERT (bson_append_binary (b, "binary", -1, BSON_SUBTYPE_USER, binary, 4));
+   BSON_ASSERT (
+      bson_append_binary (b, "binary", -1, BSON_SUBTYPE_USER, binary, 4));
    b2 = get_bson ("test24.bson");
    BSON_ASSERT_BSON_EQUAL (b, b2);
    bson_destroy (b);
@@ -417,7 +418,8 @@ test_bson_append_code_with_scope (void)
 
    /* Test with NULL bson, which converts to just CODE type. */
    b = bson_new ();
-   BSON_ASSERT (bson_append_code_with_scope (b, "code", -1, "var a = {};", NULL));
+   BSON_ASSERT (
+      bson_append_code_with_scope (b, "code", -1, "var a = {};", NULL));
    b2 = get_bson ("test30.bson");
    BSON_ASSERT_BSON_EQUAL (b, b2);
    r = bson_iter_init_find (&iter, b, "code");
@@ -429,7 +431,8 @@ test_bson_append_code_with_scope (void)
    /* Empty scope is still CODEWSCOPE. */
    b = bson_new ();
    scope = bson_new ();
-   BSON_ASSERT (bson_append_code_with_scope (b, "code", -1, "var a = {};", scope));
+   BSON_ASSERT (
+      bson_append_code_with_scope (b, "code", -1, "var a = {};", scope));
    b2 = get_bson ("code_w_empty_scope.bson");
    BSON_ASSERT_BSON_EQUAL (b, b2);
    r = bson_iter_init_find (&iter, b, "code");
@@ -443,7 +446,8 @@ test_bson_append_code_with_scope (void)
    b = bson_new ();
    scope = bson_new ();
    BSON_ASSERT (bson_append_utf8 (scope, "foo", -1, "bar", -1));
-   BSON_ASSERT (bson_append_code_with_scope (b, "code", -1, "var a = {};", scope));
+   BSON_ASSERT (
+      bson_append_code_with_scope (b, "code", -1, "var a = {};", scope));
    b2 = get_bson ("test31.bson");
    BSON_ASSERT_BSON_EQUAL (b, b2);
    r = bson_iter_init_find (&iter, b, "code");
@@ -1036,6 +1040,7 @@ test_bson_validate (void)
    size_t offset;
    bson_t *b;
    int i;
+   bson_error_t error;
 
    for (i = 1; i <= 38; i++) {
       bson_snprintf (filename, sizeof filename, "test%u.bson", i);
@@ -1044,67 +1049,59 @@ test_bson_validate (void)
       bson_destroy (b);
    }
 
-   b = get_bson ("overflow2.bson");
-   BSON_ASSERT (!bson_validate (b, BSON_VALIDATE_NONE, &offset));
-   BSON_ASSERT (offset == 9);
-   bson_destroy (b);
-
-   b = get_bson ("trailingnull.bson");
-   BSON_ASSERT (!bson_validate (b, BSON_VALIDATE_NONE, &offset));
-   BSON_ASSERT (offset == 14);
-   bson_destroy (b);
-
-   b = get_bson ("dollarquery.bson");
-   BSON_ASSERT (!bson_validate (b, BSON_VALIDATE_DOLLAR_KEYS, &offset));
-   bson_destroy (b);
-
-   b = get_bson ("dotquery.bson");
-   BSON_ASSERT (!bson_validate (b, BSON_VALIDATE_DOT_KEYS, &offset));
-   bson_destroy (b);
-
-   b = get_bson ("overflow3.bson");
-   BSON_ASSERT (!bson_validate (b, BSON_VALIDATE_NONE, &offset));
-   BSON_ASSERT (offset == 9);
-   bson_destroy (b);
-
-   b = get_bson ("overflow4.bson");
-   BSON_ASSERT (!bson_validate (b, BSON_VALIDATE_NONE, &offset));
-   bson_destroy (b);
-
    b = get_bson ("codewscope.bson");
    BSON_ASSERT (bson_validate (b, BSON_VALIDATE_NONE, &offset));
    bson_destroy (b);
 
    b = get_bson ("empty_key.bson");
    BSON_ASSERT (bson_validate (b,
-                          BSON_VALIDATE_NONE | BSON_VALIDATE_UTF8 |
-                             BSON_VALIDATE_DOLLAR_KEYS | BSON_VALIDATE_DOT_KEYS,
-                          &offset));
-   BSON_ASSERT (!bson_validate (b, BSON_VALIDATE_EMPTY_KEYS, &offset));
+                               BSON_VALIDATE_NONE | BSON_VALIDATE_UTF8 |
+                                  BSON_VALIDATE_DOLLAR_KEYS |
+                                  BSON_VALIDATE_DOT_KEYS,
+                               &offset));
    bson_destroy (b);
 
-#define ENSURE_FAILURE(file)                                 \
-   b = get_bson (file);                                      \
-   BSON_ASSERT (!bson_validate (b, BSON_VALIDATE_NONE, &offset)); \
-   bson_destroy (b);
+#define VALIDATE_TEST(_filename, _flags, _offset, _msg)         \
+   b = get_bson (_filename);                                    \
+   BSON_ASSERT (!bson_validate (b, _flags, &offset));           \
+   ASSERT_CMPSIZE_T (offset, ==, (size_t) _offset);             \
+   BSON_ASSERT (!bson_validate_with_error (b, _flags, &error)); \
+   ASSERT_ERROR_CONTAINS (                                      \
+      error, BSON_ERROR_INVALID, BSON_VALIDATE_INVALID, _msg);  \
+   bson_destroy (b)
 
-   ENSURE_FAILURE ("test40.bson");
-   ENSURE_FAILURE ("test41.bson");
-   ENSURE_FAILURE ("test42.bson");
-   ENSURE_FAILURE ("test43.bson");
-   ENSURE_FAILURE ("test44.bson");
-   ENSURE_FAILURE ("test45.bson");
-   ENSURE_FAILURE ("test46.bson");
-   ENSURE_FAILURE ("test47.bson");
-   ENSURE_FAILURE ("test48.bson");
-   ENSURE_FAILURE ("test49.bson");
-   ENSURE_FAILURE ("test50.bson");
-   ENSURE_FAILURE ("test51.bson");
-   ENSURE_FAILURE ("test52.bson");
-   ENSURE_FAILURE ("test53.bson");
-   ENSURE_FAILURE ("test54.bson");
+   VALIDATE_TEST ("overflow2.bson", BSON_VALIDATE_NONE, 9, "corrupt BSON");
+   VALIDATE_TEST ("trailingnull.bson", BSON_VALIDATE_NONE, 14, "corrupt BSON");
+   VALIDATE_TEST ("dollarquery.bson",
+                  BSON_VALIDATE_DOLLAR_KEYS,
+                  4,
+                  "keys cannot begin with \"$\": \"$query\"");
+   VALIDATE_TEST ("dotquery.bson",
+                  BSON_VALIDATE_DOT_KEYS,
+                  4,
+                  "keys cannot contain \".\": \"abc.def\"");
+   VALIDATE_TEST ("overflow3.bson", BSON_VALIDATE_NONE, 9, "corrupt BSON");
+   VALIDATE_TEST ("overflow4.bson", BSON_VALIDATE_NONE, 9, "corrupt BSON");
+   VALIDATE_TEST ("empty_key.bson", BSON_VALIDATE_EMPTY_KEYS, 4, "empty key");
+   VALIDATE_TEST ("test40.bson", BSON_VALIDATE_NONE, 6, "corrupt BSON");
+   VALIDATE_TEST ("test41.bson", BSON_VALIDATE_NONE, 6, "corrupt BSON");
+   VALIDATE_TEST ("test42.bson", BSON_VALIDATE_NONE, 6, "corrupt BSON");
+   VALIDATE_TEST ("test43.bson", BSON_VALIDATE_NONE, 6, "corrupt BSON");
+   VALIDATE_TEST ("test44.bson", BSON_VALIDATE_NONE, 24, "corrupt BSON");
+   VALIDATE_TEST ("test45.bson", BSON_VALIDATE_NONE, 6, "corrupt BSON");
+   VALIDATE_TEST ("test46.bson", BSON_VALIDATE_NONE, 6, "corrupt BSON");
+   VALIDATE_TEST ("test47.bson", BSON_VALIDATE_NONE, 6, "corrupt BSON");
+   VALIDATE_TEST ("test48.bson", BSON_VALIDATE_NONE, 14, "corrupt BSON");
+   VALIDATE_TEST ("test49.bson", BSON_VALIDATE_NONE, 6, "corrupt BSON");
+   VALIDATE_TEST (
+      "test50.bson", BSON_VALIDATE_NONE, 10, "corrupt code-with-scope");
+   VALIDATE_TEST (
+      "test51.bson", BSON_VALIDATE_NONE, 10, "corrupt code-with-scope");
+   VALIDATE_TEST ("test52.bson", BSON_VALIDATE_NONE, 9, "corrupt BSON");
+   VALIDATE_TEST ("test53.bson", BSON_VALIDATE_NONE, 6, "corrupt BSON");
+   VALIDATE_TEST ("test54.bson", BSON_VALIDATE_NONE, 12, "corrupt BSON");
 
-#undef ENSURE_FAILURE
+#undef VALIDATE_TEST
 }
 
 

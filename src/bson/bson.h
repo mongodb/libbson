@@ -177,6 +177,11 @@ BSON_BEGIN_DECLS
    bson_append_value (b, key, (int) strlen (key), (val))
 
 
+typedef enum {
+   BSON_VALIDATE_INVALID
+} bson_validate_error_code_t;
+
+
 /**
  * bson_new:
  *
@@ -469,6 +474,21 @@ bson_equal (const bson_t *bson, const bson_t *other);
 BSON_EXPORT (bool)
 bson_validate (const bson_t *bson, bson_validate_flags_t flags, size_t *offset);
 
+
+/**
+ * bson_validate_with_error:
+ * @bson: A bson_t.
+ * @error: A location for the error info.
+ *
+ * Validates a BSON document by walking through the document and inspecting
+ * the fields for valid content.
+ *
+ * Returns: true if @bson is valid; otherwise false and @error is filled out.
+ */
+BSON_EXPORT (bool)
+bson_validate_with_error (const bson_t *bson,
+                          bson_validate_flags_t flags,
+                          bson_error_t *error);
 
 /**
  * bson_as_extended_json:

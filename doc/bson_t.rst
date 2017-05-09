@@ -207,6 +207,7 @@ The :symbol:`bson_t` structure attempts to use an inline allocation within the s
     bson_sized_new
     bson_steal
     bson_validate
+    bson_validate_with_error
 
 Example
 -------
