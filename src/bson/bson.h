@@ -177,11 +177,6 @@ BSON_BEGIN_DECLS
    bson_append_value (b, key, (int) strlen (key), (val))
 
 
-typedef enum {
-   BSON_VALIDATE_INVALID
-} bson_validate_error_code_t;
-
-
 /**
  * bson_new:
  *

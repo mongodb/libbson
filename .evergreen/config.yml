@@ -188,6 +188,7 @@ pre:
 
 post:
   - func: "upload artifacts"
+  - func: "upload scan artifacts"
   - func: "upload results"
 
 #######################################
@@ -264,7 +265,6 @@ tasks:
           params:
             working_dir: "libbson"
             script: "DEBUG=1 CC=clang ANALYZE=1 MARCH='${MARCH}' sh .evergreen/compile.sh"
-        - func: "upload scan artifacts"
 
     - name: debug-compile-coverage
       commands:

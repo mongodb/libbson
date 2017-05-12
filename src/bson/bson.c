@@ -3304,12 +3304,8 @@ bson_array_as_json (const bson_t *bson, size_t *length)
 }
 
 
-#define VALIDATION_ERR(_msg, ...)         \
-   bson_set_error (&state->error,         \
-                   BSON_ERROR_INVALID,    \
-                   BSON_VALIDATE_INVALID, \
-                   _msg,                  \
-                   __VA_ARGS__)
+#define VALIDATION_ERR(_flag, _msg, ...) \
+   bson_set_error (&state->error, BSON_ERROR_INVALID, _flag, _msg, __VA_ARGS__)
 
 static bool
 _bson_iter_validate_utf8 (const bson_iter_t *iter,
@@ -3326,7 +3322,8 @@ _bson_iter_validate_utf8 (const bson_iter_t *iter,
 
       if (!bson_utf8_validate (v_utf8, v_utf8_len, allow_null)) {
          state->err_offset = iter->off;
-         VALIDATION_ERR ("invalid utf8 string for key \"%s\"", key);
+         VALIDATION_ERR (
+            BSON_VALIDATE_UTF8, "invalid utf8 string for key \"%s\"", key);
          return true;
       }
    }
@@ -3349,7 +3346,7 @@ _bson_iter_validate_corrupt (const bson_iter_t *iter, void *data)
    bson_validate_state_t *state = data;
 
    state->err_offset = iter->err_off;
-   VALIDATION_ERR ("%s", "corrupt BSON");
+   VALIDATION_ERR (BSON_VALIDATE_NONE, "%s", "corrupt BSON");
 }
 
 
@@ -3363,7 +3360,7 @@ _bson_iter_validate_before (const bson_iter_t *iter,
    if ((state->flags & BSON_VALIDATE_EMPTY_KEYS)) {
       if (key[0] == '\0') {
          state->err_offset = iter->off;
-         VALIDATION_ERR ("%s", "empty key");
+         VALIDATION_ERR (BSON_VALIDATE_EMPTY_KEYS, "%s", "empty key");
          return true;
       }
    }
@@ -3381,14 +3378,18 @@ _bson_iter_validate_before (const bson_iter_t *iter,
             state->phase = BSON_VALIDATE_PHASE_LF_DB_UTF8;
          } else {
             state->err_offset = iter->off;
-            VALIDATION_ERR ("keys cannot begin with \"$\": \"%s\"", key);
+            VALIDATION_ERR (BSON_VALIDATE_DOLLAR_KEYS,
+                            "keys cannot begin with \"$\": \"%s\"",
+                            key);
             return true;
          }
       } else if (state->phase == BSON_VALIDATE_PHASE_LF_ID_KEY ||
                  state->phase == BSON_VALIDATE_PHASE_LF_REF_UTF8 ||
                  state->phase == BSON_VALIDATE_PHASE_LF_DB_UTF8) {
          state->err_offset = iter->off;
-         VALIDATION_ERR ("%s", "TODO");
+         VALIDATION_ERR (BSON_VALIDATE_DOLLAR_KEYS,
+                         "invalid key within DBRef subdocument: \"%s\"",
+                         key);
          return true;
       } else {
          state->phase = BSON_VALIDATE_PHASE_NOT_DBREF;
@@ -3398,7 +3399,8 @@ _bson_iter_validate_before (const bson_iter_t *iter,
    if ((state->flags & BSON_VALIDATE_DOT_KEYS)) {
       if (strstr (key, ".")) {
          state->err_offset = iter->off;
-         VALIDATION_ERR ("keys cannot contain \".\": \"%s\"", key);
+         VALIDATION_ERR (
+            BSON_VALIDATE_DOT_KEYS, "keys cannot contain \".\": \"%s\"", key);
          return true;
       }
    }
@@ -3420,7 +3422,7 @@ _bson_iter_validate_codewscope (const bson_iter_t *iter,
 
    if (!bson_validate (v_scope, state->flags, &offset)) {
       state->err_offset = iter->off + offset;
-      VALIDATION_ERR ("%s", "corrupt code-with-scope");
+      VALIDATION_ERR (BSON_VALIDATE_NONE, "%s", "corrupt code-with-scope");
       return false;
    }
 
@@ -3483,7 +3485,10 @@ _bson_iter_validate_document (const bson_iter_t *iter,
    if (state->phase == BSON_VALIDATE_PHASE_LF_ID_KEY ||
        state->phase == BSON_VALIDATE_PHASE_LF_REF_UTF8 ||
        state->phase == BSON_VALIDATE_PHASE_LF_DB_UTF8) {
-      state->err_offset = iter->off;
+      if (state->err_offset <= 0) {
+         state->err_offset = iter->off;
+      }
+
       return true;
    }
 
@@ -3504,7 +3509,7 @@ _bson_validate_internal (const bson_t *bson, bson_validate_state_t *state)
 
    if (!bson_iter_init (&iter, bson)) {
       state->err_offset = 0;
-      VALIDATION_ERR ("%s", "corrupt BSON");
+      VALIDATION_ERR (BSON_VALIDATE_NONE, "%s", "corrupt BSON");
    } else {
       _bson_iter_validate_document (&iter, NULL, bson, state);
    }
