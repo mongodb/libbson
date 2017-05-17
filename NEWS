@@ -5,6 +5,8 @@ Next release
     * bson_strcasecmp, a portable equivalent of strcasecmp.
     * bson_iter_as_double, cast the current value to double.
     * bson_iter_init_from_data, creates an iterator from BSON string.
+    * bson_validate_with_error, checks a document like bson_validate does but
+      also reports which key was invalid
   * New convenience macros
     * BSON_ITER_HOLDS_INT, checks if iterator holds int32 or int64
     * BSON_ITER_HOLDS_NUMBER, checks if iterator holds int32, int64 or double
