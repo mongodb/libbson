@@ -1,92 +1,37 @@
 Author: A. Jesse Jiryu Davis <jesse@mongodb.com>
 Description: Apply upstream patch to fix CDRIVER-2014
-Index: libbson/Makefile.am
+Index: libbson/doc/html/Makefile.am
 ===================================================================
---- libbson.orig/Makefile.am
-+++ libbson/Makefile.am
-@@ -44,16 +44,19 @@ EXTRA_DIST += CMakeLists.txt \
-     VERSION_RELEASED
+--- libbson.orig/doc/html/Makefile.am
++++ libbson/doc/html/Makefile.am
+@@ -19,5 +19,6 @@ doc/html: $(SPHINX_HTML_FILES)
+ $(SPHINX_HTML_FILES):
+ 	-mkdir -p doc/html
+ 	$(SPHINX_BUILD) -qEW $(top_srcdir)/doc doc/html
++	rm -rf doc/html/.buildinfo doc/html/.doctrees
  
- dist-hook:
--	@if test -d "$(srcdir)/.git"; then                              \
--          (cd "$(srcdir)" &&                                            \
--           $(top_srcdir)/build/autotools/missing --run git log --stat ) > ChangeLog.tmp \
--           && mv -f ChangeLog.tmp $(top_distdir)/ChangeLog              \
--           || (rm -f ChangeLog.tmp;                                     \
--               echo Failed to generate ChangeLog >&2);                  \
--	else                                                            \
--	  echo A git checkout is required to generate a ChangeLog >&2;  \
-+	@if test -d "$(srcdir)/.git"; then                                   \
-+	       (cd "$(srcdir)" &&                                            \
-+	        $(top_srcdir)/build/autotools/missing --run git log --stat ) > ChangeLog.tmp \
-+	        && mv -f ChangeLog.tmp $(top_distdir)/ChangeLog              \
-+	        || (rm -f ChangeLog.tmp;                                     \
-+	            echo Failed to generate ChangeLog >&2);                  \
-+	else                                                                 \
-+	  echo A git checkout is required to generate a ChangeLog >&2;       \
- 	fi
- 
-+clean-local:
-+	rm -rf $(CLEANFILES)
-+
- uninstall-local:
- 	-rmdir $(bsondocdir)/doc $(bsondocdir)/html
- 	-rm -r $(bsondocdir)
-Index: libbson/doc/Makefile.am
-===================================================================
---- libbson.orig/doc/Makefile.am
-+++ libbson/doc/Makefile.am
-@@ -9,9 +9,3 @@ EXTRA_DIST += \
-   doc/mongoc-theme/static/pygments.css \
-   doc/mongoc-theme/theme.conf \
-   doc/taglist.py
--
--dist-hook: man html
--
--clean-local:
--	-rm -rf doc/man/.buildinfo doc/man/.doctrees
--	-rm -rf doc/html/.buildinfo doc/html/.doctrees doc/html/_static
+ EXTRA_DIST += doc/html
 Index: libbson/doc/man/Makefile.am
 ===================================================================
 --- libbson.orig/doc/man/Makefile.am
 +++ libbson/doc/man/Makefile.am
-@@ -1,20 +1,16 @@
--BUILT_MAN_FILES = $(wildcard doc/man/*.3)
- CLEANFILES += $(wildcard doc/man/*.3)
- 
--dist_man_MANS = $(BUILT_MAN_FILES)
--# Automake (at least up to 1.10) mishandles dist_man_MANS inside conditionals.
--# Unlike with other dist primaries, the files are not distributed if the
--# conditional is false.
--# Work the bug around until it is fixed:
--dist_noinst_DATA = $(dist_man_MANS)
-+.PHONY: doc/man
- 
--man3_MANS = $(BUILT_MAN_FILES)
-+dist_man_MANS = $(wildcard doc/man/*.3)
- 
--.PHONY: man
-+man3_MANS = $(wildcard doc/man/*.3)
- 
--# "E" is "ignore cache", "b" is build type.
--man:
-+
-+# sphinx-build "-E" is "ignore cache", "b" is build type.
-+doc/man:
+@@ -11,5 +11,6 @@ man3_MANS = $(wildcard doc/man/*.3)
+ doc/man:
  	-mkdir -p doc/man
  	$(SPHINX_BUILD) -qEW -b man $(top_srcdir)/doc doc/man
 +	rm -rf doc/man/.buildinfo doc/man/.doctrees
  
  EXTRA_DIST += doc/man
-Index: libbson/doc/html/Makefile.am
+Index: libbson/Makefile.am
 ===================================================================
---- libbson.orig/doc/html/Makefile.am
-+++ libbson/doc/html/Makefile.am
-@@ -10,6 +10,7 @@ CLEANFILES += doc/html/.nojekyll doc/htm
- doc/html:
- 	-mkdir -p doc/html
- 	$(SPHINX_BUILD) -qEW $(top_srcdir)/doc doc/html
-+	rm -rf doc/html/.buildinfo doc/html/.doctrees
+--- libbson.orig/Makefile.am
++++ libbson/Makefile.am
+@@ -59,8 +59,6 @@ dist-hook:
  
- SPHINX_HTML_FILES = \
-    doc/html/.nojekyll \
+ clean-local:
+ 	-rm -rf $(CLEANFILES)
+-	-rm -rf doc/html/.buildinfo doc/html/.doctrees
+-	-rm -rf doc/man/.buildinfo doc/man/.doctrees
+ 
+ uninstall-local:
+ 	-rmdir $(bsondocdir)/doc $(bsondocdir)/html
