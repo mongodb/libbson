@@ -150,12 +150,10 @@ functions:
         content_type: ${content_type|application/x-gzip}
 
   "upload artifacts":
-    - command: archive.targz_pack
+    - command: shell.exec
       params:
-        target: "artifacts.tar.gz"
-        source_dir: "."
-        include:
-          - "libbson"
+        working_dir: "."
+        script: tar czf artifacts.tar.gz libbson
     - command: s3.put
       params:
         aws_key: ${aws_key}
