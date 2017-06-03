@@ -2733,10 +2733,16 @@ _bson_as_json_visit_regex (const bson_iter_t *iter,
                            void *data)
 {
    bson_json_state_t *state = data;
+   char *escaped;
    const char *c;
 
+   escaped = bson_utf8_escape_for_json (v_regex, -1);
+   if (!escaped) {
+      return true;
+   }
+
    bson_string_append (state->str, "{ \"$regex\" : \"");
-   bson_string_append (state->str, v_regex);
+   bson_string_append (state->str, escaped);
    bson_string_append (state->str, "\", \"$options\" : \"");
 
    /* sort the options */
@@ -2797,10 +2803,16 @@ _bson_as_extended_json_visit_dbpointer (const bson_iter_t *iter,
                                         void *data)
 {
    bson_json_state_t *state = data;
+   char *escaped;
    char str[25];
 
+   escaped = bson_utf8_escape_for_json (v_collection, -1);
+   if (!escaped) {
+      return true;
+   }
+
    bson_string_append (state->str, "{ \"$dbPointer\" : { \"$ref\" : \"");
-   bson_string_append (state->str, v_collection);
+   bson_string_append (state->str, escaped);
    bson_string_append (state->str, "\"");
 
    if (v_oid) {
@@ -2811,6 +2823,8 @@ _bson_as_extended_json_visit_dbpointer (const bson_iter_t *iter,
    }
 
    bson_string_append (state->str, " } }");
+
+   bson_free (escaped);
 
    return false;
 }
@@ -2917,16 +2931,16 @@ _bson_as_json_visit_code (const bson_iter_t *iter,
    char *escaped;
 
    escaped = bson_utf8_escape_for_json (v_code, v_code_len);
-
-   if (escaped) {
-      bson_string_append (state->str, "{ \"$code\" : \"");
-      bson_string_append (state->str, escaped);
-      bson_string_append (state->str, "\" }");
-      bson_free (escaped);
-      return false;
+   if (!escaped) {
+      return true;
    }
 
-   return true;
+   bson_string_append (state->str, "{ \"$code\" : \"");
+   bson_string_append (state->str, escaped);
+   bson_string_append (state->str, "\" }");
+   bson_free (escaped);
+
+   return false;
 }
 
 
@@ -2938,10 +2952,17 @@ _bson_as_extended_json_visit_symbol (const bson_iter_t *iter,
                                      void *data)
 {
    bson_json_state_t *state = data;
+   char *escaped;
+
+   escaped = bson_utf8_escape_for_json (v_symbol, v_symbol_len);
+   if (!escaped) {
+      return true;
+   }
 
    bson_string_append (state->str, "{ \"$symbol\" : \"");
-   bson_string_append (state->str, v_symbol);
+   bson_string_append (state->str, escaped);
    bson_string_append (state->str, "\" }");
+   bson_free (escaped);
 
    return false;
 }
@@ -2955,10 +2976,17 @@ _bson_as_json_visit_symbol (const bson_iter_t *iter,
                             void *data)
 {
    bson_json_state_t *state = data;
+   char *escaped;
+
+   escaped = bson_utf8_escape_for_json (v_symbol, v_symbol_len);
+   if (!escaped) {
+      return true;
+   }
 
    bson_string_append (state->str, "\"");
-   bson_string_append (state->str, v_symbol);
+   bson_string_append (state->str, escaped);
    bson_string_append (state->str, "\"");
+   bson_free (escaped);
 
    return false;
 }
