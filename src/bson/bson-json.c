@@ -564,7 +564,7 @@ _bson_json_parse_double (bson_json_reader_t *reader,
    if (*d == 0.0) {
       if (!_strnicmp (val, "nan", vlen)) {
 #ifdef NAN
-      *d = NAN;
+         *d = NAN;
 #else
          /* Visual Studio 2010 doesn't define NAN or INFINITY
           * https://msdn.microsoft.com/en-us/library/w22adx1s(v=vs.100).aspx */
@@ -574,7 +574,7 @@ _bson_json_parse_double (bson_json_reader_t *reader,
          return true;
       } else if (!_strnicmp (val, "infinity", vlen)) {
 #ifdef INFINITY
-      *d = INFINITY;
+         *d = INFINITY;
 #else
          unsigned long inf[2] = {0x00000000, 0x7ff00000};
          *d = *(double *) inf;
@@ -582,7 +582,7 @@ _bson_json_parse_double (bson_json_reader_t *reader,
          return true;
       } else if (!_strnicmp (val, "-infinity", vlen)) {
 #ifdef INFINITY
-      *d = -INFINITY;
+         *d = -INFINITY;
 #else
          unsigned long inf[2] = {0x00000000, 0xfff00000};
          *d = *(double *) inf;
@@ -599,10 +599,9 @@ _bson_json_parse_double (bson_json_reader_t *reader,
    }
 #else
    /* not MSVC -  set err on overflow, but avoid err for infinity */
-   if ((*d == HUGE_VAL || *d == -HUGE_VAL)
-         && errno == ERANGE
-         && strncasecmp (val, "infinity", vlen)
-         && strncasecmp (val, "-infinity", vlen)) {
+   if ((*d == HUGE_VAL || *d == -HUGE_VAL) && errno == ERANGE &&
+       strncasecmp (val, "infinity", vlen) &&
+       strncasecmp (val, "-infinity", vlen)) {
       _bson_json_read_set_error (
          reader, "Number \"%.*s\" is out of range", (int) vlen, val);
 
@@ -629,7 +628,7 @@ static bool
 _bson_json_read_int64 (bson_json_reader_t *reader, /* IN */
                        const unsigned char *val,   /* IN */
                        size_t vlen,                /* IN */
-                       int64_t *v64                /* OUT */)
+                       int64_t *v64 /* OUT */)
 {
    bson_json_reader_bson_t *bson = &reader->bson;
    char *endptr = NULL;
@@ -940,8 +939,7 @@ _bson_json_read_map_key (bson_json_reader_t *reader, /* IN */
    }
 
    if (bson->read_state == BSON_JSON_IN_START_MAP) {
-      if (len > 0 && val[0] == '$' &&
-          _is_known_key ((const char *) val, len) &&
+      if (len > 0 && val[0] == '$' && _is_known_key ((const char *) val, len) &&
           bson->n >= 0 /* key is in subdocument */) {
          bson->read_state = BSON_JSON_IN_BSON_TYPE;
          bson->bson_type = (bson_type_t) 0;

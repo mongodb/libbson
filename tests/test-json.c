@@ -1605,12 +1605,12 @@ test_bson_json_infinity (void)
    const char *infs[] = {"{ \"d\": Infinity }",
                          "{ \"d\": infinity }",
                          "{ \"d\": inFINIty }",
-                          NULL};
+                         NULL};
 
    const char *negs[] = {"{ \"d\": -Infinity }",
                          "{ \"d\": -infinity }",
                          "{ \"d\": -inFINIty }",
-                          NULL};
+                         NULL};
 
    const char *bad[] = {"{ \"d\": Infinityy }",
                         "{ \"d\": Infinit }",
