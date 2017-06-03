@@ -86,6 +86,7 @@ BSON_BEGIN_DECLS
 
 
 #ifdef _MSC_VER
+#include <time.h>
 #include "bson-stdint-win32.h"
 #ifndef __cplusplus
 /* benign redefinition of type */

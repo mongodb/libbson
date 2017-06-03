@@ -72,6 +72,13 @@ else ()
   set(BSON_HAVE_TIMESPEC 1)
 endif ()
 
+CHECK_SYMBOL_EXISTS(gmtime_r time.h BSON_HAVE_GMTIME_R)
+if (NOT BSON_HAVE_GMTIME_R)
+   set(BSON_HAVE_GMTIME_R 0)
+else ()
+   set(BSON_HAVE_GMTIME_R 1)
+endif ()
+
 if (WIN32)
    set (BSON_OS 2)
 else ()

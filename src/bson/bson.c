@@ -20,6 +20,7 @@
 #include "b64_ntop.h"
 #include "bson-private.h"
 #include "bson-string.h"
+#include "bson-iso8601-private.h"
 
 #include <string.h>
 #include <math.h>
@@ -2711,9 +2712,14 @@ _bson_as_json_visit_date_time (const bson_iter_t *iter,
 {
    bson_json_state_t *state = data;
 
-   bson_string_append (state->str, "{ \"$date\" : ");
-   bson_string_append_printf (state->str, "%" PRId64, msec_since_epoch);
-   bson_string_append (state->str, " }");
+   if (msec_since_epoch < 0) {
+      return _bson_as_extended_json_visit_date_time (
+         iter, key, msec_since_epoch, data);
+   }
+
+   bson_string_append (state->str, "{ \"$date\" : \"");
+   _bson_iso8601_date_format (msec_since_epoch, state->str);
+   bson_string_append (state->str, "\" }");
 
    return false;
 }
