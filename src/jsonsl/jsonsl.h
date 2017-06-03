@@ -161,12 +161,12 @@ typedef enum {
 #undef X
     /* Handy flags for checking */
 
-    JSONSL_SPECIALf_UNKNOWN = 1 << 8,
+    JSONSL_SPECIALf_UNKNOWN = 1 << 10,
 
     /** @private Private */
-    JSONSL_SPECIALf_ZERO    = 1 << 9 | JSONSL_SPECIALf_UNSIGNED,
+    JSONSL_SPECIALf_ZERO    = 1 << 11 | JSONSL_SPECIALf_UNSIGNED,
     /** @private */
-    JSONSL_SPECIALf_DASH    = 1 << 10,
+    JSONSL_SPECIALf_DASH    = 1 << 12,
     /** @private */
     JSONSL_SPECIALf_POS_INF = (JSONSL_SPECIALf_INF),
     JSONSL_SPECIALf_NEG_INF = (JSONSL_SPECIALf_INF|JSONSL_SPECIALf_SIGNED),

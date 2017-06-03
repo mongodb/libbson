@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <bson-string.h>
 #include <bson-private.h>
+#include <math.h>
 
 #include "bson-config.h"
 #include "bson-tests.h"
@@ -1456,6 +1457,61 @@ test_bson_json_uescape_bad (void)
 }
 
 static void
+test_bson_json_number (void)
+{
+   bson_t b;
+   bson_error_t error;
+   bson_iter_t iter;
+
+   ASSERT_OR_PRINT (
+      bson_init_from_json (&b, "{ \"x\": 1 }", -1, &error), error);
+
+   BSON_ASSERT (bson_iter_init_find (&iter, &b, "x"));
+   BSON_ASSERT (BSON_ITER_HOLDS_INT32 (&iter));
+   ASSERT_CMPINT32 (bson_iter_int32 (&iter), ==, (int32_t) 1);
+   bson_destroy (&b);
+
+   ASSERT_OR_PRINT (
+      bson_init_from_json (&b, "{ \"x\": 4294967296 }", -1, &error), error);
+
+   BSON_ASSERT (bson_iter_init_find (&iter, &b, "x"));
+   BSON_ASSERT (BSON_ITER_HOLDS_INT64 (&iter));
+   ASSERT_CMPINT64 (bson_iter_int64 (&iter), ==, (int64_t) 4294967296);
+   bson_destroy (&b);
+
+   ASSERT_OR_PRINT (bson_init_from_json (&b, "{ \"x\": 1.0 }", -1, &error),
+                    error);
+
+   BSON_ASSERT (bson_iter_init_find (&iter, &b, "x"));
+   BSON_ASSERT (BSON_ITER_HOLDS_DOUBLE (&iter));
+   ASSERT_CMPDOUBLE (bson_iter_double (&iter), ==, 1.0);
+   bson_destroy (&b);
+
+   ASSERT_OR_PRINT (bson_init_from_json (&b, "{ \"x\": 0.0 }", -1, &error),
+                    error);
+
+   BSON_ASSERT (bson_iter_init_find (&iter, &b, "x"));
+   BSON_ASSERT (BSON_ITER_HOLDS_DOUBLE (&iter));
+   ASSERT_CMPDOUBLE (bson_iter_double (&iter), ==, 0.0);
+   bson_destroy (&b);
+
+   ASSERT_OR_PRINT (bson_init_from_json (&b, "{ \"x\": -0.0 }", -1, &error),
+                    error);
+
+   BSON_ASSERT (bson_iter_init_find (&iter, &b, "x"));
+   BSON_ASSERT (BSON_ITER_HOLDS_DOUBLE (&iter));
+   ASSERT_CMPDOUBLE (bson_iter_double (&iter), ==, 0.0);
+
+   /* check that "x" is -0.0. signbit not available on Solaris or VS 2010 */
+#if !defined(__sun) && (!defined(_MSC_VER) || (_MSC_VER >= 1800))
+   BSON_ASSERT (signbit (bson_iter_double (&iter)));
+#endif
+
+   bson_destroy (&b);
+}
+
+
+static void
 test_bson_json_double_overflow (void)
 {
    const char *nums[] = {"2e400", "-2e400", NULL};
@@ -2064,6 +2120,7 @@ test_json_install (TestSuite *suite)
       suite, "/bson/json/read/uescape/key", test_bson_json_uescape_key);
    TestSuite_Add (
       suite, "/bson/json/read/uescape/bad", test_bson_json_uescape_bad);
+   TestSuite_Add (suite, "/bson/json/read/double", test_bson_json_number);
    TestSuite_Add (
       suite, "/bson/json/read/double/overflow", test_bson_json_double_overflow);
    TestSuite_Add (suite, "/bson/json/read/double/nan", test_bson_json_nan);
