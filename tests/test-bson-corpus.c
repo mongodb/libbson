@@ -59,22 +59,36 @@ See:
 github.com/mongodb/specifications/blob/master/source/bson-corpus/bson-corpus.rst
 #testing-validity
 
-We don't do the "B->cB" or "cB->cB" steps since we have no concept of decoding
-BSON to objects as other drivers like Python do.
+* for cB input:
+    * bson_to_canonical_extended_json(cB) = cE
+    * bson_to_relaxed_extended_json(cB) = rE (if rE exists)
+
+* for cE input:
+    * json_to_bson(cE) = cB (unless lossy)
+
+* for dB input (if it exists):
+    * bson_to_canonical_extended_json(dB) = cE
+    * bson_to_relaxed_extended_json(dB) = rE (if rE exists)
+
+* for rE input (if it exists):
+    bson_to_relaxed_extended_json( json_to_bson(rE) ) = rE
+
  */
 static void
 test_bson_corpus (test_bson_type_t *test)
 {
    skipped_corpus_test_t *skip;
-   bson_t B;
    bson_t cB;
-   bson_t *decode_E;
+   bson_t dB;
    bson_t *decode_cE;
+   bson_t *decode_rE;
    bson_error_t error;
 
-   BSON_ASSERT (test->B);
+   BSON_ASSERT (!test->B); /* not used in BSON Corpus Tests */
    BSON_ASSERT (test->cB);
+   BSON_ASSERT (test->cE);
 
+   /* TODO: need rE_len and so on ? */
    for (skip = SKIPPED_CORPUS_TESTS; skip->scenario != NULL; skip++) {
       if (!strcmp (skip->scenario, test->scenario_description) &&
           !strcmp (skip->test, test->test_description)) {
@@ -87,58 +101,45 @@ test_bson_corpus (test_bson_type_t *test)
       }
    }
 
-   ASSERT (bson_init_static (&B, test->B, test->B_len));
-   ASSERT (bson_init_static (&cB, test->cB, test->cB_len));
+   BSON_ASSERT (bson_init_static (&cB, test->cB, test->cB_len));
+   ASSERT_CMPJSON (bson_as_extended_json (&cB, NULL), test->cE);
 
-   if (test->E) {
-      decode_E =
-         bson_new_from_json ((const uint8_t *) test->E, test->E_len, &error);
-
-      ASSERT_OR_PRINT (decode_E, error);
-
-      decode_cE =
-         bson_new_from_json ((const uint8_t *) test->cE, test->cE_len, &error);
-
-      ASSERT_OR_PRINT (decode_cE, error);
-
-      /* B->cE */
-      ASSERT_CMPJSON (bson_as_extended_json (&B, NULL), test->cE);
-
-      /* E->cE */
-      ASSERT_CMPJSON (bson_as_extended_json (decode_E, NULL), test->cE);
-
-      if (test->B != test->cB) {
-         /* cB->cE */
-         ASSERT_CMPJSON (bson_as_extended_json (&cB, NULL), test->cE);
-      }
-
-      if (test->E != test->cE) {
-         /* cE->cE */
-         ASSERT_CMPJSON (bson_as_extended_json (decode_cE, NULL), test->cE);
-      }
-
-      if (!test->lossy) {
-         /* E->cB */
-         compare_data (
-            bson_get_data (decode_E), decode_E->len, test->cB, test->cB_len);
-
-         if (test->E != test->cE) {
-            /* cE->cB */
-            compare_data (bson_get_data (decode_cE),
-                          decode_cE->len,
-                          test->cB,
-                          test->cB_len);
-         }
-      }
-
-      bson_destroy (decode_E);
-      bson_destroy (decode_cE);
-   } else {
-      /* tests of deprecated types: just make sure we can decode it */
-      ASSERT (bson_validate (&B, BSON_VALIDATE_UTF8, 0));
+   if (test->rE) {
+      ASSERT_CMPJSON (bson_as_json (&cB, NULL), test->rE);
    }
 
-   bson_destroy (&B);
+   decode_cE =
+      bson_new_from_json ((const uint8_t *) test->cE, test->cE_len, &error);
+
+   ASSERT_OR_PRINT (decode_cE, error);
+
+   if (!test->lossy) {
+      compare_data (
+         bson_get_data (decode_cE), decode_cE->len, test->cB, test->cB_len);
+   }
+
+   if (test->dB) {
+      BSON_ASSERT (bson_init_static (&dB, test->dB, test->dB_len));
+      ASSERT_CMPJSON (bson_as_extended_json (&dB, NULL), test->cE);
+
+      if (test->rE) {
+         ASSERT_CMPJSON (bson_as_json (&dB, NULL), test->rE);
+      }
+
+      bson_destroy (&dB);
+   }
+
+   if (test->rE) {
+      decode_rE =
+         bson_new_from_json ((const uint8_t *) test->rE, test->rE_len, &error);
+
+      ASSERT_OR_PRINT (decode_rE, error);
+      ASSERT_CMPJSON (bson_as_json (decode_rE, NULL), test->rE);
+
+      bson_destroy (decode_rE);
+   }
+
+   bson_destroy (decode_cE);
    bson_destroy (&cB);
 }
 

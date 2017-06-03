@@ -34,10 +34,14 @@ typedef struct _test_bson_type_t {
    uint32_t B_len;
    uint8_t *cB;         /* "canonical_bson" */
    uint32_t cB_len;
+   uint8_t *dB;         /* "degenerate_bson" */
+   uint32_t dB_len;
    const char *E;       /* "extjson" */
    uint32_t E_len;
    const char *cE;      /* "canonical_extjson" */
    uint32_t cE_len;
+   const char *rE;      /* "relaxed_extjson" */
+   uint32_t rE_len;
    bool lossy;
 } test_bson_type_t;
 

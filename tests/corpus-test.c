@@ -103,6 +103,10 @@ corpus_test (bson_t *scenario, test_bson_type_valid_cb valid)
                test.cB = corpus_test_unhexlify (&test_iter, &test.cB_len);
             }
 
+            if (!strcmp (key, "degenerate_bson")) {
+               test.dB = corpus_test_unhexlify (&test_iter, &test.dB_len);
+            }
+
             if (!strcmp (key, "extjson")) {
                test.E = bson_iter_utf8 (&test_iter, &test.E_len);
             }
@@ -111,12 +115,14 @@ corpus_test (bson_t *scenario, test_bson_type_valid_cb valid)
                test.cE = bson_iter_utf8 (&test_iter, &test.cE_len);
             }
 
+            if (!strcmp (key, "relaxed_extjson")) {
+               test.rE = bson_iter_utf8 (&test_iter, &test.rE_len);
+            }
+
             if (!strcmp (key, "lossy")) {
                test.lossy = bson_iter_bool (&test_iter);
             }
          }
-
-         ASSERT (test.B);
 
 #define SET_DEFAULT(a, b) \
    if (!test.a) {         \
