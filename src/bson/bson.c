@@ -2551,11 +2551,15 @@ _bson_as_json_visit_double_common (const bson_iter_t *iter,
    bson_string_t *str = state->str;
    uint32_t start_len;
 
+   /* wrap inf or nan in $numberDouble - old platforms have no isinf or isnan */
+   if (v_double != v_double || v_double * 0 != 0) {
+      legacy = false;
+   }
+
    if (!legacy) {
       bson_string_append (state->str, "{ \"$numberDouble\" : \"");
    }
 
-   /* portable: some old platforms have no isinf or isnan */
    if (v_double != v_double) {
       bson_string_append (str, "NaN");
    } else if (v_double * 0 != 0) {
