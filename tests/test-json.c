@@ -1463,8 +1463,8 @@ test_bson_json_number (void)
    bson_error_t error;
    bson_iter_t iter;
 
-   ASSERT_OR_PRINT (
-      bson_init_from_json (&b, "{ \"x\": 1 }", -1, &error), error);
+   ASSERT_OR_PRINT (bson_init_from_json (&b, "{ \"x\": 1 }", -1, &error),
+                    error);
 
    BSON_ASSERT (bson_iter_init_find (&iter, &b, "x"));
    BSON_ASSERT (BSON_ITER_HOLDS_INT32 (&iter));
@@ -1969,9 +1969,11 @@ test_bson_json_timestamp (void)
    BSON_APPEND_TIMESTAMP (
       &compare, "ts", (uint32_t) 1486785977, (uint32_t) 1234);
 
-   /* 1486785977 << 32 | 1234 */
    r = bson_init_from_json (
-      &b, "{\"ts\": {\"$timestamp\": \"6385697147366409426\"}}", -1, &error);
+      &b,
+      "{\"ts\": {\"$timestamp\": {\"t\": 1486785977, \"i\": 1234}}}",
+      -1,
+      &error);
 
    if (!r) {
       fprintf (stderr, "%s\n", error.message);

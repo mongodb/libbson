@@ -671,18 +671,6 @@ _bson_json_read_string (bson_json_reader_t *reader, /* IN */
       BASIC_CB_BAIL_IF_NOT_NORMAL ("string");
       bson_append_utf8 (
          STACK_BSON_CHILD, key, (int) len, (const char *) val, (int) vlen);
-   } else if (rs == BSON_JSON_IN_BSON_TYPE_TIMESTAMP_STARTMAP) {
-      /* new-style "key" : {"$timestamp": "180388626433" } */
-      int64_t v64;
-      if (!_bson_json_read_int64 (reader, val, vlen, &v64)) {
-         _bson_json_read_corrupt (reader, "Invalid timestamp: \"%s\"", val);
-         return;
-      }
-
-      bson->bson_type_data.timestamp.has_t = true;
-      bson->bson_type_data.timestamp.has_i = true;
-      bson->bson_type_data.timestamp.t = (uint32_t) (v64 >> 32);
-      bson->bson_type_data.timestamp.i = (uint32_t) v64;
    } else if (rs == BSON_JSON_IN_BSON_TYPE_SCOPE_STARTMAP ||
               rs == BSON_JSON_IN_BSON_TYPE_DBPOINTER_STARTMAP) {
       _bson_json_read_set_error (
@@ -1366,13 +1354,6 @@ _bson_json_read_end_map (bson_json_reader_t *reader) /* IN */
 
       _bson_json_read_append_timestamp (reader, bson);
       return;
-   } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_TIMESTAMP_STARTMAP) {
-      bson_append_timestamp (STACK_BSON_CHILD,
-                             bson->key,
-                             (int) bson->key_buf.len,
-                             bson->bson_type_data.timestamp.t,
-                             bson->bson_type_data.timestamp.i);
-      bson->read_state = BSON_JSON_REGULAR;
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_TIMESTAMP_ENDMAP) {
       bson->read_state = BSON_JSON_REGULAR;
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_DATE_NUMBERLONG) {

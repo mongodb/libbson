@@ -87,14 +87,6 @@ _bson_as_json_visit_document (const bson_iter_t *iter,
                               const bson_t *v_document,
                               void *data);
 
-
-static uint64_t
-_int64_timestamp (uint32_t timestamp, uint32_t increment)
-{
-   return (((uint64_t) timestamp) << 32) | (uint64_t) increment;
-}
-
-
 /*
  * Globals.
  */
@@ -1673,7 +1665,8 @@ bson_append_timestamp (bson_t *bson,
       key_length = (int) strlen (key);
    }
 
-   value = BSON_UINT64_TO_LE (_int64_timestamp (timestamp, increment));
+   value = ((((uint64_t) timestamp) << 32) | ((uint64_t) increment));
+   value = BSON_UINT64_TO_LE (value);
 
    return _bson_append (bson,
                         4,
