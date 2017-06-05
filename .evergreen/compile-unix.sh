@@ -124,7 +124,11 @@ fi
 
 
 CFLAGS="$CFLAGS" CC="$CC" $SCAN_BUILD $CONFIGURE_SCRIPT $CONFIGURE_FLAGS
-$SCAN_BUILD make $TARGET TEST_ARGS="--no-fork -d -F test-results.json" 2>error.log
+# Write stderr to error.log and to console.
+mkfifo pipe
+tee error.log < pipe &
+$SCAN_BUILD make $TARGET TEST_ARGS="--no-fork -d -F test-results.json" 2>pipe
+rm pipe
 
 if [ "$COVERAGE" ]; then
    case "$CC" in
