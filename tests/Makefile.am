@@ -21,7 +21,6 @@ test_libbson_SOURCES = \
 	tests/test-oid.c \
 	tests/test-reader.c \
 	tests/test-string.c \
-	tests/test-type.c \
 	tests/test-utf8.c \
 	tests/test-value.c \
 	tests/test-version.c \

@@ -68,9 +68,9 @@ test_bson_type_decimal128 (test_bson_type_t *test)
    ASSERT_CMPUINT8 (bson_get_data (&canonical_bson), test->cB);
 
    extjson =
-      bson_new_from_json ((const uint8_t *) test->E, test->E_len, &error);
+      bson_new_from_json ((const uint8_t *) test->E, -1, &error);
    canonical_extjson =
-      bson_new_from_json ((const uint8_t *) test->cE, test->cE_len, &error);
+      bson_new_from_json ((const uint8_t *) test->cE, -1, &error);
 
    /* B->cE */
    ASSERT_CMPJSON (bson_as_json (&bson, NULL), test->cE);

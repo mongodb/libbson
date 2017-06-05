@@ -95,10 +95,6 @@ corpus_test (bson_t *scenario, test_bson_type_valid_cb valid)
                corpus_test_print_description (test.test_description);
             }
 
-            if (!strcmp (key, "bson")) {
-               test.B = corpus_test_unhexlify (&test_iter, &test.B_len);
-            }
-
             if (!strcmp (key, "canonical_bson")) {
                test.cB = corpus_test_unhexlify (&test_iter, &test.cB_len);
             }
@@ -107,16 +103,12 @@ corpus_test (bson_t *scenario, test_bson_type_valid_cb valid)
                test.dB = corpus_test_unhexlify (&test_iter, &test.dB_len);
             }
 
-            if (!strcmp (key, "extjson")) {
-               test.E = bson_iter_utf8 (&test_iter, &test.E_len);
-            }
-
             if (!strcmp (key, "canonical_extjson")) {
-               test.cE = bson_iter_utf8 (&test_iter, &test.cE_len);
+               test.cE = bson_iter_utf8 (&test_iter, NULL);
             }
 
             if (!strcmp (key, "relaxed_extjson")) {
-               test.rE = bson_iter_utf8 (&test_iter, &test.rE_len);
+               test.rE = bson_iter_utf8 (&test_iter, NULL);
             }
 
             if (!strcmp (key, "lossy")) {
@@ -124,24 +116,11 @@ corpus_test (bson_t *scenario, test_bson_type_valid_cb valid)
             }
          }
 
-#define SET_DEFAULT(a, b) \
-   if (!test.a) {         \
-      test.a = test.b;    \
-   }
-
-         SET_DEFAULT (cB, B);
-         SET_DEFAULT (cB_len, B_len);
-         SET_DEFAULT (cE, E);
-         SET_DEFAULT (cE_len, E_len);
-
          /* execute the test callback */
          valid (&test);
 
-         if (test.cB != test.B) {
-            bson_free (test.cB);
-         }
-
-         bson_free (test.B);
+         bson_free (test.cB);
+         bson_free (test.dB);
       }
    }
 }

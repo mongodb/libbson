@@ -84,11 +84,9 @@ test_bson_corpus (test_bson_type_t *test)
    bson_t *decode_rE;
    bson_error_t error;
 
-   BSON_ASSERT (!test->B); /* not used in BSON Corpus Tests */
    BSON_ASSERT (test->cB);
    BSON_ASSERT (test->cE);
 
-   /* TODO: need rE_len and so on ? */
    for (skip = SKIPPED_CORPUS_TESTS; skip->scenario != NULL; skip++) {
       if (!strcmp (skip->scenario, test->scenario_description) &&
           !strcmp (skip->test, test->test_description)) {
@@ -109,7 +107,7 @@ test_bson_corpus (test_bson_type_t *test)
    }
 
    decode_cE =
-      bson_new_from_json ((const uint8_t *) test->cE, test->cE_len, &error);
+      bson_new_from_json ((const uint8_t *) test->cE, -1, &error);
 
    ASSERT_OR_PRINT (decode_cE, error);
 
@@ -131,7 +129,7 @@ test_bson_corpus (test_bson_type_t *test)
 
    if (test->rE) {
       decode_rE =
-         bson_new_from_json ((const uint8_t *) test->rE, test->rE_len, &error);
+         bson_new_from_json ((const uint8_t *) test->rE, -1, &error);
 
       ASSERT_OR_PRINT (decode_rE, error);
       ASSERT_CMPJSON (bson_as_json (decode_rE, NULL), test->rE);

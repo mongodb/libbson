@@ -259,13 +259,6 @@ if (ENABLE_TESTS)
          ${SOURCE_DIR}/tests/corpus-test.h
          ${SOURCE_DIR}/tests/TestSuite.c
          ${SOURCE_DIR}/tests/TestSuite.h
-         ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-1.json
-         ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-2.json
-         ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-3.json
-         ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-4.json
-         ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-5.json
-         ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-6.json
-         ${SOURCE_DIR}/tests/json/type/decimal128/decimal128-7.json
          ${SOURCE_DIR}/tests/test-libbson.c
          ${SOURCE_DIR}/tests/test-atomic.c
          ${SOURCE_DIR}/tests/test-bson.c
@@ -280,7 +273,6 @@ if (ENABLE_TESTS)
          ${SOURCE_DIR}/tests/test-oid.c
          ${SOURCE_DIR}/tests/test-reader.c
          ${SOURCE_DIR}/tests/test-string.c
-         ${SOURCE_DIR}/tests/test-type.c
          ${SOURCE_DIR}/tests/test-utf8.c
          ${SOURCE_DIR}/tests/test-value.c
          ${SOURCE_DIR}/tests/test-version.c
