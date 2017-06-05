@@ -484,14 +484,26 @@ _bson_json_read_boolean (bson_json_reader_t *reader, /* IN */
 }
 
 
+/* sign is -1 or 1 */
 static void
-_bson_json_read_integer (bson_json_reader_t *reader, /* IN */
-                         int64_t val)                /* IN */
+_bson_json_read_integer (bson_json_reader_t *reader, uint64_t val, int64_t sign)
 {
    bson_json_read_state_t rs;
    bson_json_read_bson_state_t bs;
 
    BASIC_CB_PREAMBLE;
+
+   if (sign == 1 && val > INT64_MAX) {
+      _bson_json_read_set_error (
+         reader, "Number \"%" PRIu64 "\" is out of range", val);
+
+      return;
+   } else if (sign == -1 && val > ((uint64_t) INT64_MAX + 1)) {
+      _bson_json_read_set_error (
+         reader, "Number \"-%" PRIu64 "\" is out of range", val);
+
+      return;
+   }
 
    rs = bson->read_state;
    bs = bson->bson_state;
@@ -499,30 +511,63 @@ _bson_json_read_integer (bson_json_reader_t *reader, /* IN */
    if (rs == BSON_JSON_REGULAR) {
       BASIC_CB_BAIL_IF_NOT_NORMAL ("integer");
 
-      if (val <= INT32_MAX && val >= INT32_MIN) {
-         bson_append_int32 (STACK_BSON_CHILD, key, (int) len, (int) val);
+      if (val <= INT32_MAX || (sign == -1 && val <= (uint64_t) INT32_MAX + 1)) {
+         bson_append_int32 (
+            STACK_BSON_CHILD, key, (int) len, (int) (val * sign));
+      } else if (sign == -1) {
+         bson_append_int64 (STACK_BSON_CHILD, key, (int) len, (int64_t) -val);
       } else {
-         bson_append_int64 (STACK_BSON_CHILD, key, (int) len, val);
+         bson_append_int64 (STACK_BSON_CHILD, key, (int) len, (int64_t) val);
       }
    } else if (rs == BSON_JSON_IN_BSON_TYPE ||
               rs == BSON_JSON_IN_BSON_TYPE_TIMESTAMP_VALUES) {
       switch (bs) {
       case BSON_JSON_LF_DATE:
          bson->bson_type_data.date.has_date = true;
-         bson->bson_type_data.date.date = val;
+         bson->bson_type_data.date.date = sign * val;
          break;
       case BSON_JSON_LF_TIMESTAMP_T:
+         if (sign == -1) {
+            _bson_json_read_set_error (
+               reader, "Invalid timestamp value: \"-%" PRIu64 "\"", val);
+            return;
+         }
+
          bson->bson_type_data.timestamp.has_t = true;
          bson->bson_type_data.timestamp.t = (uint32_t) val;
          break;
       case BSON_JSON_LF_TIMESTAMP_I:
+         if (sign == -1) {
+            _bson_json_read_set_error (
+               reader, "Invalid timestamp value: \"-%" PRIu64 "\"", val);
+            return;
+         }
+
          bson->bson_type_data.timestamp.has_i = true;
          bson->bson_type_data.timestamp.i = (uint32_t) val;
          break;
       case BSON_JSON_LF_MINKEY:
+         if (sign == -1) {
+            _bson_json_read_set_error (
+               reader, "Invalid MinKey value: \"-%" PRIu64 "\"", val);
+            return;
+         } else if (val != 1) {
+            _bson_json_read_set_error (
+               reader, "Invalid MinKey value: \"%" PRIu64 "\"", val);
+         }
+
          bson->bson_type_data.minkey.has_minkey = true;
          break;
       case BSON_JSON_LF_MAXKEY:
+         if (sign == -1) {
+            _bson_json_read_set_error (
+               reader, "Invalid MinKey value: \"-%" PRIu64 "\"", val);
+            return;
+         } else if (val != 1) {
+            _bson_json_read_set_error (
+               reader, "Invalid MinKey value: \"%" PRIu64 "\"", val);
+         }
+
          bson->bson_type_data.maxkey.has_maxkey = true;
          break;
       case BSON_JSON_LF_REGEX:
@@ -1590,13 +1635,11 @@ _pop_callback (jsonsl_t json,
             _bson_json_read_double (reader, d);
          }
       } else if (state->special_flags & JSONSL_SPECIALf_NUMERIC) {
-         int64_t i = state->nelem;
          /* jsonsl puts the unsigned value in state->nelem */
-         if (state->special_flags & JSONSL_SPECIALf_SIGNED) {
-            i *= -1;
-         }
-
-         _bson_json_read_integer (reader, i);
+         _bson_json_read_integer (
+            reader,
+            state->nelem,
+            state->special_flags & JSONSL_SPECIALf_SIGNED ? -1 : 1);
       } else if (state->special_flags & JSONSL_SPECIALf_BOOLEAN) {
          _bson_json_read_boolean (reader, obj_text[0] == 't' ? 1 : 0);
       } else if (state->special_flags & JSONSL_SPECIALf_NULL) {

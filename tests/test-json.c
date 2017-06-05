@@ -1456,8 +1456,125 @@ test_bson_json_uescape_bad (void)
    bson_destroy (&b);
 }
 
+
 static void
-test_bson_json_number (void)
+test_bson_json_int32 (void)
+{
+   bson_t b;
+   bson_iter_t iter;
+   bson_error_t error;
+
+   /* INT32_MAX */
+   ASSERT_OR_PRINT (
+      bson_init_from_json (&b, "{ \"x\": 2147483647 }", -1, &error),
+      error);
+
+   BSON_ASSERT (bson_iter_init_find (&iter, &b, "x"));
+   BSON_ASSERT (BSON_ITER_HOLDS_INT32 (&iter));
+   ASSERT_CMPINT32 (
+      bson_iter_int32 (&iter), ==, (int32_t) 2147483647LL);
+   bson_destroy (&b);
+
+   /* INT32_MIN */
+   ASSERT_OR_PRINT (
+      bson_init_from_json (&b, "{ \"x\": -2147483648 }", -1, &error),
+      error);
+
+   BSON_ASSERT (bson_iter_init_find (&iter, &b, "x"));
+   BSON_ASSERT (BSON_ITER_HOLDS_INT32 (&iter));
+   ASSERT_CMPINT32 (
+      bson_iter_int32 (&iter), ==, (int32_t) -2147483648LL);
+   bson_destroy (&b);
+
+   /* INT32_MAX + 1 */
+   ASSERT_OR_PRINT (
+      bson_init_from_json (&b, "{ \"x\": 2147483648 }", -1, &error),
+      error);
+
+   BSON_ASSERT (bson_iter_init_find (&iter, &b, "x"));
+   BSON_ASSERT (BSON_ITER_HOLDS_INT64 (&iter));
+   ASSERT_CMPINT64 (
+      bson_iter_int64 (&iter), ==, (int64_t) 2147483648LL);
+   bson_destroy (&b);
+
+   /* INT32_MIN - 1 */
+   ASSERT_OR_PRINT (
+      bson_init_from_json (&b, "{ \"x\": -2147483649 }", -1, &error),
+      error);
+
+   BSON_ASSERT (bson_iter_init_find (&iter, &b, "x"));
+   BSON_ASSERT (BSON_ITER_HOLDS_INT64 (&iter));
+   ASSERT_CMPINT64 (
+      bson_iter_int64 (&iter), ==, (int64_t) -2147483649LL);
+   bson_destroy (&b);
+}
+
+
+static void
+test_bson_json_int64 (void)
+{
+   bson_t b;
+   bson_iter_t iter;
+   bson_error_t error;
+
+   /* INT64_MAX */
+   ASSERT_OR_PRINT (
+      bson_init_from_json (&b, "{ \"x\": 9223372036854775807 }", -1, &error),
+      error);
+
+   BSON_ASSERT (bson_iter_init_find (&iter, &b, "x"));
+   BSON_ASSERT (BSON_ITER_HOLDS_INT64 (&iter));
+   ASSERT_CMPINT64 (
+      bson_iter_int64 (&iter), ==, (int64_t) 9223372036854775807LL);
+   bson_destroy (&b);
+
+   /* INT64_MIN */
+   ASSERT_OR_PRINT (
+      bson_init_from_json (&b, "{ \"x\": -9223372036854775808 }", -1, &error),
+      error);
+
+   BSON_ASSERT (bson_iter_init_find (&iter, &b, "x"));
+   BSON_ASSERT (BSON_ITER_HOLDS_INT64 (&iter));
+   ASSERT_CMPINT64 (
+      bson_iter_int64 (&iter), ==, (int64_t) INT64_MIN);
+   bson_destroy (&b);
+
+   /* INT64_MAX + 1 */
+   BSON_ASSERT (
+      !bson_init_from_json (&b, "{ \"x\": 9223372036854775808 }", -1, &error));
+   ASSERT_ERROR_CONTAINS (error,
+                          BSON_ERROR_JSON,
+                          BSON_JSON_ERROR_READ_INVALID_PARAM,
+                          "Number \"9223372036854775808\" is out of range");
+
+   /* INT64_MIN - 1 */
+   BSON_ASSERT (
+      !bson_init_from_json (&b, "{ \"x\": -9223372036854775809 }", -1, &error));
+   ASSERT_ERROR_CONTAINS (error,
+                          BSON_ERROR_JSON,
+                          BSON_JSON_ERROR_READ_INVALID_PARAM,
+                          "Number \"-9223372036854775809\" is out of range");
+
+   BSON_ASSERT (
+      !bson_init_from_json (&b, "{ \"x\": 10000000000000000000 }", -1, &error));
+   ASSERT_ERROR_CONTAINS (error,
+                          BSON_ERROR_JSON,
+                          BSON_JSON_ERROR_READ_INVALID_PARAM,
+                          "Number \"10000000000000000000\" is out of range");
+
+   /* INT64_MIN - 2 */
+   BSON_ASSERT (!bson_init_from_json (
+      &b, "{ \"x\": -10000000000000000000 }", -1, &error));
+
+   ASSERT_ERROR_CONTAINS (error,
+                          BSON_ERROR_JSON,
+                          BSON_JSON_ERROR_READ_INVALID_PARAM,
+                          "Number \"-10000000000000000000\" is out of range");
+}
+
+
+static void
+test_bson_json_double (void)
 {
    bson_t b;
    bson_error_t error;
@@ -2122,7 +2239,9 @@ test_json_install (TestSuite *suite)
       suite, "/bson/json/read/uescape/key", test_bson_json_uescape_key);
    TestSuite_Add (
       suite, "/bson/json/read/uescape/bad", test_bson_json_uescape_bad);
-   TestSuite_Add (suite, "/bson/json/read/double", test_bson_json_number);
+   TestSuite_Add (suite, "/bson/json/read/int32", test_bson_json_int32);
+   TestSuite_Add (suite, "/bson/json/read/int64", test_bson_json_int64);
+   TestSuite_Add (suite, "/bson/json/read/double", test_bson_json_double);
    TestSuite_Add (
       suite, "/bson/json/read/double/overflow", test_bson_json_double_overflow);
    TestSuite_Add (suite, "/bson/json/read/double/nan", test_bson_json_nan);
