@@ -141,8 +141,8 @@ extern "C" {
       size_t i = 0;                                                        \
       char *a = (char *) _a;                                               \
       char *b = (char *) _b;                                               \
-      char *aa = bson_malloc0 (strlen (a));                                \
-      char *bb = bson_malloc0 (strlen (b));                                \
+      char *aa = bson_malloc0 (strlen (a) + 1);                            \
+      char *bb = bson_malloc0 (strlen (b) + 1);                            \
       char *f = a;                                                         \
       do {                                                                 \
          while (isspace (*a))                                              \
