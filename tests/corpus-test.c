@@ -107,6 +107,10 @@ corpus_test (bson_t *scenario, test_bson_type_valid_cb valid)
                test.cE = bson_iter_utf8 (&test_iter, NULL);
             }
 
+            if (!strcmp (key, "degenerate_extjson")) {
+               test.dE = bson_iter_utf8 (&test_iter, NULL);
+            }
+
             if (!strcmp (key, "relaxed_extjson")) {
                test.rE = bson_iter_utf8 (&test_iter, NULL);
             }

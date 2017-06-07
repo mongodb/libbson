@@ -81,6 +81,7 @@ test_bson_corpus (test_bson_type_t *test)
    bson_t cB;
    bson_t dB;
    bson_t *decode_cE;
+   bson_t *decode_dE;
    bson_t *decode_rE;
    bson_error_t error;
 
@@ -125,6 +126,16 @@ test_bson_corpus (test_bson_type_t *test)
       }
 
       bson_destroy (&dB);
+   }
+
+   if (test->dE) {
+      decode_dE =
+         bson_new_from_json ((const uint8_t *) test->dE, -1, &error);
+
+      ASSERT_OR_PRINT (decode_dE, error);
+      ASSERT_CMPJSON (bson_as_json (decode_dE, NULL), test->cE);
+
+      bson_destroy (decode_dE);
    }
 
    if (test->rE) {

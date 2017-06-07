@@ -36,6 +36,7 @@ typedef struct _test_bson_type_t {
    uint32_t dB_len;
    const char *cE;      /* "canonical_extjson" */
    const char *rE;      /* "relaxed_extjson" */
+   const char *dE;      /* "degenerate_extjson" */
    bool lossy;
 } test_bson_type_t;
 
