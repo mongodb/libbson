@@ -636,7 +636,7 @@ test_bson_json_read (void)
         \"$options\" : \"ism\" \n\
       }, \n\
       \"date\" : { \n\
-        \"$date\" : 10000 \n\
+        \"$date\" : \"1970-01-01T00:00:10Z\" \n\
       }, \n\
       \"ref\" : { \n\
         \"$ref\" : \"foo\", \n\
@@ -1998,8 +1998,6 @@ test_bson_json_date (void)
       "{ \"dt\" : { \"$date\" : \"1970-01-01T00:00:00.000Z\" } }", 0);
    test_bson_json_date_check (
       "{ \"dt\" : { \"$date\" : \"1969-12-31T16:00:00.000-0800\" } }", 0);
-   test_bson_json_date_check ("{ \"dt\" : { \"$date\" : -62135593139000 } }",
-                              -62135593139000);
    test_bson_json_date_check (
       "{ \"dt\" : { \"$date\" : { \"$numberLong\" : \"-62135593139000\" } } }",
       -62135593139000);
