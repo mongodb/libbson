@@ -714,10 +714,12 @@ _bson_json_read_int64 (bson_json_reader_t *reader, /* IN */
    *v64 = bson_ascii_strtoll ((const char *) val, &endptr, 10);
 
    if (((*v64 == INT64_MIN) || (*v64 == INT64_MAX)) && (errno == ERANGE)) {
+      _bson_json_read_set_error (reader, "Number \"%s\" is out of range", val);
       return false;
    }
 
    if (endptr != ((const char *) val + vlen)) {
+      _bson_json_read_set_error (reader, "Number \"%s\" is invalid", val);
       return false;
    }
 
@@ -855,7 +857,7 @@ _bson_json_read_string (bson_json_reader_t *reader, /* IN */
       case BSON_JSON_LF_INT32: {
          int64_t v64;
          if (!_bson_json_read_int64 (reader, val, vlen, &v64)) {
-            goto BAD_PARSE;
+            return;
          }
 
          if (v64 < INT32_MIN || v64 > INT32_MAX) {
@@ -871,7 +873,7 @@ _bson_json_read_string (bson_json_reader_t *reader, /* IN */
       case BSON_JSON_LF_INT64: {
          int64_t v64;
          if (!_bson_json_read_int64 (reader, val, vlen, &v64)) {
-            goto BAD_PARSE;
+            return;
          }
 
          if (bson->read_state == BSON_JSON_IN_BSON_TYPE) {

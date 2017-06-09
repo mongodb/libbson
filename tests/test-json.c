@@ -1125,13 +1125,11 @@ test_bson_json_number_long (void)
 {
    bson_error_t error;
    bson_iter_t iter;
-   const char *json =
-      "{ \"key\": { \"$numberLong\": \"4611686018427387904\" }}";
-   const char *json2 = "{ \"key\": { \"$numberLong\": \"461168601abcd\" }}";
    bson_t b;
    bool r;
 
-   r = bson_init_from_json (&b, json, -1, &error);
+   r = bson_init_from_json (
+      &b, "{\"key\": {\"$numberLong\": \"4611686018427387904\"}}", -1, &error);
    if (!r)
       fprintf (stderr, "%s\n", error.message);
    BSON_ASSERT (r);
@@ -1141,7 +1139,66 @@ test_bson_json_number_long (void)
    BSON_ASSERT (bson_iter_int64 (&iter) == 4611686018427387904LL);
    bson_destroy (&b);
 
-   BSON_ASSERT (!bson_init_from_json (&b, json2, -1, &error));
+   BSON_ASSERT (!bson_init_from_json (
+      &b, "{\"key\": {\"$numberLong\": \"461168601abcd\"}}", -1, &error));
+   BSON_ASSERT (!bson_init_from_json (
+      &b, "{\"key\": {\"$numberLong\": \"461168601abcd\"}}", -1, &error));
+
+   /* INT64_MAX */
+   r = bson_init_from_json (
+      &b, "{\"x\": {\"$numberLong\": \"9223372036854775807\"}}", -1, &error);
+   ASSERT_OR_PRINT (r, error);
+   BSON_ASSERT (bson_iter_init_find (&iter, &b, "x"));
+   BSON_ASSERT (BSON_ITER_HOLDS_INT64 (&iter));
+   ASSERT_CMPINT64 (bson_iter_int64 (&iter), ==, (int64_t) INT64_MAX);
+
+   /* INT64_MIN */
+   r = bson_init_from_json (
+      &b, "{\"x\": {\"$numberLong\": \"-9223372036854775808\"}}", -1, &error);
+   ASSERT_OR_PRINT (r, error);
+
+   BSON_ASSERT (bson_iter_init_find (&iter, &b, "x"));
+   BSON_ASSERT (BSON_ITER_HOLDS_INT64 (&iter));
+   ASSERT_CMPINT64 (bson_iter_int64 (&iter), ==, (int64_t) INT64_MIN);
+   bson_destroy (&b);
+
+   /* INT64_MAX + 1 */
+   r = bson_init_from_json (
+      &b, "{\"x\": {\"$numberLong\": \"9223372036854775808\"}}", -1, &error);
+
+   BSON_ASSERT (!r);
+   ASSERT_ERROR_CONTAINS (error,
+                          BSON_ERROR_JSON,
+                          BSON_JSON_ERROR_READ_INVALID_PARAM,
+                          "Number \"9223372036854775808\" is out of range");
+
+   /* INT64_MIN - 1 */
+   r = bson_init_from_json (
+      &b, "{\"x\": {\"$numberLong\": \"-9223372036854775809\"}}", -1, &error);
+
+   BSON_ASSERT (!r);
+   ASSERT_ERROR_CONTAINS (error,
+                          BSON_ERROR_JSON,
+                          BSON_JSON_ERROR_READ_INVALID_PARAM,
+                          "Number \"-9223372036854775809\" is out of range");
+
+   r = bson_init_from_json (
+      &b, "{\"x\": {\"$numberLong\": \"10000000000000000000\"}}", -1, &error);
+
+   BSON_ASSERT (!r);
+   ASSERT_ERROR_CONTAINS (error,
+                          BSON_ERROR_JSON,
+                          BSON_JSON_ERROR_READ_INVALID_PARAM,
+                          "Number \"10000000000000000000\" is out of range");
+
+   /* INT64_MIN - 2 */
+   r = bson_init_from_json (&b, "{\"x\": -10000000000000000000}", -1, &error);
+
+   BSON_ASSERT (!r);
+   ASSERT_ERROR_CONTAINS (error,
+                          BSON_ERROR_JSON,
+                          BSON_JSON_ERROR_READ_INVALID_PARAM,
+                          "Number \"-10000000000000000000\" is out of range");
 }
 
 static void
