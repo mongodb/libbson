@@ -5,6 +5,10 @@ project (libbson C)
 option(ENABLE_TESTS "Build libbson tests." ON)
 option(ENABLE_EXAMPLES "Build libbson examples." OFF)
 
+if (NOT WIN32)
+    message(WARNING "CMake support is experimental and may not produce production quality artifacts")
+endif ()
+
 include(CheckFunctionExists)
 include(CheckIncludeFile)
 include(CheckStructHasMember)

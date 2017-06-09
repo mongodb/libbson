@@ -1,6 +1,8 @@
 Next release
 ============
 
+  * Minimum required CMake version has been increased to 3.1.
+  * CMake remains experimental on non-Windows platforms and issues a warning now
   * New functions
     * bson_strcasecmp, a portable equivalent of strcasecmp.
     * bson_iter_as_double, cast the current value to double.
