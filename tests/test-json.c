@@ -1466,46 +1466,38 @@ test_bson_json_int32 (void)
 
    /* INT32_MAX */
    ASSERT_OR_PRINT (
-      bson_init_from_json (&b, "{ \"x\": 2147483647 }", -1, &error),
-      error);
+      bson_init_from_json (&b, "{ \"x\": 2147483647 }", -1, &error), error);
 
    BSON_ASSERT (bson_iter_init_find (&iter, &b, "x"));
    BSON_ASSERT (BSON_ITER_HOLDS_INT32 (&iter));
-   ASSERT_CMPINT32 (
-      bson_iter_int32 (&iter), ==, (int32_t) 2147483647LL);
+   ASSERT_CMPINT32 (bson_iter_int32 (&iter), ==, (int32_t) 2147483647LL);
    bson_destroy (&b);
 
    /* INT32_MIN */
    ASSERT_OR_PRINT (
-      bson_init_from_json (&b, "{ \"x\": -2147483648 }", -1, &error),
-      error);
+      bson_init_from_json (&b, "{ \"x\": -2147483648 }", -1, &error), error);
 
    BSON_ASSERT (bson_iter_init_find (&iter, &b, "x"));
    BSON_ASSERT (BSON_ITER_HOLDS_INT32 (&iter));
-   ASSERT_CMPINT32 (
-      bson_iter_int32 (&iter), ==, (int32_t) -2147483648LL);
+   ASSERT_CMPINT32 (bson_iter_int32 (&iter), ==, (int32_t) -2147483648LL);
    bson_destroy (&b);
 
    /* INT32_MAX + 1 */
    ASSERT_OR_PRINT (
-      bson_init_from_json (&b, "{ \"x\": 2147483648 }", -1, &error),
-      error);
+      bson_init_from_json (&b, "{ \"x\": 2147483648 }", -1, &error), error);
 
    BSON_ASSERT (bson_iter_init_find (&iter, &b, "x"));
    BSON_ASSERT (BSON_ITER_HOLDS_INT64 (&iter));
-   ASSERT_CMPINT64 (
-      bson_iter_int64 (&iter), ==, (int64_t) 2147483648LL);
+   ASSERT_CMPINT64 (bson_iter_int64 (&iter), ==, (int64_t) 2147483648LL);
    bson_destroy (&b);
 
    /* INT32_MIN - 1 */
    ASSERT_OR_PRINT (
-      bson_init_from_json (&b, "{ \"x\": -2147483649 }", -1, &error),
-      error);
+      bson_init_from_json (&b, "{ \"x\": -2147483649 }", -1, &error), error);
 
    BSON_ASSERT (bson_iter_init_find (&iter, &b, "x"));
    BSON_ASSERT (BSON_ITER_HOLDS_INT64 (&iter));
-   ASSERT_CMPINT64 (
-      bson_iter_int64 (&iter), ==, (int64_t) -2147483649LL);
+   ASSERT_CMPINT64 (bson_iter_int64 (&iter), ==, (int64_t) -2147483649LL);
    bson_destroy (&b);
 }
 
@@ -1535,8 +1527,7 @@ test_bson_json_int64 (void)
 
    BSON_ASSERT (bson_iter_init_find (&iter, &b, "x"));
    BSON_ASSERT (BSON_ITER_HOLDS_INT64 (&iter));
-   ASSERT_CMPINT64 (
-      bson_iter_int64 (&iter), ==, (int64_t) INT64_MIN);
+   ASSERT_CMPINT64 (bson_iter_int64 (&iter), ==, (int64_t) INT64_MIN);
    bson_destroy (&b);
 
    /* INT64_MAX + 1 */
@@ -1619,7 +1610,7 @@ test_bson_json_double (void)
    BSON_ASSERT (BSON_ITER_HOLDS_DOUBLE (&iter));
    ASSERT_CMPDOUBLE (bson_iter_double (&iter), ==, 0.0);
 
-   /* check that "x" is -0.0. signbit not available on Solaris or VS 2010 */
+/* check that "x" is -0.0. signbit not available on Solaris or VS 2010 */
 #if !defined(__sun) && (!defined(_MSC_VER) || (_MSC_VER >= 1800))
    BSON_ASSERT (signbit (bson_iter_double (&iter)));
 #endif

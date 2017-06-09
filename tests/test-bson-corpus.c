@@ -137,8 +137,7 @@ test_bson_corpus (test_bson_type_t *test)
    }
 
    if (test->rE) {
-      decode_rE =
-         bson_new_from_json ((const uint8_t *) test->rE, -1, &error);
+      decode_rE = bson_new_from_json ((const uint8_t *) test->rE, -1, &error);
 
       ASSERT_OR_PRINT (decode_rE, error);
       ASSERT_CMPJSON (bson_as_json (decode_rE, NULL), test->rE);
