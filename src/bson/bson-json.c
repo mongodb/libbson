@@ -90,11 +90,17 @@ typedef struct {
 } bson_json_buf_t;
 
 
+typedef enum {
+   BSON_JSON_FRAME_ARRAY,
+   BSON_JSON_FRAME_DOC,
+   BSON_JSON_FRAME_SCOPE,
+   BSON_JSON_FRAME_DBPOINTER,
+} bson_json_frame_type_t;
+
+
 typedef struct {
    int i;
-   bool is_array;
-   bool is_scope;
-   bool is_dbpointer;
+   bson_json_frame_type_t type;
    bson_t bson;
 } bson_json_stack_frame_t;
 
@@ -223,62 +229,56 @@ _noop (void)
 #define STACK_BSON_PARENT STACK_BSON (-1)
 #define STACK_BSON_CHILD STACK_BSON (0)
 #define STACK_I STACK_ELE (0, i)
-#define STACK_IS_ARRAY STACK_ELE (0, is_array)
-#define STACK_IS_SCOPE STACK_ELE (0, is_scope)
-#define STACK_IS_DBPOINTER STACK_ELE (0, is_dbpointer)
-#define STACK_PUSH_ARRAY(statement)     \
-   do {                                 \
-      if (bson->n >= (STACK_MAX - 1)) { \
-         return;                        \
-      }                                 \
-      bson->n++;                        \
-      STACK_I = 0;                      \
-      STACK_IS_ARRAY = 1;               \
-      STACK_IS_SCOPE = 0;               \
-      STACK_IS_DBPOINTER = 0;           \
-      if (bson->n != 0) {               \
-         statement;                     \
-      }                                 \
+#define STACK_FRAME_TYPE STACK_ELE (0, type)
+#define STACK_IS_ARRAY (STACK_FRAME_TYPE == BSON_JSON_FRAME_ARRAY)
+#define STACK_IS_DOC (STACK_FRAME_TYPE == BSON_JSON_FRAME_DOC)
+#define STACK_IS_SCOPE (STACK_FRAME_TYPE == BSON_JSON_FRAME_SCOPE)
+#define STACK_IS_DBPOINTER (STACK_FRAME_TYPE == BSON_JSON_FRAME_DBPOINTER)
+#define STACK_PUSH_ARRAY(statement)             \
+   do {                                         \
+      if (bson->n >= (STACK_MAX - 1)) {         \
+         return;                                \
+      }                                         \
+      bson->n++;                                \
+      STACK_I = 0;                              \
+      STACK_FRAME_TYPE = BSON_JSON_FRAME_ARRAY; \
+      if (bson->n != 0) {                       \
+         statement;                             \
+      }                                         \
    } while (0)
-#define STACK_PUSH_DOC(statement)       \
-   do {                                 \
-      if (bson->n >= (STACK_MAX - 1)) { \
-         return;                        \
-      }                                 \
-      bson->n++;                        \
-      STACK_IS_ARRAY = 0;               \
-      STACK_IS_SCOPE = 0;               \
-      STACK_IS_DBPOINTER = 0;           \
-      if (bson->n != 0) {               \
-         statement;                     \
-      }                                 \
+#define STACK_PUSH_DOC(statement)             \
+   do {                                       \
+      if (bson->n >= (STACK_MAX - 1)) {       \
+         return;                              \
+      }                                       \
+      bson->n++;                              \
+      STACK_FRAME_TYPE = BSON_JSON_FRAME_DOC; \
+      if (bson->n != 0) {                     \
+         statement;                           \
+      }                                       \
    } while (0)
-#define STACK_PUSH_SCOPE(statement)     \
-   do {                                 \
-      if (bson->n >= (STACK_MAX - 1)) { \
-         return;                        \
-      }                                 \
-      bson->n++;                        \
-      STACK_IS_ARRAY = 0;               \
-      STACK_IS_SCOPE = 1;               \
-      STACK_IS_DBPOINTER = 0;           \
-      bson->code_data.in_scope = true;  \
-      if (bson->n != 0) {               \
-         statement;                     \
-      }                                 \
+#define STACK_PUSH_SCOPE(statement)             \
+   do {                                         \
+      if (bson->n >= (STACK_MAX - 1)) {         \
+         return;                                \
+      }                                         \
+      bson->n++;                                \
+      STACK_FRAME_TYPE = BSON_JSON_FRAME_SCOPE; \
+      bson->code_data.in_scope = true;          \
+      if (bson->n != 0) {                       \
+         statement;                             \
+      }                                         \
    } while (0)
-#define STACK_PUSH_DBPOINTER(statement) \
-   do {                                 \
-      if (bson->n >= (STACK_MAX - 1)) { \
-         return;                        \
-      }                                 \
-      bson->n++;                        \
-      STACK_IS_ARRAY = 0;               \
-      STACK_IS_SCOPE = 0;               \
-      STACK_IS_DBPOINTER = 1;           \
-      if (bson->n != 0) {               \
-         statement;                     \
-      }                                 \
+#define STACK_PUSH_DBPOINTER(statement)             \
+   do {                                             \
+      if (bson->n >= (STACK_MAX - 1)) {             \
+         return;                                    \
+      }                                             \
+      bson->n++;                                    \
+      STACK_FRAME_TYPE = BSON_JSON_FRAME_DBPOINTER; \
+      if (bson->n != 0) {                           \
+         statement;                                 \
+      }                                             \
    } while (0)
 #define STACK_POP_ARRAY(statement) \
    do {                            \
