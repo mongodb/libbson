@@ -64,6 +64,8 @@ AC_CHECK_TYPE([struct timespec], [AC_SUBST(BSON_HAVE_TIMESPEC, 1)], [], [#includ
 # Check for clock_gettime and if it needs -lrt
 AC_SUBST(BSON_HAVE_CLOCK_GETTIME, 0)
 AC_SEARCH_LIBS([clock_gettime], [rt], [AC_SUBST(BSON_HAVE_CLOCK_GETTIME, 1)])
+# Check if math functions need -lm
+AC_SEARCH_LIBS([floor], [m])
 
 
 # Check for pthreads. We might need to make this better to handle mingw,

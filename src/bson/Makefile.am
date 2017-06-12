@@ -89,12 +89,6 @@ libbson_la_SOURCES = \
 
 libbson_la_LIBADD =
 
-if !OS_WIN32
-libbson_la_LIBADD += $(PTHREAD_LIBS)
-else
-libbson_la_LIBADD += -lws2_32
-endif
-
 EXTRA_DIST += \
 	src/bson/bson-config.h.in \
 	src/bson/bson-version.h.in

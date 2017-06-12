@@ -36,24 +36,14 @@ AM_INIT_AUTOMAKE([foreign subdir-objects tar-ustar])
 m4_include([build/autotools/SetupAutomake.m4])
 
 # Substitute our dependencies into the pkg-config files.
-pkg_config_libs=""
-pkg_config_static_libs=""
+LIBBSON_LIBS=""
 if test "$os_win32" = "yes"; then
-    pkg_config_libs="${pkg_config_libs} -lws2_32"
-    pkg_config_static_libs="${pkg_config_libs}"
-else
-    pkg_config_static_libs="${pkg_config_static_libs} -lpthread"
-    if test "$os_darwin" != "yes"; then
-        pkg_config_static_libs="${pkg_config_static_libs} -lrt"
-    fi
-    pkg_config_static_libs="${pkg_config_static_libs} -lm"
+    LIBBSON_LIBS="${LIBBSON_LIBS} -lws2_32"
 fi
-CONFIG_LIBS="${pkg_config_libs}"
-CONFIG_STATIC_LIBS="${pkg_config_static_libs}"
-AC_SUBST(pkg_config_libs)
-AC_SUBST(pkg_config_static_libs)
-AC_SUBST(CONFIG_LIBS)
-AC_SUBST(CONFIG_STATIC_LIBS)
+# It is apparently legitimate to pass cflags to the linker
+LIBS="${LIBS} ${LIBBSON_LIBS} ${PTHREAD_LIBS} ${PTHREAD_CFLAGS}"
+LIBBSON_LIBS="${LIBS}"
+AC_SUBST(LIBBSON_LIBS)
 
 AC_CONFIG_FILES([
     Makefile

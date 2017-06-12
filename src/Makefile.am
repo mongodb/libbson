@@ -3,8 +3,7 @@ lib_LTLIBRARIES += libbson-1.0.la
 libbson_1_0_la_SOURCES =
 libbson_1_0_la_CPPFLAGS = "-DJSONSL_PARSE_NAN -DBSON_STATIC"
 libbson_1_0_la_LIBADD = \
-	libbson.la \
-	-lm
+	libbson.la
 libbson_1_0_la_LDFLAGS = \
 	$(OPTIMIZE_LDFLAGS) \
 	$(COVERAGE_LDFLAGS) \
