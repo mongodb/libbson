@@ -39,6 +39,3 @@ find_library(BSON_LIBRARY bson-1.0 PATHS "${PACKAGE_PREFIX_DIR}/lib" NO_DEFAULT_
 
 set (BSON_LIBRARIES ${BSON_LIBRARY})
 
-foreach (LIB @CONFIG_LIBS@)
-    list (APPEND BSON_LIBRARIES ${LIB})
-endforeach ()

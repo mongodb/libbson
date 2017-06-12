@@ -47,6 +47,7 @@ find_library(RT_LIBRARY rt)
 if (RT_LIBRARY)
    #set required libraries for CHECK_FUNCTION_EXISTS
    set(CMAKE_REQUIRED_LIBRARIES ${RT_LIBRARY})
+   set(BSON_LIBS ${BSON_LIBS} ${RT_LIBRARY})
 endif()
 
 # See https://public.kitware.com/Bug/view.php?id=15659
@@ -209,9 +210,17 @@ set_target_properties(bson_static PROPERTIES VERSION ${BSON_VERSION})
 set_target_properties(bson_shared PROPERTIES OUTPUT_NAME "bson-${BSON_API_VERSION}" PREFIX "lib")
 set_target_properties(bson_static PROPERTIES OUTPUT_NAME "bson-static-${BSON_API_VERSION}")
 
+# This wasn't added before as the targets didn't exist yet
 if (RT_LIBRARY)
-    target_link_libraries (bson_shared ${RT_LIBRARY})
-    target_link_libraries (bson_static ${RT_LIBRARY})
+   target_link_libraries (bson_shared ${RT_LIBRARY})
+   target_link_libraries (bson_static ${RT_LIBRARY})
+endif()
+
+find_library(M_LIBRARY m)
+if (M_LIBRARY)
+   target_link_libraries (bson_shared ${M_LIBRARY})
+   target_link_libraries (bson_static ${M_LIBRARY})
+   set(BSON_LIBS ${BSON_LIBS} ${M_LIBRARY})
 endif()
 
 
@@ -227,6 +236,9 @@ if (NOT UNIX)
    # gethostbyname
    target_link_libraries (bson_shared ws2_32)
    target_link_libraries (bson_static ws2_32)
+   # Can't find_library () system dependencies
+   # must be handled specially since we can't resolve them
+   set(BSON_SYSTEM_LIBS ${BSON_SYSTEM_LIBS} ws2_32)
 endif()
 
 if (ENABLE_TESTS)
@@ -315,34 +327,17 @@ install(
   DESTINATION ${BSON_HEADER_INSTALL_DIR}
 )
 
-if (WIN32)
-    set (CONFIG_LIBS ws2_32)
-    set (CONFIG_STATIC_LIBS ${CONFIG_LIBS})
-else ()
-    find_package (Threads REQUIRED)
-    set (CONFIG_LIBS ${CMAKE_THREAD_LIBS_INIT})
-    if (NOT APPLE)
-        set (CONFIG_LIBS ${CONFIG_LIBS} rt)
-    endif ()
-    set (CONFIG_STATIC_LIBS ${CONFIG_LIBS} m)
-endif ()
-
-# pkg-config needs libs joined by spaces not semicolons and must
-# start with "-l" if it's not already a flag
-foreach(FLAG ${CONFIG_LIBS})
-    if ( ${FLAG} MATCHES "^-" )
-        set(pkg_config_libs "${pkg_config_libs} ${FLAG}")
-    else ()
-        set(pkg_config_libs "${pkg_config_libs} -l${FLAG}")
-    endif ()
+set(LIBBSON_LIBS "")
+foreach(_lib ${CMAKE_C_IMPLICIT_LINK_LIBRARIES} ${BSON_LIBS})
+   if(_lib MATCHES ".*/.*" OR _lib MATCHES "^-")
+    set(LIBBSON_LIBS          "${LIBBSON_LIBS} ${_lib}")
+  else()
+    set(LIBBSON_LIBS          "${LIBBSON_LIBS} -l${_lib}")
+  endif()
 endforeach()
-
-foreach(FLAG ${CONFIG_STATIC_LIBS})
-    if ( ${FLAG} MATCHES "^-" )
-        set(pkg_config_static_libs "${pkg_config_static_libs} ${FLAG}")
-    else ()
-        set(pkg_config_static_libs "${pkg_config_static_libs} -l${FLAG}")
-    endif ()
+# System dependencies don't match the above regexs, but also don't want the -l
+foreach(_lib ${BSON_SYSTEM_LIBS})
+    set(LIBBSON_LIBS          "${LIBBSON_LIBS} ${_lib}")
 endforeach()
 
 set(VERSION "${BSON_VERSION}")
@@ -350,18 +345,18 @@ set(prefix "${CMAKE_INSTALL_PREFIX}")
 set(libdir "\${prefix}/lib")
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/src/libbson-1.0.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/libbson-1.0.pc
+    ${CMAKE_CURRENT_BINARY_DIR}/src/libbson-1.0.pc
 @ONLY)
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/src/libbson-static-1.0.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/libbson-static-1.0.pc
+    ${CMAKE_CURRENT_BINARY_DIR}/src/libbson-static-1.0.pc
 @ONLY)
 
 install(
     FILES
-      ${CMAKE_CURRENT_BINARY_DIR}/libbson-1.0.pc
-      ${CMAKE_CURRENT_BINARY_DIR}/libbson-static-1.0.pc
+      ${CMAKE_CURRENT_BINARY_DIR}/src/libbson-1.0.pc
+      ${CMAKE_CURRENT_BINARY_DIR}/src/libbson-static-1.0.pc
     DESTINATION
       lib/pkgconfig
 )
