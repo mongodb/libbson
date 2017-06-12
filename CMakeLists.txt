@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.1)
 
 project (libbson C)
 
@@ -214,13 +214,19 @@ if (RT_LIBRARY)
     target_link_libraries (bson_static ${RT_LIBRARY})
 endif()
 
-if (UNIX)
-    find_package (Threads)
-    target_link_libraries (bson_shared ${CMAKE_THREAD_LIBS_INIT})
-    target_link_libraries (bson_static ${CMAKE_THREAD_LIBS_INIT})
-else()
-    target_link_libraries (bson_shared ws2_32)
-    target_link_libraries (bson_static ws2_32)
+
+set(THREADS_PREFER_PTHREAD_FLAG 1)
+find_package (Threads REQUIRED)
+target_link_libraries(bson_shared Threads::Threads)
+target_link_libraries(bson_static Threads::Threads)
+if(CMAKE_USE_PTHREADS_INIT)
+   set(BSON_LIBS ${BSON_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+endif()
+
+if (NOT UNIX)
+   # gethostbyname
+   target_link_libraries (bson_shared ws2_32)
+   target_link_libraries (bson_static ws2_32)
 endif()
 
 if (ENABLE_TESTS)
