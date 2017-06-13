@@ -351,6 +351,9 @@ _bson_context_init (bson_context_t *context,    /* IN */
    /* ms's runtime is multithreaded by default, so no rand_r */
    srand (real_seed);
    context->seq32 = rand () & 0x007FFFF0;
+#elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__DragonFly__) || defined(__OpenBSD__)
+   arc4random_buf(&context->seq32, sizeof(context->seq32));
+   context->seq32 &= 0x007FFFF0;
 #else
    context->seq32 = rand_r (&real_seed) & 0x007FFFF0;
 #endif
