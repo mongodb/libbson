@@ -1203,6 +1203,11 @@ _bson_json_read_append_dbpointer (bson_json_reader_t *reader,    /* IN */
          }
 
          ns = bson_iter_utf8 (&iter, NULL);
+      } else {
+         _bson_json_read_set_error (reader,
+                                    "$dbPointer contains invalid key: \"%s\"",
+                                    bson_iter_key (&iter));
+         return;
       }
    }
 
