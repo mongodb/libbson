@@ -189,6 +189,32 @@ test_bson_corpus_cb (bson_t *scenario)
          bson_free (bson_str);
       }
    }
+
+   /* test invalid JSON */
+   if (bson_iter_init_find (&iter, scenario, "parseErrors")) {
+      bson_iter_recurse (&iter, &inner_iter);
+      while (bson_iter_next (&inner_iter)) {
+         bson_iter_t test;
+         const char *description = NULL;
+         const char *input = NULL;
+         uint32_t tmp = 0;
+
+         bson_iter_recurse (&inner_iter, &test);
+         while (bson_iter_next (&test)) {
+            if (!strcmp (bson_iter_key (&test), "description")) {
+               description = bson_iter_utf8 (&test, NULL);
+               corpus_test_print_description (description);
+            }
+
+            if (!strcmp (bson_iter_key (&test), "string")) {
+               input = bson_iter_utf8 (&test, &tmp);
+            }
+         }
+
+         ASSERT (input);
+         ASSERT (!bson_new_from_json ((uint8_t *) input, tmp, NULL));
+      }
+   }
 }
 
 void
