@@ -1102,26 +1102,21 @@ static void
 _bson_json_read_append_regex (bson_json_reader_t *reader,    /* IN */
                               bson_json_reader_bson_t *bson) /* IN */
 {
-   char *regex = NULL;
-   char *options = NULL;
-
    if (!bson->bson_type_data.regex.has_regex) {
-      _bson_json_read_set_error (
-         reader, "Missing $regex after $options in BSON_TYPE_REGEX");
+      _bson_json_read_set_error (reader, "Missing $regex after $options");
       return;
    }
 
-   regex = (char *) bson->bson_type_buf[0].buf;
-
-   if (bson->bson_type_data.regex.has_options) {
-      options = (char *) bson->bson_type_buf[1].buf;
+   if (!bson->bson_type_data.regex.has_options) {
+      _bson_json_read_set_error (reader, "Missing $options after $regex");
+      return;
    }
 
    if (!bson_append_regex (STACK_BSON_CHILD,
                            bson->key,
                            (int) bson->key_buf.len,
-                           regex,
-                           options)) {
+                           (char *) bson->bson_type_buf[0].buf,
+                           (char *) bson->bson_type_buf[1].buf)) {
       _bson_json_read_set_error (reader, "Error storing regex");
    }
 }
