@@ -19,6 +19,12 @@
             "canonical_extjson": "{\"a\" : {\"$regex\" : \"abc\", \"$options\" : \"im\"}}"
         },
         {
+            "description": "regex with options (keys reversed)",
+            "canonical_bson": "0F0000000B610061626300696D0000",
+            "canonical_extjson": "{\"a\" : {\"$regex\" : \"abc\", \"$options\" : \"im\"}}",
+            "degenerate_extjson": "{\"a\" : {\"$options\" : \"im\", \"$regex\" : \"abc\"}}"
+        },
+        {
             "description": "regex with slash",
             "canonical_bson": "110000000B610061622F636400696D0000",
             "canonical_extjson": "{\"a\" : {\"$regex\" : \"ab/cd\", \"$options\" : \"im\"}}"
@@ -27,7 +33,8 @@
             "description": "flags not alphabetized",
             "degenerate_bson": "100000000B6100616263006D69780000",
             "canonical_bson": "100000000B610061626300696D780000",
-            "canonical_extjson": "{\"a\" : {\"$regex\" : \"abc\", \"$options\" : \"imx\"}}"
+            "canonical_extjson": "{\"a\" : {\"$regex\" : \"abc\", \"$options\" : \"imx\"}}",
+            "degenerate_extjson": "{\"a\" : {\"$regex\" : \"abc\", \"$options\" : \"mix\"}}"
         },
         {
             "description" : "Required escapes",
