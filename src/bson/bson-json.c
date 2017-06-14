@@ -1031,7 +1031,7 @@ _bson_json_read_map_key (bson_json_reader_t *reader, /* IN */
          bson->bson_type = BSON_TYPE_TIMESTAMP;
          bson->read_state = BSON_JSON_IN_BSON_TYPE_TIMESTAMP_STARTMAP;
       } else if (!strcmp ("$dbPointer", (const char *) val)) {
-         /* start parsing "key": {"$dbPointer": ...}, save "key" for later */
+         /* start parsing "key": {"$dbPointer": {...}}, save "key" for later */
          _bson_json_buf_set (
             &bson->dbpointer_key, bson->key_buf.buf, bson->key_buf.len);
 
