@@ -86,7 +86,8 @@ clean-local:
 	-rm -rf $(CLEANFILES)
 
 uninstall-local:
-	-rmdir $(bsondocdir)/doc $(bsondocdir)/html
 	-rm -r $(bsondocdir)
+	-rm -rf $(DESTDIR)$(libdir)/libbson-static-1.0.a
 	-rm -rf $(DESTDIR)$(libdir)/cmake/libbson-1.0
-	-rm -rf $(DESTDIR)$(libdir)/cmake/libbson-1.0-static
+	-rm -rf $(DESTDIR)$(libdir)/cmake/libbson-static-1.0
+
