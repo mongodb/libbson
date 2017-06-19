@@ -595,12 +595,12 @@ buildvariants:
     - name: "debug-compile-c11"
 
 ## OSX
-- name: os-x-1010-64
-  display_name: "OSX 10.10 clang 64"
+- name: darwin
+  display_name: "Darwin, macOS (Apple LLVM)"
   expansions:
     CC: clang
   run_on:
-    - osx-1010
+    - macos-1012
   tasks:
     - name: "debug-compile"
     - name: "debug-compile-c99"

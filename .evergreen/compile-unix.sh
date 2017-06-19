@@ -87,7 +87,7 @@ case "$OS" in
    darwin)
       CFLAGS="$CFLAGS -Wno-unknown-pragmas"
       # llvm-cov is installed from brew
-      export PATH=/usr/local/opt/llvm/bin:$PATH
+      export PATH=$PATH:/usr/local/opt/llvm/bin
    ;;
 
    linux)
