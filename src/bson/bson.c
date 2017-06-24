@@ -2738,9 +2738,10 @@ _bson_as_json_visit_regex (const bson_iter_t *iter,
       return true;
    }
 
-   bson_string_append (state->str, "{ \"$regex\" : \"");
+   bson_string_append (state->str,
+                       "{ \"$regularExpression\" : { \"pattern\" : \"");
    bson_string_append (state->str, escaped);
-   bson_string_append (state->str, "\", \"$options\" : \"");
+   bson_string_append (state->str, "\", \"options\" : \"");
 
    /* sort the options */
    for (c = "ilmsux"; *c; c++) {
@@ -2749,8 +2750,7 @@ _bson_as_json_visit_regex (const bson_iter_t *iter,
       }
    }
 
-   bson_string_append (state->str, "\" }");
-
+   bson_string_append (state->str, "\" } }");
    bson_free (escaped);
 
    return false;

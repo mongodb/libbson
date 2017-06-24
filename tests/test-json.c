@@ -632,8 +632,9 @@ test_bson_json_read (void)
         \"$binary\" : \"ZGVhZGJlZWY=\" \n\
       }, \n\
       \"regex\" : { \n\
-        \"$regex\" : \"foo|bar\", \n\
-        \"$options\" : \"ism\" \n\
+        \"$regularExpression\" : { \n\
+          \"pattern\": \"foo|bar\", \"options\" : \"ism\" \n\
+        } \n\
       }, \n\
       \"date\" : { \n\
         \"$date\" : \"1970-01-01T00:00:10Z\" \n\
