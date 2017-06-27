@@ -808,6 +808,26 @@ test_bson_json_read_dbpointer (void)
 
 
 static void
+test_bson_json_read_legacy_regex (void)
+{
+   bson_t b;
+   bson_error_t error;
+   bool r;
+   const char *regex = "{\"a\": {\"$regex\": \"abc\", \"$options\": \"ix\"}}";
+   const char *pattern;
+   const char *flags;
+
+   r = bson_init_from_json (&b, regex, -1, &error);
+   ASSERT_OR_PRINT (r, error);
+   BCON_EXTRACT (&b, "a", BCONE_REGEX (pattern, flags));
+   ASSERT_CMPSTR (pattern, "abc");
+   ASSERT_CMPSTR (flags, "ix");
+
+   bson_destroy (&b);
+}
+
+
+static void
 test_json_reader_new_from_file (void)
 {
    const char *path = JSON_DIR "/test.json";
@@ -2211,6 +2231,8 @@ test_json_install (TestSuite *suite)
       suite, "/bson/json/read/decimal128", test_bson_json_read_decimal128);
    TestSuite_Add (
       suite, "/bson/json/read/dbpointer", test_bson_json_read_dbpointer);
+   TestSuite_Add (
+      suite, "/bson/json/read/legacy_regex", test_bson_json_read_legacy_regex);
    TestSuite_Add (
       suite, "/bson/json/read/file", test_json_reader_new_from_file);
    TestSuite_Add (
