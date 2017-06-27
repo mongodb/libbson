@@ -7,8 +7,8 @@ Next release
       to conform to "Relaxed Extended JSON"
     * When parsing JSON type wrappers like "$timestamp", any missing or extra
       keys are an error. The JSON format for BSON regular expressions is now
-      "$regularExpression": {"pattern": "...", "options": "..."}, the old format
-      {"$regex": "...", "$options": "..."} is no longer supported.
+      "$regularExpression": {"pattern": "...", "options": "..."}. The old format
+      {"$regex": "...", "$options": "..."} is still parsed but not generated.
     * BSON dates can be parsed from "$date" as an ISO8601 date or "$numberLong"
       as milliseconds since the epoch: "t": {"$date": {"$numberLong": "1234"}}.
       Dates can no longer be formmatted as raw integers. bson_as_json writes a
@@ -301,7 +301,7 @@ Thanks to everyone who contributed to the development of this release.
   * A. Jesse Jiryu Davis
   * Hannes Magnusson
   * Mark Benvenuto
-  * Petr Písař
+  * Petr P?sa?
   * xpol
   * Jose Sebastian Battig
   * Jeroen Ooms
@@ -350,7 +350,7 @@ Thanks to everyone who contributed to the development of this release.
   * Hannes Magnusson
   * A. Jesse Jiryu Davis
   * Jeroen Ooms
-  * Petr Písař
+  * Petr P?sa?
   * xpol
 
 Peace,
@@ -598,7 +598,7 @@ Libbson.
  * Ivan Suvorov
  * Hannes Magnusson
  * Jason Carey
- * Jérôme Lebel
+ * J?r?me Lebel
  * Samantha Ritter
 
 -- Jason Carey
@@ -632,7 +632,7 @@ Libbson.
  * Daniel Colchete
  * Ivan Suvorov
  * Jason Carey
- * Jérôme Lebel
+ * J?r?me Lebel
 
 -- Jason Carey
 
@@ -656,7 +656,7 @@ Libbson.
  * Adam Midvidy
  * Christian Hergert
  * Jason Carey
- * Jérôme Lebel
+ * J?r?me Lebel
  * Tyler Brock
 
 -- Jason Carey
@@ -676,7 +676,7 @@ Thanks to everyone who contributed to the development of Libbson!
  * Jason Carey
  * Jose Sebastian Battig
  * Maxim Zakharov
- * Jérôme Lebel
+ * J?r?me Lebel
  * Itay Neeman
  * Mike Manilone
  * Michael Kuhn
@@ -690,7 +690,7 @@ Thanks to everyone who contributed to the development of Libbson!
  * Matt Cotter
  * Gary J. Murakami
  * Toon Schoenmakers
- * Máximo Cuadros
+ * M?ximo Cuadros
  * Michael Whittaker
  * Kota Yamaguchi
  * Justin Case
@@ -851,7 +851,7 @@ I'd like to thank everyone who contributed to this release.
     Gary Murakami
     Jason Carey
     Jose Sebastian Battig
-    Máximo Cuadros
+    M?ximo Cuadros
     Paul Melnikow
     Stefan Kaes
 

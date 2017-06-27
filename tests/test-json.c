@@ -813,17 +813,25 @@ test_bson_json_read_legacy_regex (void)
    bson_t b;
    bson_error_t error;
    bool r;
-   const char *regex = "{\"a\": {\"$regex\": \"abc\", \"$options\": \"ix\"}}";
    const char *pattern;
    const char *flags;
 
-   r = bson_init_from_json (&b, regex, -1, &error);
+   r = bson_init_from_json (
+      &b, "{\"a\": {\"$regex\": \"abc\", \"$options\": \"ix\"}}", -1, &error);
    ASSERT_OR_PRINT (r, error);
    BCON_EXTRACT (&b, "a", BCONE_REGEX (pattern, flags));
    ASSERT_CMPSTR (pattern, "abc");
    ASSERT_CMPSTR (flags, "ix");
 
    bson_destroy (&b);
+
+   r = bson_init_from_json (&b, "{\"a\": {\"$regex\": \"abc\"}}", -1, &error);
+   BSON_ASSERT (!r);
+   ASSERT_ERROR_CONTAINS (error, BSON_ERROR_JSON, BSON_JSON_ERROR_READ_INVALID_PARAM, "Missing \"$options\" after \"$regex\"");
+
+   r = bson_init_from_json (&b, "{\"a\": {\"$options\": \"ix\"}}", -1, &error);
+   BSON_ASSERT (!r);
+   ASSERT_ERROR_CONTAINS (error, BSON_ERROR_JSON, BSON_JSON_ERROR_READ_INVALID_PARAM, "Missing \"$regex\" after \"$options\"");
 }
 
 

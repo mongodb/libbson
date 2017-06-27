@@ -64,8 +64,12 @@ typedef enum {
 
 
 typedef enum {
-   BSON_JSON_LF_REGEX_PATTERN,
-   BSON_JSON_LF_REGEX_OPTIONS,
+   /* legacy {$regex: "...", $options: "..."} */
+   BSON_JSON_LF_REGEX,
+   BSON_JSON_LF_OPTIONS,
+   /* modern $regularExpression: {pattern: "...", options: "..."} */
+   BSON_JSON_LF_REGULAR_EXPRESSION_PATTERN,
+   BSON_JSON_LF_REGULAR_EXPRESSION_OPTIONS,
    BSON_JSON_LF_CODE,
    BSON_JSON_LF_SCOPE,
    BSON_JSON_LF_OID,
@@ -115,6 +119,7 @@ typedef union {
    struct {
       bool has_pattern;
       bool has_options;
+      bool is_legacy;
    } regex;
    struct {
       bool has_oid;
@@ -576,8 +581,10 @@ _bson_json_read_integer (bson_json_reader_t *reader, uint64_t val, int64_t sign)
 
          bson->bson_type_data.maxkey.has_maxkey = true;
          break;
-      case BSON_JSON_LF_REGEX_PATTERN:
-      case BSON_JSON_LF_REGEX_OPTIONS:
+      case BSON_JSON_LF_REGEX:
+      case BSON_JSON_LF_OPTIONS:
+      case BSON_JSON_LF_REGULAR_EXPRESSION_PATTERN:
+      case BSON_JSON_LF_REGULAR_EXPRESSION_OPTIONS:
       case BSON_JSON_LF_CODE:
       case BSON_JSON_LF_SCOPE:
       case BSON_JSON_LF_OID:
@@ -737,11 +744,17 @@ _bson_json_read_string (bson_json_reader_t *reader, /* IN */
       val_w_null = (const char *) bson->bson_type_buf[2].buf;
 
       switch (bs) {
-      case BSON_JSON_LF_REGEX_PATTERN:
+      case BSON_JSON_LF_REGEX:
+         bson->bson_type_data.regex.is_legacy = true;
+         /* FALL THROUGH */
+      case BSON_JSON_LF_REGULAR_EXPRESSION_PATTERN:
          bson->bson_type_data.regex.has_pattern = true;
          _bson_json_buf_set (&bson->bson_type_buf[0], val, vlen);
          break;
-      case BSON_JSON_LF_REGEX_OPTIONS:
+      case BSON_JSON_LF_OPTIONS:
+         bson->bson_type_data.regex.is_legacy = true;
+         /* FALL THROUGH */
+      case BSON_JSON_LF_REGULAR_EXPRESSION_OPTIONS:
          bson->bson_type_data.regex.has_options = true;
          _bson_json_buf_set (&bson->bson_type_buf[1], val, vlen);
          break;
@@ -912,16 +925,16 @@ _is_known_key (const char *key, size_t len)
 
 #define IS_KEY(k) (len == strlen (k) && (0 == memcmp (k, key, len)))
 
-   ret = (IS_KEY ("$regularExpression") || IS_KEY ("$options") ||
-          IS_KEY ("$code") || IS_KEY ("$scope") || IS_KEY ("$oid") ||
-          IS_KEY ("$binary") || IS_KEY ("$type") || IS_KEY ("$date") ||
-          IS_KEY ("$undefined") || IS_KEY ("$maxKey") || IS_KEY ("$minKey") ||
-          IS_KEY ("$timestamp") || IS_KEY ("$numberInt") ||
-          IS_KEY ("$numberLong") || IS_KEY ("$numberDouble") ||
-          IS_KEY ("$numberDecimal") || IS_KEY ("$numberInt") ||
-          IS_KEY ("$numberLong") || IS_KEY ("$numberDouble") ||
-          IS_KEY ("$numberDecimal") || IS_KEY ("$dbPointer") ||
-          IS_KEY ("$symbol"));
+   ret = (IS_KEY ("$regularExpression") || IS_KEY ("$regex") ||
+          IS_KEY ("$options") || IS_KEY ("$code") || IS_KEY ("$scope") ||
+          IS_KEY ("$oid") || IS_KEY ("$binary") || IS_KEY ("$type") ||
+          IS_KEY ("$date") || IS_KEY ("$undefined") || IS_KEY ("$maxKey") ||
+          IS_KEY ("$minKey") || IS_KEY ("$timestamp") ||
+          IS_KEY ("$numberInt") || IS_KEY ("$numberLong") ||
+          IS_KEY ("$numberDouble") || IS_KEY ("$numberDecimal") ||
+          IS_KEY ("$numberInt") || IS_KEY ("$numberLong") ||
+          IS_KEY ("$numberDouble") || IS_KEY ("$numberDecimal") ||
+          IS_KEY ("$dbPointer") || IS_KEY ("$symbol"));
 
 #undef IS_KEY
 
@@ -1016,6 +1029,10 @@ _bson_json_read_map_key (bson_json_reader_t *reader, /* IN */
 
    if (bson->read_state == BSON_JSON_IN_BSON_TYPE) {
       if
+         HANDLE_OPTION ("$regex", BSON_TYPE_REGEX, BSON_JSON_LF_REGEX)
+      else if
+         HANDLE_OPTION ("$options", BSON_TYPE_REGEX, BSON_JSON_LF_OPTIONS)
+      else if
          HANDLE_OPTION ("$oid", BSON_TYPE_OID, BSON_JSON_LF_OID)
       else if
          HANDLE_OPTION ("$binary", BSON_TYPE_BINARY, BSON_JSON_LF_BINARY)
@@ -1091,9 +1108,11 @@ _bson_json_read_map_key (bson_json_reader_t *reader, /* IN */
       }
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_REGEX_VALUES) {
       if
-         HANDLE_OPTION ("pattern", BSON_TYPE_REGEX, BSON_JSON_LF_REGEX_PATTERN)
+         HANDLE_OPTION (
+            "pattern", BSON_TYPE_REGEX, BSON_JSON_LF_REGULAR_EXPRESSION_PATTERN)
       else if
-         HANDLE_OPTION ("options", BSON_TYPE_REGEX, BSON_JSON_LF_REGEX_OPTIONS)
+         HANDLE_OPTION (
+            "options", BSON_TYPE_REGEX, BSON_JSON_LF_REGULAR_EXPRESSION_OPTIONS)
       else {
          _bson_json_read_set_error (
             reader,
@@ -1148,13 +1167,23 @@ static void
 _bson_json_read_append_regex (bson_json_reader_t *reader,    /* IN */
                               bson_json_reader_bson_t *bson) /* IN */
 {
-   if (!bson->bson_type_data.regex.has_pattern) {
+   bson_json_bson_data_t *data = &bson->bson_type_data;
+   if (data->regex.is_legacy) {
+      if (!data->regex.has_pattern) {
+         _bson_json_read_set_error (reader,
+                                    "Missing \"$regex\" after \"$options\"");
+         return;
+      }
+      if (!data->regex.has_options) {
+         _bson_json_read_set_error (reader,
+                                    "Missing \"$options\" after \"$regex\"");
+         return;
+      }
+   } else if (!data->regex.has_pattern) {
       _bson_json_read_set_error (
          reader, "Missing \"pattern\" after \"options\" in regular expression");
       return;
-   }
-
-   if (!bson->bson_type_data.regex.has_options) {
+   } else if (!data->regex.has_options) {
       _bson_json_read_set_error (
          reader, "Missing \"options\" after \"pattern\" in regular expression");
       return;
@@ -1362,6 +1391,9 @@ _bson_json_read_end_map (bson_json_reader_t *reader) /* IN */
 
       bson->read_state = BSON_JSON_REGULAR;
       switch (bson->bson_type) {
+      case BSON_TYPE_REGEX:
+         _bson_json_read_append_regex (reader, bson);
+         break;
       case BSON_TYPE_CODE:
       case BSON_TYPE_CODEWSCOPE:
          /* we've read the closing "}" in "{$code: ..., $scope: ...}" */
@@ -1427,7 +1459,6 @@ _bson_json_read_end_map (bson_json_reader_t *reader) /* IN */
       case BSON_TYPE_BOOL:
       case BSON_TYPE_NULL:
       case BSON_TYPE_TIMESTAMP:
-      case BSON_TYPE_REGEX:
       default:
          _bson_json_read_set_error (reader, "Unknown type %d", bson->bson_type);
          break;
