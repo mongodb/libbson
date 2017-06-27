@@ -746,14 +746,14 @@ _bson_json_read_string (bson_json_reader_t *reader, /* IN */
       switch (bs) {
       case BSON_JSON_LF_REGEX:
          bson->bson_type_data.regex.is_legacy = true;
-         /* FALL THROUGH */
+      /* FALL THROUGH */
       case BSON_JSON_LF_REGULAR_EXPRESSION_PATTERN:
          bson->bson_type_data.regex.has_pattern = true;
          _bson_json_buf_set (&bson->bson_type_buf[0], val, vlen);
          break;
       case BSON_JSON_LF_OPTIONS:
          bson->bson_type_data.regex.is_legacy = true;
-         /* FALL THROUGH */
+      /* FALL THROUGH */
       case BSON_JSON_LF_REGULAR_EXPRESSION_OPTIONS:
          bson->bson_type_data.regex.has_options = true;
          _bson_json_buf_set (&bson->bson_type_buf[1], val, vlen);
