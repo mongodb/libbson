@@ -827,11 +827,48 @@ test_bson_json_read_legacy_regex (void)
 
    r = bson_init_from_json (&b, "{\"a\": {\"$regex\": \"abc\"}}", -1, &error);
    BSON_ASSERT (!r);
-   ASSERT_ERROR_CONTAINS (error, BSON_ERROR_JSON, BSON_JSON_ERROR_READ_INVALID_PARAM, "Missing \"$options\" after \"$regex\"");
+   ASSERT_ERROR_CONTAINS (error,
+                          BSON_ERROR_JSON,
+                          BSON_JSON_ERROR_READ_INVALID_PARAM,
+                          "Missing \"$options\" after \"$regex\"");
 
    r = bson_init_from_json (&b, "{\"a\": {\"$options\": \"ix\"}}", -1, &error);
    BSON_ASSERT (!r);
-   ASSERT_ERROR_CONTAINS (error, BSON_ERROR_JSON, BSON_JSON_ERROR_READ_INVALID_PARAM, "Missing \"$regex\" after \"$options\"");
+   ASSERT_ERROR_CONTAINS (error,
+                          BSON_ERROR_JSON,
+                          BSON_JSON_ERROR_READ_INVALID_PARAM,
+                          "Missing \"$regex\" after \"$options\"");
+}
+
+
+static void
+test_bson_json_read_legacy_binary (void)
+{
+   const char *jsons[] = {
+      "{\"x\": {\"$binary\": \"Zm9v\", \"$type\": \"05\"}}",
+      "{\"x\": {\"$type\": \"05\", \"$binary\": \"Zm9v\"}}",
+      NULL
+   };
+
+   const char **json;
+   bson_error_t error;
+   bson_t b;
+   bool r;
+   bson_subtype_t subtype;
+   uint32_t len;
+   const uint8_t *binary;
+
+   for (json = jsons; *json; json++) {
+      r = bson_init_from_json (&b, *json, -1, &error);
+
+      ASSERT_OR_PRINT (r, error);
+      BCON_EXTRACT (&b, "x", BCONE_BIN (subtype, binary, len));
+      ASSERT_CMPINT ((int) subtype, ==, 5);
+      ASSERT_CMPUINT32 (len, ==, (uint32_t) 3);
+      ASSERT_CMPSTR ((const char *) binary, "foo");
+
+      bson_destroy (&b);
+   }
 }
 
 
@@ -1026,29 +1063,6 @@ test_bson_json_read_invalid (void)
 
    bson_json_reader_destroy (reader);
    bson_destroy (&bson);
-}
-
-static void
-test_bson_json_binary_order (void)
-{
-   bson_error_t error;
-   const char *json =
-      "{ \"bin\" : "
-      "{ \"$binary\" : \"IG43GK8JL9HRL4DK53HMrA==\", \"$type\" : \"05\" } }";
-   bson_t b;
-   bool r;
-   char *str;
-
-   r = bson_init_from_json (&b, json, -1, &error);
-   if (!r)
-      fprintf (stderr, "%s\n", error.message);
-   BSON_ASSERT (r);
-
-   str = bson_as_json (&b, NULL);
-   ASSERT_CMPSTR (str, json);
-
-   bson_destroy (&b);
-   bson_free (str);
 }
 
 static void
@@ -2199,8 +2213,6 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/as_json/corrupt_utf8", test_bson_corrupt_utf8);
    TestSuite_Add (
       suite, "/bson/as_json/corrupt_binary", test_bson_corrupt_binary);
-   TestSuite_Add (
-      suite, "/bson/as_json/binary_order", test_bson_json_binary_order);
    TestSuite_Add (suite, "/bson/as_json_spacing", test_bson_as_json_spacing);
    TestSuite_Add (suite, "/bson/array_as_json", test_bson_array_as_json);
    TestSuite_Add (
@@ -2241,6 +2253,8 @@ test_json_install (TestSuite *suite)
       suite, "/bson/json/read/dbpointer", test_bson_json_read_dbpointer);
    TestSuite_Add (
       suite, "/bson/json/read/legacy_regex", test_bson_json_read_legacy_regex);
+   TestSuite_Add (
+      suite, "/bson/json/read/legacy_binary", test_bson_json_read_legacy_binary);
    TestSuite_Add (
       suite, "/bson/json/read/file", test_json_reader_new_from_file);
    TestSuite_Add (
