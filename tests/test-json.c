@@ -842,13 +842,68 @@ test_bson_json_read_legacy_regex (void)
 
 
 static void
+test_bson_json_read_binary (void)
+{
+   bson_error_t error;
+   bson_t b;
+   bool r;
+   bson_subtype_t subtype;
+   uint32_t len;
+   const uint8_t *binary;
+
+   r = bson_init_from_json (
+      &b,
+      "{\"b\": {\"$binary\": {\"base64\": \"Zm9v\", \"subType\": \"05\"}}}",
+      -1,
+      &error);
+   ASSERT_OR_PRINT (r, error);
+
+   BCON_EXTRACT (&b, "b", BCONE_BIN (subtype, binary, len));
+   ASSERT_CMPINT ((int) subtype, ==, 5);
+   ASSERT_CMPUINT32 (len, ==, (uint32_t) 3);
+   ASSERT_CMPSTR ((const char *) binary, "foo");
+
+   bson_destroy (&b);
+
+   r = bson_init_from_json (
+      &b,
+      "{\"b\": {\"$binary\": {\"subType\": \"05\", \"base64\": \"Zm9v\"}}}",
+      -1,
+      &error);
+   ASSERT_OR_PRINT (r, error);
+   BCON_EXTRACT (&b, "b", BCONE_BIN (subtype, binary, len));
+   ASSERT_CMPINT ((int) subtype, ==, 5);
+   ASSERT_CMPUINT32 (len, ==, (uint32_t) 3);
+   ASSERT_CMPSTR ((const char *) binary, "foo");
+
+   bson_destroy (&b);
+
+   /* no base64 */
+   r = bson_init_from_json (
+      &b, "{\"b\": {\"$binary\": {\"subType\": \"5\"}}}", -1, &error);
+   BSON_ASSERT (!r);
+   ASSERT_ERROR_CONTAINS (error,
+                          BSON_ERROR_JSON,
+                          BSON_JSON_ERROR_READ_INVALID_PARAM,
+                          "Missing \"base64\" after \"subType\"");
+
+   /* no subType */
+   r = bson_init_from_json (
+      &b, "{\"b\": {\"$binary\": {\"base64\": \"Zm9v\"}}}", -1, &error);
+   BSON_ASSERT (!r);
+   ASSERT_ERROR_CONTAINS (error,
+                          BSON_ERROR_JSON,
+                          BSON_JSON_ERROR_READ_INVALID_PARAM,
+                          "Missing \"subType\" after \"base64\"");
+}
+
+
+static void
 test_bson_json_read_legacy_binary (void)
 {
-   const char *jsons[] = {
-      "{\"x\": {\"$binary\": \"Zm9v\", \"$type\": \"05\"}}",
-      "{\"x\": {\"$type\": \"05\", \"$binary\": \"Zm9v\"}}",
-      NULL
-   };
+   const char *jsons[] = {"{\"x\": {\"$binary\": \"Zm9v\", \"$type\": \"05\"}}",
+                          "{\"x\": {\"$type\": \"05\", \"$binary\": \"Zm9v\"}}",
+                          NULL};
 
    const char **json;
    bson_error_t error;
@@ -2253,8 +2308,10 @@ test_json_install (TestSuite *suite)
       suite, "/bson/json/read/dbpointer", test_bson_json_read_dbpointer);
    TestSuite_Add (
       suite, "/bson/json/read/legacy_regex", test_bson_json_read_legacy_regex);
-   TestSuite_Add (
-      suite, "/bson/json/read/legacy_binary", test_bson_json_read_legacy_binary);
+   TestSuite_Add (suite, "/bson/json/read/binary", test_bson_json_read_binary);
+   TestSuite_Add (suite,
+                  "/bson/json/read/legacy_binary",
+                  test_bson_json_read_legacy_binary);
    TestSuite_Add (
       suite, "/bson/json/read/file", test_json_reader_new_from_file);
    TestSuite_Add (

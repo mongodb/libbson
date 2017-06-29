@@ -6,9 +6,13 @@ Next release
       according to MongoDB Extended JSON Spec, while bson_as_json is updated
       to conform to "Relaxed Extended JSON"
     * When parsing JSON type wrappers like "$timestamp", any missing or extra
-      keys are an error. The JSON format for BSON regular expressions is now
-      "$regularExpression": {"pattern": "...", "options": "..."}. The old format
-      {"$regex": "...", "$options": "..."} is still parsed but not generated.
+      keys are an error.
+    * The JSON format for BSON regular expressions is now "$regularExpression":
+      {"pattern": "...", "options": "..."}. The old format {"$regex": "...",
+      "$options": "..."} is still parsed but not generated.
+    * The JSON format for BSON binary elements is now "$binary": {"base64":
+      "...", "subType": "..."}. The old format {"$binary": "...", "$type":
+      "..."} is still parsed but not generated.
     * BSON dates can be parsed from "$date" as an ISO8601 date or "$numberLong"
       as milliseconds since the epoch: "t": {"$date": {"$numberLong": "1234"}}.
       Dates can no longer be formmatted as raw integers. bson_as_json writes a
