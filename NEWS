@@ -15,7 +15,7 @@ Next release
       "..."} is still parsed but not generated.
     * BSON dates can be parsed from "$date" as an ISO8601 date or "$numberLong"
       as milliseconds since the epoch: "t": {"$date": {"$numberLong": "1234"}}.
-      Dates can no longer be formmatted as raw integers. bson_as_json writes a
+      Dates can no longer be formatted as raw integers. bson_as_json writes a
       BSON date after 1970 as "$date" with an ISO8601 string, and dates before
       1970 as negative milliseconds wrapped in "$numberLong".
       bson_as_extended_json always writes dates with "$numberLong".
