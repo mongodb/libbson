@@ -1414,8 +1414,7 @@ size_t jsonsl_util_unescape_ex(const char *in,
         } else if (uescval < 0xD800 || uescval > 0xDFFF) {
             *oflags |= JSONSL_SPECIALf_NONASCII;
             out = jsonsl__writeutf8(uescval, out) - 1;
-
-        } else if (uescval > 0xD7FF && uescval < 0xDC00) {
+        } else if (uescval < 0xDC00) {
             *oflags |= JSONSL_SPECIALf_NONASCII;
             last_codepoint = (uint16_t)uescval;
             out--;
