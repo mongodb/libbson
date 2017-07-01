@@ -48,56 +48,67 @@
 #define AT_LEAST_0(x) ((x) >= 0 ? (x) : 0)
 
 
-typedef enum {
-   BSON_JSON_REGULAR,
-   BSON_JSON_DONE,
-   BSON_JSON_ERROR,
-   BSON_JSON_IN_START_MAP,
-   BSON_JSON_IN_BSON_TYPE,
-   BSON_JSON_IN_BSON_TYPE_DATE_NUMBERLONG,
-   BSON_JSON_IN_BSON_TYPE_DATE_ENDMAP,
-   BSON_JSON_IN_BSON_TYPE_TIMESTAMP_STARTMAP,
-   BSON_JSON_IN_BSON_TYPE_TIMESTAMP_VALUES,
-   BSON_JSON_IN_BSON_TYPE_TIMESTAMP_ENDMAP,
-   BSON_JSON_IN_BSON_TYPE_REGEX_STARTMAP,
-   BSON_JSON_IN_BSON_TYPE_REGEX_VALUES,
-   BSON_JSON_IN_BSON_TYPE_REGEX_ENDMAP,
-   BSON_JSON_IN_BSON_TYPE_BINARY_VALUES,
-   BSON_JSON_IN_BSON_TYPE_BINARY_ENDMAP,
-   BSON_JSON_IN_BSON_TYPE_SCOPE_STARTMAP,
-   BSON_JSON_IN_BSON_TYPE_DBPOINTER_STARTMAP,
-   BSON_JSON_IN_SCOPE,
-   BSON_JSON_IN_DBPOINTER,
-} bson_json_read_state_t;
+#define READ_STATE_ENUM(ENUM) BSON_JSON_##ENUM,
+#define GENERATE_STRING(STRING) #STRING,
 
+#define FOREACH_READ_STATE(RS)          \
+   RS (REGULAR)                         \
+   RS (DONE)                            \
+   RS (ERROR)                           \
+   RS (IN_START_MAP)                    \
+   RS (IN_BSON_TYPE)                    \
+   RS (IN_BSON_TYPE_DATE_NUMBERLONG)    \
+   RS (IN_BSON_TYPE_DATE_ENDMAP)        \
+   RS (IN_BSON_TYPE_TIMESTAMP_STARTMAP) \
+   RS (IN_BSON_TYPE_TIMESTAMP_VALUES)   \
+   RS (IN_BSON_TYPE_TIMESTAMP_ENDMAP)   \
+   RS (IN_BSON_TYPE_REGEX_STARTMAP)     \
+   RS (IN_BSON_TYPE_REGEX_VALUES)       \
+   RS (IN_BSON_TYPE_REGEX_ENDMAP)       \
+   RS (IN_BSON_TYPE_BINARY_VALUES)      \
+   RS (IN_BSON_TYPE_BINARY_ENDMAP)      \
+   RS (IN_BSON_TYPE_SCOPE_STARTMAP)     \
+   RS (IN_BSON_TYPE_DBPOINTER_STARTMAP) \
+   RS (IN_SCOPE)                        \
+   RS (IN_DBPOINTER)
+
+typedef enum { FOREACH_READ_STATE (READ_STATE_ENUM) } bson_json_read_state_t;
+
+static const char *read_state_names[] = {FOREACH_READ_STATE (GENERATE_STRING)};
+
+#define BSON_STATE_ENUM(ENUM) BSON_JSON_LF_##ENUM,
+
+#define FOREACH_BSON_STATE(BS)                                       \
+   /* legacy {$regex: "...", $options: "..."} */                     \
+   BS (REGEX)                                                        \
+   BS (OPTIONS)                                                      \
+   /* modern $regularExpression: {pattern: "...", options: "..."} */ \
+   BS (REGULAR_EXPRESSION_PATTERN)                                   \
+   BS (REGULAR_EXPRESSION_OPTIONS)                                   \
+   BS (CODE)                                                         \
+   BS (SCOPE)                                                        \
+   BS (OID)                                                          \
+   BS (BINARY)                                                       \
+   BS (TYPE)                                                         \
+   BS (DATE)                                                         \
+   BS (TIMESTAMP_T)                                                  \
+   BS (TIMESTAMP_I)                                                  \
+   BS (UNDEFINED)                                                    \
+   BS (MINKEY)                                                       \
+   BS (MAXKEY)                                                       \
+   BS (INT32)                                                        \
+   BS (INT64)                                                        \
+   BS (DOUBLE)                                                       \
+   BS (DECIMAL128)                                                   \
+   BS (DBPOINTER)                                                    \
+   BS (SYMBOL)                                                       \
+   BS (DBREF)
 
 typedef enum {
-   /* legacy {$regex: "...", $options: "..."} */
-   BSON_JSON_LF_REGEX,
-   BSON_JSON_LF_OPTIONS,
-   /* modern $regularExpression: {pattern: "...", options: "..."} */
-   BSON_JSON_LF_REGULAR_EXPRESSION_PATTERN,
-   BSON_JSON_LF_REGULAR_EXPRESSION_OPTIONS,
-   BSON_JSON_LF_CODE,
-   BSON_JSON_LF_SCOPE,
-   BSON_JSON_LF_OID,
-   BSON_JSON_LF_BINARY,
-   BSON_JSON_LF_TYPE,
-   BSON_JSON_LF_DATE,
-   BSON_JSON_LF_TIMESTAMP_T,
-   BSON_JSON_LF_TIMESTAMP_I,
-   BSON_JSON_LF_UNDEFINED,
-   BSON_JSON_LF_MINKEY,
-   BSON_JSON_LF_MAXKEY,
-   BSON_JSON_LF_INT32,
-   BSON_JSON_LF_INT64,
-   BSON_JSON_LF_DOUBLE,
-   BSON_JSON_LF_DECIMAL128,
-   BSON_JSON_LF_DBPOINTER,
-   BSON_JSON_LF_SYMBOL,
-   BSON_JSON_LF_DBREF,
+   FOREACH_BSON_STATE (BSON_STATE_ENUM)
 } bson_json_read_bson_state_t;
 
+static const char *bson_state_names[] = {FOREACH_BSON_STATE (GENERATE_STRING)};
 
 typedef struct {
    uint8_t *buf;
@@ -352,29 +363,32 @@ _noop (void)
    len = bson->key_buf.len;
 #define BASIC_CB_BAIL_IF_NOT_NORMAL(_type)                                     \
    if (bson->read_state != BSON_JSON_REGULAR) {                                \
-      _bson_json_read_set_error (                                              \
-         reader, "Invalid read of %s in state %d", (_type), bson->read_state); \
+      _bson_json_read_set_error (reader,                                       \
+                                 "Invalid read of %s in state %s",             \
+                                 (_type),                                      \
+                                 read_state_names[bson->read_state]);          \
       return;                                                                  \
    } else if (!key) {                                                          \
       _bson_json_read_set_error (reader,                                       \
-                                 "Invalid read of %s without key in state %d", \
+                                 "Invalid read of %s without key in state %s", \
                                  (_type),                                      \
-                                 bson->read_state);                            \
+                                 read_state_names[bson->read_state]);          \
       return;                                                                  \
    }
-#define HANDLE_OPTION(_key, _type, _state)                                  \
-   (len == strlen (_key) && strncmp ((const char *) val, (_key), len) == 0) \
-   {                                                                        \
-      if (bson->bson_type && bson->bson_type != (_type)) {                  \
-         _bson_json_read_set_error (                                        \
-            reader,                                                         \
-            "Invalid key %s.  Looking for values for %d",                   \
-            (_key),                                                         \
-            bson->bson_type);                                               \
-         return;                                                            \
-      }                                                                     \
-      bson->bson_type = (_type);                                            \
-      bson->bson_state = (_state);                                          \
+#define HANDLE_OPTION(_key, _type, _state)                                     \
+   (len == strlen (_key) && strncmp ((const char *) val, (_key), len) == 0)    \
+   {                                                                           \
+      if (bson->bson_type && bson->bson_type != (_type)) {                     \
+         _bson_json_read_set_error (reader,                                    \
+                                    "Invalid key \"%s\".  Looking for values " \
+                                    "for type \"%s\", got \"%s\"",             \
+                                    (_key),                                    \
+                                    _bson_json_type_name (bson->bson_type),    \
+                                    _bson_json_type_name (_type));             \
+         return;                                                               \
+      }                                                                        \
+      bson->bson_type = (_type);                                               \
+      bson->bson_state = (_state);                                             \
    }
 
 
@@ -470,6 +484,60 @@ _bson_json_buf_append (bson_json_buf_t *buf, const void *from, size_t len)
    memcpy (buf->buf + buf->len, from, len);
    buf->len += len;
    buf->buf[buf->len] = '\0';
+}
+
+
+static const char *
+_bson_json_type_name (bson_type_t type)
+{
+   switch (type) {
+   case BSON_TYPE_EOD:
+      return "end of document";
+   case BSON_TYPE_DOUBLE:
+      return "double";
+   case BSON_TYPE_UTF8:
+      return "utf-8";
+   case BSON_TYPE_DOCUMENT:
+      return "document";
+   case BSON_TYPE_ARRAY:
+      return "array";
+   case BSON_TYPE_BINARY:
+      return "binary";
+   case BSON_TYPE_UNDEFINED:
+      return "undefined";
+   case BSON_TYPE_OID:
+      return "objectid";
+   case BSON_TYPE_BOOL:
+      return "bool";
+   case BSON_TYPE_DATE_TIME:
+      return "datetime";
+   case BSON_TYPE_NULL:
+      return "null";
+   case BSON_TYPE_REGEX:
+      return "regex";
+   case BSON_TYPE_DBPOINTER:
+      return "dbpointer";
+   case BSON_TYPE_CODE:
+      return "code";
+   case BSON_TYPE_SYMBOL:
+      return "symbol";
+   case BSON_TYPE_CODEWSCOPE:
+      return "code with scope";
+   case BSON_TYPE_INT32:
+      return "int32";
+   case BSON_TYPE_TIMESTAMP:
+      return "timestamp";
+   case BSON_TYPE_INT64:
+      return "int64";
+   case BSON_TYPE_DECIMAL128:
+      return "decimal128";
+   case BSON_TYPE_MAXKEY:
+      return "maxkey";
+   case BSON_TYPE_MINKEY:
+      return "minkey";
+   default:
+      return "";
+   }
 }
 
 
@@ -597,6 +665,14 @@ _bson_json_read_integer (bson_json_reader_t *reader, uint64_t val, int64_t sign)
 
          bson->bson_type_data.maxkey.has_maxkey = true;
          break;
+      case BSON_JSON_LF_INT32:
+      case BSON_JSON_LF_INT64:
+         _bson_json_read_set_error (
+            reader,
+            "Invalid state for integer read: %s, "
+            "expected number as quoted string like \"123\"",
+            bson_state_names[bs]);
+         break;
       case BSON_JSON_LF_REGEX:
       case BSON_JSON_LF_OPTIONS:
       case BSON_JSON_LF_REGULAR_EXPRESSION_PATTERN:
@@ -607,8 +683,6 @@ _bson_json_read_integer (bson_json_reader_t *reader, uint64_t val, int64_t sign)
       case BSON_JSON_LF_BINARY:
       case BSON_JSON_LF_TYPE:
       case BSON_JSON_LF_UNDEFINED:
-      case BSON_JSON_LF_INT32:
-      case BSON_JSON_LF_INT64:
       case BSON_JSON_LF_DATE:
       case BSON_JSON_LF_DOUBLE:
       case BSON_JSON_LF_DECIMAL128:
@@ -616,12 +690,20 @@ _bson_json_read_integer (bson_json_reader_t *reader, uint64_t val, int64_t sign)
       case BSON_JSON_LF_SYMBOL:
       case BSON_JSON_LF_DBREF:
       default:
-         _bson_json_read_set_error (
-            reader, "Invalid special type for integer read %d", bs);
+         _bson_json_read_set_error (reader,
+                                    "Unexpected integer %s%" PRIu64
+                                    " in type \"%s\"",
+                                    sign == -1 ? "-" : "",
+                                    val,
+                                    _bson_json_type_name (bson->bson_type));
       }
    } else {
-      _bson_json_read_set_error (
-         reader, "Invalid state for integer read %d", rs);
+      _bson_json_read_set_error (reader,
+                                 "Unexpected integer %s%" PRIu64
+                                 " in state \"%s\"",
+                                 sign == -1 ? "-" : "",
+                                 val,
+                                 read_state_names[rs]);
    }
 }
 
@@ -701,10 +783,10 @@ _bson_json_read_double (bson_json_reader_t *reader, /* IN */
 
 
 static bool
-_bson_json_read_int64 (bson_json_reader_t *reader, /* IN */
-                       const unsigned char *val,   /* IN */
-                       size_t vlen,                /* IN */
-                       int64_t *v64 /* OUT */)
+_bson_json_read_int64_or_set_error (bson_json_reader_t *reader, /* IN */
+                                    const unsigned char *val,   /* IN */
+                                    size_t vlen,                /* IN */
+                                    int64_t *v64)               /* OUT */
 {
    bson_json_reader_bson_t *bson = &reader->bson;
    char *endptr = NULL;
@@ -748,7 +830,7 @@ _bson_json_parse_binary_elem (bson_json_reader_t *reader,
       if (binary_len < 0) {
          _bson_json_read_set_error (
             reader,
-            "Invalid input string %s, looking for base64-encoded binary",
+            "Invalid input string \"%s\", looking for base64-encoded binary",
             val_w_null);
       }
 
@@ -766,7 +848,7 @@ _bson_json_parse_binary_elem (bson_json_reader_t *reader,
              * or legacy {$binary: "", $type: "x"} */
             _bson_json_read_set_error (
                reader,
-               "Invalid input string %s, looking for binary subtype",
+               "Invalid input string \"%s\", looking for binary subtype",
                val_w_null);
          } else {
             /* actually a query operator: {x: {$type: "array"}}*/
@@ -809,8 +891,10 @@ _bson_json_read_string (bson_json_reader_t *reader, /* IN */
          STACK_BSON_CHILD, key, (int) len, (const char *) val, (int) vlen);
    } else if (rs == BSON_JSON_IN_BSON_TYPE_SCOPE_STARTMAP ||
               rs == BSON_JSON_IN_BSON_TYPE_DBPOINTER_STARTMAP) {
-      _bson_json_read_set_error (
-         reader, "Invalid read of %s in state %d", val, rs);
+      _bson_json_read_set_error (reader,
+                                 "Invalid read of \"%s\" in state \"%s\"",
+                                 val,
+                                 read_state_names[rs]);
    } else if (rs == BSON_JSON_IN_BSON_TYPE_BINARY_VALUES) {
       const char *val_w_null;
       _bson_json_buf_set (&bson->bson_type_buf[2], val, vlen);
@@ -856,7 +940,8 @@ _bson_json_read_string (bson_json_reader_t *reader, /* IN */
          break;
       case BSON_JSON_LF_INT32: {
          int64_t v64;
-         if (!_bson_json_read_int64 (reader, val, vlen, &v64)) {
+         if (!_bson_json_read_int64_or_set_error (reader, val, vlen, &v64)) {
+            /* the error is set, return and let the reader exit */
             return;
          }
 
@@ -872,7 +957,8 @@ _bson_json_read_string (bson_json_reader_t *reader, /* IN */
       } break;
       case BSON_JSON_LF_INT64: {
          int64_t v64;
-         if (!_bson_json_read_int64 (reader, val, vlen, &v64)) {
+         if (!_bson_json_read_int64_or_set_error (reader, val, vlen, &v64)) {
+            /* the error is set, return and let the reader exit */
             return;
          }
 
@@ -939,11 +1025,13 @@ _bson_json_read_string (bson_json_reader_t *reader, /* IN */
 
       return;
    BAD_PARSE:
-      _bson_json_read_set_error (
-         reader, "Invalid input string %s, looking for %d", val_w_null, bs);
+      _bson_json_read_set_error (reader,
+                                 "Invalid input string \"%s\", looking for %s",
+                                 val_w_null,
+                                 bson_state_names[bs]);
    } else {
       _bson_json_read_set_error (
-         reader, "Invalid state to look for string %d", rs);
+         reader, "Invalid state to look for string: %s", read_state_names[rs]);
    }
 }
 
@@ -1058,6 +1146,20 @@ _bson_json_read_code_or_scope_key (bson_json_reader_bson_t *bson,
 
 
 static void
+_bson_json_bad_key_in_type (bson_json_reader_t *reader, /* IN */
+                            const uint8_t *val)         /* IN */
+{
+   bson_json_reader_bson_t *bson = &reader->bson;
+
+   _bson_json_read_set_error (
+      reader,
+      "Invalid key \"%s\".  Looking for values for type \"%s\"",
+      val,
+      _bson_json_type_name (bson->bson_type));
+}
+
+
+static void
 _bson_json_read_map_key (bson_json_reader_t *reader, /* IN */
                          const uint8_t *val,         /* IN */
                          size_t len)                 /* IN */
@@ -1145,21 +1247,13 @@ _bson_json_read_map_key (bson_json_reader_t *reader, /* IN */
          _bson_json_read_code_or_scope_key (
             bson, true /* is_scope */, val, len);
       } else {
-         _bson_json_read_set_error (
-            reader,
-            "Invalid key %s.  Looking for values for %d",
-            val,
-            bson->bson_type);
+         _bson_json_bad_key_in_type (reader, val);
       }
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_DATE_NUMBERLONG) {
       if
          HANDLE_OPTION ("$numberLong", BSON_TYPE_DATE_TIME, BSON_JSON_LF_INT64)
       else {
-         _bson_json_read_set_error (
-            reader,
-            "Invalid key %s.  Looking for values for %d",
-            val,
-            bson->bson_type);
+         _bson_json_bad_key_in_type (reader, val);
       }
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_TIMESTAMP_VALUES) {
       if
@@ -1167,11 +1261,7 @@ _bson_json_read_map_key (bson_json_reader_t *reader, /* IN */
       else if
          HANDLE_OPTION ("i", BSON_TYPE_TIMESTAMP, BSON_JSON_LF_TIMESTAMP_I)
       else {
-         _bson_json_read_set_error (
-            reader,
-            "Invalid key %s.  Looking for values for %d",
-            val,
-            bson->bson_type);
+         _bson_json_bad_key_in_type (reader, val);
       }
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_REGEX_VALUES) {
       if
@@ -1181,11 +1271,7 @@ _bson_json_read_map_key (bson_json_reader_t *reader, /* IN */
          HANDLE_OPTION (
             "options", BSON_TYPE_REGEX, BSON_JSON_LF_REGULAR_EXPRESSION_OPTIONS)
       else {
-         _bson_json_read_set_error (
-            reader,
-            "Invalid key %s.  Looking for values for %d",
-            val,
-            bson->bson_type);
+         _bson_json_bad_key_in_type (reader, val);
       }
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_BINARY_VALUES) {
       if
@@ -1193,11 +1279,7 @@ _bson_json_read_map_key (bson_json_reader_t *reader, /* IN */
       else if
          HANDLE_OPTION ("subType", BSON_TYPE_BINARY, BSON_JSON_LF_TYPE)
       else {
-         _bson_json_read_set_error (
-            reader,
-            "Invalid key %s.  Looking for values for %d",
-            val,
-            bson->bson_type);
+         _bson_json_bad_key_in_type (reader, val);
       }
    } else {
       _bson_json_save_map_key (bson, val, len);
@@ -1228,21 +1310,25 @@ _bson_json_read_append_binary (bson_json_reader_t *reader,    /* IN */
    if (data->binary.is_legacy) {
       if (!data->binary.has_binary) {
          _bson_json_read_set_error (
-            reader, "Missing $binary after $type in BSON_TYPE_BINARY");
+            reader,
+            "Missing \"$binary\" after \"$type\" reading type \"binary\"");
          return;
       } else if (!data->binary.has_subtype) {
          _bson_json_read_set_error (
-            reader, "Missing $type after $binary in BSON_TYPE_BINARY");
+            reader,
+            "Missing \"$type\" after \"$binary\" reading type \"binary\"");
          return;
       }
    } else {
       if (!data->binary.has_binary) {
          _bson_json_read_set_error (
-            reader, "Missing \"base64\" after \"subType\" in BSON_TYPE_BINARY");
+            reader,
+            "Missing \"base64\" after \"subType\" reading type \"binary\"");
          return;
       } else if (!data->binary.has_subtype) {
          _bson_json_read_set_error (
-            reader, "Missing \"subType\" after \"base64\" in BSON_TYPE_BINARY");
+            reader,
+            "Missing \"subType\" after \"base64\" reading type \"binary\"");
          return;
       }
    }
@@ -1555,7 +1641,10 @@ _bson_json_read_end_map (bson_json_reader_t *reader) /* IN */
       case BSON_TYPE_NULL:
       case BSON_TYPE_TIMESTAMP:
       default:
-         _bson_json_read_set_error (reader, "Unknown type %d", bson->bson_type);
+         _bson_json_read_set_error (
+            reader,
+            "Internal error: can't parse JSON wrapper for type \"%s\"",
+            _bson_json_type_name (bson->bson_type));
          break;
       }
    } else if (bson->read_state == BSON_JSON_IN_BSON_TYPE_TIMESTAMP_VALUES) {
@@ -1635,7 +1724,8 @@ _bson_json_read_end_map (bson_json_reader_t *reader) /* IN */
       /* empty $dbPointer??? */
       _bson_json_read_set_error (reader, "Empty $dbPointer");
    } else {
-      _bson_json_read_set_error (reader, "Invalid state %d", bson->read_state);
+      _bson_json_read_set_error (
+         reader, "Invalid state \"%s\"", read_state_names[bson->read_state]);
    }
 }
 
@@ -1654,7 +1744,12 @@ _bson_json_read_start_array (bson_json_reader_t *reader) /* IN */
       key = bson->key;
       len = bson->key_buf.len;
 
-      BASIC_CB_BAIL_IF_NOT_NORMAL ("[");
+      if (bson->read_state != BSON_JSON_REGULAR) {
+         _bson_json_read_set_error (reader,
+                                    "Invalid read of \"[\" in state \"%s\"",
+                                    read_state_names[bson->read_state]);
+         return;
+      }
 
       STACK_PUSH_ARRAY (bson_append_array_begin (
          STACK_BSON_PARENT, key, (int) len, STACK_BSON_CHILD));
@@ -1668,8 +1763,9 @@ _bson_json_read_end_array (bson_json_reader_t *reader) /* IN */
    bson_json_reader_bson_t *bson = &reader->bson;
 
    if (bson->read_state != BSON_JSON_REGULAR) {
-      _bson_json_read_set_error (
-         reader, "Invalid read of %s in state %d", "]", bson->read_state);
+      _bson_json_read_set_error (reader,
+                                 "Invalid read of \"]\" in state \"%s\"",
+                                 read_state_names[bson->read_state]);
       return;
    }
 
@@ -1705,7 +1801,7 @@ _bson_json_unescape (bson_json_reader_t *reader,
       bson_set_error (reader->error,
                       BSON_ERROR_JSON,
                       BSON_JSON_ERROR_READ_CORRUPT_JS,
-                      "error near position %d: %s",
+                      "error near position %d: \"%s\"",
                       (int) state->pos_begin,
                       jsonsl_strerror (err));
       return false;
@@ -1872,7 +1968,7 @@ _error_callback (jsonsl_t json,
    bson_set_error (reader->error,
                    BSON_ERROR_JSON,
                    BSON_JSON_ERROR_READ_CORRUPT_JS,
-                   "Got parse error at '%c', position %d: %s",
+                   "Got parse error at \"%c\", position %d: \"%s\"",
                    *errat,
                    (int) json->pos,
                    jsonsl_strerror (err));

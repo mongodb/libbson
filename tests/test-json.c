@@ -1387,16 +1387,18 @@ test_bson_json_code_errors (void)
 
    code_error_test_t tests[] = {
       {"{\"a\": {\"$scope\": {}}", "Missing $code after $scope"},
-      {"{\"a\": {\"$scope\": {}, \"$x\": 1}", "Invalid key $x"},
+      {"{\"a\": {\"$scope\": {}, \"$x\": 1}", "Invalid key \"$x\""},
       {"{\"a\": {\"$scope\": {\"a\": 1}}", "Missing $code after $scope"},
-      {"{\"a\": {\"$code\": \"\", \"$scope\": \"a\"}}", "Invalid read of a"},
+      {"{\"a\": {\"$code\": \"\", \"$scope\": \"a\"}}",
+       "Invalid read of \"a\""},
       {"{\"a\": {\"$code\": \"\", \"$scope\": 1}}",
-       "Invalid state for integer read"},
-      {"{\"a\": {\"$code\": \"\", \"$scope\": []}}", "Invalid read of ["},
-      {"{\"a\": {\"$code\": \"\", \"x\": 1}}", "Invalid key x"},
-      {"{\"a\": {\"$code\": \"\", \"$x\": 1}}", "Invalid key $x"},
+       "Unexpected integer 1 in state \"IN_BSON_TYPE_SCOPE_STARTMAP\""},
+      {"{\"a\": {\"$code\": \"\", \"$scope\": []}}", "Invalid read of \"[\""},
+      {"{\"a\": {\"$code\": \"\", \"x\": 1}}",
+       "Invalid key \"x\".  Looking for values for type \"code\""},
+      {"{\"a\": {\"$code\": \"\", \"$x\": 1}}", "Invalid key \"$x\""},
       {"{\"a\": {\"$code\": \"\", \"$numberLong\": \"1\"}}",
-       "Invalid key $numberLong"},
+       "Invalid key \"$numberLong\""},
    };
 
    for (i = 0; i < sizeof (tests) / (sizeof (code_error_test_t)); i++) {
@@ -2291,6 +2293,35 @@ test_bson_as_json_spacing (void)
    bson_destroy (&d);
 }
 
+
+static void
+test_bson_json_errors (void)
+{
+   typedef const char *test_bson_json_error_t[2];
+   test_bson_json_error_t tests[] = {
+      {"{\"x\": {\"$numberLong\": 1}}",
+       "Invalid state for integer read: INT64"},
+      {"{\"x\": {\"$binary\": 1}}", "Unexpected integer 1 in type \"binary\""},
+      {"{\"x\": {\"$numberInt\": true}}",
+       "Invalid read of boolean in state IN_BSON_TYPE"},
+      {"{\"x\": {\"$dbPointer\": true}}",
+       "Invalid read of boolean in state IN_BSON_TYPE_DBPOINTER_STARTMAP"},
+      {"{\"x\": {\"$numberInt\": \"8589934592\"}}",
+       "Invalid input string \"8589934592\", looking for INT32"},
+      {0},
+   };
+
+   bson_error_t error;
+   test_bson_json_error_t *p;
+
+   for (p = tests; *(p[0]); p++) {
+      BSON_ASSERT (!bson_new_from_json ((const uint8_t *) (*p)[0], -1, &error));
+      ASSERT_ERROR_CONTAINS (
+         error, BSON_ERROR_JSON, BSON_JSON_ERROR_READ_INVALID_PARAM, (*p)[1]);
+   }
+}
+
+
 static void
 test_bson_integer_width (void)
 {
@@ -2402,5 +2433,6 @@ test_json_install (TestSuite *suite)
       suite, "/bson/as_json/decimal128", test_bson_as_json_decimal128);
    TestSuite_Add (
       suite, "/bson/json/read/$numberDecimal", test_bson_json_number_decimal);
+   TestSuite_Add (suite, "/bson/json/errors", test_bson_json_errors);
    TestSuite_Add (suite, "/bson/integer/width", test_bson_integer_width);
 }
