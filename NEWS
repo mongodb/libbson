@@ -1,5 +1,5 @@
-Next release
-============
+Libbson-1.7.0
+=============
 
   * Changes to JSON encoding and decoding:
     * New function bson_as_extended_json formats "Strict Extended JSON"
@@ -19,6 +19,12 @@ Next release
       BSON date after 1970 as "$date" with an ISO8601 string, and dates before
       1970 as negative milliseconds wrapped in "$numberLong".
       bson_as_extended_json always writes dates with "$numberLong".
+    * The non-numbers NaN, Infinity, and -Infinity are now recognized (regardless
+      of case) when parsing JSON.
+  * CMake build now installs .pc files for programs that link to libbson using
+    pkg-config. Both the CMake and Autotools build systems now install .cmake
+    files for programs that link to libbson using CMake. Linking to libbson
+    statically or dynamically is now much more convenient.
   * Minimum required CMake version has been increased to 3.1.
   * CMake remains experimental on non-Windows platforms and issues a warning now
   * New functions
@@ -30,8 +36,6 @@ Next release
   * New convenience macros
     * BSON_ITER_HOLDS_INT, checks if iterator holds int32 or int64
     * BSON_ITER_HOLDS_NUMBER, checks if iterator holds int32, int64 or double
-  * The non-numbers NaN, Infinity, and -Infinity are now recognized (regardless
-    of case) when parsing JSON.
   * Raised BSON recursion limit to 200
 
 Libbson-1.6.0
