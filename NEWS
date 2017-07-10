@@ -1,3 +1,15 @@
+libbson 1.8.0
+=============
+
+  * Added this
+  * Removed that
+
+Thanks to everyone who contributed to the development of this release.
+
+  * A name
+  * Another name
+
+
 Libbson-1.7.0
 =============
 
@@ -37,6 +49,7 @@ Libbson-1.7.0
     * BSON_ITER_HOLDS_INT, checks if iterator holds int32 or int64
     * BSON_ITER_HOLDS_NUMBER, checks if iterator holds int32, int64 or double
   * Raised BSON recursion limit to 200
+
 
 Libbson-1.6.0
 =============
