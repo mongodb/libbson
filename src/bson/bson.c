@@ -1512,7 +1512,9 @@ bson_append_regex (bson_t *bson,
 {
    static const uint8_t type = BSON_TYPE_REGEX;
    uint32_t regex_len;
-   uint32_t options_len;
+   bson_string_t *options_sorted;
+   const char *c;
+   bool r;
 
    BSON_ASSERT (bson);
    BSON_ASSERT (key);
@@ -1530,21 +1532,31 @@ bson_append_regex (bson_t *bson,
    }
 
    regex_len = (int) strlen (regex) + 1;
-   options_len = (int) strlen (options) + 1;
+   options_sorted = bson_string_new (NULL);
 
-   return _bson_append (bson,
-                        5,
-                        (1 + key_length + 1 + regex_len + options_len),
-                        1,
-                        &type,
-                        key_length,
-                        key,
-                        1,
-                        &gZero,
-                        regex_len,
-                        regex,
-                        options_len,
-                        options);
+   for (c = BSON_REGEX_OPTIONS_SORTED; *c; c++) {
+      if (strchr (options, *c)) {
+         bson_string_append_c (options_sorted, *c);
+      }
+   }
+
+   r =  _bson_append (bson,
+                      5,
+                      (1 + key_length + 1 + regex_len + options_sorted->len),
+                      1,
+                      &type,
+                      key_length,
+                      key,
+                      1,
+                      &gZero,
+                      regex_len,
+                      regex,
+                      options_sorted->len + 1,
+                      options_sorted->str);
+
+   bson_string_free (options_sorted, true);
+
+   return r;
 }
 
 
@@ -2744,7 +2756,7 @@ _bson_as_json_visit_regex (const bson_iter_t *iter,
    bson_string_append (state->str, "\", \"options\" : \"");
 
    /* sort the options */
-   for (c = "ilmsux"; *c; c++) {
+   for (c = BSON_REGEX_OPTIONS_SORTED; *c; c++) {
       if (strchr (v_options, *c)) {
          bson_string_append_c (state->str, *c);
       }

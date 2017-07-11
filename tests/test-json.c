@@ -842,6 +842,33 @@ test_bson_json_read_legacy_regex (void)
 
 
 static void
+test_bson_json_read_regex_options_order (void)
+{
+   bson_t b;
+   bson_error_t error;
+   bool r;
+   const char *pattern;
+   const char *flags;
+
+   r = bson_init_from_json (
+      &b, "{\"a\": {\"$regex\": \"\", \"$options\": \"ism\"}}", -1, &error);
+   ASSERT_OR_PRINT (r, error);
+   BCON_EXTRACT (&b, "a", BCONE_REGEX (pattern, flags));
+   ASSERT_CMPSTR (flags, "ims");
+
+   bson_destroy (&b);
+
+   r = bson_init_from_json (
+      &b, "{\"a\": {\"$regex\": \"\", \"$options\": \"misl\"}}", -1, &error);
+   ASSERT_OR_PRINT (r, error);
+   BCON_EXTRACT (&b, "a", BCONE_REGEX (pattern, flags));
+   ASSERT_CMPSTR (flags, "ilms");
+
+   bson_destroy (&b);
+}
+
+
+static void
 test_bson_json_read_binary (void)
 {
    bson_error_t error;
@@ -2396,6 +2423,9 @@ test_json_install (TestSuite *suite)
       suite, "/bson/json/read/dbpointer", test_bson_json_read_dbpointer);
    TestSuite_Add (
       suite, "/bson/json/read/legacy_regex", test_bson_json_read_legacy_regex);
+   TestSuite_Add (suite,
+                  "/bson/json/read/regex_options_order",
+                  test_bson_json_read_regex_options_order);
    TestSuite_Add (suite, "/bson/json/read/binary", test_bson_json_read_binary);
    TestSuite_Add (suite,
                   "/bson/json/read/legacy_binary",
