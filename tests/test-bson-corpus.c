@@ -70,8 +70,11 @@ github.com/mongodb/specifications/blob/master/source/bson-corpus/bson-corpus.rst
     * bson_to_canonical_extended_json(dB) = cE
     * bson_to_relaxed_extended_json(dB) = rE (if rE exists)
 
+* for dE input (if it exists):
+  * json_to_bson(dE) = cB (unless lossy)
+
 * for rE input (if it exists):
-    bson_to_relaxed_extended_json( json_to_bson(rE) ) = rE
+    bson_to_relaxed_extended_json(json_to_bson(rE)) = rE
 
  */
 static void
@@ -132,6 +135,11 @@ test_bson_corpus (test_bson_type_t *test)
 
       ASSERT_OR_PRINT (decode_dE, error);
       ASSERT_CMPJSON (bson_as_extended_json (decode_dE, NULL), test->cE);
+
+      if (!test->lossy) {
+         compare_data (
+            bson_get_data (decode_dE), decode_dE->len, test->cB, test->cB_len);
+      }
 
       bson_destroy (decode_dE);
    }

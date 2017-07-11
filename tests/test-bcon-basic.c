@@ -193,10 +193,9 @@ test_regex (void)
    bson_init (&bcon);
    bson_init (&expected);
 
-   bson_append_regex (&expected, "foo", -1, "^foo|bar$", "i");
-
-   BCON_APPEND (&bcon, "foo", BCON_REGEX ("^foo|bar$", "i"));
-
+   /* option flags are sorted */
+   bson_append_regex (&expected, "foo", -1, "^foo|bar$", "mis");
+   BCON_APPEND (&bcon, "foo", BCON_REGEX ("^foo|bar$", "msi"));
    bson_eq_bson (&bcon, &expected);
 
    bson_destroy (&bcon);
