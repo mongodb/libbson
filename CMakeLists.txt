@@ -2,8 +2,13 @@ cmake_minimum_required(VERSION 3.1)
 
 project (libbson C)
 
+option(ENABLE_STATIC "Build static libbson." ON)
 option(ENABLE_TESTS "Build libbson tests." ON)
 option(ENABLE_EXAMPLES "Build libbson examples." OFF)
+
+if (ENABLE_TESTS AND NOT ENABLE_STATIC)
+   message (FATAL_ERROR "-DENABLE_STATIC=OFF also requires -DENABLE_TESTS=OFF")
+endif ()
 
 if (NOT WIN32)
     message(WARNING "CMake support is experimental and may not produce production quality artifacts")
@@ -200,41 +205,27 @@ set (HEADERS
 )
 
 add_library(bson_shared SHARED ${SOURCES} ${HEADERS})
-add_library(bson_static STATIC ${SOURCES} ${HEADERS})
-
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-
-
 set_target_properties(bson_shared PROPERTIES COMPILE_DEFINITIONS "BSON_COMPILATION;JSONSL_PARSE_NAN")
-set_target_properties(bson_static PROPERTIES COMPILE_DEFINITIONS "BSON_COMPILATION;BSON_STATIC;JSONSL_PARSE_NAN")
-
 # CMake wants to make different symlinks than the Autotools, see
 # https://cmake.org/pipermail/cmake/2007-September/016501.html
 # This hack sets up standard symlink, libbson-1.0.so -> libbson-1.0.0.so
 set_target_properties(bson_shared PROPERTIES VERSION 0 SOVERSION ${BSON_MAJOR_VERSION})
-set_target_properties(bson_static PROPERTIES VERSION ${BSON_VERSION})
-
 set_target_properties(bson_shared PROPERTIES OUTPUT_NAME "bson-${BSON_API_VERSION}" PREFIX "lib")
-set_target_properties(bson_static PROPERTIES OUTPUT_NAME "bson-static-${BSON_API_VERSION}")
 
-# This wasn't added before as the targets didn't exist yet
 if (RT_LIBRARY)
    target_link_libraries (bson_shared ${RT_LIBRARY})
-   target_link_libraries (bson_static ${RT_LIBRARY})
 endif()
 
 find_library(M_LIBRARY m)
 if (M_LIBRARY)
    target_link_libraries (bson_shared ${M_LIBRARY})
-   target_link_libraries (bson_static ${M_LIBRARY})
    set(BSON_LIBS ${BSON_LIBS} ${M_LIBRARY})
 endif()
-
 
 set(THREADS_PREFER_PTHREAD_FLAG 1)
 find_package (Threads REQUIRED)
 target_link_libraries(bson_shared Threads::Threads)
-target_link_libraries(bson_static Threads::Threads)
 if(CMAKE_USE_PTHREADS_INIT)
    set(BSON_LIBS ${BSON_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 endif()
@@ -242,11 +233,28 @@ endif()
 if (NOT UNIX)
    # gethostbyname
    target_link_libraries (bson_shared ws2_32)
-   target_link_libraries (bson_static ws2_32)
    # Can't find_library () system dependencies
    # must be handled specially since we can't resolve them
    set(BSON_SYSTEM_LIBS ${BSON_SYSTEM_LIBS} ws2_32)
 endif()
+
+if (ENABLE_STATIC)
+   add_library(bson_static STATIC ${SOURCES} ${HEADERS})
+   set_target_properties(bson_static PROPERTIES COMPILE_DEFINITIONS "BSON_COMPILATION;BSON_STATIC;JSONSL_PARSE_NAN")
+   set_target_properties(bson_static PROPERTIES VERSION ${BSON_VERSION})
+   set_target_properties(bson_static PROPERTIES OUTPUT_NAME "bson-static-${BSON_API_VERSION}")
+   target_link_libraries(bson_static Threads::Threads)
+   if (RT_LIBRARY)
+      target_link_libraries (bson_static ${RT_LIBRARY})
+   endif()
+   if (M_LIBRARY)
+      target_link_libraries (bson_static ${M_LIBRARY})
+   endif()
+   if (NOT UNIX)
+      # gethostbyname
+      target_link_libraries (bson_static ws2_32)
+   endif ()
+endif ()
 
 if (ENABLE_TESTS)
     enable_testing()
@@ -316,11 +324,19 @@ endif () # ENABLE_EXAMPLES
 
 set (BSON_HEADER_INSTALL_DIR "include/libbson-${BSON_API_VERSION}")
 install(
-  TARGETS bson_shared bson_static ${EXAMPLES}
+  TARGETS bson_shared ${EXAMPLES}
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
   RUNTIME DESTINATION bin
 )
+if (ENABLE_STATIC)
+   install(
+     TARGETS bson_static ${EXAMPLES}
+     LIBRARY DESTINATION lib
+     ARCHIVE DESTINATION lib
+     RUNTIME DESTINATION bin
+   )
+endif ()
 install(
   FILES ${HEADERS}
   DESTINATION ${BSON_HEADER_INSTALL_DIR}
@@ -345,19 +361,28 @@ set(libdir "\${prefix}/lib")
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/src/libbson-1.0.pc.in
     ${CMAKE_CURRENT_BINARY_DIR}/src/libbson-1.0.pc
-@ONLY)
-
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/libbson-static-1.0.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/src/libbson-static-1.0.pc
-@ONLY)
+    @ONLY)
 
 install(
-    FILES
-      ${CMAKE_CURRENT_BINARY_DIR}/src/libbson-1.0.pc
-      ${CMAKE_CURRENT_BINARY_DIR}/src/libbson-static-1.0.pc
-    DESTINATION
-      lib/pkgconfig
+   FILES
+   ${CMAKE_CURRENT_BINARY_DIR}/src/libbson-1.0.pc
+   DESTINATION
+   lib/pkgconfig
 )
+
+if (ENABLE_STATIC)
+   configure_file(
+       ${CMAKE_CURRENT_SOURCE_DIR}/src/libbson-static-1.0.pc.in
+       ${CMAKE_CURRENT_BINARY_DIR}/src/libbson-static-1.0.pc
+       @ONLY)
+
+   install(
+      FILES
+      ${CMAKE_CURRENT_BINARY_DIR}/src/libbson-static-1.0.pc
+      DESTINATION
+      lib/pkgconfig
+   )
+endif ()
+
 
 include (build/cmake/BSONPackage.cmake)

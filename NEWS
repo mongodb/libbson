@@ -37,6 +37,7 @@ Libbson-1.7.0
     pkg-config. Both the CMake and Autotools build systems now install .cmake
     files for programs that link to libbson using CMake. Linking to libbson
     statically or dynamically is now much more convenient.
+  * New CMake option, "ENABLE_STATIC", defaults to ON.
   * Minimum required CMake version has been increased to 3.1.
   * CMake remains experimental on non-Windows platforms and issues a warning now
   * New functions
