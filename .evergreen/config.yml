@@ -347,8 +347,8 @@ tasks:
               # Build libbson with CMake (not Autotools) and compile a program
               # that links dynamically or statically to libbson, using
               # variables from CMake's find_package command.
-              LINK_STATIC=  cmd.exe /c .\\.evergreen\\link-sample-program.bat
-              LINK_STATIC=1 cmd.exe /c .\\.evergreen\\link-sample-program.bat
+              LINK_STATIC=  cmd.exe /c .\\.evergreen\\link-sample-program.cmd
+              LINK_STATIC=1 cmd.exe /c .\\.evergreen\\link-sample-program.cmd
 
     - name: link-with-pkg-config
       depends_on:
