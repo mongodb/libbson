@@ -1505,6 +1505,40 @@ bson_append_oid (bson_t *bson,
 }
 
 
+/*
+ *--------------------------------------------------------------------------
+ *
+ * _bson_append_regex_options_sorted --
+ *
+ *       Helper to append regex options to a buffer in a sorted order.
+ *
+ * Parameters:
+ *       @buffer: Buffer to which sorted options will be appended
+ *       @options: Regex options
+ *
+ * Returns:
+ *       None.
+ *
+ * Side effects:
+ *       None.
+ *
+ *--------------------------------------------------------------------------
+ */
+
+static BSON_INLINE void
+_bson_append_regex_options_sorted (bson_string_t *buffer, /* IN */
+                                   const char *options)   /* IN */
+{
+   const char *c;
+
+   for (c = BSON_REGEX_OPTIONS_SORTED; *c; c++) {
+      if (strchr (options, *c)) {
+         bson_string_append_c (buffer, *c);
+      }
+   }
+}
+
+
 bool
 bson_append_regex (bson_t *bson,
                    const char *key,
@@ -1515,7 +1549,6 @@ bson_append_regex (bson_t *bson,
    static const uint8_t type = BSON_TYPE_REGEX;
    uint32_t regex_len;
    bson_string_t *options_sorted;
-   const char *c;
    bool r;
 
    BSON_ASSERT (bson);
@@ -1536,11 +1569,7 @@ bson_append_regex (bson_t *bson,
    regex_len = (int) strlen (regex) + 1;
    options_sorted = bson_string_new (NULL);
 
-   for (c = BSON_REGEX_OPTIONS_SORTED; *c; c++) {
-      if (strchr (options, *c)) {
-         bson_string_append_c (options_sorted, *c);
-      }
-   }
+   _bson_append_regex_options_sorted (options_sorted, options);
 
    r =  _bson_append (bson,
                       5,
@@ -2703,7 +2732,6 @@ _bson_as_json_visit_regex (const bson_iter_t *iter,
 {
    bson_json_state_t *state = data;
    char *escaped;
-   const char *c;
 
    escaped = bson_utf8_escape_for_json (v_regex, -1);
    if (!escaped) {
@@ -2716,25 +2744,13 @@ _bson_as_json_visit_regex (const bson_iter_t *iter,
                           "{ \"$regularExpression\" : { \"pattern\" : \"");
       bson_string_append (state->str, escaped);
       bson_string_append (state->str, "\", \"options\" : \"");
-
-      for (c = BSON_REGEX_OPTIONS_SORTED; *c; c++) {
-         if (strchr (v_options, *c)) {
-            bson_string_append_c (state->str, *c);
-         }
-      }
-
+      _bson_append_regex_options_sorted (state->str, v_options);
       bson_string_append (state->str, "\" } }");
    } else {
       bson_string_append (state->str, "{ \"$regex\" : \"");
       bson_string_append (state->str, escaped);
       bson_string_append (state->str, "\", \"$options\" : \"");
-
-      for (c = BSON_REGEX_OPTIONS_SORTED; *c; c++) {
-         if (strchr (v_options, *c)) {
-            bson_string_append_c (state->str, *c);
-         }
-      }
-
+      _bson_append_regex_options_sorted (state->str, v_options);
       bson_string_append (state->str, "\" }");
    }
 
