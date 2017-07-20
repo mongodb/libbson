@@ -2565,20 +2565,21 @@ _bson_as_json_visit_double (const bson_iter_t *iter,
    bson_json_state_t *state = data;
    bson_string_t *str = state->str;
    uint32_t start_len;
-   bool legacy = (state->mode != BSON_JSON_MODE_CANONICAL);
+   bool finite, legacy;
 
-   /* wrap inf or nan in $numberDouble - old platforms have no isinf or isnan */
-   if (v_double != v_double || v_double * 0 != 0) {
-      legacy = false;
-   }
+   /* Check for nan and inf values (old platforms have not have isinf or isnan)
+    * and determine if legacy (i.e. unwrapped) output should be used. */
+   finite = !(v_double != v_double || v_double * 0 != 0);
+   legacy = state->mode == BSON_JSON_MODE_LEGACY ||
+            (state->mode == BSON_JSON_MODE_RELAXED && finite);
 
    if (!legacy) {
       bson_string_append (state->str, "{ \"$numberDouble\" : \"");
    }
 
-   if (v_double != v_double) {
+   if (!legacy && v_double != v_double) {
       bson_string_append (str, "NaN");
-   } else if (v_double * 0 != 0) {
+   } else if (!legacy && v_double * 0 != 0) {
       if (v_double > 0) {
          bson_string_append (str, "Infinity");
       } else {

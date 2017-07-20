@@ -356,6 +356,9 @@ test_bson_as_json_double (void)
    BSON_ASSERT (bson_append_double (b, "baz", -1, -1));
    BSON_ASSERT (bson_append_double (b, "quux", -1, 0.03125));
    BSON_ASSERT (bson_append_double (b, "huge", -1, 1e99));
+   BSON_ASSERT (bson_append_double (b, "nan", -1, NAN));
+   BSON_ASSERT (bson_append_double (b, "pos_inf", -1, INFINITY));
+   BSON_ASSERT (bson_append_double (b, "neg_inf", -1, -INFINITY));
    str = bson_as_json (b, &len);
 
    expected = bson_strdup_printf ("{"
@@ -363,8 +366,14 @@ test_bson_as_json_double (void)
                                   " \"bar\" : 3.0,"
                                   " \"baz\" : -1.0,"
                                   " \"quux\" : 0.03125,"
-                                  " \"huge\" : %.20g }",
-                                  1e99);
+                                  " \"huge\" : %.20g,"
+                                  " \"nan\" : %.20g,"
+                                  " \"pos_inf\" : %.20g,"
+                                  " \"neg_inf\" : %.20g }",
+                                  1e99,
+                                  NAN,
+                                  INFINITY,
+                                  -INFINITY);
 
    ASSERT_CMPSTR (str, expected);
 
