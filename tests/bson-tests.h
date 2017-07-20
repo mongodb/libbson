@@ -92,8 +92,8 @@ bson_open (const char *filename, int flags, ...)
                         bson_get_data ((bson)),                               \
                         (expected)->len);                                     \
       if (unequal) {                                                          \
-         bson_json = bson_as_extended_json (bson, NULL);                      \
-         expected_json = bson_as_extended_json ((expected), NULL);            \
+         bson_json = bson_as_canonical_json (bson, NULL);                     \
+         expected_json = bson_as_canonical_json ((expected), NULL);           \
          for (o = 0; o < (bson)->len && o < (expected)->len; o++) {           \
             if (bson_data[o] != expected_data[o]) {                           \
                off = o;                                                       \

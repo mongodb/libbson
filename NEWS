@@ -2,23 +2,24 @@ Libbson-1.7.0
 =============
 
   * Changes to JSON encoding and decoding:
-    * New function bson_as_extended_json formats "Strict Extended JSON"
-      according to MongoDB Extended JSON Spec, while bson_as_json is updated
-      to conform to "Relaxed Extended JSON"
+    * New functions bson_as_canonical_json and bson_as_relaxed_json convert BSON
+      to canonical and relaxed extended JSON according to MongoDB Extended JSON
+      Spec. Output for the existing bson_as_json function has not been changed.
     * When parsing JSON type wrappers like "$timestamp", any missing or extra
       keys are an error.
     * The JSON format for BSON regular expressions is now "$regularExpression":
       {"pattern": "...", "options": "..."}. The old format {"$regex": "...",
-      "$options": "..."} is still parsed but not generated.
+      "$options": "..."} is still parsed.
     * The JSON format for BSON binary elements is now "$binary": {"base64":
       "...", "subType": "..."}. The old format {"$binary": "...", "$type":
-      "..."} is still parsed but not generated.
+      "..."} is still parsed.
     * BSON dates can be parsed from "$date" as an ISO8601 date or "$numberLong"
       as milliseconds since the epoch: "t": {"$date": {"$numberLong": "1234"}}.
       Dates can no longer be formatted as raw integers. bson_as_json writes a
       BSON date after 1970 as "$date" with an ISO8601 string, and dates before
       1970 as negative milliseconds wrapped in "$numberLong".
-      bson_as_extended_json always writes dates with "$numberLong".
+      bson_as_canonical_json always writes dates with "$numberLong".
+      bson_as_relaxed_json always writes dates with "$date".
     * The non-numbers NaN, Infinity, and -Infinity are now recognized (regardless
       of case) when parsing JSON.
   * CMake build now installs .pc files for programs that link to libbson using
