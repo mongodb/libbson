@@ -13,7 +13,7 @@ CC=${CC:-"Visual Studio 14 2015 Win64"}
 echo "CC: $CC"
 echo "RELEASE: $RELEASE"
 
-CONFIGURE_FLAGS="-DCMAKE_INSTALL_PREFIX=C:/libbson -DENABLE_EXAMPLES:BOOL=ON"
+CONFIGURE_FLAGS="-DCMAKE_INSTALL_PREFIX=C:/libbson -DENABLE_EXAMPLES:BOOL=ON -DENABLE_MAINTAINER_FLAGS=ON"
 BUILD_FLAGS="/m"  # Number of concurrent processes. No value=# of cpus
 
 if [ "$RELEASE" ]; then

@@ -1,10 +1,21 @@
 cmake_minimum_required(VERSION 3.1)
 
+set (MESSAGES_ENABLED 1)
+
+function(message)
+   list (GET ARGV 0 MessageType)
+   if (MESSAGES_ENABLED)
+      list (REMOVE_AT ARGV 0)
+      _message (${MessageType} "${ARGV}")
+   endif()
+endfunction()
+
 project (libbson C)
 
 set(ENABLE_STATIC AUTO CACHE STRING "Build static libbson. Set to ON/AUTO/OFF, default AUTO.")
 option(ENABLE_TESTS "Build libbson tests." ON)
 option(ENABLE_EXAMPLES "Build libbson examples." OFF)
+option(ENABLE_MAINTAINER_FLAGS "Use strict compiler checks" OFF)
 
 if (ENABLE_STATIC STREQUAL ON OR ENABLE_STATIC STREQUAL AUTO)
    # In the future we may need to check whether static dependencies are
@@ -154,6 +165,8 @@ include_directories("${SOURCE_DIR}/src")
 if (APPLE)
    cmake_policy(SET CMP0042 OLD)
 endif()
+
+include (MaintainerFlags)
 
 set (SOURCES
    ${SOURCE_DIR}/src/bson/bcon.c

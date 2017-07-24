@@ -5,5 +5,5 @@ EXTRA_DIST += \
 	build/cmake/libbson-1.0-config-version.cmake.in \
 	build/cmake/libbson-static-1.0-config.cmake.in \
 	build/cmake/libbson-static-1.0-config-version.cmake.in \
-	build/cmake/LoadVersion.cmake
-
+	build/cmake/LoadVersion.cmake \
+	build/cmake/MaintainerFlags.cmake
