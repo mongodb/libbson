@@ -8,6 +8,9 @@
 #endif
 
 
+#define IS_NAN(dec) (dec).high == 0x7c00000000000000ull
+
+
 typedef struct {
    const char *scenario;
    const char *test;
@@ -54,6 +57,22 @@ compare_data (const uint8_t *a,
 }
 
 
+static bool
+is_test_skipped (const char *scenario, const char *description)
+{
+   skipped_corpus_test_t *skip;
+
+   for (skip = SKIPPED_CORPUS_TESTS; skip->scenario != NULL; skip++) {
+      if (!strcmp (skip->scenario, scenario) &&
+          !strcmp (skip->test, description)) {
+         return true;
+      }
+   }
+
+   return false;
+}
+
+
 /*
 See:
 github.com/mongodb/specifications/blob/master/source/bson-corpus/bson-corpus.rst
@@ -78,9 +97,8 @@ github.com/mongodb/specifications/blob/master/source/bson-corpus/bson-corpus.rst
 
  */
 static void
-test_bson_corpus (test_bson_type_t *test)
+test_bson_corpus_valid (test_bson_valid_type_t *test)
 {
-   skipped_corpus_test_t *skip;
    bson_t cB;
    bson_t dB;
    bson_t *decode_cE;
@@ -91,16 +109,13 @@ test_bson_corpus (test_bson_type_t *test)
    BSON_ASSERT (test->cB);
    BSON_ASSERT (test->cE);
 
-   for (skip = SKIPPED_CORPUS_TESTS; skip->scenario != NULL; skip++) {
-      if (!strcmp (skip->scenario, test->scenario_description) &&
-          !strcmp (skip->test, test->test_description)) {
-         if (test_suite_debug_output ()) {
-            printf ("      SKIP\n");
-            fflush (stdout);
-         }
-
-         return;
+   if (is_test_skipped (test->scenario_description, test->test_description)) {
+      if (test_suite_debug_output ()) {
+         printf ("      SKIP\n");
+         fflush (stdout);
       }
+
+      return;
    }
 
    BSON_ASSERT (bson_init_static (&cB, test->cB, test->cB_len));
@@ -158,71 +173,77 @@ test_bson_corpus (test_bson_type_t *test)
 }
 
 
+/*
+See:
+github.com/mongodb/specifications/blob/master/source/bson-corpus/bson-corpus.rst
+#testing-decode-errors
+ */
+static void
+test_bson_corpus_decode_error (test_bson_decode_error_type_t *test)
+{
+   bson_t invalid_bson;
+
+   BSON_ASSERT (test->bson);
+
+   if (is_test_skipped (test->scenario_description, test->test_description)) {
+      if (test_suite_debug_output ()) {
+         printf ("      SKIP\n");
+         fflush (stdout);
+      }
+
+      return;
+   }
+
+   ASSERT (test->bson);
+   ASSERT (!bson_init_static (&invalid_bson, test->bson, test->bson_len) ||
+           bson_empty (&invalid_bson) ||
+           !bson_as_canonical_json (&invalid_bson, NULL));
+}
+
+
+/*
+See:
+github.com/mongodb/specifications/blob/master/source/bson-corpus/bson-corpus.rst
+#testing-parsing-errors
+ */
+static void
+test_bson_corpus_parse_error (test_bson_parse_error_type_t *test)
+{
+   BSON_ASSERT (test->str);
+
+   if (is_test_skipped (test->scenario_description, test->test_description)) {
+      if (test_suite_debug_output ()) {
+         printf ("      SKIP\n");
+         fflush (stdout);
+      }
+
+      return;
+   }
+
+   switch (test->bson_type) {
+   case 0x00: /* top-level document to be parsed as JSON */
+      ASSERT (!bson_new_from_json ((uint8_t *) test->str, test->str_len, NULL));
+      break;
+   case BSON_TYPE_DECIMAL128: {
+      bson_decimal128_t dec;
+      ASSERT (!bson_decimal128_from_string (test->str, &dec));
+      ASSERT (IS_NAN (dec));
+      break;
+   }
+   default:
+      fprintf (stderr, "Unsupported parseError type: %#x\n", test->bson_type);
+      abort ();
+   }
+}
+
+
 static void
 test_bson_corpus_cb (bson_t *scenario)
 {
-   bson_iter_t iter;
-   bson_iter_t inner_iter;
-   bson_t invalid_bson;
-
-   /* test valid BSON and Extended JSON */
-   corpus_test (scenario, test_bson_corpus);
-
-   /* test invalid BSON */
-   if (bson_iter_init_find (&iter, scenario, "decodeErrors")) {
-      bson_iter_recurse (&iter, &inner_iter);
-      while (bson_iter_next (&inner_iter)) {
-         bson_iter_t test;
-         const char *description;
-         uint8_t *bson_str = NULL;
-         uint32_t bson_str_len = 0;
-
-         bson_iter_recurse (&inner_iter, &test);
-         while (bson_iter_next (&test)) {
-            if (!strcmp (bson_iter_key (&test), "description")) {
-               description = bson_iter_utf8 (&test, NULL);
-               corpus_test_print_description (description);
-            }
-
-            if (!strcmp (bson_iter_key (&test), "bson")) {
-               bson_str = corpus_test_unhexlify (&test, &bson_str_len);
-            }
-         }
-
-         ASSERT (bson_str);
-         ASSERT (!bson_init_static (&invalid_bson, bson_str, bson_str_len) ||
-                 bson_empty (&invalid_bson) ||
-                 !bson_as_canonical_json (&invalid_bson, NULL));
-
-         bson_free (bson_str);
-      }
-   }
-
-   /* test invalid JSON */
-   if (bson_iter_init_find (&iter, scenario, "parseErrors")) {
-      bson_iter_recurse (&iter, &inner_iter);
-      while (bson_iter_next (&inner_iter)) {
-         bson_iter_t test;
-         const char *description = NULL;
-         const char *input = NULL;
-         uint32_t tmp = 0;
-
-         bson_iter_recurse (&inner_iter, &test);
-         while (bson_iter_next (&test)) {
-            if (!strcmp (bson_iter_key (&test), "description")) {
-               description = bson_iter_utf8 (&test, NULL);
-               corpus_test_print_description (description);
-            }
-
-            if (!strcmp (bson_iter_key (&test), "string")) {
-               input = bson_iter_utf8 (&test, &tmp);
-            }
-         }
-
-         ASSERT (input);
-         ASSERT (!bson_new_from_json ((uint8_t *) input, tmp, NULL));
-      }
-   }
+   corpus_test (scenario,
+                test_bson_corpus_valid,
+                test_bson_corpus_decode_error,
+                test_bson_corpus_parse_error);
 }
 
 void

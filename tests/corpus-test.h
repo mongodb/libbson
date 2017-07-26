@@ -26,7 +26,7 @@ See:
 github.com/mongodb/specifications/blob/master/source/bson-corpus/bson-corpus.rst
 #testing-validity
 */
-typedef struct _test_bson_type_t {
+typedef struct _test_bson_valid_type_t {
    const char *scenario_description;
    bson_type_t bson_type;
    const char *test_description;
@@ -38,16 +38,46 @@ typedef struct _test_bson_type_t {
    const char *rE;      /* "relaxed_extjson" */
    const char *dE;      /* "degenerate_extjson" */
    bool lossy;
-} test_bson_type_t;
+} test_bson_valid_type_t;
 
+/*
+See:
+github.com/mongodb/specifications/blob/master/source/bson-corpus/bson-corpus.rst
+#testing-decode-errors
+ */
+typedef struct _test_bson_decode_error_type_t {
+   const char *scenario_description;
+   bson_type_t bson_type;
+   const char *test_description;
+   uint8_t *bson;
+   uint32_t bson_len;
+} test_bson_decode_error_type_t;
 
-typedef void (*test_bson_type_valid_cb) (test_bson_type_t *test);
+/*
+See:
+github.com/mongodb/specifications/blob/master/source/bson-corpus/bson-corpus.rst
+#testing-parsing-errors
+ */
+typedef struct _test_bson_parse_error_type_t {
+   const char *scenario_description;
+   bson_type_t bson_type;
+   const char *test_description;
+   const char *str;
+   uint32_t str_len;
+} test_bson_parse_error_type_t;
+
+typedef void (*test_bson_valid_cb) (test_bson_valid_type_t *test);
+typedef void (*test_bson_decode_error_cb) (test_bson_decode_error_type_t *test);
+typedef void (*test_bson_parse_error_cb) (test_bson_parse_error_type_t *test);
 
 void
 corpus_test_print_description (const char *description);
 uint8_t *
 corpus_test_unhexlify (bson_iter_t *iter, uint32_t *bson_str_len);
 void
-corpus_test (bson_t *scenario, test_bson_type_valid_cb valid);
+corpus_test (bson_t *scenario,
+             test_bson_valid_cb valid,
+             test_bson_decode_error_cb decode_error,
+             test_bson_parse_error_cb parse_error);
 
 #endif
