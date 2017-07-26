@@ -32,6 +32,7 @@ Synopsis
      BSON_TYPE_INT32 = 0x10,
      BSON_TYPE_TIMESTAMP = 0x11,
      BSON_TYPE_INT64 = 0x12,
+     BSON_TYPE_DECIMAL128 = 0x13,
      BSON_TYPE_MAXKEY = 0x7F,
      BSON_TYPE_MINKEY = 0xFF,
   } bson_type_t;
