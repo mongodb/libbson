@@ -2451,9 +2451,6 @@ test_bson_json_date (void)
       "{ \"dt\" : { \"$date\" : \"1970-01-01T00:00:00.000Z\" } }", 0);
    test_bson_json_date_check (
       "{ \"dt\" : { \"$date\" : \"1969-12-31T16:00:00.000-0800\" } }", 0);
-   test_bson_json_date_check (
-      "{ \"dt\" : { \"$date\" : { \"$numberLong\" : \"-62135593139000\" } } }",
-      -62135593139000);
 
    test_bson_json_date_error (
       "{ \"dt\" : { \"$date\" : \"1970-01-01T01:00:00.000+01:00\" } }",
@@ -2514,6 +2511,44 @@ test_bson_json_date (void)
       "timezone minute must be at most 59");
 }
 
+
+static void
+test_bson_json_date_legacy (void)
+{
+   test_bson_json_date_check ("{ \"dt\" : { \"$date\" : 0 } }", 0);
+   test_bson_json_date_check ("{ \"dt\" : { \"$date\" : 1356351330500 } }",
+                              1356351330500);
+   test_bson_json_date_check ("{ \"dt\" : { \"$date\" : -62135593139000 } }",
+                              -62135593139000);
+
+   /* INT64_MAX */
+   test_bson_json_date_check (
+      "{ \"dt\" : { \"$date\" : 9223372036854775807 } }", INT64_MAX);
+
+   /* INT64_MIN */
+   test_bson_json_date_check (
+      "{ \"dt\" : { \"$date\" : -9223372036854775808 } }", INT64_MIN);
+
+   /* INT64_MAX + 1 */
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : 9223372036854775808 } }",
+      "Number \"9223372036854775808\" is out of range");
+
+   /* INT64_MIN - 1 */
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : -9223372036854775809 } }",
+      "Number \"-9223372036854775809\" is out of range");
+
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : 10000000000000000000 } }",
+      "Number \"10000000000000000000\" is out of range");
+
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : -10000000000000000000 } }",
+      "Number \"-10000000000000000000\" is out of range");
+}
+
+
 static void
 test_bson_json_date_numberlong (void)
 {
@@ -2522,6 +2557,40 @@ test_bson_json_date_numberlong (void)
    test_bson_json_date_check (
       "{ \"dt\" : { \"$date\" : {\"$numberLong\": \"1356351330500\" } } }",
       1356351330500);
+   test_bson_json_date_check (
+      "{ \"dt\" : { \"$date\" : { \"$numberLong\" : \"-62135593139000\" } } }",
+      -62135593139000);
+
+   /* INT64_MAX */
+   test_bson_json_date_check ("{ \"dt\" : { \"$date\" : { \"$numberLong\" "
+                              ": \"9223372036854775807\" } } }",
+                              INT64_MAX);
+
+   /* INT64_MIN */
+   test_bson_json_date_check ("{ \"dt\" : { \"$date\" : { \"$numberLong\" "
+                              ": \"-9223372036854775808\" } } }",
+                              INT64_MIN);
+
+   /* INT64_MAX + 1 */
+   test_bson_json_date_error ("{ \"dt\" : { \"$date\" : { \"$numberLong\" "
+                              ": \"9223372036854775808\" } } }",
+                              "Number \"9223372036854775808\" is out of range");
+
+   /* INT64_MIN - 1 */
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : { \"$numberLong\" "
+      ": \"-9223372036854775809\" } } }",
+      "Number \"-9223372036854775809\" is out of range");
+
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : { \"$numberLong\" "
+      ": \"10000000000000000000\" } } }",
+      "Number \"10000000000000000000\" is out of range");
+
+   test_bson_json_date_error (
+      "{ \"dt\" : { \"$date\" : { \"$numberLong\" "
+      ": \"-10000000000000000000\" } } }",
+      "Number \"-10000000000000000000\" is out of range");
 }
 
 
@@ -2688,6 +2757,7 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (
       suite, "/bson/json/array/subdoc", test_bson_json_array_subdoc);
    TestSuite_Add (suite, "/bson/json/date", test_bson_json_date);
+   TestSuite_Add (suite, "/bson/json/date/legacy", test_bson_json_date_legacy);
    TestSuite_Add (
       suite, "/bson/json/date/long", test_bson_json_date_numberlong);
    TestSuite_Add (suite, "/bson/json/timestamp", test_bson_json_timestamp);

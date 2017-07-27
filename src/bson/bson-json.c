@@ -621,6 +621,10 @@ _bson_json_read_integer (bson_json_reader_t *reader, uint64_t val, int64_t sign)
    } else if (rs == BSON_JSON_IN_BSON_TYPE ||
               rs == BSON_JSON_IN_BSON_TYPE_TIMESTAMP_VALUES) {
       switch (bs) {
+      case BSON_JSON_LF_DATE:
+         bson->bson_type_data.date.has_date = true;
+         bson->bson_type_data.date.date = sign * val;
+         break;
       case BSON_JSON_LF_TIMESTAMP_T:
          if (sign == -1) {
             _bson_json_read_set_error (
@@ -683,7 +687,6 @@ _bson_json_read_integer (bson_json_reader_t *reader, uint64_t val, int64_t sign)
       case BSON_JSON_LF_BINARY:
       case BSON_JSON_LF_TYPE:
       case BSON_JSON_LF_UNDEFINED:
-      case BSON_JSON_LF_DATE:
       case BSON_JSON_LF_DOUBLE:
       case BSON_JSON_LF_DECIMAL128:
       case BSON_JSON_LF_DBPOINTER:
