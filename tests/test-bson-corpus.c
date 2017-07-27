@@ -21,6 +21,8 @@ skipped_corpus_test_t SKIPPED_CORPUS_TESTS[] = {
    {"Javascript Code", "Embedded nulls"},
    {"Javascript Code with Scope",
     "Unicode and embedded null in code string, empty scope"},
+   /* CDRIVER-2223, legacy extended JSON $date syntax uses numbers */
+   {"Top-level document validity", "Bad $date (number, not string or hash)"},
    {0}};
 
 
