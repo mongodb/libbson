@@ -1,14 +1,9 @@
 libbson 1.8.0
 =============
 
-  * Added this
-  * Removed that
-
-Thanks to everyone who contributed to the development of this release.
-
-  * A name
-  * Another name
-
+  * Make symbols bson_get_major_version, bson_get_minor_version,
+    bson_get_micro_version, bson_get_version, and bson_check_version available
+    to C++ programs.
 
 Libbson-1.7.0
 =============
@@ -324,7 +319,7 @@ Thanks to everyone who contributed to the development of this release.
   * A. Jesse Jiryu Davis
   * Hannes Magnusson
   * Mark Benvenuto
-  * Petr Písař
+  * Petr P??sa??
   * xpol
   * Jose Sebastian Battig
   * Jeroen Ooms
@@ -373,7 +368,7 @@ Thanks to everyone who contributed to the development of this release.
   * Hannes Magnusson
   * A. Jesse Jiryu Davis
   * Jeroen Ooms
-  * Petr Písař
+  * Petr P??sa??
   * xpol
 
 Peace,
@@ -621,7 +616,7 @@ Libbson.
  * Ivan Suvorov
  * Hannes Magnusson
  * Jason Carey
- * Jérôme Lebel
+ * J??r??me Lebel
  * Samantha Ritter
 
 -- Jason Carey
@@ -655,7 +650,7 @@ Libbson.
  * Daniel Colchete
  * Ivan Suvorov
  * Jason Carey
- * Jérôme Lebel
+ * J??r??me Lebel
 
 -- Jason Carey
 
@@ -679,7 +674,7 @@ Libbson.
  * Adam Midvidy
  * Christian Hergert
  * Jason Carey
- * Jérôme Lebel
+ * J??r??me Lebel
  * Tyler Brock
 
 -- Jason Carey
@@ -699,7 +694,7 @@ Thanks to everyone who contributed to the development of Libbson!
  * Jason Carey
  * Jose Sebastian Battig
  * Maxim Zakharov
- * Jérôme Lebel
+ * J??r??me Lebel
  * Itay Neeman
  * Mike Manilone
  * Michael Kuhn
@@ -713,7 +708,7 @@ Thanks to everyone who contributed to the development of Libbson!
  * Matt Cotter
  * Gary J. Murakami
  * Toon Schoenmakers
- * Máximo Cuadros
+ * M??ximo Cuadros
  * Michael Whittaker
  * Kota Yamaguchi
  * Justin Case
@@ -874,7 +869,7 @@ I'd like to thank everyone who contributed to this release.
     Gary Murakami
     Jason Carey
     Jose Sebastian Battig
-    Máximo Cuadros
+    M??ximo Cuadros
     Paul Melnikow
     Stefan Kaes
 

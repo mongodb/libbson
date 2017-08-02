@@ -25,6 +25,8 @@
 
 #include "bson-types.h"
 
+BSON_BEGIN_DECLS
+
 BSON_EXPORT (int)
 bson_get_major_version (void);
 BSON_EXPORT (int)
@@ -36,5 +38,6 @@ bson_get_version (void);
 BSON_EXPORT (bool)
 bson_check_version (int required_major, int required_minor, int required_micro);
 
+BSON_END_DECLS
 
 #endif /* BSON_VERSION_FUNCTIONS_H */
