@@ -121,10 +121,10 @@ test_bson_corpus_valid (test_bson_valid_type_t *test)
    }
 
    BSON_ASSERT (bson_init_static (&cB, test->cB, test->cB_len));
-   ASSERT_CMPJSON (bson_as_canonical_json (&cB, NULL), test->cE);
+   ASSERT_CMPJSON (bson_as_canonical_extended_json (&cB, NULL), test->cE);
 
    if (test->rE) {
-      ASSERT_CMPJSON (bson_as_relaxed_json (&cB, NULL), test->rE);
+      ASSERT_CMPJSON (bson_as_relaxed_extended_json (&cB, NULL), test->rE);
    }
 
    decode_cE = bson_new_from_json ((const uint8_t *) test->cE, -1, &error);
@@ -138,10 +138,10 @@ test_bson_corpus_valid (test_bson_valid_type_t *test)
 
    if (test->dB) {
       BSON_ASSERT (bson_init_static (&dB, test->dB, test->dB_len));
-      ASSERT_CMPJSON (bson_as_canonical_json (&dB, NULL), test->cE);
+      ASSERT_CMPJSON (bson_as_canonical_extended_json (&dB, NULL), test->cE);
 
       if (test->rE) {
-         ASSERT_CMPJSON (bson_as_relaxed_json (&dB, NULL), test->rE);
+         ASSERT_CMPJSON (bson_as_relaxed_extended_json (&dB, NULL), test->rE);
       }
 
       bson_destroy (&dB);
@@ -151,7 +151,8 @@ test_bson_corpus_valid (test_bson_valid_type_t *test)
       decode_dE = bson_new_from_json ((const uint8_t *) test->dE, -1, &error);
 
       ASSERT_OR_PRINT (decode_dE, error);
-      ASSERT_CMPJSON (bson_as_canonical_json (decode_dE, NULL), test->cE);
+      ASSERT_CMPJSON (bson_as_canonical_extended_json (decode_dE, NULL),
+                      test->cE);
 
       if (!test->lossy) {
          compare_data (
@@ -165,7 +166,8 @@ test_bson_corpus_valid (test_bson_valid_type_t *test)
       decode_rE = bson_new_from_json ((const uint8_t *) test->rE, -1, &error);
 
       ASSERT_OR_PRINT (decode_rE, error);
-      ASSERT_CMPJSON (bson_as_relaxed_json (decode_rE, NULL), test->rE);
+      ASSERT_CMPJSON (bson_as_relaxed_extended_json (decode_rE, NULL),
+                      test->rE);
 
       bson_destroy (decode_rE);
    }
@@ -199,7 +201,7 @@ test_bson_corpus_decode_error (test_bson_decode_error_type_t *test)
    ASSERT (test->bson);
    ASSERT (!bson_init_static (&invalid_bson, test->bson, test->bson_len) ||
            bson_empty (&invalid_bson) ||
-           !bson_as_canonical_json (&invalid_bson, NULL));
+           !bson_as_canonical_extended_json (&invalid_bson, NULL));
 }
 
 

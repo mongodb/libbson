@@ -51,7 +51,7 @@ Converting a document to JSON uses a :symbol:`bson_iter_t` and :symbol:`bson_vis
   char *json;
 
   if ((b = bson_new_from_data (my_data, my_data_len))) {
-     if ((json = bson_as_canonical_json (b, NULL))) {
+     if ((json = bson_as_canonical_extended_json (b, NULL))) {
         printf ("%s\n", json);
         bson_free (json);
      }
