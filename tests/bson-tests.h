@@ -27,7 +27,7 @@
 BSON_BEGIN_DECLS
 
 
-#define BSON_ASSERT_CMPSTR(a, b)                                               \
+#define BSON_ASSERT_CMPSTR(a, b)                                          \
    do {                                                                   \
       if (((a) != (b)) && !!strcmp ((a), (b))) {                          \
          fprintf (stderr,                                                 \
@@ -40,7 +40,7 @@ BSON_BEGIN_DECLS
    } while (0)
 
 
-#define BSON_ASSERT_CMPINT(a, eq, b)                                               \
+#define BSON_ASSERT_CMPINT(a, eq, b)                                          \
    do {                                                                       \
       if (!((a) eq (b))) {                                                    \
          fprintf (stderr,                                                     \
@@ -92,8 +92,8 @@ bson_open (const char *filename, int flags, ...)
                         bson_get_data ((bson)),                               \
                         (expected)->len);                                     \
       if (unequal) {                                                          \
-         bson_json = bson_as_canonical_json (bson, NULL);                     \
-         expected_json = bson_as_canonical_json ((expected), NULL);           \
+         bson_json = bson_as_canonical_extended_json (bson, NULL);            \
+         expected_json = bson_as_canonical_extended_json ((expected), NULL);  \
          for (o = 0; o < (bson)->len && o < (expected)->len; o++) {           \
             if (bson_data[o] != expected_data[o]) {                           \
                off = o;                                                       \

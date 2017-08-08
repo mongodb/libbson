@@ -487,7 +487,7 @@ bson_validate_with_error (const bson_t *bson,
 
 
 /**
- * bson_as_canonical_json:
+ * bson_as_canonical_extended_json:
  * @bson: A bson_t.
  * @length: A location for the string length, or NULL.
  *
@@ -505,7 +505,7 @@ bson_validate_with_error (const bson_t *bson,
  * Returns: A newly allocated string that should be freed with bson_free().
  */
 BSON_EXPORT (char *)
-bson_as_canonical_json (const bson_t *bson, size_t *length);
+bson_as_canonical_extended_json (const bson_t *bson, size_t *length);
 
 
 /**
@@ -514,7 +514,8 @@ bson_as_canonical_json (const bson_t *bson, size_t *length);
  * @length: A location for the string length, or NULL.
  *
  * Creates a new string containing @bson in libbson's legacy JSON format.
- * Superseded by bson_as_canonical_json and bson_as_relaxed_json. The caller is
+ * Superseded by bson_as_canonical_extended_json and
+ * bson_as_relaxed_extended_json. The caller is
  * responsible for freeing the resulting string. If @length is non-NULL, then
  * the length of the resulting string will be placed in @length.
  *
@@ -525,7 +526,7 @@ bson_as_json (const bson_t *bson, size_t *length);
 
 
 /**
- * bson_as_relaxed_json:
+ * bson_as_relaxed_extended_json:
  * @bson: A bson_t.
  * @length: A location for the string length, or NULL.
  *
@@ -543,7 +544,7 @@ bson_as_json (const bson_t *bson, size_t *length);
  * Returns: A newly allocated string that should be freed with bson_free().
  */
 BSON_EXPORT (char *)
-bson_as_relaxed_json (const bson_t *bson, size_t *length);
+bson_as_relaxed_extended_json (const bson_t *bson, size_t *length);
 
 
 /* like bson_as_json() but for outermost arrays. */

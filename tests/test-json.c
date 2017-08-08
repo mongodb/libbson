@@ -606,7 +606,7 @@ test_bson_as_json_dbpointer (void)
 
 
 static void
-test_bson_as_canonical_json_dbpointer (void)
+test_bson_as_canonical_extended_json_dbpointer (void)
 {
    bson_oid_t oid;
    bson_t *b;
@@ -616,7 +616,7 @@ test_bson_as_canonical_json_dbpointer (void)
    bson_oid_init_from_string (&oid, "12341234123412abcdababcd");
    b = bson_new ();
    BSON_ASSERT (BSON_APPEND_DBPOINTER (b, "p", "coll", &oid));
-   str = bson_as_canonical_json (b, &len);
+   str = bson_as_canonical_extended_json (b, &len);
    ASSERT_CMPJSON (str,
                    "{ \"p\" : { \"$dbPointer\" : { \"$ref\" : "
                    "\"coll\", \"$id\" : { \"$oid\" : "
@@ -2734,8 +2734,8 @@ test_json_install (TestSuite *suite)
                   "/bson/as_json/dbpointer",
                   test_bson_as_json_dbpointer);
    TestSuite_Add (suite,
-                  "/bson/as_canonical_json/dbpointer",
-                  test_bson_as_canonical_json_dbpointer);
+                  "/bson/as_canonical_extended_json/dbpointer",
+                  test_bson_as_canonical_extended_json_dbpointer);
    TestSuite_Add (
       suite, "/bson/as_json/stack_overflow", test_bson_as_json_stack_overflow);
    TestSuite_Add (suite, "/bson/as_json/corrupt", test_bson_corrupt);

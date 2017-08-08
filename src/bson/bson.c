@@ -3141,7 +3141,7 @@ _bson_as_json_visit_all (const bson_t *bson,
 
 
 char *
-bson_as_canonical_json (const bson_t *bson, size_t *length)
+bson_as_canonical_extended_json (const bson_t *bson, size_t *length)
 {
    return _bson_as_json_visit_all (bson, length, BSON_JSON_MODE_CANONICAL);
 }
@@ -3155,7 +3155,7 @@ bson_as_json (const bson_t *bson, size_t *length)
 
 
 char *
-bson_as_relaxed_json (const bson_t *bson, size_t *length)
+bson_as_relaxed_extended_json (const bson_t *bson, size_t *length)
 {
    return _bson_as_json_visit_all (bson, length, BSON_JSON_MODE_RELAXED);
 }

@@ -8,7 +8,7 @@ Libbson provides routines for converting to and from the JSON format. In particu
 Converting BSON to JSON
 -----------------------
 
-There are often times where you might want to convert a BSON document to JSON. It is convenient for debugging as well as an interchange format. To help with this, Libbson contains the functions :symbol:`bson_as_canonical_json()` and :symbol:`bson_as_relaxed_json()`. The canonical format preserves BSON type information for values that may have ambiguous representations in JSON (e.g. numeric types).
+There are often times where you might want to convert a BSON document to JSON. It is convenient for debugging as well as an interchange format. To help with this, Libbson contains the functions :symbol:`bson_as_canonical_extended_json()` and :symbol:`bson_as_relaxed_extended_json()`. The canonical format preserves BSON type information for values that may have ambiguous representations in JSON (e.g. numeric types).
 
 .. code-block:: c
 
@@ -18,7 +18,7 @@ There are often times where you might want to convert a BSON document to JSON. I
 
   b = BCON_NEW ("a", BCON_INT32 (1));
 
-  str = bson_as_canonical_json (b, &len);
+  str = bson_as_canonical_extended_json (b, &len);
   printf ("%s\n", str);
   bson_free (str);
 
@@ -38,7 +38,7 @@ The relaxed format prefers JSON primitives for numeric values and may be used if
 
   b = BCON_NEW ("a", BCON_INT32 (1));
 
-  str = bson_as_relaxed_json (b, &len);
+  str = bson_as_relaxed_extended_json (b, &len);
   printf ("%s\n", str);
   bson_free (str);
 
@@ -235,7 +235,7 @@ The following example reads BSON documents from ``stdin`` and prints them to ``s
          * Convert each incoming document to JSON and print to stdout.
          */
         while ((b = bson_reader_read (reader, NULL))) {
-           str = bson_as_canonical_json (b, NULL);
+           str = bson_as_canonical_extended_json (b, NULL);
            fprintf (stdout, "%s\n", str);
            bson_free (str);
         }
