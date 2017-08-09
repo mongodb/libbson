@@ -550,6 +550,7 @@ buildvariants:
 ## ZAP
 - name: rhel-72-zseries
   display_name: "RHEL 7.2 zSeries"
+  batchtime: 1440 # 1 day
   expansions:
     CC: gcc
   run_on:
@@ -561,6 +562,7 @@ buildvariants:
 
 - name: rhel-71-power8
   display_name: "RHEL 7.1 Power8"
+  batchtime: 1440 # 1 day
   expansions:
     CC: gcc
   run_on:
@@ -571,6 +573,7 @@ buildvariants:
     - name: "debug-compile-c11"
 
 - name: ubuntu1604-power8
+  batchtime: 1440 # 1 day
   display_name: "Ubuntu 16.04 Power8"
   expansions:
     CC: gcc
@@ -584,6 +587,7 @@ buildvariants:
 
 - name: ubuntu1604-arm64
   display_name: "Ubuntu 16.04 ARM64"
+  batchtime: 1440 # 1 day
   expansions:
     CC: "gcc"
   run_on:
