@@ -610,26 +610,6 @@ buildvariants:
     - name: "debug-compile-c99"
     - name: "debug-compile-c11"
 
-## Solaris
-#- name: solaris-32-bit
-#  display_name: "Sol gcc-4.8.2 32"
-#  expansions:
-#    CC: gcc
-#    MARCH: i386
-#  run_on:
-#    - solaris
-#  tasks:
-#    - name: "debug-compile"
-#
-#- name: solaris-64-bit
-#  display_name: "Sol gcc-4.8.2 64"
-#  expansions:
-#    CC: gcc
-#  run_on:
-#    - solaris
-#  tasks:
-#    - name: "debug-compile"
-
 ## Windows
 - name: windows-32-vs2010
   display_name: "Win VS2010 32"
