@@ -97,7 +97,7 @@ Use ``bson_reserve_buffer`` to write a function that takes a :symbol:`bson_t` po
      read_into (&bson, fp);
      fclose (fp);
 
-     json = bson_as_json (&bson, NULL);
+     json = bson_as_canonical_extended_json (&bson, NULL);
      printf ("%s\n", json);
 
      bson_free (json);

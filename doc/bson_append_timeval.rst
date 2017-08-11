@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_TIMEVAL(b, key, val) \
+     bson_append_timeval (b, key, (int) strlen (key), val)
+
   bool
   bson_append_timeval (bson_t *bson,
                        const char *key,
@@ -30,5 +33,4 @@ The :symbol:`bson_append_timeval()` function is a helper that takes a ``struct t
 Returns
 -------
 
-true if the operation was applied successfully, otherwise false and ``bson`` should be discarded.
-
+Returns ``true`` if the operation was applied successfully. The function will fail if appending the value grows ``bson`` larger than INT32_MAX.

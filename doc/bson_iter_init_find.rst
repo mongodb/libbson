@@ -23,3 +23,7 @@ Description
 
 This function is identical to ``(bson_iter_init() && bson_iter_find())``.
 
+.. only:: html
+
+  .. taglist:: See Also:
+    :tags: iter-init

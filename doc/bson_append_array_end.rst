@@ -25,5 +25,4 @@ The :symbol:`bson_append_array_end()` function shall complete the appending of a
 Returns
 -------
 
-true if there the operation could be applied without overflowing.
-
+Returns ``true`` if successful.

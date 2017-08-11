@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_DBPOINTER(b, key, coll, oid) \
+     bson_append_dbpointer (b, key, (int) strlen (key), coll, oid)
+
   bool
   bson_append_dbpointer (bson_t *bson,
                          const char *key,
@@ -27,12 +30,11 @@ Parameters
 Description
 -----------
 
-.. warning:
+.. warning::
 
   The dbpointer field type is *DEPRECATED* and should only be used when interacting with legacy systems.
 
 Returns
 -------
 
-true if the operation was applied successfully, otherwise false and ``bson`` should be discarded.
-
+Returns ``true`` if the operation was applied successfully. The function will fail if appending the array grows ``bson`` larger than INT32_MAX.

@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_CODE_WITH_SCOPE(b, key, val, scope) \
+     bson_append_code_with_scope (b, key, (int) strlen (key), val, scope)
+
   bool
   bson_append_code_with_scope (bson_t *bson,
                                const char *key,
@@ -34,5 +37,4 @@ If ``scope`` is NULL, this function appends an element with BSON type "code", ot
 Returns
 -------
 
-true if the operation was applied successfully, otherwise false and ``bson`` should be discarded.
-
+Returns ``true`` if the operation was applied successfully. The function will fail if appending ``javascript`` and ``scope`` grows ``bson`` larger than INT32_MAX.

@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_UTF8(b, key, val) \
+     bson_append_utf8 (b, key, (int) strlen (key), val, (int) strlen (val))
+
   bool
   bson_append_utf8 (bson_t *bson,
                     const char *key,
@@ -38,5 +41,4 @@ It is suggested to use modified UTF-8 which uses a 2 byte representation for emb
 Returns
 -------
 
-true if the operation was applied successfully, otherwise false and ``bson`` should be discarded.
-
+Returns ``true`` if the operation was applied successfully. The function will fail if appending the value grows ``bson`` larger than INT32_MAX.

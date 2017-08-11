@@ -80,6 +80,15 @@
 
 
 /*
+ * Define to 1 if you have gmtime_r available on your platform.
+ */
+#define BSON_HAVE_GMTIME_R @BSON_HAVE_GMTIME_R@
+#if BSON_HAVE_GMTIME_R != 1
+# undef BSON_HAVE_GMTIME_R
+#endif
+
+
+/*
  * Define to 1 if you have reallocf available on your platform.
  */
 #define BSON_HAVE_REALLOCF @BSON_HAVE_REALLOCF@
@@ -87,14 +96,6 @@
 # undef BSON_HAVE_REALLOCF
 #endif
 
-
-/*
- * Define to 1 if you have _set_output_format (VS2013 and older).
- */
-#define BSON_NEEDS_SET_OUTPUT_FORMAT @BSON_NEEDS_SET_OUTPUT_FORMAT@
-#if BSON_NEEDS_SET_OUTPUT_FORMAT != 1
-# undef BSON_NEEDS_SET_OUTPUT_FORMAT
-#endif
 
 /*
  * Define to 1 if you have struct timespec available on your platform.

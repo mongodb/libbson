@@ -75,6 +75,7 @@
 #include <limits.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -85,6 +86,7 @@ BSON_BEGIN_DECLS
 
 
 #ifdef _MSC_VER
+#include <time.h>
 #include "bson-stdint-win32.h"
 #ifndef __cplusplus
 /* benign redefinition of type */
@@ -93,7 +95,10 @@ BSON_BEGIN_DECLS
 #define _SSIZE_T_DEFINED
 typedef SSIZE_T ssize_t;
 #endif
+#ifndef _SIZE_T_DEFINED
+#define _SIZE_T_DEFINED
 typedef SIZE_T size_t;
+#endif
 #pragma warning(default : 4142)
 #else
 /*

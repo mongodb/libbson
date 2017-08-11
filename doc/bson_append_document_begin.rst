@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_DOCUMENT_BEGIN(b, key, child) \
+     bson_append_document_begin (b, key, (int) strlen (key), child)
+
   bool
   bson_append_document_begin (bson_t *bson,
                               const char *key,
@@ -32,5 +35,4 @@ The :symbol:`bson_append_document_begin()` function shall begin appending a sub-
 Returns
 -------
 
-true if the operation was applied successfully, otherwise false and ``bson`` should be discarded.
-
+Returns ``true`` if the operation was applied successfully. The function will fail if ``bson`` must grow larger than INT32_MAX.

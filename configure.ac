@@ -35,9 +35,24 @@ m4_include([build/autotools/Coverage.m4])
 AM_INIT_AUTOMAKE([foreign subdir-objects tar-ustar])
 m4_include([build/autotools/SetupAutomake.m4])
 
+# Substitute our dependencies into the pkg-config files.
+LIBBSON_LIBS=""
+if test "$os_win32" = "yes"; then
+    LIBBSON_LIBS="${LIBBSON_LIBS} -lws2_32"
+fi
+# It is apparently legitimate to pass cflags to the linker
+LIBS="${LIBS} ${LIBBSON_LIBS} ${PTHREAD_LIBS} ${PTHREAD_CFLAGS}"
+LIBBSON_LIBS="${LIBS}"
+AC_SUBST(LIBBSON_LIBS)
+
 AC_CONFIG_FILES([
     Makefile
     src/libbson-1.0.pc
+    src/libbson-static-1.0.pc
+    build/cmake/libbson-1.0-config.cmake
+    build/cmake/libbson-1.0-config-version.cmake
+    build/cmake/libbson-static-1.0-config.cmake
+    build/cmake/libbson-static-1.0-config-version.cmake
     src/bson/bson-config.h
     src/bson/bson-version.h
 ])

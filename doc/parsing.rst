@@ -8,7 +8,7 @@ Parsing
 
 BSON documents are lazily parsed as necessary. To begin parsing a BSON document, use one of the provided Libbson functions to create a new :symbol:`bson_t` from existing data such as :symbol:`bson_new_from_data()`. This will make a copy of the data so that additional mutations may occur to the BSON document.
 
-.. tip:
+.. tip::
 
   If you only want to parse a BSON document and have no need to mutate it, you may use :symbol:`bson_init_static()` to avoid making a copy of the data.
 
@@ -51,7 +51,7 @@ Converting a document to JSON uses a :symbol:`bson_iter_t` and :symbol:`bson_vis
   char *json;
 
   if ((b = bson_new_from_data (my_data, my_data_len))) {
-     if ((json = bson_as_json (b, NULL))) {
+     if ((json = bson_as_canonical_extended_json (b, NULL))) {
         printf ("%s\n", json);
         bson_free (json);
      }

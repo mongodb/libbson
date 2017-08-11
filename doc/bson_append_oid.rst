@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_OID(b, key, val) \
+     bson_append_oid (b, key, (int) strlen (key), val)
+
   bool
   bson_append_oid (bson_t *bson,
                    const char *key,
@@ -30,5 +33,4 @@ The :symbol:`bson_append_oid()` function shall append a new element to ``bson`` 
 Returns
 -------
 
-true if the operation was applied successfully, otherwise false and ``bson`` should be discarded.
-
+Returns ``true`` if the operation was applied successfully. The function will fail if appending ``oid`` grows ``bson`` larger than INT32_MAX.

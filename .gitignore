@@ -14,6 +14,7 @@ CMakeFiles
 CMakeCache.txt
 compile
 config.*
+!config.yml
 configure
 depcomp
 .deps
@@ -49,3 +50,12 @@ doc/version.page
 coverage
 *.gcda
 *.gcno
+CPackConfig.cmake
+CPackSourceConfig.cmake
+CTestTestfile.cmake
+cmake_install.cmake
+libbson-1.0-config-version.cmake
+libbson-1.0-config.cmake
+libbson-static-1.0-config-version.cmake
+libbson-static-1.0-config.cmake
+

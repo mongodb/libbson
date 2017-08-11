@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_ARRAY(b, key, val) \
+     bson_append_array (b, key, (int) strlen (key), val)
+
   bool
   bson_append_array (bson_t *bson,
                      const char *key,
@@ -30,5 +33,4 @@ The :symbol:`bson_append_array()` function shall append ``child`` to ``bson`` us
 Returns
 -------
 
-true if the operation was applied successfully, otherwise false and ``bson`` should be discarded.
-
+Returns ``true`` if the operation was applied successfully. The function fails if appending the array grows ``bson`` larger than INT32_MAX.

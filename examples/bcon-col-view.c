@@ -67,7 +67,7 @@ col_view_create (const char *stub, ...)
          keep_going = 0;
          break;
       default:
-         assert (0);
+         BSON_ASSERT (0);
          break;
       }
    }
@@ -86,7 +86,7 @@ main (int argc, char *argv[])
    bson = COL_VIEW_CREATE (
       SORT ("a", BCON_INT32 (1)), QUERY ("hello", "world"), LIMIT (10));
 
-   json = bson_as_json (bson, NULL);
+   json = bson_as_canonical_extended_json (bson, NULL);
    printf ("%s\n", json);
    bson_free (json);
 

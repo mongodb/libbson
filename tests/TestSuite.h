@@ -35,7 +35,7 @@ extern "C" {
 #ifdef ASSERT
 #undef ASSERT
 #endif
-#define ASSERT assert
+#define ASSERT BSON_ASSERT
 
 
 #ifdef ASSERT_OR_PRINT
@@ -86,6 +86,7 @@ extern "C" {
 #define ASSERT_CMPUINT64(a, eq, b) ASSERT_CMPINT_HELPER (a, eq, b, PRIu64)
 #define ASSERT_CMPSIZE_T(a, eq, b) ASSERT_CMPINT_HELPER (a, eq, b, "zd")
 #define ASSERT_CMPSSIZE_T(a, eq, b) ASSERT_CMPINT_HELPER (a, eq, b, "zx")
+#define ASSERT_CMPDOUBLE(a, eq, b) ASSERT_CMPINT_HELPER (a, eq, b, "f")
 
 #define ASSERT_MEMCMP(a, b, n)                                       \
    do {                                                              \
@@ -141,8 +142,8 @@ extern "C" {
       size_t i = 0;                                                        \
       char *a = (char *) _a;                                               \
       char *b = (char *) _b;                                               \
-      char *aa = bson_malloc0 (strlen (a));                                \
-      char *bb = bson_malloc0 (strlen (b));                                \
+      char *aa = bson_malloc0 (strlen (a) + 1);                            \
+      char *bb = bson_malloc0 (strlen (b) + 1);                            \
       char *f = a;                                                         \
       do {                                                                 \
          while (isspace (*a))                                              \
@@ -157,7 +158,10 @@ extern "C" {
       } while (*b);                                                        \
       if (!!strcmp ((aa), (bb))) {                                         \
          fprintf (                                                         \
-            stderr, "FAIL\n\nAssert Failure: \"%s\" != \"%s\"\n", aa, bb); \
+            stderr, "FAIL\n\nAssert Failure: \"%s\" != \"%s\"\n"           \
+                  "%s:%d  %s()\n",                                         \
+                  aa, bb,                                                  \
+                  __FILE__, __LINE__, BSON_FUNC);                          \
          abort ();                                                         \
       }                                                                    \
       bson_free (aa);                                                      \
@@ -235,7 +239,7 @@ extern "C" {
          fprintf (stderr,                                                \
                   "FAIL\n\nAssert Failure: No field \"%s\" in \"%s\"\n", \
                   (_field),                                              \
-                  bson_as_json (_bson, NULL));                           \
+                  bson_as_canonical_extended_json (_bson, NULL));        \
          abort ();                                                       \
       }                                                                  \
    } while (0)
@@ -253,21 +257,6 @@ extern "C" {
 #define gettestpid _getpid
 #else
 #define gettestpid getpid
-#endif
-
-#if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)
-#define BEGIN_IGNORE_DEPRECATIONS  \
-   _Pragma ("GCC diagnostic push") \
-      _Pragma ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-#define END_IGNORE_DEPRECATIONS _Pragma ("GCC diagnostic pop")
-#elif defined(__clang__)
-#define BEGIN_IGNORE_DEPRECATIONS    \
-   _Pragma ("clang diagnostic push") \
-      _Pragma ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-#define END_IGNORE_DEPRECATIONS _Pragma ("clang diagnostic pop")
-#else
-#define BEGIN_IGNORE_DEPRECATIONS
-#define END_IGNORE_DEPRECATIONS
 #endif
 
 #define ASSERT_OR_PRINT_ERRNO(_statement, _errcode)                          \

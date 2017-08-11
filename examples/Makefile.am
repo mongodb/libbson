@@ -8,6 +8,14 @@ EXAMPLE_STREAMING_CFLAGS = $(EXAMPLE_CFLAGS) \
 	$(SOCKET_CFLAGS)
 EXAMPLE_STREAMING_LDFLAGS = $(SOCKET_LDFLAGS)
 
+# These files are included when we generate docs from include-and-link.rst
+EXTRA_DIST += \
+	examples/hello_bson.c \
+	examples/compile-with-pkg-config.sh \
+	examples/compile-with-pkg-config-static.sh \
+	examples/cmake/find_package/CMakeLists.txt \
+	examples/cmake/find_package_static/CMakeLists.txt
+
 
 noinst_PROGRAMS += bson-to-json
 bson_to_json_SOURCES = examples/bson-to-json.c

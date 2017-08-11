@@ -5,6 +5,8 @@
 extern void
 test_atomic_install (TestSuite *suite);
 extern void
+test_bson_corpus_install (TestSuite *suite);
+extern void
 test_bcon_basic_install (TestSuite *suite);
 extern void
 test_bcon_extract_install (TestSuite *suite);
@@ -38,8 +40,6 @@ extern void
 test_version_install (TestSuite *suite);
 extern void
 test_writer_install (TestSuite *suite);
-extern void
-test_bson_type_install (TestSuite *suite);
 
 
 int
@@ -51,6 +51,7 @@ main (int argc, char *argv[])
    TestSuite_Init (&suite, "", argc, argv);
 
    test_atomic_install (&suite);
+   test_bson_corpus_install (&suite);
    test_bcon_basic_install (&suite);
    test_bcon_extract_install (&suite);
    test_bson_install (&suite);
@@ -68,7 +69,6 @@ main (int argc, char *argv[])
    test_version_install (&suite);
    test_writer_install (&suite);
    test_decimal128_install (&suite);
-   test_bson_type_install (&suite);
 
    ret = TestSuite_Run (&suite);
 

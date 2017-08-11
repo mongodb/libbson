@@ -29,7 +29,7 @@ Description
 
 This function shall install a new memory allocator to be used by Libbson.
 
-.. warning:
+.. warning::
 
   This function *MUST* be called at the beginning of the process. Failure to do so will result in memory being freed by the wrong allocator.
 

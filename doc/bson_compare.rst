@@ -26,7 +26,7 @@ This can be useful in conjunction with _qsort()_.
 
 If equal, 0 is returned.
 
-.. tip:
+.. tip::
 
   This function uses _memcmp()_ internally, so the semantics are the same.
 

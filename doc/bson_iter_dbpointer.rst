@@ -27,7 +27,7 @@ Description
 
 Fetches the contents of a BSON_TYPE_DBPOINTER element.
 
-.. warning:
+.. warning::
 
   The BSON_TYPE_DBPOINTER field type is deprecated by the BSON spec and should not be used in new code.
 

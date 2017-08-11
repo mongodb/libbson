@@ -17,9 +17,6 @@ functions:
            export AWS_ACCESS_KEY_ID=${aws_key}
            export AWS_SECRET_ACCESS_KEY=${aws_secret}
            sudo apt-get install -y awscli
-           # awscli seems to have a bug uploading the empty ".nojekyll" file:
-           # "seek() takes 2 positional arguments but 3 were given"
-           rm -f doc/html/.nojekyll
            aws s3 cp doc/html s3://mciuploads/${project}/docs/${CURRENT_VERSION} --recursive --acl public-read --region us-east-1
     - command: s3.put
       params:
@@ -118,7 +115,10 @@ functions:
       params:
         continue_on_err: true
         # Must be http as RHEL55 has https issues
-        script: "set -o xtrace; rm -f *.tar.gz; curl http://s3.amazonaws.com/mciuploads/libbson/libbson-${CURRENT_VERSION}.tar.gz --output libbson.tar.gz --silent --max-time 120 --fail"
+        script: |
+          set -o xtrace
+          rm -f *.tar.gz
+          curl --retry 5 http://s3.amazonaws.com/mciuploads/libbson/${branch_name}/libbson-${CURRENT_VERSION}.tar.gz --output libbson.tar.gz --silent --max-time 120 --fail
 
   "upload release":
     - command: shell.exec
@@ -129,7 +129,7 @@ functions:
         aws_key: ${aws_key}
         aws_secret: ${aws_secret}
         local_file: libbson.tar.gz
-        remote_file: libbson/libbson-${CURRENT_VERSION}.tar.gz
+        remote_file: libbson/${branch_name}/libbson-${CURRENT_VERSION}.tar.gz
         bucket: mciuploads
         permissions: public-read
         content_type: ${content_type|application/x-gzip}
@@ -150,12 +150,10 @@ functions:
         content_type: ${content_type|application/x-gzip}
 
   "upload artifacts":
-    - command: archive.targz_pack
+    - command: shell.exec
       params:
-        target: "artifacts.tar.gz"
-        source_dir: "."
-        include:
-          - "libbson"
+        working_dir: "."
+        script: tar czf artifacts.tar.gz libbson
     - command: s3.put
       params:
         aws_key: ${aws_key}
@@ -188,6 +186,7 @@ pre:
 
 post:
   - func: "upload artifacts"
+  - func: "upload scan artifacts"
   - func: "upload results"
 
 #######################################
@@ -243,6 +242,20 @@ tasks:
             working_dir: "libbson"
             script: "PATH=/usr/lib/llvm-3.8/bin:$PATH DEBUG=1 CC='clang-3.8' MARCH='${MARCH}' CFLAGS='-fsanitize=address' sh .evergreen/compile.sh"
 
+    - name: debug-compile-sanitizer-undefined
+      commands:
+        - command: shell.exec
+          type: test
+          params:
+            working_dir: "libbson"
+            script: |
+              PATH=/usr/lib/llvm-3.8/bin:$PATH DEBUG=1 CC='clang-3.8' MARCH='${MARCH}' CFLAGS='-fsanitize=undefined' sh .evergreen/compile.sh
+              grep -v "^ar: " error.log > log.log
+              if [ -s log.log ]; then
+                cat log.log
+                exit 2
+              fi
+
     - name: debug-compile-scan-build
       commands:
         - command: shell.exec
@@ -250,7 +263,6 @@ tasks:
           params:
             working_dir: "libbson"
             script: "DEBUG=1 CC=clang ANALYZE=1 MARCH='${MARCH}' sh .evergreen/compile.sh"
-        - func: "upload scan artifacts"
 
     - name: debug-compile-coverage
       commands:
@@ -283,20 +295,8 @@ tasks:
           params:
             working_dir: "libbson"
             script: |
-               echo '{ "results": [ { "status": "pass", "test_file": "Create Release Archive",' > test-results.json
-               start=$(date +%s)
-               echo '"start": ' $start ', ' >> test-results.json
+               sh .evergreen/check-release-archive.sh
 
-               # Use modern sphinx-build from venv.
-               . venv/bin/activate
-               which sphinx-build
-               sphinx-build --version
-
-               ./autogen.sh --enable-html-docs --enable-man-pages && make distcheck
-               end=$(date +%s)
-               echo '"end": ' $end ', ' >> test-results.json
-               sum=$(expr $end - $start)
-               echo '"elapsed": ' $sum ' } ] }' >> test-results.json
         - func: "upload docs"
         - func: "upload man pages"
         - func: "upload release"
@@ -312,7 +312,7 @@ tasks:
             working_dir: "libbson"
             script: "CC='${CC}' MARCH='${MARCH}' RELEASE=1 sh .evergreen/compile.sh"
 
-    - name: release-compile-cmake
+    - name: link-with-cmake
       depends_on:
         - name: "make-release-archive"
           variant: releng
@@ -321,7 +321,54 @@ tasks:
           type: test
           params:
             working_dir: "libbson"
-            script: "CC='${CC}' sh .evergreen/cmake.sh"
+            script: |
+              set -o xtrace
+              set -o errexit
+              # Build libbson with the Autotools or CMake and compile a program
+              # that links dynamically or statically to libbson, using
+              # variables from CMake's find_package command.
+              BUILD_LIBBSON_WITH_CMAKE=  LINK_STATIC=  BUILD_SAMPLE_WITH_CMAKE=1  sh .evergreen/link-sample-program.sh
+              BUILD_LIBBSON_WITH_CMAKE=1 LINK_STATIC=  BUILD_SAMPLE_WITH_CMAKE=1  sh .evergreen/link-sample-program.sh
+              BUILD_LIBBSON_WITH_CMAKE=  LINK_STATIC=1 BUILD_SAMPLE_WITH_CMAKE=1  sh .evergreen/link-sample-program.sh
+              BUILD_LIBBSON_WITH_CMAKE=1 LINK_STATIC=1 BUILD_SAMPLE_WITH_CMAKE=1  sh .evergreen/link-sample-program.sh
+
+    - name: link-with-cmake-windows
+      depends_on:
+        - name: "make-release-archive"
+          variant: releng
+      commands:
+        - command: shell.exec
+          type: test
+          params:
+            working_dir: "libbson"
+            script: |
+              set -o xtrace
+              set -o errexit
+              # Build libbson with CMake (not Autotools) and compile a program
+              # that links dynamically or statically to libbson, using
+              # variables from CMake's find_package command.
+              LINK_STATIC=  cmd.exe /c .\\.evergreen\\link-sample-program.cmd
+              LINK_STATIC=1 cmd.exe /c .\\.evergreen\\link-sample-program.cmd
+
+    - name: link-with-pkg-config
+      depends_on:
+        - name: "make-release-archive"
+          variant: releng
+      commands:
+        - command: shell.exec
+          type: test
+          params:
+            working_dir: "libbson"
+            script: |
+              set -o xtrace
+              set -o errexit
+              # Build libbson with the Autotools or CMake and compile a program
+              # that links dynamically or statically to libbson, using
+              # variables from "pkg-config".
+              BUILD_LIBBSON_WITH_CMAKE=  LINK_STATIC=  BUILD_SAMPLE_WITH_CMAKE= sh .evergreen/link-sample-program.sh
+              BUILD_LIBBSON_WITH_CMAKE=1 LINK_STATIC=  BUILD_SAMPLE_WITH_CMAKE= sh .evergreen/link-sample-program.sh
+              BUILD_LIBBSON_WITH_CMAKE=  LINK_STATIC=1 BUILD_SAMPLE_WITH_CMAKE= sh .evergreen/link-sample-program.sh
+              BUILD_LIBBSON_WITH_CMAKE=1 LINK_STATIC=1 BUILD_SAMPLE_WITH_CMAKE= sh .evergreen/link-sample-program.sh
 
     - name: release-compile-c11
       depends_on:
@@ -375,11 +422,29 @@ buildvariants:
       - ubuntu1404-build
       - ubuntu1404-test
     - name: "release-compile"
-    - name: "release-compile-cmake"
+    - name: "link-with-cmake"
+      distros: # Run on any of these variants, whichever will schedule us first
+      - ubuntu1604-build
+      - ubuntu1604-test
+      - ubuntu1404-build
+      - ubuntu1404-test
+    - name: "link-with-cmake-windows"
+      distros:
+      - windows-64-vs2015-compile
+      - windows-64-vs2015-test
+    - name: "link-with-pkg-config"
+      distros:
+      - ubuntu1604-build
+      - ubuntu1604-test
+      - ubuntu1404-build
+      - ubuntu1404-test
     - name: "debug-compile-valgrind"
       distros:
       - ubuntu1604-build
     - name: "debug-compile-sanitizer-address"
+      distros:
+      - ubuntu1604-build
+    - name: "debug-compile-sanitizer-undefined"
       distros:
       - ubuntu1604-build
     - name: "debug-compile-scan-build"
@@ -530,36 +595,36 @@ buildvariants:
     - name: "debug-compile-c11"
 
 ## OSX
-- name: os-x-1010-64
-  display_name: "OSX 10.10 clang 64"
+- name: darwin
+  display_name: "Darwin, macOS (Apple LLVM)"
   expansions:
     CC: clang
   run_on:
-    - osx-1010
+    - macos-1012
   tasks:
     - name: "debug-compile"
     - name: "debug-compile-c99"
     - name: "debug-compile-c11"
 
 ## Solaris
-- name: solaris-32-bit
-  display_name: "Sol gcc-4.8.2 32"
-  expansions:
-    CC: gcc
-    MARCH: i386
-  run_on:
-    - solaris
-  tasks:
-    - name: "debug-compile"
-
-- name: solaris-64-bit
-  display_name: "Sol gcc-4.8.2 64"
-  expansions:
-    CC: gcc
-  run_on:
-    - solaris
-  tasks:
-    - name: "debug-compile"
+#- name: solaris-32-bit
+#  display_name: "Sol gcc-4.8.2 32"
+#  expansions:
+#    CC: gcc
+#    MARCH: i386
+#  run_on:
+#    - solaris
+#  tasks:
+#    - name: "debug-compile"
+#
+#- name: solaris-64-bit
+#  display_name: "Sol gcc-4.8.2 64"
+#  expansions:
+#    CC: gcc
+#  run_on:
+#    - solaris
+#  tasks:
+#    - name: "debug-compile"
 
 ## Windows
 - name: windows-32-vs2010
@@ -624,3 +689,4 @@ buildvariants:
   - windows-64-vs2013-compile
   tasks:
     - name: "debug-compile"
+    - name: "release-compile"

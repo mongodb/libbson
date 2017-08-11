@@ -46,37 +46,37 @@
 #define STACK_I STACK_ELE (0, i)
 #define STACK_IS_ARRAY STACK_ELE (0, is_array)
 
-#define STACK_PUSH_ARRAY(statement)           \
-   do {                                       \
-      assert (ctx->n < (BCON_STACK_MAX - 1)); \
-      ctx->n++;                               \
-      STACK_I = 0;                            \
-      STACK_IS_ARRAY = 1;                     \
-      statement;                              \
+#define STACK_PUSH_ARRAY(statement)                \
+   do {                                            \
+      BSON_ASSERT (ctx->n < (BCON_STACK_MAX - 1)); \
+      ctx->n++;                                    \
+      STACK_I = 0;                                 \
+      STACK_IS_ARRAY = 1;                          \
+      statement;                                   \
    } while (0)
 
-#define STACK_PUSH_DOC(statement)             \
-   do {                                       \
-      assert (ctx->n < (BCON_STACK_MAX - 1)); \
-      ctx->n++;                               \
-      STACK_IS_ARRAY = 0;                     \
-      statement;                              \
+#define STACK_PUSH_DOC(statement)                  \
+   do {                                            \
+      BSON_ASSERT (ctx->n < (BCON_STACK_MAX - 1)); \
+      ctx->n++;                                    \
+      STACK_IS_ARRAY = 0;                          \
+      statement;                                   \
    } while (0)
 
-#define STACK_POP_ARRAY(statement) \
-   do {                            \
-      assert (STACK_IS_ARRAY);     \
-      assert (ctx->n != 0);        \
-      statement;                   \
-      ctx->n--;                    \
+#define STACK_POP_ARRAY(statement)  \
+   do {                             \
+      BSON_ASSERT (STACK_IS_ARRAY); \
+      BSON_ASSERT (ctx->n != 0);    \
+      statement;                    \
+      ctx->n--;                     \
    } while (0)
 
-#define STACK_POP_DOC(statement) \
-   do {                          \
-      assert (!STACK_IS_ARRAY);  \
-      assert (ctx->n != 0);      \
-      statement;                 \
-      ctx->n--;                  \
+#define STACK_POP_DOC(statement)     \
+   do {                              \
+      BSON_ASSERT (!STACK_IS_ARRAY); \
+      BSON_ASSERT (ctx->n != 0);     \
+      statement;                     \
+      ctx->n--;                      \
    } while (0)
 
 /* This is a landing pad union for all of the types we can process with bcon.
@@ -288,7 +288,7 @@ _bcon_append_single (bson_t *bson,
       bson_append_iter (bson, key, -1, val->ITER);
       break;
    default:
-      assert (0);
+      BSON_ASSERT (0);
       break;
    }
 }
@@ -431,7 +431,7 @@ _bcon_extract_single (const bson_iter_t *iter,
       memcpy (val->ITER, iter, sizeof *iter);
       break;
    default:
-      assert (0);
+      BSON_ASSERT (0);
       break;
    }
 
@@ -461,7 +461,7 @@ _bcon_append_tokenize (va_list *ap, bcon_append_t *u)
 
    mark = va_arg (*ap, char *);
 
-   assert (mark != BCONE_MAGIC);
+   BSON_ASSERT (mark != BCONE_MAGIC);
 
    if (mark == NULL) {
       type = BCON_TYPE_END;
@@ -541,7 +541,7 @@ _bcon_append_tokenize (va_list *ap, bcon_append_t *u)
          u->ITER = va_arg (*ap, const bson_iter_t *);
          break;
       default:
-         assert (0);
+         BSON_ASSERT (0);
          break;
       }
    } else {
@@ -593,7 +593,7 @@ _bcon_extract_tokenize (va_list *ap, bcon_extract_t *u)
 
    mark = va_arg (*ap, char *);
 
-   assert (mark != BCON_MAGIC);
+   BSON_ASSERT (mark != BCON_MAGIC);
 
    if (mark == NULL) {
       type = BCON_TYPE_END;
@@ -673,7 +673,7 @@ _bcon_extract_tokenize (va_list *ap, bcon_extract_t *u)
          u->ITER = va_arg (*ap, bson_iter_t *);
          break;
       default:
-         assert (0);
+         BSON_ASSERT (0);
          break;
       }
    } else {
@@ -781,17 +781,17 @@ bcon_append_ctx_va (bson_t *bson, bcon_append_ctx_t *ctx, va_list *ap)
             continue;
          }
 
-         assert (type == BCON_TYPE_UTF8);
+         BSON_ASSERT (type == BCON_TYPE_UTF8);
 
          key = u.UTF8;
       }
 
       type = _bcon_append_tokenize (ap, &u);
-      assert (type != BCON_TYPE_END);
+      BSON_ASSERT (type != BCON_TYPE_END);
 
       switch ((int) type) {
       case BCON_TYPE_BCON:
-         assert (STACK_IS_ARRAY);
+         BSON_ASSERT (STACK_IS_ARRAY);
          _bson_concat_array (STACK_BSON_CHILD, u.BCON, ctx);
 
          break;
@@ -870,13 +870,13 @@ bcon_extract_ctx_va (bson_t *bson, bcon_extract_ctx_t *ctx, va_list *ap)
             continue;
          }
 
-         assert (type == BCON_TYPE_RAW);
+         BSON_ASSERT (type == BCON_TYPE_RAW);
 
          key = u.key;
       }
 
       type = _bcon_extract_tokenize (ap, &u);
-      assert (type != BCON_TYPE_END);
+      BSON_ASSERT (type != BCON_TYPE_END);
 
       if (type == BCON_TYPE_DOC_END) {
          STACK_POP_DOC (_noop ());

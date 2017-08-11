@@ -18,11 +18,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #else
+#include <unistd.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -100,13 +100,13 @@ bson_streaming_remote_open (const char *hostname, const char *port)
       break;
    }
 
+   freeaddrinfo (server_list);
    if (ptr == NULL) {
       fprintf (stderr,
                "bson-streaming-remote-open: failed to connect to server\n");
       return -1;
    }
 
-   freeaddrinfo (server_list);
    return sock;
 }
 
@@ -174,7 +174,7 @@ main (int argc, char *argv[])
 
    reader = bson_reader_new_from_fd (fd, true);
    while ((document = bson_reader_read (reader, NULL))) {
-      json = bson_as_json (document, NULL);
+      json = bson_as_canonical_extended_json (document, NULL);
       fprintf (stdout, "%s\n", json);
       bson_free (json);
    }

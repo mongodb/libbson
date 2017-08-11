@@ -31,6 +31,8 @@
  *       Given a parent directory and filename, compile a full path to
  *       the child file.
  *
+ *       "dst" receives the joined path, delimited by "/" even on Windows.
+ *
  *-----------------------------------------------------------------------
  */
 void
@@ -38,15 +40,22 @@ assemble_path (const char *parent_path,
                const char *child_name,
                char *dst /* OUT */)
 {
+   char *p;
    int path_len = (int) strlen (parent_path);
    int name_len = (int) strlen (child_name);
 
-   assert (path_len + name_len + 1 < MAX_TEST_NAME_LENGTH);
+   BSON_ASSERT (path_len + name_len + 1 < MAX_TEST_NAME_LENGTH);
 
    memset (dst, '\0', MAX_TEST_NAME_LENGTH * sizeof (char));
    strncat (dst, parent_path, path_len);
    strncat (dst, "/", 1);
    strncat (dst, child_name, name_len);
+
+   for (p = dst; *p; ++p) {
+      if (*p == '\\') {
+         *p = '/';
+      }
+   }
 }
 
 /*
@@ -79,7 +88,7 @@ collect_tests_from_dir (char (*paths)[MAX_TEST_NAME_LENGTH] /* OUT */,
    }
 
    while (1) {
-      assert (paths_index < max_paths);
+      BSON_ASSERT (paths_index < max_paths);
 
       if (_findnext (handle, &info) == -1) {
          break;
@@ -108,21 +117,21 @@ collect_tests_from_dir (char (*paths)[MAX_TEST_NAME_LENGTH] /* OUT */,
    DIR *dir;
 
    dir = opendir (dir_path);
-   assert (dir);
+   BSON_ASSERT (dir);
    while ((entry = readdir (dir))) {
-      assert (paths_index < max_paths);
+      BSON_ASSERT (paths_index < max_paths);
+      if (strcmp (entry->d_name, "..") == 0 ||
+          strcmp (entry->d_name, ".") == 0) {
+         continue;
+      }
+
+      assemble_path (dir_path, entry->d_name, child_path);
 
       if (0 == stat (entry->d_name, &dir_stat) && S_ISDIR (dir_stat.st_mode)) {
          /* recursively call on child directories */
-         if (strcmp (entry->d_name, "..") != 0 &&
-             strcmp (entry->d_name, ".") != 0) {
-            assemble_path (dir_path, entry->d_name, child_path);
-            paths_index = collect_tests_from_dir (
-               paths, child_path, paths_index, max_paths);
-         }
-      } else if (strncmp (entry->d_name + (strlen (entry->d_name) - 5),
-                          ".json",
-                          5) == 0) {
+         paths_index =
+            collect_tests_from_dir (paths, child_path, paths_index, max_paths);
+      } else if (strstr (entry->d_name, ".json")) {
          /* if this is a JSON test, collect its path */
          assemble_path (dir_path, entry->d_name, paths[paths_index++]);
       }
@@ -201,7 +210,7 @@ get_bson_from_json_file (char *filename)
  *      test into a BSON blob and call the provided callback for
  *      evaluation.
  *
- *      It is expected that the callback will assert on failure, so if
+ *      It is expected that the callback will BSON_ASSERT on failure, so if
  *      callback returns quietly the test is considered to have passed.
  *
  *-----------------------------------------------------------------------
@@ -224,9 +233,9 @@ install_json_test_suite (TestSuite *suite,
    for (i = 0; i < num_tests; i++) {
       test = get_bson_from_json_file (test_paths[i]);
       skip_json = strstr (test_paths[i], "/json") + strlen ("/json");
-      assert (skip_json);
+      BSON_ASSERT (skip_json);
       ext = strstr (skip_json, ".json");
-      assert (ext);
+      BSON_ASSERT (ext);
       ext[0] = '\0';
 
       TestSuite_AddWC (suite,

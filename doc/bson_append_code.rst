@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_CODE(b, key, val) \
+     bson_append_code (b, key, (int) strlen (key), val)
+
   bool
   bson_append_code (bson_t *bson,
                     const char *key,
@@ -30,5 +33,4 @@ The :symbol:`bson_append_code()` function shall append a new element to ``bson``
 Returns
 -------
 
-true if the operation was applied successfully, otherwise false and ``bson`` should be discarded.
-
+Returns ``true`` if the operation was applied successfully. The function will fail if appending ``javascript`` grows ``bson`` larger than INT32_MAX.

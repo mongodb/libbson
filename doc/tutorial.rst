@@ -7,6 +7,7 @@ Tutorial
   :titlesonly:
   :maxdepth: 1
 
+  include-and-link
   creating
   errors
   oid

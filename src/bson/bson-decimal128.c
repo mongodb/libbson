@@ -16,7 +16,6 @@
  */
 
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -99,7 +98,7 @@ _bson_uint128_divide1B (_bson_uint128_t value,     /* IN */
    }
 
    *quotient = value;
-   *rem = _rem;
+   *rem = (uint32_t) _rem;
 }
 
 
@@ -678,7 +677,7 @@ bson_decimal128_from_string (const char *string,     /* IN */
       significand_high = 0;
       significand_low = 0;
    } else if (last_digit - first_digit < 17) {
-      int d_idx = first_digit;
+      size_t d_idx = first_digit;
       significand_low = digits[d_idx++];
 
       for (; d_idx <= last_digit; d_idx++) {
@@ -687,7 +686,7 @@ bson_decimal128_from_string (const char *string,     /* IN */
          significand_high = 0;
       }
    } else {
-      int d_idx = first_digit;
+      size_t d_idx = first_digit;
       significand_high = digits[d_idx++];
 
       for (; d_idx <= last_digit - 17; d_idx++) {

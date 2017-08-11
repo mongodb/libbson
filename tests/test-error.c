@@ -15,8 +15,6 @@
  */
 
 
-#include <assert.h>
-
 #include "bson-tests.h"
 #include "TestSuite.h"
 
@@ -27,9 +25,9 @@ test_bson_error_basic (void)
    bson_error_t error;
 
    bson_set_error (&error, 123, 456, "%s %u", "localhost", 27017);
-   assert (!strcmp (error.message, "localhost 27017"));
-   assert_cmpint (error.domain, ==, 123);
-   assert_cmpint (error.code, ==, 456);
+   BSON_ASSERT (!strcmp (error.message, "localhost 27017"));
+   BSON_ASSERT_CMPINT (error.domain, ==, 123);
+   BSON_ASSERT_CMPINT (error.code, ==, 456);
 }
 
 

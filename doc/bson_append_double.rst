@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_DOUBLE(b, key, val) \
+     bson_append_double (b, key, (int) strlen (key), val)
+
   bool
   bson_append_double (bson_t *bson,
                       const char *key,
@@ -30,5 +33,4 @@ The :symbol:`bson_append_double()` function shall append a new element to a bson
 Returns
 -------
 
-true if the operation was applied successfully, otherwise false and ``bson`` should be discarded.
-
+Returns ``true`` if the operation was applied successfully. The function will fail if appending ``value`` grows ``bson`` larger than INT32_MAX.

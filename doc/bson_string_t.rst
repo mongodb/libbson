@@ -34,11 +34,6 @@ This API is useful if you need to build UTF-8 encoded strings.
     :titlesonly:
     :maxdepth: 1
 
-    bson_snprintf
-    bson_strdup
-    bson_strdup_printf
-    bson_strdupv_printf
-    bson_strfreev
     bson_string_append
     bson_string_append_c
     bson_string_append_printf
@@ -46,15 +41,6 @@ This API is useful if you need to build UTF-8 encoded strings.
     bson_string_free
     bson_string_new
     bson_string_truncate
-    bson_strncpy
-    bson_strndup
-    bson_strnlen
-    bson_utf8_escape_for_json
-    bson_utf8_from_unichar
-    bson_utf8_get_char
-    bson_utf8_next_char
-    bson_utf8_validate
-    bson_vsnprintf
 
 Example
 -------
@@ -69,7 +55,7 @@ Example
 
   bson_string_free (str, true);
 
-.. tip:
+.. tip::
 
   You can call :symbol:`bson_string_free()` with ``false`` if you would like to take ownership of ``str->str``. Some APIs that do this might call ``return bson_string_free (str, false);`` after building the string.
 

@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_SYMBOL(b, key, val) \
+     bson_append_symbol (b, key, (int) strlen (key), val, (int) strlen (val))
+
   bool
   bson_append_symbol (bson_t *bson,
                       const char *key,
@@ -32,5 +35,4 @@ Appends a new field to ``bson`` of type BSON_TYPE_SYMBOL. This BSON type is depr
 Returns
 -------
 
-true if the operation was applied successfully, otherwise false and ``bson`` should be discarded.
-
+Returns ``true`` if the operation was applied successfully. The function will fail if appending the value grows ``bson`` larger than INT32_MAX.

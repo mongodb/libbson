@@ -20,7 +20,16 @@ Parameters
 Description
 -----------
 
-Parses the string containing ascii encoded decimal128 and initialize the bytes in ``decimal128``.
+Parses the string containing ascii encoded Decimal128 and initialize the bytes
+in ``dec``. See the `Decimal128 specification
+<https://github.com/mongodb/specifications/blob/master/source/bson-decimal128/decimal128.rst>`_
+for the exact string format.
+
+Returns
+-------
+
+Returns ``true`` if valid Decimal128 string was provided, otherwise ``false``
+and ``dec`` will be set to ``NaN``.
 
 Example
 -------

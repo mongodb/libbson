@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_UNDEFINED(b, key) \
+     bson_append_undefined (b, key, (int) strlen (key))
+
   bool
   bson_append_undefined (bson_t *bson, const char *key, int key_length);
 
@@ -26,5 +29,4 @@ The :symbol:`bson_append_undefined()` function shall append a new element to ``b
 Returns
 -------
 
-true if the operation was applied successfully, otherwise false and ``bson`` should be discarded.
-
+Returns ``true`` if the operation was applied successfully. The function will fail if appending the value grows ``bson`` larger than INT32_MAX.

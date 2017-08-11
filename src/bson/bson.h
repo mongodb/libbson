@@ -80,7 +80,7 @@ BSON_BEGIN_DECLS
  *
  * bson_t *doc = bson_new();
  * bson_clear (&doc);
- * assert (doc == NULL);
+ * BSON_ASSERT (doc == NULL);
  */
 #define bson_clear(bptr)         \
    do {                          \
@@ -373,11 +373,11 @@ bson_steal (bson_t *dst, bson_t *src);
 /**
  * bson_destroy_with_steal:
  * @bson: A #bson_t.
- * @steal: If ownership of the data buffer should be transfered to caller.
+ * @steal: If ownership of the data buffer should be transferred to caller.
  * @length: (out): location for the length of the buffer.
  *
  * Destroys @bson similar to calling bson_destroy() except that the underlying
- * buffer will be returned and ownership transfered to the caller if @steal
+ * buffer will be returned and ownership transferred to the caller if @steal
  * is non-zero.
  *
  * If length is non-NULL, the length of @bson will be stored in @length.
@@ -471,13 +471,33 @@ bson_validate (const bson_t *bson, bson_validate_flags_t flags, size_t *offset);
 
 
 /**
- * bson_as_json:
+ * bson_validate_with_error:
+ * @bson: A bson_t.
+ * @error: A location for the error info.
+ *
+ * Validates a BSON document by walking through the document and inspecting
+ * the fields for valid content.
+ *
+ * Returns: true if @bson is valid; otherwise false and @error is filled out.
+ */
+BSON_EXPORT (bool)
+bson_validate_with_error (const bson_t *bson,
+                          bson_validate_flags_t flags,
+                          bson_error_t *error);
+
+
+/**
+ * bson_as_canonical_extended_json:
  * @bson: A bson_t.
  * @length: A location for the string length, or NULL.
  *
- * Creates a new string containing @bson in extended JSON format. The caller
- * is responsible for freeing the resulting string. If @length is non-NULL,
- * then the length of the resulting string will be placed in @length.
+ * Creates a new string containing @bson in canonical extended JSON format,
+ * conforming to the MongoDB Extended JSON Spec:
+ *
+ * github.com/mongodb/specifications/blob/master/source/extended-json.rst
+ *
+ * The caller is responsible for freeing the resulting string. If @length is
+ * non-NULL, then the length of the resulting string will be placed in @length.
  *
  * See http://docs.mongodb.org/manual/reference/mongodb-extended-json/ for
  * more information on extended JSON.
@@ -485,7 +505,46 @@ bson_validate (const bson_t *bson, bson_validate_flags_t flags, size_t *offset);
  * Returns: A newly allocated string that should be freed with bson_free().
  */
 BSON_EXPORT (char *)
+bson_as_canonical_extended_json (const bson_t *bson, size_t *length);
+
+
+/**
+ * bson_as_json:
+ * @bson: A bson_t.
+ * @length: A location for the string length, or NULL.
+ *
+ * Creates a new string containing @bson in libbson's legacy JSON format.
+ * Superseded by bson_as_canonical_extended_json and
+ * bson_as_relaxed_extended_json. The caller is
+ * responsible for freeing the resulting string. If @length is non-NULL, then
+ * the length of the resulting string will be placed in @length.
+ *
+ * Returns: A newly allocated string that should be freed with bson_free().
+ */
+BSON_EXPORT (char *)
 bson_as_json (const bson_t *bson, size_t *length);
+
+
+/**
+ * bson_as_relaxed_extended_json:
+ * @bson: A bson_t.
+ * @length: A location for the string length, or NULL.
+ *
+ * Creates a new string containing @bson in relaxed extended JSON format,
+ * conforming to the MongoDB Extended JSON Spec:
+ *
+ * github.com/mongodb/specifications/blob/master/source/extended-json.rst
+ *
+ * The caller is responsible for freeing the resulting string. If @length is
+ * non-NULL, then the length of the resulting string will be placed in @length.
+ *
+ * See http://docs.mongodb.org/manual/reference/mongodb-extended-json/ for
+ * more information on extended JSON.
+ *
+ * Returns: A newly allocated string that should be freed with bson_free().
+ */
+BSON_EXPORT (char *)
+bson_as_relaxed_extended_json (const bson_t *bson, size_t *length);
 
 
 /* like bson_as_json() but for outermost arrays. */

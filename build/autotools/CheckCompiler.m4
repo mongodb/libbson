@@ -27,6 +27,20 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
 #endif
 #endif
 ])], [c_compiler="gcc"], [])
+
+# If our BEGIN_IGNORE_DEPRECATIONS macro won't work, pass
+# -Wno-deprecated-declarations
+
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
+#if !defined(__clang__) && defined(__GNUC__)
+#define GCC_VERSION (__GNUC__ * 10000 \
+                     + __GNUC_MINOR__ * 100 \
+                     + __GNUC_PATCHLEVEL__)
+#if GCC_VERSION < 40600
+#error Does not support deprecation warning pragmas
+#endif
+#endif
+])], [], [CFLAGS="$CFLAGS -Wno-deprecated-declarations"])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
 #if defined(__clang__)
 #define CLANG_VERSION (__clang_major__ * 10000 \

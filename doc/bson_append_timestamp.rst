@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_TIMESTAMP(b, key, val, inc) \
+     bson_append_timestamp (b, key, (int) strlen (key), val, inc)
+
   bool
   bson_append_timestamp (bson_t *bson,
                          const char *key,
@@ -36,5 +39,4 @@ The :symbol:`bson_append_timestamp()` function shall append a new element of typ
 Returns
 -------
 
-true if the operation was applied successfully, otherwise false and ``bson`` should be discarded.
-
+Returns ``true`` if the operation was applied successfully. The function will fail if appending the value grows ``bson`` larger than INT32_MAX.

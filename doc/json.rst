@@ -3,12 +3,12 @@
 JSON
 ====
 
-Libbson provides routines for converting to and from the JSON format. In particular, it supports the `MongoDB extended JSON <http://docs.mongodb.org/manual/reference/mongodb-extended-json/>`_ format.
+Libbson provides routines for converting to and from the JSON format. In particular, it supports the `MongoDB extended JSON <https://docs.mongodb.com/manual/reference/mongodb-extended-json/>`_ format.
 
 Converting BSON to JSON
 -----------------------
 
-There are often times where you might want to convert a BSON document to JSON. It is convenient for debugging as well as an interchange format. To help with this, Libbson contains the function :symbol:`bson_as_json()`.
+There are often times where you might want to convert a BSON document to JSON. It is convenient for debugging as well as an interchange format. To help with this, Libbson contains the functions :symbol:`bson_as_canonical_extended_json()` and :symbol:`bson_as_relaxed_extended_json()`. The canonical format preserves BSON type information for values that may have ambiguous representations in JSON (e.g. numeric types).
 
 .. code-block:: c
 
@@ -18,7 +18,27 @@ There are often times where you might want to convert a BSON document to JSON. I
 
   b = BCON_NEW ("a", BCON_INT32 (1));
 
-  str = bson_as_json (b, &len);
+  str = bson_as_canonical_extended_json (b, &len);
+  printf ("%s\n", str);
+  bson_free (str);
+
+  bson_destroy (b);
+
+.. code-block:: none
+
+  { "a" : { "$numberInt": "1" } }
+
+The relaxed format prefers JSON primitives for numeric values and may be used if type fidelity is not required.
+
+.. code-block:: c
+
+  bson_t *b;
+  size_t len;
+  char *str;
+
+  b = BCON_NEW ("a", BCON_INT32 (1));
+
+  str = bson_as_relaxed_extended_json (b, &len);
   printf ("%s\n", str);
   bson_free (str);
 
@@ -51,7 +71,7 @@ The following example creates a new :symbol:`bson_t` from the JSON string ``{"a"
 Streaming JSON Parsing
 ----------------------
 
-Libbson provides :symbol:`bson_json_reader_t` to allow for parsing a sequence of JSON documents into BSON. The interface is similar to :symbol:`bson_reader_t` but expects the input to be in the `MongoDB extended JSON <http://docs.mongodb.org/manual/reference/mongodb-extended-json/>`_ format.
+Libbson provides :symbol:`bson_json_reader_t` to allow for parsing a sequence of JSON documents into BSON. The interface is similar to :symbol:`bson_reader_t` but expects the input to be in the `MongoDB extended JSON <https://docs.mongodb.com/manual/reference/mongodb-extended-json/>`_ format.
 
 .. code-block:: c
 
@@ -215,7 +235,7 @@ The following example reads BSON documents from ``stdin`` and prints them to ``s
          * Convert each incoming document to JSON and print to stdout.
          */
         while ((b = bson_reader_read (reader, NULL))) {
-           str = bson_as_json (b, NULL);
+           str = bson_as_canonical_extended_json (b, NULL);
            fprintf (stdout, "%s\n", str);
            bson_free (str);
         }

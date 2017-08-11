@@ -79,13 +79,19 @@ BSON_BEGIN_DECLS
 #define BSON_ITER_HOLDS_INT64(iter) (bson_iter_type ((iter)) == BSON_TYPE_INT64)
 
 #define BSON_ITER_HOLDS_DECIMAL128(iter) \
-   (bson_iter_type (iter)) == BSON_TYPE_DECIMAL128
+   (bson_iter_type ((iter)) == BSON_TYPE_DECIMAL128)
 
 #define BSON_ITER_HOLDS_MAXKEY(iter) \
    (bson_iter_type ((iter)) == BSON_TYPE_MAXKEY)
 
 #define BSON_ITER_HOLDS_MINKEY(iter) \
    (bson_iter_type ((iter)) == BSON_TYPE_MINKEY)
+
+#define BSON_ITER_HOLDS_INT(iter) \
+   (BSON_ITER_HOLDS_INT32 (iter) || BSON_ITER_HOLDS_INT64 (iter))
+
+#define BSON_ITER_HOLDS_NUMBER(iter) \
+   (BSON_ITER_HOLDS_INT (iter) || BSON_ITER_HOLDS_DOUBLE (iter))
 
 #define BSON_ITER_IS_KEY(iter, key) \
    (0 == strcmp ((key), bson_iter_key ((iter))))
@@ -171,6 +177,8 @@ bson_iter_document (const bson_iter_t *iter,
 BSON_EXPORT (double)
 bson_iter_double (const bson_iter_t *iter);
 
+BSON_EXPORT (double)
+bson_iter_as_double (const bson_iter_t *iter);
 
 /**
  * bson_iter_double_unsafe:
@@ -192,6 +200,11 @@ bson_iter_double_unsafe (const bson_iter_t *iter)
 
 BSON_EXPORT (bool)
 bson_iter_init (bson_iter_t *iter, const bson_t *bson);
+
+BSON_EXPORT (bool)
+bson_iter_init_from_data (bson_iter_t *iter,
+                          const uint8_t *data,
+                          size_t length);
 
 
 BSON_EXPORT (bool)

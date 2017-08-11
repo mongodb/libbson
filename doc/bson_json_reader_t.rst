@@ -27,9 +27,9 @@ The :symbol:`bson_json_reader_t` structure is used for reading a sequence of JSO
 
 This can often be useful if you want to perform bulk operations that are defined in a file containing JSON documents.
 
-.. tip:
+.. tip::
 
-  :symbol:`bson_json_reader_t` works upon JSON documents formatted in `MongoDB extended JSON <http://docs.mongodb.org/manual/reference/mongodb-extended-json/>`_ format.
+  :symbol:`bson_json_reader_t` works upon JSON documents formatted in `MongoDB extended JSON <https://docs.mongodb.com/manual/reference/mongodb-extended-json/>`_ format.
 
 .. only:: html
 

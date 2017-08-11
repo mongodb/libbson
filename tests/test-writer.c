@@ -15,7 +15,6 @@
  */
 
 
-#include <assert.h>
 #include <time.h>
 
 #include "bson-tests.h"
@@ -43,15 +42,15 @@ test_bson_writer_custom_realloc (void)
    writer = bson_writer_new (
       &buf, &buflen, 0, test_bson_writer_custom_realloc_helper, &x);
 
-   assert (bson_writer_begin (writer, &b));
+   BSON_ASSERT (bson_writer_begin (writer, &b));
 
-   assert (bson_append_utf8 (b, "hello", -1, "world", -1));
+   BSON_ASSERT (bson_append_utf8 (b, "hello", -1, "world", -1));
 
    bson_writer_end (writer);
 
    bson_writer_destroy (writer);
 
-   assert_cmpint (x, >, 0);
+   BSON_ASSERT_CMPINT (x, >, 0);
 
    bson_free (buf);
 }
@@ -75,11 +74,11 @@ test_bson_writer_shared_buffer (void)
    writer = bson_writer_new (&buf, &buflen, 0, bson_realloc_ctx, NULL);
 
    for (i = 0; i < n_docs; i++) {
-      assert (bson_writer_begin (writer, &b));
+      BSON_ASSERT (bson_writer_begin (writer, &b));
 
       for (j = 0; j < 1000; j++) {
          bson_uint32_to_string (j, &key, keystr, sizeof keystr);
-         assert (bson_append_int64 (b, key, -1, j));
+         BSON_ASSERT (bson_append_int64 (b, key, -1, j));
       }
 
       if (bson_writer_get_length (writer) > (48 * 1024 * 1024)) {
@@ -95,9 +94,9 @@ test_bson_writer_shared_buffer (void)
 
    bson_writer_destroy (writer);
 
-   assert_cmpint (n_bytes, <, (48 * 1024 * 1024));
-   assert_cmpint (rolled_back, ==, true);
-   assert (rolled_back);
+   BSON_ASSERT_CMPINT (n_bytes, <, (48 * 1024 * 1024));
+   BSON_ASSERT_CMPINT (rolled_back, ==, true);
+   BSON_ASSERT (rolled_back);
 
    bson_free (buf);
 }
@@ -117,11 +116,11 @@ test_bson_writer_empty_sequence (void)
 
    writer = bson_writer_new (&buf, &len, 0, bson_realloc_ctx, NULL);
    for (i = 0; i < 5; i++) {
-      assert (bson_writer_begin (writer, &b));
+      BSON_ASSERT (bson_writer_begin (writer, &b));
       bson_writer_end (writer);
    }
    r = memcmp (buf, testdata, 25);
-   assert (r == 0);
+   BSON_ASSERT (r == 0);
    bson_writer_destroy (writer);
    bson_free (buf);
 }
@@ -141,14 +140,14 @@ test_bson_writer_null_realloc (void)
 
    writer = bson_writer_new (&buf, &buflen, 0, NULL, NULL);
    for (i = 0; i < 6; i++) {
-      assert (bson_writer_begin (writer, &b));
+      BSON_ASSERT (bson_writer_begin (writer, &b));
       bson_writer_end (writer);
    }
 
-   assert (!bson_writer_begin (writer, &b));
+   BSON_ASSERT (!bson_writer_begin (writer, &b));
 
    r = memcmp (buf, testdata, 32);
-   assert (r == 0);
+   BSON_ASSERT (r == 0);
    bson_writer_destroy (writer);
 
    bson_free (buf);
@@ -168,16 +167,16 @@ test_bson_writer_null_realloc_2 (void)
 
    writer = bson_writer_new (&buf, &buflen, 0, NULL, NULL);
    for (i = 0; i < 5; i++) {
-      assert (bson_writer_begin (writer, &b));
+      BSON_ASSERT (bson_writer_begin (writer, &b));
       bson_writer_end (writer);
    }
 
-   assert (bson_writer_begin (writer, &b));
-   assert (!bson_append_int32 (b, "a", -1, 123));
+   BSON_ASSERT (bson_writer_begin (writer, &b));
+   BSON_ASSERT (!bson_append_int32 (b, "a", -1, 123));
    bson_writer_end (writer);
 
    r = memcmp (buf, testdata, 32);
-   assert (r == 0);
+   BSON_ASSERT (r == 0);
    bson_writer_destroy (writer);
 
    bson_free (buf);

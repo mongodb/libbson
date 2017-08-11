@@ -1,5 +1,3 @@
-:man_page: bson_index
-
 Libbson
 =======
 

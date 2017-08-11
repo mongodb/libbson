@@ -52,7 +52,7 @@ main (int argc, char *argv[])
       return EXIT_FAILURE;
    }
 
-   assert (argc == 3);
+   BSON_ASSERT (argc == 3);
 
    n = atoi (argv[1]);
    bcon = (argv[2][0] == 'y') ? 1 : 0;

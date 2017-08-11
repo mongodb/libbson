@@ -63,8 +63,10 @@ fi
 
 # Available on our Ubuntu 16.04 images
 [ "$ANALYZE" ] && SCAN_BUILD="scan-build-3.8 -o scan --status-bugs"
+# UndefinedBehaviorSanitizer configuration
+UBSAN_OPTIONS="print_stacktrace=1 abort_on_error=1"
 # AddressSanitizer configuration
-ASAN_OPTIONS="detect_leaks=1"
+ASAN_OPTIONS="detect_leaks=1 abort_on_error=1"
 # LeakSanitizer configuration
 LSAN_OPTIONS="log_pointers=true"
 
@@ -84,6 +86,8 @@ esac
 case "$OS" in
    darwin)
       CFLAGS="$CFLAGS -Wno-unknown-pragmas"
+      # llvm-cov is installed from brew
+      export PATH=$PATH:/usr/local/opt/llvm/bin
    ;;
 
    linux)
@@ -111,14 +115,20 @@ CFLAGS="$CFLAGS -Werror"
 [ "$COVERAGE" ] && CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-coverage"
 
 if [ "$RELEASE" ]; then
-   # Overwrite the git checkout with the packaged archive
-   $TAR xf ../libbson.tar.gz -C . --strip-components=1
+   # Build from the release tarball.
+   mkdir build-dir
+   $TAR xf ../libbson.tar.gz -C build-dir --strip-components=1
+   cd build-dir
    CONFIGURE_SCRIPT="./configure"
 fi
 
 
 CFLAGS="$CFLAGS" CC="$CC" $SCAN_BUILD $CONFIGURE_SCRIPT $CONFIGURE_FLAGS
-$SCAN_BUILD make $TARGET TEST_ARGS="--no-fork -F test-results.json"
+# Write stderr to error.log and to console.
+mkfifo pipe
+tee error.log < pipe &
+$SCAN_BUILD make $TARGET TEST_ARGS="--no-fork -d -F test-results.json" 2>pipe
+rm pipe
 
 if [ "$COVERAGE" ]; then
    case "$CC" in

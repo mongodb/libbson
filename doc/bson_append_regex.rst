@@ -8,6 +8,9 @@ Synopsis
 
 .. code-block:: c
 
+  #define BSON_APPEND_REGEX(b, key, val, opt) \
+     bson_append_regex (b, key, (int) strlen (key), val, opt)
+
   bool
   bson_append_regex (bson_t *bson,
                      const char *key,
@@ -41,5 +44,4 @@ Valid characters for ``options`` include:
 Returns
 -------
 
-true if the operation was applied successfully, otherwise false and ``bson`` should be discarded.
-
+Returns ``true`` if the operation was applied successfully. The function will fail if appending the regex grows ``bson`` larger than INT32_MAX.

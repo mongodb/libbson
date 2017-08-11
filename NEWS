@@ -1,3 +1,67 @@
+Libbson-1.7.0
+=============
+
+It is my pleasure to announce libbson 1.7.0.
+
+  * Changes to JSON encoding and decoding:
+    * New functions bson_as_canonical_extended_json and
+      bson_as_relaxed_extended_json convert BSON to canonical and relaxed
+      extended JSON according to MongoDB Extended JSON Spec.
+      Output for the existing bson_as_json function has not been changed.
+    * When parsing JSON type wrappers like "$timestamp", any missing or extra
+      keys are an error.
+    * The JSON format for BSON regular expressions is now "$regularExpression":
+      {"pattern": "...", "options": "..."}. The old format {"$regex": "...",
+      "$options": "..."} is still parsed.
+    * The JSON format for BSON binary elements is now "$binary": {"base64":
+      "...", "subType": "..."}. The old format {"$binary": "...", "$type":
+      "..."} is still parsed.
+    * BSON dates can be parsed from "$date" as an ISO8601 date or "$numberLong"
+      as milliseconds since the epoch: "t": {"$date": {"$numberLong": "1234"}}.
+      Dates can no longer be formatted as raw integers. bson_as_json writes a
+      BSON date after 1970 as "$date" with an ISO8601 string, and dates before
+      1970 as negative milliseconds wrapped in "$numberLong".
+      bson_as_canonical_extended_json always writes dates with "$numberLong".
+      bson_as_relaxed_extended_json always writes dates with "$date".
+    * The non-numbers NaN, Infinity, and -Infinity are now recognized (regardless
+      of case) when parsing JSON.
+  * CMake build now installs .pc files for programs that link to libbson using
+    pkg-config. Both the CMake and Autotools build systems now install .cmake
+    files for programs that link to libbson using CMake. Linking to libbson
+    statically or dynamically is now much more convenient.
+  * New CMake option, "ENABLE_STATIC", defaults to ON.
+  * Minimum required CMake version has been increased to 3.1.
+  * CMake remains experimental on non-Windows platforms and issues a warning now
+  * New functions
+    * bson_strcasecmp, a portable equivalent of strcasecmp.
+    * bson_iter_as_double, cast the current value to double.
+    * bson_iter_init_from_data, creates an iterator from BSON string.
+    * bson_validate_with_error, checks a document like bson_validate does but
+      also reports which key was invalid
+  * New convenience macros
+    * BSON_ITER_HOLDS_INT, checks if iterator holds int32 or int64
+    * BSON_ITER_HOLDS_NUMBER, checks if iterator holds int32, int64 or double
+  * Raised BSON recursion limit to 200
+
+Thanks to everyone who contributed to the development of this release.
+
+  * A. Jesse Jiryu Davis
+  * Hannes Magnusson
+  * David Golden
+  * Jeremy Mikola
+  * gael Magnan
+  * Hannes Magn?sson
+  * David Carlier
+  * Paul Melnikow
+  * Petr Písař
+  * Shane Harvey
+  * alexeyvo
+  * Greg Rowe
+
+Peace,
+
+    A. Jesse Jiryu Davis
+
 Libbson-1.6.0
 =============
 
@@ -28,17 +92,14 @@ Peace,
 
     A. Jesse Jiryu Davis
 
-Libbson-1.5.2
+
+libbson-1.5.5
 =============
 
-This is a patch release that fixes a build error with MinGW on Windows.
-
-Libbson-1.5.1
-=============
-
-No change since 1.5.0; released to keep pace with libmongoc's version.
+No change since 1.5.4; released to keep pace with libmongoc's version.
 
 -- A. Jesse Jiryu Davis
+
 
 Libbson-1.5.4
 =============
@@ -52,6 +113,20 @@ Libbson-1.5.3
 =============
 
 No change since 1.5.2; released to keep pace with libmongoc's version.
+
+-- A. Jesse Jiryu Davis
+
+
+Libbson-1.5.2
+=============
+
+This is a patch release that fixes a build error with MinGW on Windows.
+
+
+Libbson-1.5.1
+=============
+
+No change since 1.5.0; released to keep pace with libmongoc's version.
 
 -- A. Jesse Jiryu Davis
 

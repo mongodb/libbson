@@ -14,7 +14,6 @@ Synopsis
                          char *str,
                          size_t size);
 
-See :ref:`Array Element Key Building <performance_array_element_key_building>` for example usage.
 
 Parameters
 ----------
@@ -34,6 +33,22 @@ If ``value`` is from 0 to 999, it will use a constant string in the data section
 If not, a string will be formatted using ``str`` and ``snprintf()``.
 
 ``strptr`` will always be set. It will either point to ``str`` or a constant string. Use this as your key.
+
+Array Element Key Building
+--------------------------
+
+Each element in a BSON array has a monotonic string key like ``"0"``, ``"1"``, etc. This function is optimized for generating such string keys.
+
+.. code-block:: c
+
+  char str[16];
+  const char *key;
+  uint32_t i;
+
+  for (i = 0; i < 10; i++) {
+     bson_uint32_to_string (i, &key, str, sizeof str);
+     printf ("Key: %s\n", key);
+  }
 
 Returns
 -------

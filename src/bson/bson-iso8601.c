@@ -295,3 +295,35 @@ _bson_iso8601_date_parse (const char *str,
 
    return true;
 }
+
+
+void
+_bson_iso8601_date_format (int64_t msec_since_epoch, bson_string_t *str)
+{
+   time_t t;
+   int64_t msecs_part;
+   char buf[64];
+
+   msecs_part = msec_since_epoch % 1000;
+   t = (time_t) (msec_since_epoch / 1000);
+
+#ifdef BSON_HAVE_GMTIME_R
+   {
+      struct tm posix_date;
+      gmtime_r (&t, &posix_date);
+      strftime (buf, sizeof buf, "%Y-%m-%dT%H:%M:%S", &posix_date);
+   }
+#else
+   {
+      /* Windows gmtime is thread-safe */
+      strftime (buf, sizeof buf, "%Y-%m-%dT%H:%M:%S", gmtime (&t));
+   }
+#endif
+
+   if (msecs_part) {
+      bson_string_append_printf (str, "%s.%3" PRId64 "Z", buf, msecs_part);
+   } else {
+      bson_string_append (str, buf);
+      bson_string_append_c (str, 'Z');
+   }
+}

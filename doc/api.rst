@@ -1,5 +1,3 @@
-:man_page: bson_api
-
 API Reference
 =============
 
@@ -16,10 +14,10 @@ API Reference
   bson_md5_t
   bson_oid_t
   bson_reader_t
+  character_and_string_routines
   bson_string_t
   bson_subtype_t
   bson_type_t
-  bson_uint32_to_string
   bson_unichar_t
   bson_value_t
   bson_visitor_t
