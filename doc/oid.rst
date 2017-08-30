@@ -5,7 +5,7 @@ ObjectIDs
 
 Libbson provides a simple way to generate ObjectIDs. It can be used in a single-threaded or multi-threaded manner depending on your requirements.
 
-The :symbol:`bson_oid_t` structure represents an ``ObjectI`` in MongoDB. It is a 96-bit identifier that includes various information about the system generating the OID.
+The :symbol:`bson_oid_t` structure represents an ``ObjectID`` in MongoDB. It is a 96-bit identifier that includes various information about the system generating the OID.
 
 Composition
 -----------
