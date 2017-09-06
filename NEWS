@@ -1,9 +1,26 @@
-libbson 1.8.0
+Libbson-1.8.0
 =============
+
+It is my pleasure to announce Libbson-1.8.0.
+
+New features and bugfixes:
 
   * Make symbols bson_get_major_version, bson_get_minor_version,
     bson_get_micro_version, bson_get_version, and bson_check_version available
     to C++ programs.
+  * New CMake option ENABLE_MAINTAINER_FLAGS.
+
+Thanks to everyone who contributed to the development of this release.
+
+  * A. Jesse Jiryu Davis
+  * Hannes Magnusson
+  * Jeremy Mikola
+  * Michael Kuhn
+
+Peace,
+
+    A. Jesse Jiryu Davis
+
 
 Libbson-1.7.0
 =============
