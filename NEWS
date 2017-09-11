@@ -9,12 +9,14 @@ New features and bugfixes:
     bson_get_micro_version, bson_get_version, and bson_check_version available
     to C++ programs.
   * New CMake option ENABLE_MAINTAINER_FLAGS.
+  * Crash iterating over invalid code with scope.
 
 Thanks to everyone who contributed to the development of this release.
 
   * A. Jesse Jiryu Davis
   * Hannes Magnusson
   * Jeremy Mikola
+  * Kevin Albertson
   * Michael Kuhn
 
 Peace,
