@@ -462,7 +462,6 @@ test_bson_append_code_with_scope (void)
    bson_destroy (scope);
 
    /* CDRIVER-2269 Test with a malformed zero length code string  */
-   b = bson_new ();
 
    uint8_t data[] = {
       0x00,
