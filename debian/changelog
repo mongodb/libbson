@@ -1,6 +1,6 @@
 libbson (1.8.0-1) unstable; urgency=low
 
-  * New upstream release
+  * New upstream release (Closes: #874754)
 
  -- A. Jesse Jiryu Davis <jesse@mongodb.com>  Thu, 14 Sep 2017 19:45:21 +0000
 
