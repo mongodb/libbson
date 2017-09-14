@@ -25,7 +25,7 @@ include examples/Makefile.am
 endif
 
 # for various extra dist
-include build/cmake/Makefile.am
+include build/Makefile.am
 
 ACLOCAL_AMFLAGS = -I build/autotools/m4 ${ACLOCAL_FLAGS}
 DISTCHECK_CONFIGURE_FLAGS = --enable-maintainer-flags --enable-silent-rules --enable-optimizations --enable-html-docs --enable-man-pages

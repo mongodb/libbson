@@ -347,8 +347,8 @@ tasks:
               # Build libbson with CMake (not Autotools) and compile a program
               # that links dynamically or statically to libbson, using
               # variables from CMake's find_package command.
-              LINK_STATIC=  cmd.exe /c .\\.evergreen\\link-sample-program.bat
-              LINK_STATIC=1 cmd.exe /c .\\.evergreen\\link-sample-program.bat
+              LINK_STATIC=  cmd.exe /c .\\.evergreen\\link-sample-program.cmd
+              LINK_STATIC=1 cmd.exe /c .\\.evergreen\\link-sample-program.cmd
 
     - name: link-with-pkg-config
       depends_on:
@@ -550,6 +550,7 @@ buildvariants:
 ## ZAP
 - name: rhel-72-zseries
   display_name: "RHEL 7.2 zSeries"
+  batchtime: 1440 # 1 day
   expansions:
     CC: gcc
   run_on:
@@ -561,6 +562,7 @@ buildvariants:
 
 - name: rhel-71-power8
   display_name: "RHEL 7.1 Power8"
+  batchtime: 1440 # 1 day
   expansions:
     CC: gcc
   run_on:
@@ -571,6 +573,7 @@ buildvariants:
     - name: "debug-compile-c11"
 
 - name: ubuntu1604-power8
+  batchtime: 1440 # 1 day
   display_name: "Ubuntu 16.04 Power8"
   expansions:
     CC: gcc
@@ -584,6 +587,7 @@ buildvariants:
 
 - name: ubuntu1604-arm64
   display_name: "Ubuntu 16.04 ARM64"
+  batchtime: 1440 # 1 day
   expansions:
     CC: "gcc"
   run_on:
@@ -605,26 +609,6 @@ buildvariants:
     - name: "debug-compile"
     - name: "debug-compile-c99"
     - name: "debug-compile-c11"
-
-## Solaris
-#- name: solaris-32-bit
-#  display_name: "Sol gcc-4.8.2 32"
-#  expansions:
-#    CC: gcc
-#    MARCH: i386
-#  run_on:
-#    - solaris
-#  tasks:
-#    - name: "debug-compile"
-#
-#- name: solaris-64-bit
-#  display_name: "Sol gcc-4.8.2 64"
-#  expansions:
-#    CC: gcc
-#  run_on:
-#    - solaris
-#  tasks:
-#    - name: "debug-compile"
 
 ## Windows
 - name: windows-32-vs2010

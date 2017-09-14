@@ -51,14 +51,21 @@
 #endif
 
 
+#if defined (__GNUC__)
 #define BSON_GNUC_CHECK_VERSION(major, minor) \
-   (defined (__GNUC__) &&                     \
-    ((__GNUC__ > (major)) ||                  \
-     ((__GNUC__ == (major)) && (__GNUC_MINOR__ >= (minor)))))
+   ((__GNUC__ > (major)) ||                   \
+    ((__GNUC__ == (major)) && (__GNUC_MINOR__ >= (minor))))
+#else
+#define BSON_GNUC_CHECK_VERSION(major, minor) 0
+#endif
 
 
+#if defined (__GNUC__)
 #define BSON_GNUC_IS_VERSION(major, minor) \
-   (defined (__GNUC__) && (__GNUC__ == (major)) && (__GNUC_MINOR__ == (minor)))
+   ((__GNUC__ == (major)) && (__GNUC_MINOR__ == (minor)))
+#else
+#define BSON_GNUC_IS_VERSION(major, minor) 0
+#endif
 
 
 /* Decorate public functions:

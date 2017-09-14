@@ -12,7 +12,6 @@ which sphinx-build
 sphinx-build --version
 
 ./autogen.sh --enable-html-docs --enable-man-pages && make distcheck
-sphinx-build -b linkcheck ./doc doc/html
 
 # Check that docs were included, but sphinx temp files weren't.
 tarfile=libbson-*.tar.gz

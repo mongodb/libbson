@@ -41,21 +41,27 @@ mkdir -p $INSTALL_DIR
 cd $BUILD_DIR
 $TAR xf ../../libbson.tar.gz -C . --strip-components=1
 
-if [ "$BUILD_LIBBSON_WITH_CMAKE" ]; then
-  # Our CMake build system always installs both dynamic and static libbson.
-  $CMAKE -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR .
+if [ "$LINK_STATIC" ]; then
+  if [ "$BUILD_LIBBSON_WITH_CMAKE" ]; then
+    # Our CMake system builds shared and static by default.
+    $CMAKE -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR -DENABLE_TESTS=OFF .
+  else
+    ./configure --prefix=$INSTALL_DIR --enable-static
+  fi
   make
   make install
-  EXPECT_STATIC=1
-elif [ "$LINK_STATIC" ]; then
-  ./configure --prefix=$INSTALL_DIR --enable-static
-  make
-  make install
-  EXPECT_STATIC=1
 else
-  ./configure --prefix=$INSTALL_DIR
+  if [ "$BUILD_LIBBSON_WITH_CMAKE" ]; then
+    # Our CMake system builds shared and static by default.
+    $CMAKE -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR -DENABLE_TESTS=OFF -DENABLE_STATIC=OFF .
+  else
+    ./configure --prefix=$INSTALL_DIR
+  fi
   make
   make install
+
+  set +o xtrace
+
   if test -f $INSTALL_DIR/lib/libbson-static-1.0.a; then
     echo "libbson-static-1.0.a shouldn't have been installed"
     exit 1
@@ -76,7 +82,10 @@ else
     echo "libbson-static-1.0-config-version.cmake shouldn't have been installed"
     exit 1
   fi
+
 fi
+
+set +o xtrace
 
 LIB=$INSTALL_DIR/lib/libbson-1.0.$SO
 if test ! -L $LIB; then
@@ -119,7 +128,7 @@ else
   echo "libbson-1.0-config-version.cmake check ok"
 fi
 
-if [ "$EXPECT_STATIC" ]; then
+if [ "$LINK_STATIC" ]; then
   if test ! -f $INSTALL_DIR/lib/libbson-static-1.0.a; then
     echo "libbson-static-1.0.a missing!"
     exit 1
@@ -146,6 +155,7 @@ if [ "$EXPECT_STATIC" ]; then
   fi
 fi
 
+set -o xtrace
 cd $SRCROOT
 
 if [ "$BUILD_SAMPLE_WITH_CMAKE" ]; then

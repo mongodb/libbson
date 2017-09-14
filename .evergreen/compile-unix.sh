@@ -52,7 +52,7 @@ CONFIGURE_SCRIPT="./autogen.sh"
 
 
 # --strip-components is an GNU tar extension. Check if the platform
-# (e.g. Solaris) has GNU tar installed as `gtar`, otherwise we assume to be on
+# has GNU tar installed as `gtar`, otherwise we assume to be on
 # platform that supports it
 # command -v returns success error code if found and prints the path to it
 if command -v gtar 2>/dev/null; then
@@ -96,9 +96,6 @@ case "$OS" in
       MAKEFLAGS="-j${cpus}"
    ;;
 
-   sunos)
-      PATH="/opt/mongodbtoolchain/bin:$PATH"
-   ;;
 esac
 
 case "$CC" in

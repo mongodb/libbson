@@ -60,7 +60,10 @@ corpus_test_unhexlify (bson_iter_t *iter, uint32_t *bson_str_len)
 
 
 void
-corpus_test (bson_t *scenario, test_bson_type_valid_cb valid)
+corpus_test (bson_t *scenario,
+             test_bson_valid_cb valid,
+             test_bson_decode_error_cb decode_error,
+             test_bson_parse_error_cb parse_error)
 {
    bson_iter_t iter;
    bson_iter_t inner_iter;
@@ -80,11 +83,12 @@ corpus_test (bson_t *scenario, test_bson_type_valid_cb valid)
       abort ();
    }
 
+   /* test valid BSON and Extended JSON */
    if (bson_iter_init_find (&iter, scenario, "valid")) {
       bson_iter_recurse (&iter, &inner_iter);
       while (bson_iter_next (&inner_iter)) {
          bson_iter_t test_iter;
-         test_bson_type_t test = {scenario_description, bson_type, NULL};
+         test_bson_valid_type_t test = {scenario_description, bson_type, NULL};
 
          bson_iter_recurse (&inner_iter, &test_iter);
          while (bson_iter_next (&test_iter)) {
@@ -125,6 +129,58 @@ corpus_test (bson_t *scenario, test_bson_type_valid_cb valid)
 
          bson_free (test.cB);
          bson_free (test.dB);
+      }
+   }
+
+   /* test decoding errors (i.e. invalid BSON) */
+   if (bson_iter_init_find (&iter, scenario, "decodeErrors")) {
+      bson_iter_recurse (&iter, &inner_iter);
+      while (bson_iter_next (&inner_iter)) {
+         bson_iter_t test_iter;
+         test_bson_decode_error_type_t test = {
+            scenario_description, bson_type, NULL};
+
+         bson_iter_recurse (&inner_iter, &test_iter);
+         while (bson_iter_next (&test_iter)) {
+            if (!strcmp (bson_iter_key (&test_iter), "description")) {
+               test.test_description = bson_iter_utf8 (&test_iter, NULL);
+               corpus_test_print_description (test.test_description);
+            }
+
+            if (!strcmp (bson_iter_key (&test_iter), "bson")) {
+               test.bson = corpus_test_unhexlify (&test_iter, &test.bson_len);
+            }
+         }
+
+         /* execute the test callback */
+         decode_error (&test);
+
+         bson_free (test.bson);
+      }
+   }
+
+   /* test parsing errors (e.g. invalid JSON or Decimal128 strings) */
+   if (bson_iter_init_find (&iter, scenario, "parseErrors")) {
+      bson_iter_recurse (&iter, &inner_iter);
+      while (bson_iter_next (&inner_iter)) {
+         bson_iter_t test_iter;
+         test_bson_parse_error_type_t test = {
+            scenario_description, bson_type, NULL};
+
+         bson_iter_recurse (&inner_iter, &test_iter);
+         while (bson_iter_next (&test_iter)) {
+            if (!strcmp (bson_iter_key (&test_iter), "description")) {
+               test.test_description = bson_iter_utf8 (&test_iter, NULL);
+               corpus_test_print_description (test.test_description);
+            }
+
+            if (!strcmp (bson_iter_key (&test_iter), "string")) {
+               test.str = bson_iter_utf8 (&test_iter, &test.str_len);
+            }
+         }
+
+         /* execute the test callback */
+         parse_error (&test);
       }
    }
 }

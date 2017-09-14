@@ -1,30 +1,59 @@
+Libbson-1.8.0
+=============
+
+It is my pleasure to announce Libbson-1.8.0.
+
+New features and bugfixes:
+
+  * Make symbols bson_get_major_version, bson_get_minor_version,
+    bson_get_micro_version, bson_get_version, and bson_check_version available
+    to C++ programs.
+  * New CMake option ENABLE_MAINTAINER_FLAGS.
+  * Crash iterating over invalid code with scope.
+
+Thanks to everyone who contributed to the development of this release.
+
+  * A. Jesse Jiryu Davis
+  * Hannes Magnusson
+  * Jeremy Mikola
+  * Kevin Albertson
+  * Michael Kuhn
+
+Peace,
+
+    A. Jesse Jiryu Davis
+
+
 Libbson-1.7.0
 =============
 
   * Changes to JSON encoding and decoding:
-    * New function bson_as_extended_json formats "Strict Extended JSON"
-      according to MongoDB Extended JSON Spec, while bson_as_json is updated
-      to conform to "Relaxed Extended JSON"
+    * New functions bson_as_canonical_extended_json and
+      bson_as_relaxed_extended_json convert BSON to canonical and relaxed
+      extended JSON according to MongoDB Extended JSON Spec.
+      Output for the existing bson_as_json function has not been changed.
     * When parsing JSON type wrappers like "$timestamp", any missing or extra
       keys are an error.
     * The JSON format for BSON regular expressions is now "$regularExpression":
       {"pattern": "...", "options": "..."}. The old format {"$regex": "...",
-      "$options": "..."} is still parsed but not generated.
+      "$options": "..."} is still parsed.
     * The JSON format for BSON binary elements is now "$binary": {"base64":
       "...", "subType": "..."}. The old format {"$binary": "...", "$type":
-      "..."} is still parsed but not generated.
+      "..."} is still parsed.
     * BSON dates can be parsed from "$date" as an ISO8601 date or "$numberLong"
       as milliseconds since the epoch: "t": {"$date": {"$numberLong": "1234"}}.
       Dates can no longer be formatted as raw integers. bson_as_json writes a
       BSON date after 1970 as "$date" with an ISO8601 string, and dates before
       1970 as negative milliseconds wrapped in "$numberLong".
-      bson_as_extended_json always writes dates with "$numberLong".
+      bson_as_canonical_extended_json always writes dates with "$numberLong".
+      bson_as_relaxed_extended_json always writes dates with "$date".
     * The non-numbers NaN, Infinity, and -Infinity are now recognized (regardless
       of case) when parsing JSON.
   * CMake build now installs .pc files for programs that link to libbson using
     pkg-config. Both the CMake and Autotools build systems now install .cmake
     files for programs that link to libbson using CMake. Linking to libbson
     statically or dynamically is now much more convenient.
+  * New CMake option, "ENABLE_STATIC", defaults to ON.
   * Minimum required CMake version has been increased to 3.1.
   * CMake remains experimental on non-Windows platforms and issues a warning now
   * New functions
@@ -37,6 +66,7 @@ Libbson-1.7.0
     * BSON_ITER_HOLDS_INT, checks if iterator holds int32 or int64
     * BSON_ITER_HOLDS_NUMBER, checks if iterator holds int32, int64 or double
   * Raised BSON recursion limit to 200
+
 
 Libbson-1.6.0
 =============
@@ -309,7 +339,7 @@ Thanks to everyone who contributed to the development of this release.
   * A. Jesse Jiryu Davis
   * Hannes Magnusson
   * Mark Benvenuto
-  * Petr Písař
+  * Petr P??sa??
   * xpol
   * Jose Sebastian Battig
   * Jeroen Ooms
@@ -358,7 +388,7 @@ Thanks to everyone who contributed to the development of this release.
   * Hannes Magnusson
   * A. Jesse Jiryu Davis
   * Jeroen Ooms
-  * Petr Písař
+  * Petr P??sa??
   * xpol
 
 Peace,
@@ -606,7 +636,7 @@ Libbson.
  * Ivan Suvorov
  * Hannes Magnusson
  * Jason Carey
- * Jérôme Lebel
+ * J??r??me Lebel
  * Samantha Ritter
 
 -- Jason Carey
@@ -640,7 +670,7 @@ Libbson.
  * Daniel Colchete
  * Ivan Suvorov
  * Jason Carey
- * Jérôme Lebel
+ * J??r??me Lebel
 
 -- Jason Carey
 
@@ -664,7 +694,7 @@ Libbson.
  * Adam Midvidy
  * Christian Hergert
  * Jason Carey
- * Jérôme Lebel
+ * J??r??me Lebel
  * Tyler Brock
 
 -- Jason Carey
@@ -684,7 +714,7 @@ Thanks to everyone who contributed to the development of Libbson!
  * Jason Carey
  * Jose Sebastian Battig
  * Maxim Zakharov
- * Jérôme Lebel
+ * J??r??me Lebel
  * Itay Neeman
  * Mike Manilone
  * Michael Kuhn
@@ -698,7 +728,7 @@ Thanks to everyone who contributed to the development of Libbson!
  * Matt Cotter
  * Gary J. Murakami
  * Toon Schoenmakers
- * Máximo Cuadros
+ * M??ximo Cuadros
  * Michael Whittaker
  * Kota Yamaguchi
  * Justin Case
@@ -859,7 +889,7 @@ I'd like to thank everyone who contributed to this release.
     Gary Murakami
     Jason Carey
     Jose Sebastian Battig
-    Máximo Cuadros
+    M??ximo Cuadros
     Paul Melnikow
     Stefan Kaes
 

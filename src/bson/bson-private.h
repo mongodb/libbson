@@ -86,6 +86,8 @@ typedef struct {
 BSON_STATIC_ASSERT (sizeof (bson_impl_alloc_t) <= 128);
 
 
+#define BSON_REGEX_OPTIONS_SORTED "ilmsux"
+
 BSON_END_DECLS
 
 
