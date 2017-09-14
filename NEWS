@@ -1,3 +1,19 @@
+Libbson-1.4.3
+=============
+
+It is my pleasure to announce Libbson-1.4.3. This fix backports one bugfix:
+
+  * Crash iterating over invalid code with scope.
+
+Thanks to everyone who contributed to the development of this release.
+
+  * Kevin Albertson
+
+Peace,
+
+    A. Jesse Jiryu Davis
+
+
 Libbson-1.4.2
 =============
 
