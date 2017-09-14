@@ -26,16 +26,9 @@ set PATH=%PATH%;%INSTALL_DIR%\bin
 cd %BUILD_DIR%
 %TAR% xf ..\..\libbson.tar.gz -C . --strip-components=1
 
-if "%LINK_STATIC%"=="1" (
-  %CMAKE% -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DENABLE_TESTS=OFF .
-) else (
-  %CMAKE% -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DENABLE_TESTS=OFF -DENABLE_STATIC=OFF .
-)
-
+%CMAKE% -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% .
 msbuild.exe /m ALL_BUILD.vcxproj
 msbuild.exe INSTALL.vcxproj
-
-echo off
 
 rem Notice that the dll goes in "bin".
 set DLL=%INSTALL_DIR%\bin\libbson-1.0.dll
@@ -72,59 +65,30 @@ if not exist %INSTALL_DIR%\lib\cmake\libbson-1.0\libbson-1.0-config-version.cmak
   echo libbson-1.0-config-version.cmake check ok
 )
 
-if "%LINK_STATIC%"=="1" (
-  if not exist %INSTALL_DIR%\lib\bson-static-1.0.lib (
-    echo bson-static-1.0.lib missing!
-    exit /B 1
-  ) else (
-    echo bson-static-1.0.lib check ok
-  )
-  if not exist %INSTALL_DIR%\lib\pkgconfig\libbson-static-1.0.pc (
-    echo libbson-static-1.0.pc missing!
-    exit /B 1
-  ) else (
-    echo libbson-static-1.0.pc check ok
-  )
-  if not exist %INSTALL_DIR%\lib\cmake\libbson-static-1.0\libbson-static-1.0-config.cmake (
-    echo libbson-static-1.0-config.cmake missing!
-    exit /B 1
-  ) else (
-    echo libbson-static-1.0-config.cmake check ok
-  )
-  if not exist %INSTALL_DIR%\lib\cmake\libbson-static-1.0\libbson-static-1.0-config-version.cmake (
-    echo libbson-static-1.0-config-version.cmake missing!
-    exit /B 1
-  ) else (
-    echo libbson-static-1.0-config-version.cmake check ok
-  )
+if not exist %INSTALL_DIR%\lib\bson-static-1.0.lib (
+  echo bson-static-1.0.lib missing!
+  exit /B 1
 ) else (
-  if exist %INSTALL_DIR%\lib\bson-static-1.0.lib (
-    echo bson-static-1.0.lib should not be installed!
-    exit /B 1
-  ) else (
-    echo bson-static-1.0.lib check ok
-  )
-  if exist %INSTALL_DIR%\lib\pkgconfig\libbson-static-1.0.pc (
-    echo libbson-static-1.0.pc should not be installed!
-    exit /B 1
-  ) else (
-    echo libbson-static-1.0.pc check ok
-  )
-  if exist %INSTALL_DIR%\lib\cmake\libbson-static-1.0\libbson-static-1.0-config.cmake (
-    echo libbson-static-1.0-config.cmake should not be installed!
-    exit /B 1
-  ) else (
-    echo libbson-static-1.0-config.cmake check ok
-  )
-  if exist %INSTALL_DIR%\lib\cmake\libbson-static-1.0\libbson-static-1.0-config-version.cmake (
-    echo libbson-static-1.0-config-version.cmake should not be installed!
-    exit /B 1
-  ) else (
-    echo libbson-static-1.0-config-version.cmake check ok
-  )
+  echo bson-static-1.0.lib check ok
 )
-
-echo on
+if not exist %INSTALL_DIR%\lib\pkgconfig\libbson-static-1.0.pc (
+  echo libbson-static-1.0.pc missing!
+  exit /B 1
+) else (
+  echo libbson-static-1.0.pc check ok
+)
+if not exist %INSTALL_DIR%\lib\cmake\libbson-static-1.0\libbson-static-1.0-config.cmake (
+  echo libbson-static-1.0-config.cmake missing!
+  exit /B 1
+) else (
+  echo libbson-static-1.0-config.cmake check ok
+)
+if not exist %INSTALL_DIR%\lib\cmake\libbson-static-1.0\libbson-static-1.0-config-version.cmake (
+  echo libbson-static-1.0-config-version.cmake missing!
+  exit /B 1
+) else (
+  echo libbson-static-1.0-config-version.cmake check ok
+)
 
 cd %SRCROOT%
 

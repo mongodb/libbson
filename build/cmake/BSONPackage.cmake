@@ -4,8 +4,7 @@ set (PACKAGE_LIBRARIES bson-1.0)
 
 include (CMakePackageConfigHelpers)
 
-# These aren't pkg-config files, they're CMake package configuration files.
-function (install_package_config_file prefix)
+foreach (prefix "1.0" "static-1.0")
    foreach (suffix "config.cmake" "config-version.cmake")
       configure_package_config_file (
          build/cmake/libbson-${prefix}-${suffix}.in
@@ -21,10 +20,4 @@ function (install_package_config_file prefix)
            lib/cmake/libbson-${prefix}
       )
    endforeach ()
-endfunction ()
-
-install_package_config_file ("1.0")
-
-if (BSON_ENABLE_STATIC)
-   install_package_config_file ("static-1.0")
-endif ()
+endforeach ()
