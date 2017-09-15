@@ -16,7 +16,7 @@ Parameters
 
 * ``str``: The string to convert.
 * ``endptr``: Address of the first invalid character of ``str``, or null.
-* ``base``: The base to use for the convertion.
+* ``base``: The base to use for the conversion.
 
 Description
 -----------
