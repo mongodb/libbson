@@ -202,7 +202,6 @@ New features and bug fixes:
     contains zero-length field names.
   * The configure option "--enable-hardening" had had no effect. It is removed
     in favor of system-wide compiler configuration.
-  * Additional validation of
 
 Thanks to everyone who contributed to the development of this release.
 
@@ -345,7 +344,7 @@ Thanks to everyone who contributed to the development of this release.
   * A. Jesse Jiryu Davis
   * Hannes Magnusson
   * Mark Benvenuto
-  * Petr P??sa??
+  * Petr Písař
   * xpol
   * Jose Sebastian Battig
   * Jeroen Ooms
@@ -394,7 +393,7 @@ Thanks to everyone who contributed to the development of this release.
   * Hannes Magnusson
   * A. Jesse Jiryu Davis
   * Jeroen Ooms
-  * Petr P??sa??
+  * Petr Písař
   * xpol
 
 Peace,
@@ -642,7 +641,7 @@ Libbson.
  * Ivan Suvorov
  * Hannes Magnusson
  * Jason Carey
- * J??r??me Lebel
+ * Jérôme Lebel
  * Samantha Ritter
 
 -- Jason Carey
@@ -676,7 +675,7 @@ Libbson.
  * Daniel Colchete
  * Ivan Suvorov
  * Jason Carey
- * J??r??me Lebel
+ * Jérôme Lebel
 
 -- Jason Carey
 
@@ -700,7 +699,7 @@ Libbson.
  * Adam Midvidy
  * Christian Hergert
  * Jason Carey
- * J??r??me Lebel
+ * Jérôme Lebel
  * Tyler Brock
 
 -- Jason Carey
@@ -720,7 +719,7 @@ Thanks to everyone who contributed to the development of Libbson!
  * Jason Carey
  * Jose Sebastian Battig
  * Maxim Zakharov
- * J??r??me Lebel
+ * Jérôme Lebel
  * Itay Neeman
  * Mike Manilone
  * Michael Kuhn
@@ -734,7 +733,7 @@ Thanks to everyone who contributed to the development of Libbson!
  * Matt Cotter
  * Gary J. Murakami
  * Toon Schoenmakers
- * M??ximo Cuadros
+ * Máximo Cuadros
  * Michael Whittaker
  * Kota Yamaguchi
  * Justin Case
@@ -895,7 +894,7 @@ I'd like to thank everyone who contributed to this release.
     Gary Murakami
     Jason Carey
     Jose Sebastian Battig
-    M??ximo Cuadros
+    Máximo Cuadros
     Paul Melnikow
     Stefan Kaes
 
