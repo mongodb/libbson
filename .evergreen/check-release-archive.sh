@@ -2,6 +2,16 @@
 set -o xtrace   # Write all commands first to stderr
 set -o errexit  # Exit the script with error if any of the commands fail
 
+# Check that a CLion user didn't accidentally convert NEWS from UTF-8 to ASCII
+news_type=`file NEWS`
+echo "NEWS file type is $news_type"
+case "$news_type" in
+  *ASCII*)
+    echo '{ "results": [ { "status": "FAIL", "test_file": "Create Release Archive" } ] }' > test-results.json
+    exit 1
+  ;;
+esac
+
 echo '{ "results": [ { "status": "pass", "test_file": "Create Release Archive",' > test-results.json
 start=$(date +%s)
 echo '"start": ' $start ', ' >> test-results.json
