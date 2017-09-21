@@ -24,5 +24,5 @@ The ``bson_iter_overwrite_bool()`` function shall overwrite the contents of a BS
 
 This may only be done when the underlying bson document allows mutation.
 
-It is a programming error to call this function when ``iter`` is not obvserving an element of type BSON_TYPE_BOOL.
+It is a programming error to call this function when ``iter`` is not observing an element of type BSON_TYPE_BOOL.
 

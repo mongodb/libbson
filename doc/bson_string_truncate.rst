@@ -22,5 +22,5 @@ Description
 
 Truncates the string so that it is ``len`` bytes in length. This must be smaller or equal to the current length of the string.
 
-A ``\0`` byte will be placed where the end of the string occurrs.
+A ``\0`` byte will be placed where the end of the string occurs.
 

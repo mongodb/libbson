@@ -24,5 +24,5 @@ The :symbol:`bson_iter_overwrite_decimal128()` function shall overwrite the cont
 
 This may only be done when the underlying bson document allows mutation.
 
-It is a programming error to call this function when ``iter`` is not obvserving an element of type BSON_TYPE_DECIMAL128.
+It is a programming error to call this function when ``iter`` is not observing an element of type BSON_TYPE_DECIMAL128.
 

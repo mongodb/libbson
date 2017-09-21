@@ -39,7 +39,7 @@ To generate a :symbol:`bson_oid_t`, you may use the following.
 Parsing ObjectID Strings
 ------------------------
 
-You can also parse a string contianing a :symbol:`bson_oid_t`. The input string *MUST* be 24 characters or more in length.
+You can also parse a string containing a :symbol:`bson_oid_t`. The input string *MUST* be 24 characters or more in length.
 
 .. code-block:: c
 

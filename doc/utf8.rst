@@ -21,7 +21,7 @@ To validate the string contained in ``my_string``, use the following. You may pa
      printf ("Validation failed.\n");
   }
 
-If ``my_string`` has NULL bytes within the string, you must provide the string length. Use the following format. Notice the ``true`` at the end indicationg ``\0`` is allowed.
+If ``my_string`` has NULL bytes within the string, you must provide the string length. Use the following format. Notice the ``true`` at the end indicating ``\0`` is allowed.
 
 .. code-block:: c
 
