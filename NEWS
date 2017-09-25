@@ -1,7 +1,9 @@
-Next Release
+Next release
 ============
 
-No changes yet.
+New features and bugfixes:
+
+  * Fix a one-byte write past the end of a buffer in bson_decimal128_to_string.
 
 
 Libbson-1.8.0
