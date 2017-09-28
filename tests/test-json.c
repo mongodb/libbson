@@ -2711,6 +2711,23 @@ test_bson_integer_width (void)
    bson_destroy (bs);
 }
 
+
+static void
+test_bson_json_null_in_str (void)
+{
+   const char bad_json[] = "{\"a\":\"\0\"}";
+   const char cdriver2305[] = "{\"\0";
+   bson_error_t err;
+   ASSERT (!bson_new_from_json (
+      (const uint8_t *) bad_json, sizeof (bad_json) - 1, &err));
+   ASSERT_ERROR_CONTAINS (
+      err, BSON_ERROR_JSON, BSON_JSON_ERROR_READ_CORRUPT_JS, "Got parse error");
+   ASSERT (!bson_new_from_json (
+      (const uint8_t *) cdriver2305, sizeof (cdriver2305) - 1, &err));
+   ASSERT_ERROR_CONTAINS (
+      err, BSON_ERROR_JSON, BSON_JSON_ERROR_READ_CORRUPT_JS, "Got parse error");
+}
+
 void
 test_json_install (TestSuite *suite)
 {
@@ -2825,4 +2842,6 @@ test_json_install (TestSuite *suite)
       suite, "/bson/json/read/$numberDecimal", test_bson_json_number_decimal);
    TestSuite_Add (suite, "/bson/json/errors", test_bson_json_errors);
    TestSuite_Add (suite, "/bson/integer/width", test_bson_integer_width);
+   TestSuite_Add (
+      suite, "/bson/json/read/null_in_str", test_bson_json_null_in_str);
 }
