@@ -22,7 +22,7 @@ functions:
       params:
         aws_key: ${aws_key}
         aws_secret: ${aws_secret}
-        local_file:  ${workdir}/libbson/doc/html/index.html
+        local_file:  libbson/doc/html/index.html
         remote_file: ${project}/docs/${CURRENT_VERSION}/index.html
         bucket: mciuploads
         permissions: public-read
@@ -59,7 +59,7 @@ functions:
       params:
         aws_key: ${aws_key}
         aws_secret: ${aws_secret}
-        local_file:  ${workdir}/libbson/man-page-images/index.html
+        local_file:  libbson/man-page-images/index.html
         remote_file: ${project}/man-page-images/${CURRENT_VERSION}/index.html
         bucket: mciuploads
         permissions: public-read
@@ -80,7 +80,7 @@ functions:
       params:
         aws_key: ${aws_key}
         aws_secret: ${aws_secret}
-        local_file:  ${workdir}/libbson/coverage/index.html
+        local_file:  libbson/coverage/index.html
         remote_file: ${project}/${build_variant}/${revision}/${version_id}/${build_id}/coverage/index.html
         bucket: mciuploads
         permissions: public-read
