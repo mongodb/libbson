@@ -330,20 +330,37 @@ TestSuite_AddWC (TestSuite *suite,  /* IN */
 
 
 void
-TestSuite_AddFull (TestSuite *suite,  /* IN */
-                   const char *name,  /* IN */
-                   TestFuncWC func,   /* IN */
-                   TestFuncDtor dtor, /* IN */
-                   void *ctx,
-                   int (*check) (void)) /* IN */
+_TestSuite_AddFull (TestSuite *suite,  /* IN */
+                    const char *name,  /* IN */
+                    TestFuncWC func,   /* IN */
+                    TestFuncDtor dtor, /* IN */
+                    void *ctx,
+                    ...)
 {
+   va_list ap;
+   CheckFunc check;
    Test *test;
    Test *iter;
 
    test = (Test *) calloc (1, sizeof *test);
    test->name = bson_strdup (name);
    test->func = func;
-   test->check = check;
+
+   va_start (ap, ctx);
+   test->num_checks = 0;
+   while ((check = va_arg (ap, CheckFunc))) {
+      test->checks[test->num_checks] = check;
+      if (++test->num_checks > MAX_TEST_CHECK_FUNCS) {
+         fprintf (stderr,
+                  "Too many check funcs for %s, increase MAX_TEST_CHECK_FUNCS "
+                  "to more than %d\n",
+                  name,
+                  MAX_TEST_CHECK_FUNCS);
+         abort ();
+      }
+   }
+   va_end (ap);
+
    test->next = NULL;
    test->dtor = dtor;
    test->ctx = ctx;
@@ -402,6 +419,7 @@ TestSuite_RunFuncInChild (TestSuite *suite, /* IN */
 #endif
 
 
+/* returns 1 on failure, 0 on success */
 static int
 TestSuite_RunTest (TestSuite *suite, /* IN */
                    Test *test,       /* IN */
@@ -413,13 +431,33 @@ TestSuite_RunTest (TestSuite *suite, /* IN */
    struct timespec ts3;
    char name[MAX_TEST_NAME_LENGTH];
    char buf[MAX_TEST_NAME_LENGTH + 500];
+   size_t i;
    int status = 0;
 
    snprintf (name, sizeof name, "%s%s", suite->name, test->name);
    name[sizeof name - 1] = '\0';
 
-   if (!test->check || test->check ()) {
-      _Clock_GetMonotonic (&ts1);
+   for (i = 0; i < test->num_checks; i++) {
+      if (!test->checks[i] ()) {
+         status = 0;
+         Mutex_Lock (mutex);
+         snprintf (buf,
+                   sizeof buf,
+                   "    { \"status\": \"SKIP\", \"test_file\": \"%s\" }%s\n",
+                   test->name,
+                   ((*count) == 1) ? "" : ",");
+         buf[sizeof buf - 1] = '\0';
+         _Print_StdOut ("%s", buf);
+         if (suite->outfile) {
+            fprintf (suite->outfile, "%s", buf);
+            fflush (suite->outfile);
+         }
+         Mutex_Unlock (mutex);
+         goto done;
+      }
+   }
+
+   _Clock_GetMonotonic (&ts1);
 
 /*
  * TODO: If not verbose, close()/dup(/dev/null) for stdout.
@@ -427,73 +465,59 @@ TestSuite_RunTest (TestSuite *suite, /* IN */
 
 /* Tracing is superduper slow */
 #if defined(_WIN32)
-      srand (test->seed);
+   srand (test->seed);
 
-      if (suite->flags & TEST_DEBUGOUTPUT) {
-         _Print_StdOut ("Begin %s, seed %u\n", name, test->seed);
-      }
-
-      test->func (test->ctx);
-      status = 0;
-#else
-      if (suite->flags & TEST_DEBUGOUTPUT) {
-         _Print_StdOut ("Begin %s, seed %u\n", name, test->seed);
-      }
-
-      if ((suite->flags & TEST_NOFORK)) {
-         srand (test->seed);
-         test->func (test->ctx);
-         status = 0;
-      } else {
-         status = TestSuite_RunFuncInChild (suite, test);
-      }
-#endif
-
-      _Clock_GetMonotonic (&ts2);
-      _Clock_Subtract (&ts3, &ts2, &ts1);
-
-      Mutex_Lock (mutex);
-      snprintf (buf,
-                sizeof buf,
-                "    { \"status\": \"%s\", "
-                "\"test_file\": \"%s\", "
-                "\"seed\": \"%u\", "
-                "\"start\": %u.%09u, "
-                "\"end\": %u.%09u, "
-                "\"elapsed\": %u.%09u }%s\n",
-                (status == 0) ? "PASS" : "FAIL",
-                name,
-                test->seed,
-                (unsigned) ts1.tv_sec,
-                (unsigned) ts1.tv_nsec,
-                (unsigned) ts2.tv_sec,
-                (unsigned) ts2.tv_nsec,
-                (unsigned) ts3.tv_sec,
-                (unsigned) ts3.tv_nsec,
-                ((*count) == 1) ? "" : ",");
-      buf[sizeof buf - 1] = 0;
-      _Print_StdOut ("%s", buf);
-      if (suite->outfile) {
-         fprintf (suite->outfile, "%s", buf);
-         fflush (suite->outfile);
-      }
-      Mutex_Unlock (mutex);
-   } else {
-      status = 0;
-      Mutex_Lock (mutex);
-      snprintf (buf,
-                sizeof buf,
-                "    { \"status\": \"SKIP\", \"test_file\": \"%s\" },\n",
-                test->name);
-      buf[sizeof buf - 1] = '\0';
-      _Print_StdOut ("%s", buf);
-      if (suite->outfile) {
-         fprintf (suite->outfile, "%s", buf);
-         fflush (suite->outfile);
-      }
-      Mutex_Unlock (mutex);
+   if (suite->flags & TEST_DEBUGOUTPUT) {
+      _Print_StdOut ("Begin %s, seed %u\n", name, test->seed);
    }
 
+   test->func (test->ctx);
+   status = 0;
+#else
+   if (suite->flags & TEST_DEBUGOUTPUT) {
+      _Print_StdOut ("Begin %s, seed %u\n", name, test->seed);
+   }
+
+   if ((suite->flags & TEST_NOFORK)) {
+      srand (test->seed);
+      test->func (test->ctx);
+      status = 0;
+   } else {
+      status = TestSuite_RunFuncInChild (suite, test);
+   }
+#endif
+
+   _Clock_GetMonotonic (&ts2);
+   _Clock_Subtract (&ts3, &ts2, &ts1);
+
+   Mutex_Lock (mutex);
+   snprintf (buf,
+             sizeof buf,
+             "    { \"status\": \"%s\", "
+             "\"test_file\": \"%s\", "
+             "\"seed\": \"%u\", "
+             "\"start\": %u.%09u, "
+             "\"end\": %u.%09u, "
+             "\"elapsed\": %u.%09u }%s\n",
+             (status == 0) ? "PASS" : "FAIL",
+             name,
+             test->seed,
+             (unsigned) ts1.tv_sec,
+             (unsigned) ts1.tv_nsec,
+             (unsigned) ts2.tv_sec,
+             (unsigned) ts2.tv_nsec,
+             (unsigned) ts3.tv_sec,
+             (unsigned) ts3.tv_nsec,
+             ((*count) == 1) ? "" : ",");
+   buf[sizeof buf - 1] = 0;
+   _Print_StdOut ("%s", buf);
+   if (suite->outfile) {
+      fprintf (suite->outfile, "%s", buf);
+      fflush (suite->outfile);
+   }
+   Mutex_Unlock (mutex);
+
+done:
    return status ? 1 : 0;
 }
 
