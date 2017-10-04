@@ -2728,6 +2728,122 @@ test_bson_json_null_in_str (void)
       err, BSON_ERROR_JSON, BSON_JSON_ERROR_READ_CORRUPT_JS, "Got parse error");
 }
 
+static char *
+_single_to_double (const char *json)
+{
+   char *copy;
+   char *to_ret = copy = bson_malloc (strlen (json) + 1);
+   strcpy (copy, json);
+   while (*copy) {
+      if (*copy == '\'') {
+         *copy = '\"';
+      } else {
+         copy++;
+      }
+   }
+   return to_ret;
+}
+
+static void
+_test_json_produces_multiple (const char *json_in, int err_expected, ...)
+{
+   bson_t bson_in = BSON_INITIALIZER;
+   bson_t *bson_expected;
+   bson_error_t err = {0};
+   int ret;
+   va_list ap;
+   char *json = _single_to_double (json_in);
+   bson_json_reader_t *reader =
+      bson_json_data_reader_new (false /* ignored */, 512 /* buffer size */);
+
+   va_start (ap, err_expected);
+
+   bson_json_data_reader_ingest (reader, (uint8_t *) json, strlen (json));
+   while ((ret = bson_json_reader_read (reader, &bson_in, &err)) == 1) {
+      bson_expected = va_arg (ap, bson_t *);
+      if (!bson_expected) {
+         fprintf (stderr, "Extra bson documents returned for input %s\n", json);
+         abort ();
+      }
+      if (bson_compare (&bson_in, bson_expected) != 0) {
+         char *exp = bson_as_json (bson_expected, NULL);
+         char *in = bson_as_json (&bson_in, NULL);
+         fprintf (
+            stderr, "Got %s, but expected %s for input %s\n", exp, in, json);
+         bson_free (exp);
+         bson_free (in);
+         abort ();
+      }
+      bson_destroy (bson_expected);
+      bson_reinit (&bson_in);
+   }
+
+   if (ret == 0) {
+      ASSERT (!err_expected);
+   } else {
+      ASSERT_OR_PRINT (err_expected, err);
+   }
+
+   if (va_arg (ap, bson_t *) != NULL) {
+      fprintf (stderr, "Not all bson docs matched for input %s\n", json);
+      abort ();
+   }
+
+   va_end (ap);
+
+   bson_json_reader_destroy (reader);
+   bson_destroy (&bson_in);
+   bson_free (json);
+}
+
+#define TEST_JSON_PRODUCES_MULTIPLE(_json, _has_err, ...) \
+   _test_json_produces_multiple (_json, _has_err, __VA_ARGS__, NULL);
+
+static void
+test_bson_as_json_multi_object (void)
+{
+   /* Test malformed documents that produce errors */
+   TEST_JSON_PRODUCES_MULTIPLE ("[],[{''", 1, NULL);
+
+   TEST_JSON_PRODUCES_MULTIPLE ("{},[{''", 1, NULL);
+
+
+   /* Test the desired multiple document behavior */
+   TEST_JSON_PRODUCES_MULTIPLE ("{'a': 1} {'b': 1}",
+                                0,
+                                BCON_NEW ("a", BCON_INT32 (1)),
+                                BCON_NEW ("b", BCON_INT32 (1)));
+
+   TEST_JSON_PRODUCES_MULTIPLE (
+      "{}{}{}", 0, bson_new (), bson_new (), bson_new ());
+
+   /* Test strange behavior we may consider changing */
+
+   /* Combines both documents into one? */
+   TEST_JSON_PRODUCES_MULTIPLE (
+      "{'a': 1}, {'b': 1}",
+      0,
+      BCON_NEW ("a", BCON_INT32 (1), "b", BCON_INT32 (1)));
+
+   TEST_JSON_PRODUCES_MULTIPLE (
+      "{},{'a': 1}", 0, BCON_NEW ("a", BCON_INT32 (1)));
+
+   TEST_JSON_PRODUCES_MULTIPLE (
+      "{},{},{'a': 1}", 0, BCON_NEW ("a", BCON_INT32 (1)));
+
+   TEST_JSON_PRODUCES_MULTIPLE (
+      "[],{'a': 1}", 0, BCON_NEW ("a", BCON_INT32 (1)));
+
+   /* We support a root level array */
+   TEST_JSON_PRODUCES_MULTIPLE ("[]", 0, bson_new ());
+
+   TEST_JSON_PRODUCES_MULTIPLE (
+      "[{'x': 0}]", 0, BCON_NEW ("0", "{", "x", BCON_INT32 (0), "}"));
+
+   /* Yet this fails */
+   TEST_JSON_PRODUCES_MULTIPLE ("[],[{'a': 1}]", 1, NULL);
+}
+
 void
 test_json_install (TestSuite *suite)
 {
@@ -2844,4 +2960,6 @@ test_json_install (TestSuite *suite)
    TestSuite_Add (suite, "/bson/integer/width", test_bson_integer_width);
    TestSuite_Add (
       suite, "/bson/json/read/null_in_str", test_bson_json_null_in_str);
+   TestSuite_Add (
+      suite, "/bson/as_json/multi_object", test_bson_as_json_multi_object);
 }
