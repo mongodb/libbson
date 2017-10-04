@@ -1740,19 +1740,19 @@ _bson_json_read_start_array (bson_json_reader_t *reader) /* IN */
    size_t len;
    bson_json_reader_bson_t *bson = &reader->bson;
 
+   if (bson->read_state != BSON_JSON_REGULAR) {
+      _bson_json_read_set_error (reader,
+                                 "Invalid read of \"[\" in state \"%s\"",
+                                 read_state_names[bson->read_state]);
+      return;
+   }
+
    if (bson->n < 0) {
       STACK_PUSH_ARRAY (_noop ());
    } else {
       _bson_json_read_fixup_key (bson);
       key = bson->key;
       len = bson->key_buf.len;
-
-      if (bson->read_state != BSON_JSON_REGULAR) {
-         _bson_json_read_set_error (reader,
-                                    "Invalid read of \"[\" in state \"%s\"",
-                                    read_state_names[bson->read_state]);
-         return;
-      }
 
       STACK_PUSH_ARRAY (bson_append_array_begin (
          STACK_BSON_PARENT, key, (int) len, STACK_BSON_CHILD));
