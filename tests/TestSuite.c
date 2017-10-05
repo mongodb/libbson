@@ -435,7 +435,6 @@ TestSuite_RunTest (TestSuite *suite, /* IN */
    int status = 0;
 
    snprintf (name, sizeof name, "%s%s", suite->name, test->name);
-   name[sizeof name - 1] = '\0';
 
    for (i = 0; i < test->num_checks; i++) {
       if (!test->checks[i] ()) {
@@ -446,7 +445,6 @@ TestSuite_RunTest (TestSuite *suite, /* IN */
                    "    { \"status\": \"SKIP\", \"test_file\": \"%s\" }%s\n",
                    test->name,
                    ((*count) == 1) ? "" : ",");
-         buf[sizeof buf - 1] = '\0';
          _Print_StdOut ("%s", buf);
          if (suite->outfile) {
             fprintf (suite->outfile, "%s", buf);
@@ -509,7 +507,6 @@ TestSuite_RunTest (TestSuite *suite, /* IN */
              (unsigned) ts3.tv_sec,
              (unsigned) ts3.tv_nsec,
              ((*count) == 1) ? "" : ",");
-   buf[sizeof buf - 1] = 0;
    _Print_StdOut ("%s", buf);
    if (suite->outfile) {
       fprintf (suite->outfile, "%s", buf);
@@ -802,7 +799,6 @@ TestSuite_RunNamed (TestSuite *suite,     /* IN */
 
    for (test = suite->tests; test; test = test->next) {
       snprintf (name, sizeof name, "%s%s", suite->name, test->name);
-      name[sizeof name - 1] = '\0';
       if (star) {
          /* e.g. testname is "/Client*" and name is "/Client/authenticate" */
          match = (0 == strncmp (name, testname, strlen (testname) - 1));
