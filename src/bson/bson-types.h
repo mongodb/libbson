@@ -146,7 +146,7 @@ typedef struct _bson_t {
    }
 
 
-BSON_STATIC_ASSERT (sizeof (bson_t) == 128);
+BSON_STATIC_ASSERT2 (bson_t, sizeof (bson_t) == 128);
 
 
 /**
@@ -160,7 +160,7 @@ typedef struct {
    uint8_t bytes[12];
 } bson_oid_t;
 
-BSON_STATIC_ASSERT (sizeof (bson_oid_t) == 12);
+BSON_STATIC_ASSERT2 (oid_t, sizeof (bson_oid_t) == 12);
 
 /**
  * bson_decimal128_t:
@@ -501,7 +501,7 @@ typedef struct _bson_error_t {
 } bson_error_t BSON_ALIGNED_END (8);
 
 
-BSON_STATIC_ASSERT (sizeof (bson_error_t) == 512);
+BSON_STATIC_ASSERT2 (error_t, sizeof (bson_error_t) == 512);
 
 
 /**
