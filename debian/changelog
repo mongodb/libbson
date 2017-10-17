@@ -1,6 +1,7 @@
 libbson (1.8.1-1) unstable; urgency=low
 
   * New upstream release
+  * Update to Standards-Version 4.1.1 (no changes)
 
  -- A. Jesse Jiryu Davis <jesse@mongodb.com>  Thu, 12 Oct 2017 15:55:23 +0000
 
