@@ -26,6 +26,13 @@ skipped_corpus_test_t SKIPPED_CORPUS_TESTS[] = {
    {0}};
 
 
+skipped_corpus_test_t VS2013_SKIPPED_CORPUS_TESTS[] = {
+   /* VS 2013 and older is imprecise stackoverflow.com/questions/32232331 */
+   {"Double type", "1.23456789012345677E+18"},
+   {"Double type", "-1.23456789012345677E+18"},
+   {0}};
+
+
 static void
 compare_data (const uint8_t *a,
               uint32_t a_len,
@@ -70,6 +77,16 @@ is_test_skipped (const char *scenario, const char *description)
          return true;
       }
    }
+
+   /* _MSC_VER 1900 is Visual Studio 2015 */
+#if (defined(_MSC_VER) && _MSC_VER < 1900)
+   for (skip = VS2013_SKIPPED_CORPUS_TESTS; skip->scenario != NULL; skip++) {
+      if (!strcmp (skip->scenario, scenario) &&
+          !strcmp (skip->test, description)) {
+         return true;
+      }
+   }
+#endif
 
    return false;
 }
