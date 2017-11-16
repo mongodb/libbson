@@ -5,6 +5,15 @@ New features and bugfixes:
 
   * Fix a one-byte write past the end of a buffer in bson_decimal128_to_string.
 
+
+Libbson-1.8.2
+=============
+
+No change since 1.8.1; released to keep pace with libmongoc's version.
+
+-- A. Jesse Jiryu Davis
+
+
 Libbson-1.8.1
 =============
 
