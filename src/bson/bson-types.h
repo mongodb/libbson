@@ -95,7 +95,7 @@ typedef enum {
  * Many functions will require that you provide a bson_context_t such as OID
  * generation.
  *
- * This structure is oqaque in that you cannot see the contents of the
+ * This structure is opaque in that you cannot see the contents of the
  * structure. However, it is stack allocatable in that enough padding is
  * provided in _bson_context_t to hold the structure.
  */
