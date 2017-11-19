@@ -293,7 +293,7 @@ test_bson_oid_init_with_threads (void)
    int i;
 
    {
-      bson_context_flags_t flags = 0;
+      bson_context_flags_t flags = BSON_CONTEXT_NONE;
       bson_context_t *contexts[N_THREADS];
       bson_thread_t threads[N_THREADS];
 

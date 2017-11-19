@@ -390,7 +390,7 @@ tasks:
           type: test
           params:
             working_dir: "libbson"
-            script: "CC='${CC}' MARCH='${MARCH}' CFLAGS='-std=c99 -D_XOPEN_SOURCE=600' RELEASE=1 sh .evergreen/compile.sh"
+            script: "CC='${CC}' MARCH='${MARCH}' CFLAGS='-std=c99 -D_XOPEN_SOURCE=600 -pedantic' RELEASE=1 sh .evergreen/compile.sh"
 
     - name: release-compile-c89
       depends_on:
