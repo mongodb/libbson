@@ -57,7 +57,7 @@ _bson_utf8_get_sequence (const char *utf8,    /* IN */
     * against 0x3F.
     *
     * [1] http://www.joelonsoftware.com/articles/Unicode.html
-    */
+    */ // 1110 1000
 
    if ((c & 0x80) == 0) {
       n = 1;
@@ -206,6 +206,9 @@ bson_utf8_validate (const char *utf8, /* IN */
             continue;
          } else if (c == 0) {
             /* Two-byte representation for NULL. */
+            if (!allow_null) {
+               return false;
+            }
             continue;
          }
          return false;
