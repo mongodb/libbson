@@ -101,6 +101,13 @@ else ()
    set(BSON_HAVE_GMTIME_R 1)
 endif ()
 
+CHECK_FUNCTION_EXISTS(rand_r stdlib.h BSON_HAVE_RAND_R)
+if (NOT BSON_HAVE_RAND_R)
+  set(BSON_HAVE_RAND_R 0)
+else ()
+  set(BSON_HAVE_RAND_R 1)
+endif ()
+
 if (WIN32)
    set (BSON_OS 2)
 else ()
@@ -183,6 +190,7 @@ set (SOURCES
    ${SOURCE_DIR}/src/bson/bson-md5.c
    ${SOURCE_DIR}/src/bson/bson-memory.c
    ${SOURCE_DIR}/src/bson/bson-oid.c
+   ${SOURCE_DIR}/src/bson/bson-rand.c
    ${SOURCE_DIR}/src/bson/bson-reader.c
    ${SOURCE_DIR}/src/bson/bson-string.c
    ${SOURCE_DIR}/src/bson/bson-timegm.c
@@ -213,6 +221,7 @@ set (HEADERS
    ${SOURCE_DIR}/src/bson/bson-md5.h
    ${SOURCE_DIR}/src/bson/bson-memory.h
    ${SOURCE_DIR}/src/bson/bson-oid.h
+   ${SOURCE_DIR}/src/bson/bson-rand.h
    ${SOURCE_DIR}/src/bson/bson-reader.h
    ${SOURCE_DIR}/src/bson/bson-stdint-win32.h
    ${SOURCE_DIR}/src/bson/bson-string.h
@@ -402,6 +411,5 @@ if (BSON_ENABLE_STATIC)
       lib/pkgconfig
    )
 endif ()
-
 
 include (build/cmake/BSONPackage.cmake)
