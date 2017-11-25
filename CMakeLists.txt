@@ -135,7 +135,7 @@ else ()
    endif ()
    set (BSON_EXTRA_ALIGN 1)
    CHECK_SYMBOL_EXISTS(SYS_gettid sys/syscall.h BSON_HAVE_SYSCALL_TID)
-   if (NOT BSON_HAVE_SYSCALL_TID OR APPLE)
+   if (NOT BSON_HAVE_SYSCALL_TID OR APPLE OR ANDROID)
       set (BSON_HAVE_SYSCALL_TID 0)
    endif ()
    CHECK_INCLUDE_FILE(strings.h HAVE_STRINGS_H)
@@ -190,7 +190,6 @@ set (SOURCES
    ${SOURCE_DIR}/src/bson/bson-md5.c
    ${SOURCE_DIR}/src/bson/bson-memory.c
    ${SOURCE_DIR}/src/bson/bson-oid.c
-   ${SOURCE_DIR}/src/bson/bson-rand.c
    ${SOURCE_DIR}/src/bson/bson-reader.c
    ${SOURCE_DIR}/src/bson/bson-string.c
    ${SOURCE_DIR}/src/bson/bson-timegm.c
@@ -221,7 +220,6 @@ set (HEADERS
    ${SOURCE_DIR}/src/bson/bson-md5.h
    ${SOURCE_DIR}/src/bson/bson-memory.h
    ${SOURCE_DIR}/src/bson/bson-oid.h
-   ${SOURCE_DIR}/src/bson/bson-rand.h
    ${SOURCE_DIR}/src/bson/bson-reader.h
    ${SOURCE_DIR}/src/bson/bson-stdint-win32.h
    ${SOURCE_DIR}/src/bson/bson-string.h
