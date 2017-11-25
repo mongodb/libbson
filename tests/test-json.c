@@ -743,6 +743,15 @@ test_bson_corrupt_binary (void)
    bson_free (buf);
 }
 
+#ifndef BSON_HAVE_RAND_R
+static int
+rand_r(unsigned int* seed)
+{
+   srand (*seed);
+   return rand();
+}
+#endif
+
 #ifdef _WIN32
 #define RAND_R rand_s
 #else
