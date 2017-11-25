@@ -29,7 +29,6 @@
 #include "bson-md5.h"
 #include "bson-memory.h"
 #include "bson-thread-private.h"
-#include "bson-rand.h"
 
 #ifdef BSON_HAVE_SYSCALL_TID
 #include <sys/syscall.h>
@@ -348,8 +347,9 @@ _bson_context_init (bson_context_t *context,    /* IN */
    seed[2] = _bson_getpid ();
    real_seed = seed[0] ^ seed[1] ^ seed[2];
 
-#ifdef BSON_OS_WIN32
+#ifndef BSON_HAS_RAND_R
    /* ms's runtime is multithreaded by default, so no rand_r */
+   /* no rand_r on android either */
    srand (real_seed);
    context->seq32 = rand () & 0x007FFFF0;
 #elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__DragonFly__) || \
