@@ -29,6 +29,7 @@
 #include "bson-md5.h"
 #include "bson-memory.h"
 #include "bson-thread-private.h"
+#include "bson-rand.h"
 
 #ifdef BSON_HAVE_SYSCALL_TID
 #include <sys/syscall.h>
