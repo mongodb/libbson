@@ -176,15 +176,28 @@ test_bson_as_json_multi (void)
    BSON_ASSERT (bson_append_double (b, "Double", -1, -1.0));
 
    {
-      const uint8_t binary[] = { 0xa3, 0x4c, 0x38, 0xf7, 0xc3, 0xab,
-                                 0xed, 0xc8, 0xa3, 0x78, 0x14, 0xa9,
-                                 0x92, 0xab, 0x8d, 0xb6 };
+      const uint8_t binary[] = {0xa3,
+                                0x4c,
+                                0x38,
+                                0xf7,
+                                0xc3,
+                                0xab,
+                                0xed,
+                                0xc8,
+                                0xa3,
+                                0x78,
+                                0x14,
+                                0xa9,
+                                0x92,
+                                0xab,
+                                0x8d,
+                                0xb6};
       BSON_ASSERT (bson_append_binary (
          b, "Binary", -1, BSON_SUBTYPE_UUID_DEPRECATED, binary, sizeof binary));
    }
 
    {
-      const uint8_t binary[] = { 1, 2, 3, 4, 5 };
+      const uint8_t binary[] = {1, 2, 3, 4, 5};
       BSON_ASSERT (bson_append_binary (
          b, "BinaryUserDefined", -1, BSON_SUBTYPE_USER, binary, sizeof binary));
    }
@@ -219,16 +232,18 @@ test_bson_as_json_multi (void)
    BSON_ASSERT (bson_append_timestamp (b, "Timestamp", -1, 42, 1));
    BSON_ASSERT (bson_append_regex (b, "Regex", -1, "pattern", ""));
    BSON_ASSERT (bson_append_date_time (b, "DatetimeEpoch", -1, 0));
-   BSON_ASSERT (bson_append_date_time (b, "DatetimePositive", -1, (int64_t) 2147483647LL));
-   BSON_ASSERT (bson_append_date_time (b, "DatetimeNegative", -1, (int64_t) -2147483648LL));
+   BSON_ASSERT (bson_append_date_time (
+      b, "DatetimePositive", -1, (int64_t) 2147483647LL));
+   BSON_ASSERT (bson_append_date_time (
+      b, "DatetimeNegative", -1, (int64_t) -2147483648LL));
    BSON_ASSERT (bson_append_bool (b, "True", -1, true));
    BSON_ASSERT (bson_append_bool (b, "False", -1, false));
 
    {
       bson_oid_t oid;
       bson_oid_init_from_string (&oid, "57e193d7a9cc81b4027498b1");
-      BSON_ASSERT (bson_append_dbpointer (
-         b, "DBPointer", -1, "collection", &oid));
+      BSON_ASSERT (
+         bson_append_dbpointer (b, "DBPointer", -1, "collection", &oid));
    }
 
    {
@@ -257,34 +272,40 @@ test_bson_as_json_multi (void)
    str = bson_as_json (b, &len);
 
    /* Based on multi-type-deprecated.json from BSON Corpus Tests. */
-   ASSERT_CMPSTR (str,
-                  "{"
-                  " \"_id\" : { \"$oid\" : \"57e193d7a9cc81b4027498b5\" },"
-                  " \"Symbol\" : \"symbol\","
-                  " \"String\" : \"string\","
-                  " \"Int32\" : 42,"
-                  " \"Int64\" : 42,"
-                  " \"Double\" : -1.0,"
-                  " \"Binary\" : { \"$binary\" : \"o0w498Or7cijeBSpkquNtg==\", \"$type\" : \"03\" },"
-                  " \"BinaryUserDefined\" : { \"$binary\" : \"AQIDBAU=\", \"$type\" : \"80\" },"
-                  " \"Code\" : { \"$code\" : \"function() {}\" },"
-                  " \"CodeWithScope\" : { \"$code\" : \"function() {}\", \"$scope\" : { } },"
-                  " \"Subdocument\" : { \"foo\" : \"bar\" },"
-                  " \"Array\" : [ 1, 2, 3, 4, 5 ],"
-                  " \"Timestamp\" : { \"$timestamp\" : { \"t\" : 42, \"i\" : 1 } },"
-                  " \"Regex\" : { \"$regex\" : \"pattern\", \"$options\" : \"\" },"
-                  " \"DatetimeEpoch\" : { \"$date\" : 0 },"
-                  " \"DatetimePositive\" : { \"$date\" : 2147483647 },"
-                  " \"DatetimeNegative\" : { \"$date\" : -2147483648 },"
-                  " \"True\" : true,"
-                  " \"False\" : false,"
-                  " \"DBPointer\" : { \"$ref\" : \"collection\", \"$id\" : \"57e193d7a9cc81b4027498b1\" },"
-                  " \"DBRef\" : { \"$ref\" : \"collection\", \"$id\" : { \"$oid\" : \"57fd71e96e32ab4225b723fb\" }, \"$db\" : \"database\" },"
-                  " \"Minkey\" : { \"$minKey\" : 1 },"
-                  " \"Maxkey\" : { \"$maxKey\" : 1 },"
-                  " \"Null\" : null,"
-                  " \"Undefined\" : { \"$undefined\" : true },"
-                  " \"Decimal128\" : { \"$numberDecimal\" : \"11\" } }");
+   ASSERT_CMPSTR (
+      str,
+      "{"
+      " \"_id\" : { \"$oid\" : \"57e193d7a9cc81b4027498b5\" },"
+      " \"Symbol\" : \"symbol\","
+      " \"String\" : \"string\","
+      " \"Int32\" : 42,"
+      " \"Int64\" : 42,"
+      " \"Double\" : -1.0,"
+      " \"Binary\" : { \"$binary\" : \"o0w498Or7cijeBSpkquNtg==\", \"$type\" : "
+      "\"03\" },"
+      " \"BinaryUserDefined\" : { \"$binary\" : \"AQIDBAU=\", \"$type\" : "
+      "\"80\" },"
+      " \"Code\" : { \"$code\" : \"function() {}\" },"
+      " \"CodeWithScope\" : { \"$code\" : \"function() {}\", \"$scope\" : { } "
+      "},"
+      " \"Subdocument\" : { \"foo\" : \"bar\" },"
+      " \"Array\" : [ 1, 2, 3, 4, 5 ],"
+      " \"Timestamp\" : { \"$timestamp\" : { \"t\" : 42, \"i\" : 1 } },"
+      " \"Regex\" : { \"$regex\" : \"pattern\", \"$options\" : \"\" },"
+      " \"DatetimeEpoch\" : { \"$date\" : 0 },"
+      " \"DatetimePositive\" : { \"$date\" : 2147483647 },"
+      " \"DatetimeNegative\" : { \"$date\" : -2147483648 },"
+      " \"True\" : true,"
+      " \"False\" : false,"
+      " \"DBPointer\" : { \"$ref\" : \"collection\", \"$id\" : "
+      "\"57e193d7a9cc81b4027498b1\" },"
+      " \"DBRef\" : { \"$ref\" : \"collection\", \"$id\" : { \"$oid\" : "
+      "\"57fd71e96e32ab4225b723fb\" }, \"$db\" : \"database\" },"
+      " \"Minkey\" : { \"$minKey\" : 1 },"
+      " \"Maxkey\" : { \"$maxKey\" : 1 },"
+      " \"Null\" : null,"
+      " \"Undefined\" : { \"$undefined\" : true },"
+      " \"Decimal128\" : { \"$numberDecimal\" : \"11\" } }");
 
    bson_free (str);
    bson_destroy (b);
@@ -742,6 +763,15 @@ test_bson_corrupt_binary (void)
    bson_destroy (&b);
    bson_free (buf);
 }
+
+#ifndef BSON_HAVE_RAND_R
+static int
+rand_r (unsigned int *seed)
+{
+   srand (*seed);
+   return rand ();
+}
+#endif
 
 #ifdef _WIN32
 #define RAND_R rand_s
@@ -2859,13 +2889,13 @@ test_json_install (TestSuite *suite)
                   test_bson_as_json_double_nonfinite);
 #endif
    TestSuite_Add (suite, "/bson/as_json/code", test_bson_as_json_code);
-   TestSuite_Add (suite, "/bson/as_json/date_time", test_bson_as_json_date_time);
+   TestSuite_Add (
+      suite, "/bson/as_json/date_time", test_bson_as_json_date_time);
    TestSuite_Add (suite, "/bson/as_json/regex", test_bson_as_json_regex);
    TestSuite_Add (suite, "/bson/as_json/symbol", test_bson_as_json_symbol);
    TestSuite_Add (suite, "/bson/as_json/utf8", test_bson_as_json_utf8);
-   TestSuite_Add (suite,
-                  "/bson/as_json/dbpointer",
-                  test_bson_as_json_dbpointer);
+   TestSuite_Add (
+      suite, "/bson/as_json/dbpointer", test_bson_as_json_dbpointer);
    TestSuite_Add (suite,
                   "/bson/as_canonical_extended_json/dbpointer",
                   test_bson_as_canonical_extended_json_dbpointer);
