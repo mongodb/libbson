@@ -1,9 +1,9 @@
 AC_DEFUN([AC_COMPILE_CHECK_SIZEOF],
 [changequote(&lt;&lt;, &gt;&gt;)dnl
 dnl The name to #define.
-define(&lt;&lt;AC_TYPE_NAME&gt;&gt;, translit(sizeof_$1, [a-z *], [A-Z_P]))dnl
+define(AC_TYPE_NAME, translit(sizeof_$1, [a-z *], [A-Z_P]))dnl
 dnl The cache variable name.
-define(&lt;&lt;AC_CV_NAME&gt;&gt;, translit(ac_cv_sizeof_$1, [ *], [_p]))dnl
+define(AC_CV_NAME, translit(ac_cv_sizeof_$1, [ *], [_p]))dnl
 changequote([, ])dnl
 AC_MSG_CHECKING(size of $1)
 AC_CACHE_VAL(AC_CV_NAME,
