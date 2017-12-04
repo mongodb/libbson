@@ -47,8 +47,8 @@ static bson_context_t gContextDefault;
 
 
 #ifdef BSON_HAVE_SYSCALL_TID
-static uint16_t
-gettid (void)
+static long
+bson_gettid (void)
 {
    return syscall (SYS_gettid);
 }
@@ -379,10 +379,10 @@ _bson_context_init (bson_context_t *context,    /* IN */
    } else {
 #ifdef BSON_HAVE_SYSCALL_TID
       if ((flags & BSON_CONTEXT_USE_TASK_ID)) {
-         int32_t tid;
+         uint16_t tid;
 
          /* This call is always successful */
-         tid = gettid ();
+         tid = (uint16_t) bson_gettid ();
          pid = BSON_UINT16_TO_BE (tid);
       } else
 #endif
