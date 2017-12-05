@@ -1,9 +1,28 @@
-Next release
-============
+1.9.0
+=====
+
+It is my pleasure to announce Libbson-1.9.0.
 
 New features and bugfixes:
 
+  * Fix Autotools syntax for OpenBSD and any platform lacking stdint.h.
+  * Fix Android NDK incompatibilities.
   * Fix a one-byte write past the end of a buffer in bson_decimal128_to_string.
+  * Avoid reading past the end of a string that contains UTF-8 multibyte NIL.
+  * Fix some pedantic warnings in C99 mode.
+
+Thanks to everyone who contributed to the development of this release.
+
+  * A. Jesse Jiryu Davis
+  * Kevin Albertson
+  * Jean-Marc Le Roux
+  * Jeremy Mikola
+  * Dimitri Gence
+  * Hannes Magnusson
+
+Peace,
+
+    A. Jesse Jiryu Davis
 
 
 Libbson-1.8.2
