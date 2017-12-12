@@ -347,7 +347,7 @@ _bson_context_init (bson_context_t *context,    /* IN */
    seed[2] = _bson_getpid ();
    real_seed = seed[0] ^ seed[1] ^ seed[2];
 
-#ifndef BSON_HAS_RAND_R
+#ifndef BSON_HAVE_RAND_R
    /* ms's runtime is multithreaded by default, so no rand_r */
    /* no rand_r on android either */
    srand (real_seed);
