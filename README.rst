@@ -2,6 +2,8 @@
 libbson
 =======
 
+ARCHIVED - libbson is now maintained in a subdirectory of the libmongoc project: https://github.com/mongodb/mongo-c-driver/tree/master/src/libbson
+
 libbson is a library providing useful routines related to building, parsing,
 and iterating BSON documents.
 
