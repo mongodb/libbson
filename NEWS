@@ -1,45 +1,9 @@
-Libbson-1.8.1
+libbson 1.8.0
 =============
-
-It is my pleasure to announce libbson-1.8.1. This release removes a syntax
-error in the configure script that affects some shells, and fixes the encoding
-of this NEWS file.
-
-Thanks to everyone who contributed to the development of this release.
-
-  * A. Jesse Jiryu Davis
-  * Jeremy Mikola
-
-Peace,
-
-    A. Jesse Jiryu Davis
-
-
-Libbson-1.8.0
-=============
-
-It is my pleasure to announce Libbson-1.8.0.
-
-New features and bugfixes:
 
   * Make symbols bson_get_major_version, bson_get_minor_version,
     bson_get_micro_version, bson_get_version, and bson_check_version available
     to C++ programs.
-  * New CMake option ENABLE_MAINTAINER_FLAGS.
-  * Crash iterating over invalid code with scope.
-
-Thanks to everyone who contributed to the development of this release.
-
-  * A. Jesse Jiryu Davis
-  * Hannes Magnusson
-  * Jeremy Mikola
-  * Kevin Albertson
-  * Michael Kuhn
-
-Peace,
-
-    A. Jesse Jiryu Davis
-
 
 Libbson-1.7.0
 =============
@@ -213,6 +177,7 @@ New features and bug fixes:
     contains zero-length field names.
   * The configure option "--enable-hardening" had had no effect. It is removed
     in favor of system-wide compiler configuration.
+  * Additional validation of
 
 Thanks to everyone who contributed to the development of this release.
 
@@ -355,7 +320,7 @@ Thanks to everyone who contributed to the development of this release.
   * A. Jesse Jiryu Davis
   * Hannes Magnusson
   * Mark Benvenuto
-  * Petr Písař
+  * Petr P??sa??
   * xpol
   * Jose Sebastian Battig
   * Jeroen Ooms
@@ -404,7 +369,7 @@ Thanks to everyone who contributed to the development of this release.
   * Hannes Magnusson
   * A. Jesse Jiryu Davis
   * Jeroen Ooms
-  * Petr Písař
+  * Petr P??sa??
   * xpol
 
 Peace,
@@ -652,7 +617,7 @@ Libbson.
  * Ivan Suvorov
  * Hannes Magnusson
  * Jason Carey
- * Jérôme Lebel
+ * J??r??me Lebel
  * Samantha Ritter
 
 -- Jason Carey
@@ -686,7 +651,7 @@ Libbson.
  * Daniel Colchete
  * Ivan Suvorov
  * Jason Carey
- * Jérôme Lebel
+ * J??r??me Lebel
 
 -- Jason Carey
 
@@ -710,7 +675,7 @@ Libbson.
  * Adam Midvidy
  * Christian Hergert
  * Jason Carey
- * Jérôme Lebel
+ * J??r??me Lebel
  * Tyler Brock
 
 -- Jason Carey
@@ -730,7 +695,7 @@ Thanks to everyone who contributed to the development of Libbson!
  * Jason Carey
  * Jose Sebastian Battig
  * Maxim Zakharov
- * Jérôme Lebel
+ * J??r??me Lebel
  * Itay Neeman
  * Mike Manilone
  * Michael Kuhn
@@ -744,7 +709,7 @@ Thanks to everyone who contributed to the development of Libbson!
  * Matt Cotter
  * Gary J. Murakami
  * Toon Schoenmakers
- * Máximo Cuadros
+ * M??ximo Cuadros
  * Michael Whittaker
  * Kota Yamaguchi
  * Justin Case
@@ -905,7 +870,7 @@ I'd like to thank everyone who contributed to this release.
     Gary Murakami
     Jason Carey
     Jose Sebastian Battig
-    Máximo Cuadros
+    M??ximo Cuadros
     Paul Melnikow
     Stefan Kaes
 

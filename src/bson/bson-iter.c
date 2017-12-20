@@ -730,7 +730,7 @@ fill_data_fields:
       memcpy (&l, iter->raw + iter->d2, sizeof (l));
       l = BSON_UINT32_FROM_LE (l);
 
-      if (l == 0 || l >= (len - o - 4 - 4)) {
+      if (l >= (len - o - 4 - 4)) {
          iter->err_off = o;
          goto mark_invalid;
       }
@@ -1023,20 +1023,20 @@ bson_iter_double (const bson_iter_t *iter) /* IN */
 double
 bson_iter_as_double (const bson_iter_t *iter) /* IN */
 {
-   BSON_ASSERT (iter);
+  BSON_ASSERT (iter);
 
-   switch ((int) ITER_TYPE (iter)) {
-   case BSON_TYPE_BOOL:
-      return (double) bson_iter_bool (iter);
-   case BSON_TYPE_DOUBLE:
-      return bson_iter_double (iter);
-   case BSON_TYPE_INT32:
-      return (double) bson_iter_int32 (iter);
-   case BSON_TYPE_INT64:
-      return (double) bson_iter_int64 (iter);
-   default:
-      return 0;
-   }
+  switch ((int) ITER_TYPE (iter)) {
+  case BSON_TYPE_BOOL:
+    return (double) bson_iter_bool (iter);
+  case BSON_TYPE_DOUBLE:
+    return bson_iter_double (iter);
+  case BSON_TYPE_INT32:
+    return (double) bson_iter_int32 (iter);
+  case BSON_TYPE_INT64:
+    return (double) bson_iter_int64 (iter);
+  default:
+    return 0;
+  }
 }
 
 
@@ -1410,10 +1410,7 @@ bson_iter_codewscope (const bson_iter_t *iter, /* IN */
    if (ITER_TYPE (iter) == BSON_TYPE_CODEWSCOPE) {
       if (length) {
          memcpy (&len, iter->raw + iter->d2, sizeof (len));
-         /* The string length was checked > 0 in _bson_iter_next_internal. */
-         len = BSON_UINT32_FROM_LE (len);
-         BSON_ASSERT (len > 0);
-         *length = len - 1;
+         *length = BSON_UINT32_FROM_LE (len) - 1;
       }
 
       memcpy (&len, iter->raw + iter->d4, sizeof (len));
