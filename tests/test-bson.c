@@ -415,6 +415,36 @@ test_bson_append_code_with_scope (void)
    bson_t *b;
    bson_t *b2;
    bson_t *scope;
+   bson_error_t err;
+   bool eof;
+   bson_reader_t *reader;
+   const bson_t *ticket_bson;
+   uint8_t malformed_data[] = {
+      0x00,
+      0x00,
+      0x00,
+      0x00, // length of doc (set below)
+      0x0F, // code_w_s type
+      0x00, // empty key
+      0x10,
+      0x00,
+      0x00,
+      0x00, // code_w_s length (needs to be > 14 for initial
+      // validation so give a non-empty scope doc)
+      0x00,
+      0x00,
+      0x00,
+      0x00, // invalid string length (must have trailing \0)
+      0x08,
+      0x00,
+      0x00,
+      0x00, // scope doc length
+      0x08,
+      0x00,
+      0x00, // "" : false
+      0x00, // end of scope doc
+      0x00  // end of doc
+   };
 
    /* Test with NULL bson, which converts to just CODE type. */
    b = bson_new ();
@@ -460,6 +490,23 @@ test_bson_append_code_with_scope (void)
    bson_destroy (b);
    bson_destroy (b2);
    bson_destroy (scope);
+
+   /* CDRIVER-2269 Test with a malformed zero length code string  */
+   malformed_data[0] = (uint8_t) sizeof (malformed_data);
+   b = bson_new_from_data (malformed_data, sizeof (malformed_data));
+   BSON_ASSERT (b);
+   BSON_ASSERT (bson_iter_init (&iter, b));
+   BSON_ASSERT (!bson_iter_next (&iter));
+   bson_destroy (b);
+
+   /* CDRIVER-2269 Test with malformed BSON from ticket */
+   reader = bson_reader_new_from_file (BINARY_DIR "/cdriver2269.bson", &err);
+   BSON_ASSERT (reader);
+   ticket_bson = bson_reader_read (reader, &eof);
+   BSON_ASSERT (ticket_bson);
+   BSON_ASSERT (bson_iter_init (&iter, ticket_bson));
+   BSON_ASSERT (!bson_iter_next (&iter));
+   bson_reader_destroy (reader);
 }
 
 
@@ -469,6 +516,21 @@ test_bson_append_dbpointer (void)
    bson_oid_t oid;
    bson_t *b;
    bson_t *b2;
+   uint8_t malformed_data[] = {
+      0x0C,
+      0x00,
+      0x00,
+      0x00, /* document length (12) */
+      0x0C, /* dbpointer type */
+      0x00, /* empty string key */
+      0x04,
+      0x00,
+      0x00,
+      0x00, /* string length (4). This is OOB. */
+      0x00, /* empty string */
+      0x00  /* end of document */
+   };
+   size_t error_offset = 0;
 
    b = bson_new ();
    bson_oid_init_from_string (&oid, "0123abcd0123abcd0123abcd");
@@ -477,6 +539,12 @@ test_bson_append_dbpointer (void)
    BSON_ASSERT_BSON_EQUAL (b, b2);
    bson_destroy (b);
    bson_destroy (b2);
+
+   b = bson_new_from_data (malformed_data, sizeof (malformed_data));
+   BSON_ASSERT (b);
+   BSON_ASSERT (!bson_validate (b, BSON_VALIDATE_NONE, &error_offset));
+   BSON_ASSERT (error_offset == 6);
+   bson_destroy (b);
 }
 
 
@@ -1120,7 +1188,7 @@ test_bson_validate (void)
       "test43.bson", BSON_VALIDATE_NONE, 6, BSON_VALIDATE_NONE, "corrupt BSON");
    VALIDATE_TEST ("test44.bson",
                   BSON_VALIDATE_NONE,
-                  24,
+                  6,
                   BSON_VALIDATE_NONE,
                   "corrupt BSON");
    VALIDATE_TEST (
@@ -1129,11 +1197,8 @@ test_bson_validate (void)
       "test46.bson", BSON_VALIDATE_NONE, 6, BSON_VALIDATE_NONE, "corrupt BSON");
    VALIDATE_TEST (
       "test47.bson", BSON_VALIDATE_NONE, 6, BSON_VALIDATE_NONE, "corrupt BSON");
-   VALIDATE_TEST ("test48.bson",
-                  BSON_VALIDATE_NONE,
-                  14,
-                  BSON_VALIDATE_NONE,
-                  "corrupt BSON");
+   VALIDATE_TEST (
+      "test48.bson", BSON_VALIDATE_NONE, 6, BSON_VALIDATE_NONE, "corrupt BSON");
    VALIDATE_TEST (
       "test49.bson", BSON_VALIDATE_NONE, 6, BSON_VALIDATE_NONE, "corrupt BSON");
    VALIDATE_TEST ("test50.bson",

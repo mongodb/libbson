@@ -26,7 +26,7 @@ Description
 -----------
 
 The :symbol:`bson_copy_to_excluding()` function shall copy all fields from
-``src`` to ``dst`` except those speified by the variadic, NULL terminated list
+``src`` to ``dst`` except those specified by the variadic, NULL terminated list
 of keys starting from ``first_exclude``.
 
 Deprecated

@@ -1,9 +1,80 @@
-libbson 1.8.0
+1.9.0
+=====
+
+It is my pleasure to announce Libbson-1.9.0.
+
+New features and bugfixes:
+
+  * Fix Autotools syntax for OpenBSD and any platform lacking stdint.h.
+  * Fix Android NDK incompatibilities.
+  * Fix a one-byte write past the end of a buffer in bson_decimal128_to_string.
+  * Avoid reading past the end of a string that contains UTF-8 multibyte NIL.
+  * Fix some pedantic warnings in C99 mode.
+
+Thanks to everyone who contributed to the development of this release.
+
+  * A. Jesse Jiryu Davis
+  * Kevin Albertson
+  * Jean-Marc Le Roux
+  * Jeremy Mikola
+  * Dimitri Gence
+  * Hannes Magnusson
+
+Peace,
+
+    A. Jesse Jiryu Davis
+
+
+Libbson-1.8.2
 =============
+
+No change since 1.8.1; released to keep pace with libmongoc's version.
+
+-- A. Jesse Jiryu Davis
+
+
+Libbson-1.8.1
+=============
+
+It is my pleasure to announce libbson-1.8.1. This release removes a syntax
+error in the configure script that affects some shells, and fixes the encoding
+of this NEWS file.
+
+Thanks to everyone who contributed to the development of this release.
+
+  * A. Jesse Jiryu Davis
+  * Jeremy Mikola
+
+Peace,
+
+    A. Jesse Jiryu Davis
+
+
+Libbson-1.8.0
+=============
+
+It is my pleasure to announce Libbson-1.8.0.
+
+New features and bugfixes:
 
   * Make symbols bson_get_major_version, bson_get_minor_version,
     bson_get_micro_version, bson_get_version, and bson_check_version available
     to C++ programs.
+  * New CMake option ENABLE_MAINTAINER_FLAGS.
+  * Crash iterating over invalid code with scope.
+
+Thanks to everyone who contributed to the development of this release.
+
+  * A. Jesse Jiryu Davis
+  * Hannes Magnusson
+  * Jeremy Mikola
+  * Kevin Albertson
+  * Michael Kuhn
+
+Peace,
+
+    A. Jesse Jiryu Davis
+
 
 Libbson-1.7.0
 =============
@@ -177,7 +248,6 @@ New features and bug fixes:
     contains zero-length field names.
   * The configure option "--enable-hardening" had had no effect. It is removed
     in favor of system-wide compiler configuration.
-  * Additional validation of
 
 Thanks to everyone who contributed to the development of this release.
 
@@ -320,7 +390,7 @@ Thanks to everyone who contributed to the development of this release.
   * A. Jesse Jiryu Davis
   * Hannes Magnusson
   * Mark Benvenuto
-  * Petr P??sa??
+  * Petr Písař
   * xpol
   * Jose Sebastian Battig
   * Jeroen Ooms
@@ -369,7 +439,7 @@ Thanks to everyone who contributed to the development of this release.
   * Hannes Magnusson
   * A. Jesse Jiryu Davis
   * Jeroen Ooms
-  * Petr P??sa??
+  * Petr Písař
   * xpol
 
 Peace,
@@ -617,7 +687,7 @@ Libbson.
  * Ivan Suvorov
  * Hannes Magnusson
  * Jason Carey
- * J??r??me Lebel
+ * Jérôme Lebel
  * Samantha Ritter
 
 -- Jason Carey
@@ -651,7 +721,7 @@ Libbson.
  * Daniel Colchete
  * Ivan Suvorov
  * Jason Carey
- * J??r??me Lebel
+ * Jérôme Lebel
 
 -- Jason Carey
 
@@ -675,7 +745,7 @@ Libbson.
  * Adam Midvidy
  * Christian Hergert
  * Jason Carey
- * J??r??me Lebel
+ * Jérôme Lebel
  * Tyler Brock
 
 -- Jason Carey
@@ -695,7 +765,7 @@ Thanks to everyone who contributed to the development of Libbson!
  * Jason Carey
  * Jose Sebastian Battig
  * Maxim Zakharov
- * J??r??me Lebel
+ * Jérôme Lebel
  * Itay Neeman
  * Mike Manilone
  * Michael Kuhn
@@ -709,7 +779,7 @@ Thanks to everyone who contributed to the development of Libbson!
  * Matt Cotter
  * Gary J. Murakami
  * Toon Schoenmakers
- * M??ximo Cuadros
+ * Máximo Cuadros
  * Michael Whittaker
  * Kota Yamaguchi
  * Justin Case
@@ -870,7 +940,7 @@ I'd like to thank everyone who contributed to this release.
     Gary Murakami
     Jason Carey
     Jose Sebastian Battig
-    M??ximo Cuadros
+    Máximo Cuadros
     Paul Melnikow
     Stefan Kaes
 

@@ -1,15 +1,14 @@
 AC_DEFUN([AC_COMPILE_CHECK_SIZEOF],
-[changequote(&lt;&lt;, &gt;&gt;)dnl
+[
 dnl The name to #define.
-define(&lt;&lt;AC_TYPE_NAME&gt;&gt;, translit(sizeof_$1, [a-z *], [A-Z_P]))dnl
+define(AC_TYPE_NAME, translit(sizeof_$1, [a-z *], [A-Z_P]))dnl
 dnl The cache variable name.
-define(&lt;&lt;AC_CV_NAME&gt;&gt;, translit(ac_cv_sizeof_$1, [ *], [_p]))dnl
-changequote([, ])dnl
+define(AC_CV_NAME, translit(ac_cv_sizeof_$1, [ *], [_p]))dnl
 AC_MSG_CHECKING(size of $1)
 AC_CACHE_VAL(AC_CV_NAME,
 [for ac_size in 4 8 1 2 16 $2 ; do # List sizes in rough order of prevalence.
   AC_TRY_COMPILE([#include "confdefs.h"
-#include &lt;sys/types.h&gt;
+#include <sys/types.h>
 $2
 ], [switch (0) case 0: case (sizeof ($1) == $ac_size):;], AC_CV_NAME=$ac_size)
   if test x$AC_CV_NAME != x ; then break; fi

@@ -26,6 +26,13 @@ skipped_corpus_test_t SKIPPED_CORPUS_TESTS[] = {
    {0}};
 
 
+skipped_corpus_test_t VS2013_SKIPPED_CORPUS_TESTS[] = {
+   /* VS 2013 and older is imprecise stackoverflow.com/questions/32232331 */
+   {"Double type", "1.23456789012345677E+18"},
+   {"Double type", "-1.23456789012345677E+18"},
+   {0}};
+
+
 static void
 compare_data (const uint8_t *a,
               uint32_t a_len,
@@ -70,6 +77,16 @@ is_test_skipped (const char *scenario, const char *description)
          return true;
       }
    }
+
+/* _MSC_VER 1900 is Visual Studio 2015 */
+#if (defined(_MSC_VER) && _MSC_VER < 1900)
+   for (skip = VS2013_SKIPPED_CORPUS_TESTS; skip->scenario != NULL; skip++) {
+      if (!strcmp (skip->scenario, scenario) &&
+          !strcmp (skip->test, description)) {
+         return true;
+      }
+   }
+#endif
 
    return false;
 }
@@ -225,7 +242,7 @@ test_bson_corpus_parse_error (test_bson_parse_error_type_t *test)
    }
 
    switch (test->bson_type) {
-   case 0x00: /* top-level document to be parsed as JSON */
+   case BSON_TYPE_EOD: /* top-level document to be parsed as JSON */
       ASSERT (!bson_new_from_json ((uint8_t *) test->str, test->str_len, NULL));
       break;
    case BSON_TYPE_DECIMAL128: {
@@ -234,6 +251,26 @@ test_bson_corpus_parse_error (test_bson_parse_error_type_t *test)
       ASSERT (IS_NAN (dec));
       break;
    }
+   case BSON_TYPE_DOUBLE:
+   case BSON_TYPE_UTF8:
+   case BSON_TYPE_DOCUMENT:
+   case BSON_TYPE_ARRAY:
+   case BSON_TYPE_BINARY:
+   case BSON_TYPE_UNDEFINED:
+   case BSON_TYPE_OID:
+   case BSON_TYPE_BOOL:
+   case BSON_TYPE_DATE_TIME:
+   case BSON_TYPE_NULL:
+   case BSON_TYPE_REGEX:
+   case BSON_TYPE_DBPOINTER:
+   case BSON_TYPE_CODE:
+   case BSON_TYPE_SYMBOL:
+   case BSON_TYPE_CODEWSCOPE:
+   case BSON_TYPE_INT32:
+   case BSON_TYPE_TIMESTAMP:
+   case BSON_TYPE_INT64:
+   case BSON_TYPE_MAXKEY:
+   case BSON_TYPE_MINKEY:
    default:
       fprintf (stderr, "Unsupported parseError type: %#x\n", test->bson_type);
       abort ();

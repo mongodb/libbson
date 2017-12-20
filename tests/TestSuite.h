@@ -137,36 +137,39 @@ extern "C" {
 #define ASSERT_CMPUINT8(a, b) ASSERT_CMPSTR ((const char *) a, (const char *) b)
 
 
-#define ASSERT_CMPJSON(_a, _b)                                             \
-   do {                                                                    \
-      size_t i = 0;                                                        \
-      char *a = (char *) _a;                                               \
-      char *b = (char *) _b;                                               \
-      char *aa = bson_malloc0 (strlen (a) + 1);                            \
-      char *bb = bson_malloc0 (strlen (b) + 1);                            \
-      char *f = a;                                                         \
-      do {                                                                 \
-         while (isspace (*a))                                              \
-            a++;                                                           \
-         aa[i++] = *a++;                                                   \
-      } while (*a);                                                        \
-      i = 0;                                                               \
-      do {                                                                 \
-         while (isspace (*b))                                              \
-            b++;                                                           \
-         bb[i++] = *b++;                                                   \
-      } while (*b);                                                        \
-      if (!!strcmp ((aa), (bb))) {                                         \
-         fprintf (                                                         \
-            stderr, "FAIL\n\nAssert Failure: \"%s\" != \"%s\"\n"           \
-                  "%s:%d  %s()\n",                                         \
-                  aa, bb,                                                  \
-                  __FILE__, __LINE__, BSON_FUNC);                          \
-         abort ();                                                         \
-      }                                                                    \
-      bson_free (aa);                                                      \
-      bson_free (bb);                                                      \
-      bson_free (f);                                                       \
+#define ASSERT_CMPJSON(_a, _b)                                 \
+   do {                                                        \
+      size_t i = 0;                                            \
+      char *__a = (char *) (_a);                               \
+      char *__b = (char *) (_b);                               \
+      char *__aa = bson_malloc0 (strlen (__a) + 1);            \
+      char *__bb = bson_malloc0 (strlen (__b) + 1);            \
+      char *f = __a;                                           \
+      do {                                                     \
+         while (isspace (*__a))                                \
+            __a++;                                             \
+         __aa[i++] = *__a++;                                   \
+      } while (*__a);                                          \
+      i = 0;                                                   \
+      do {                                                     \
+         while (isspace (*__b))                                \
+            __b++;                                             \
+         __bb[i++] = *__b++;                                   \
+      } while (*__b);                                          \
+      if (!!strcmp ((__aa), (__bb))) {                         \
+         fprintf (stderr,                                      \
+                  "FAIL\n\nAssert Failure: \"%s\" != \"%s\"\n" \
+                  "%s:%d  %s()\n",                             \
+                  __aa,                                        \
+                  __bb,                                        \
+                  __FILE__,                                    \
+                  __LINE__,                                    \
+                  BSON_FUNC);                                  \
+         abort ();                                             \
+      }                                                        \
+      bson_free (__aa);                                        \
+      bson_free (__bb);                                        \
+      bson_free (f);                                           \
    } while (0)
 
 
@@ -277,11 +280,13 @@ extern "C" {
    } while (0)
 
 #define MAX_TEST_NAME_LENGTH 500
+#define MAX_TEST_CHECK_FUNCS 10
 
 
 typedef void (*TestFunc) (void);
 typedef void (*TestFuncWC) (void *);
 typedef void (*TestFuncDtor) (void *);
+typedef int (*CheckFunc) (void);
 typedef struct _Test Test;
 typedef struct _TestSuite TestSuite;
 
@@ -294,7 +299,8 @@ struct _Test {
    void *ctx;
    int exit_code;
    unsigned seed;
-   int (*check) (void);
+   CheckFunc checks[MAX_TEST_CHECK_FUNCS];
+   size_t num_checks;
 };
 
 
@@ -319,12 +325,14 @@ TestSuite_AddWC (TestSuite *suite,
                  TestFuncDtor dtor,
                  void *ctx);
 void
-TestSuite_AddFull (TestSuite *suite,
-                   const char *name,
-                   TestFuncWC func,
-                   TestFuncDtor dtor,
-                   void *ctx,
-                   int (*check) (void));
+_TestSuite_AddFull (TestSuite *suite,
+                    const char *name,
+                    TestFuncWC func,
+                    TestFuncDtor dtor,
+                    void *ctx,
+                    ...);
+#define TestSuite_AddFull(_suite, _name, _func, _dtor, _ctx, ...) \
+   _TestSuite_AddFull (_suite, _name, _func, _dtor, _ctx, __VA_ARGS__, NULL)
 int
 TestSuite_Run (TestSuite *suite);
 void

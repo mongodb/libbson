@@ -38,6 +38,7 @@ test_bson_utf8_validate (void)
    BSON_ASSERT (!bson_utf8_validate ((const char *) test1, 12, false));
 
    BSON_ASSERT (bson_utf8_validate ((const char *) test2, 2, true));
+   BSON_ASSERT (!bson_utf8_validate ((const char *) test2, 2, false));
 }
 
 
@@ -234,8 +235,7 @@ test_bson_utf8_non_shortest (void)
    }
 
    for (i = 0; valid_tests[i]; i++) {
-      if (!bson_utf8_validate (
-             valid_tests[i], strlen (valid_tests[i]), false)) {
+      if (!bson_utf8_validate (valid_tests[i], strlen (valid_tests[i]), true)) {
          fprintf (stderr, "non-shortest form failure, valid_tests %d\n", i);
          BSON_ASSERT (false);
       }

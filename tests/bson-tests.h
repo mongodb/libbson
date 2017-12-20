@@ -58,7 +58,6 @@ static __inline int
 bson_open (const char *filename, int flags, ...)
 {
    int fd = -1;
-   int mode = 0;
 
    if (_sopen_s (
           &fd, filename, flags | _O_BINARY, _SH_DENYNO, _S_IREAD | _S_IWRITE) ==
