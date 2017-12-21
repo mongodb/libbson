@@ -1,14 +1,16 @@
 cmake_minimum_required(VERSION 3.1)
 
-set (MESSAGES_ENABLED 1)
-
-function(message)
-   list (GET ARGV 0 MessageType)
-   if (MESSAGES_ENABLED)
-      list (REMOVE_AT ARGV 0)
-      _message (${MessageType} "${ARGV}")
-   endif()
-endfunction()
+# declare function only when we build bson independently
+if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+  set (MESSAGES_ENABLED 1)
+  function(message)
+    list (GET ARGV 0 MessageType)
+    if (MESSAGES_ENABLED)
+        list (REMOVE_AT ARGV 0)
+        _message (${MessageType} "${ARGV}")
+    endif()
+  endfunction()
+endif()
 
 project (libbson C)
 
@@ -22,7 +24,6 @@ if (ENABLE_STATIC STREQUAL ON OR ENABLE_STATIC STREQUAL AUTO)
    # available. For now, AUTO means ON.
    set (BSON_ENABLE_STATIC ON)
 endif ()
-
 if (ENABLE_TESTS AND NOT BSON_ENABLE_STATIC)
    message (FATAL_ERROR "-DENABLE_STATIC=OFF also requires -DENABLE_TESTS=OFF")
 endif ()
