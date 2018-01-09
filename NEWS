@@ -1,3 +1,20 @@
+Libbson-1.9.1
+=============
+
+It is my pleasure to announce Libbson-1.9.1. This release reverts a changed
+macro definition that broke API compatibility, and fixes an off-by-one error
+in bson_append_regex that resulted in corrupt BSON.
+
+Thanks to everyone who contributed to the development of this release.
+
+  * A. Jesse Jiryu Davis
+  * Derick Rethans
+
+Peace,
+
+    A. Jesse Jiryu Davis
+
+
 1.9.0
 =====
 
