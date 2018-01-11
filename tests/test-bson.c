@@ -31,6 +31,10 @@
 #endif
 
 
+/* CDRIVER-2460 ensure the unused old BSON_ASSERT_STATIC macro still compiles */
+BSON_STATIC_ASSERT (1 == 1);
+
+
 static bson_t *
 get_bson (const char *filename)
 {
