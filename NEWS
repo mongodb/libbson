@@ -1,3 +1,16 @@
+Libbson-1.9.2
+=============
+
+It is my pleasure to announce Libbson-1.9.2. This release completes reverting a
+changed macro definition that broke API compatibility. The revert in 1.9.1 did
+not completely fix the BC break. Thanks to Petr Písař for finding and fixing the
+mistake.
+
+Peace,
+
+    A. Jesse Jiryu Davis
+
+
 Libbson-1.9.1
 =============
 
